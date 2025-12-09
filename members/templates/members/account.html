@@ -1,0 +1,96 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Mon compte{% endblock %}
+
+{% block content %}
+
+<style>
+.account-container{
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.account-card{
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+.account-card h2{
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.account-section{
+    margin-top: 30px;
+}
+
+.account-section h3{
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+}
+
+.account-links{
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.account-links li{
+    margin-bottom: 10px;
+}
+
+.account-links a{
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #ff8b38;
+    color: white;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.account-links a:hover{
+    background: #ff7b1a;
+}
+</style>
+
+<div class="account-container">
+
+    <div class="account-card">
+
+        <h2>Bonjour {{ user.username }}</h2>
+
+        <p>Bienvenue sur votre espace personnel.</p>
+
+        <div class="account-section">
+            <h3>Votre activité</h3>
+            <ul class="account-links">
+                <li>
+                    <a href="{% url 'my-favorites' %}">
+                        ❤️ Mes favoris
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{% url 'edit_store' %}">
+                        🛍️ Modifier mon commerce
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="account-section">
+            <h3>Session</h3>
+            <ul class="account-links">
+                <li><a href="{% url 'logout' %}">Déconnexion</a></li>
+            </ul>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

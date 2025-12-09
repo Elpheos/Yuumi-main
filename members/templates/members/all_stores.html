@@ -1,0 +1,173 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+   Yuumi | {{ ville }}
+{% endblock %}
+
+{% block content %}
+
+<style>
+
+/* ------------------------------------------------------------ */
+/* 🔸 SECTION — DERNIERS ARRIVANTS (FIX VISUEL)                 */
+/* ------------------------------------------------------------ */
+
+.derniers-arrivants-grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);  /* Ajuste ici si tu veux + responsive */
+    gap: 20px;
+    width: 90%;
+    margin: 32px auto 0;
+}
+
+.derniers-arrivants-grid-commerces {
+    background-color: #ff8b38;
+    padding: 0 0 20px 0;
+    display: flex;
+}
+
+.derniers-arrivants-grid-commerces a {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    text-decoration: none;
+}
+
+/* Zone image homogène */
+.derniers-arrivants-grid-commerces .img-wrapper {
+    width: 100%;
+    height: 260px;       /* ⬅️ Ajuste si tu veux 220 / 280 */
+    overflow: hidden;
+}
+
+.derniers-arrivants-grid-commerces .img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;   /* 🔥 Tout lissage ici */
+    display: block;
+}
+
+/* Nom du commerce */
+.derniers-arrivants-grid-commerces h4 {
+    margin: 12px 8px 0 8px;
+    text-align: center;
+    color: white;
+    font-size: 1.1rem;
+}
+
+</style>
+
+
+<main>
+
+    <!-- ======================= MISE EN AVANT ======================= -->
+    <section aria-label="commerces mis en avant">
+        <div class="mise-en-avant-annecy-container">
+            <img class="mise-en-avant-annecy-image"
+                 src="{% static 'images/' %}{{ ville|lower }}/base-annecy.jpg" />
+
+            <div class="mise-en-avant-annecy-text-container">
+                <h2>Signorini Tartufi</h2>
+                <h3>Épicerie spécialisée</h3>
+            </div>
+
+            <a class="mise-en-avant-bouton" href="#" rel="noopener">découvrir</a>
+        </div>
+    </section>
+
+    <!-- ======================= CATEGORIES ======================= -->
+    <section aria-label="Liste des catégories">
+        <div class="liste-des-catégories-container">
+
+            <div class="titre-page-annecy-container">
+                <h2>Que cherchez-vous ?</h2>
+                <h3>
+                    Un commerce avec des produits de qualité, un restaurant qui vous offrira un bon moment.
+                </h3>
+            </div>
+            
+            <div class="liste-des-categories-grid-container">
+
+                <div class="grid-image-1-container">
+                    <a href="#" rel="noopener">
+                        <img src="{% static 'images/' %}{{ ville|lower }}/ben.webp" alt="image du bistroquet"/>
+                        <h3 class="grid-nom-categories">Restaurants</h3>
+                    </a>
+                </div>
+
+                <div class="grid-image-2-container">
+                    <a href="#" rel="noopener">
+                        <img src="{% static 'images/' %}{{ ville|lower }}/saveurs-dici-et-la.webp" alt="saveurs d'ici et là"/>
+                        <h3 class="grid-nom-categories">Épiceries fines</h3>
+                    </a>
+                </div>
+
+                <div class="grid-image-3-container">
+                    <a href="#" rel="noopener">
+                        <img src="{% static 'images/' %}{{ ville|lower }}/cafes-brand.webp" alt="image de cafés brand"/>
+                        <h3 class="grid-nom-categories">Torréfacteurs</h3>
+                    </a>
+                </div>
+
+                <div class="grid-image-4-container">
+                    <a href="#" rel="noopener">
+                        <img src="{% static 'images/' %}{{ ville|lower }}/cave-filaterie.webp" alt="image de la cave filaterie"/>
+                        <h3 class="grid-nom-categories">Cavistes</h3>
+                    </a>
+                </div>
+
+            </div>
+
+            <div class="liste-des-categories-button-container">
+                <a class="liste-des-categories-button"
+                    href="{% url 'categories_ville' departement ville %}"
+                    rel="noopener">
+                    Toutes les catégories
+                </a>
+            </div>
+
+        </div>
+
+        <hr class="hr-separator"/>
+    </section>
+
+    <!-- ======================= DERNIERS ARRIVANTS ======================= -->
+    <section aria-label="les derniers arrivants">
+        <div class="derniers-arrivants-container">
+
+            <div class="titre-page-annecy-container">
+                <h2>Les derniers arrivants</h2>
+                <h3>Ils viennent de nous rejoindre ! Pensez à y jeter un œil.</h3>
+            </div>
+
+            <div class="derniers-arrivants-grid-container">
+                {% for store in derniers_arrivants %}
+                    <div class="derniers-arrivants-grid-commerces">
+
+                        <a href="{% url 'store_details' departement=store.departement ville=store.ville slug=store.slug %}"
+                           rel="noopener">
+
+                            <div class="img-wrapper">
+                                {% if store.photo %}
+                                    <img src="{{ store.photo.url }}" alt="Photo de {{ store.nom }}">
+                                {% else %}
+                                    <img src="{% static 'placeholder.png' %}" alt="Pas de photo">
+                                {% endif %}
+                            </div>
+
+                            <h4>{{ store.nom }}</h4>
+                        </a>
+
+                    </div>
+                {% empty %}
+                    <p>Aucun commerce récemment ajouté.</p>
+                {% endfor %}
+            </div>
+
+        </div>
+    </section>
+
+</main>
+
+{% endblock %}

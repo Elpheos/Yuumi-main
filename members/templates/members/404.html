@@ -1,0 +1,79 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page introuvable | Yuumi</title>
+    <link rel="stylesheet" href="{% static 'myglobal.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <style>
+        body {
+            background-color: #fff;
+            color: #333;
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .error-container {
+            text-align: center;
+            max-width: 600px;
+            padding: 30px;
+        }
+
+        .error-container img {
+            width: 150px;
+            margin-bottom: 25px;
+        }
+
+        .error-title {
+            font-size: 64px;
+            color: #ff8b38;
+            margin: 0;
+        }
+
+        .error-subtitle {
+            font-size: 22px;
+            margin: 15px 0 30px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .home-button {
+            display: inline-block;
+            background-color: #ff8b38;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .home-button:hover {
+            background-color: #e27930;
+        }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <img src="{% static 'images/logo.webp' %}" alt="Logo Yuumi">
+        <h1 class="error-title">404</h1>
+        <h2 class="error-subtitle">Oups... page introuvable</h2>
+        <p class="error-message">
+            La page que vous cherchez n’existe pas ou a été déplacée.<br>
+            Pas de panique, vous pouvez revenir à l’accueil pour continuer votre visite.
+        </p>
+        <a href="{% url 'main' %}" class="home-button"><i class="fa-solid fa-house"></i> Retour à l’accueil</a>
+    </div>
+</body>
+</html>

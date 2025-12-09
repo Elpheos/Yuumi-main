@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier mon commerce : {{ store.nom }}</title>
+    <link rel="stylesheet" href="{% static 'myglobal.css' %}">
+</head>
+
+<body>
+    <div class="page-container">
+        <header>
+            <h1>Modifier mon commerce : {{ store.nom }}</h1>
+        </header>
+
+        <main>
+            <form method="post" enctype="multipart/form-data" class="edit-store-form">
+                {% csrf_token %}
+
+                <label for="id_nom">Nom du commerce :</label>
+                {{ form.nom }}
+
+                <label for="id_ville">Ville :</label>
+                {{ form.ville }}
+
+                <label for="id_departement">Département :</label>
+                {{ form.departement }}
+
+                <label for="id_categorie">Catégorie :</label>
+                {{ form.categorie }}
+
+                <label for="id_descriptionpetite">Description courte :</label>
+                {{ form.descriptionpetite }}
+
+                <label for="id_descriptiongrande">Description détaillée :</label>
+                {{ form.descriptiongrande }}
+
+                <label for="id_addressemaps">Adresse (Google Maps) :</label>
+                {{ form.addressemaps }}
+
+                <label for="id_addresseitineraire">Adresse itinéraire :</label>
+                {{ form.addresseitineraire }}
+
+                <label for="id_site">Site web :</label>
+                {{ form.site }}
+
+                <label for="id_phone">Téléphone :</label>
+                {{ form.phone }}
+
+                <label for="id_instagram">Instagram :</label>
+                {{ form.instagram }}
+
+                <label for="id_facebook">Facebook :</label>
+                {{ form.facebook }}
+
+                <label for="id_photo">Photo principale :</label>
+                {% if store.photo %}
+                    <p>Image actuelle :</p>
+                    <img src="{{ store.photo.url }}" alt="Photo actuelle de {{ store.nom }}" style="max-width:200px;">
+                {% endif %}
+                {{ form.photo }}
+
+                <button type="submit" class="btn btn-primary">Enregistrer</button>
+            </form>
+        </main>
+    </div>
+</body>
+
+</html>

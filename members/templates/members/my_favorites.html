@@ -1,0 +1,97 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block content %}
+<main>
+    <section class="favorites-container">
+        <h1>Mes favoris</h1>
+        {% if user.is_authenticated %}
+    <p>Connecté en tant que {{ user.username }}</p>
+{% else %}
+    <p>Non connecté</p>
+{% endif %}
+        {% if favoris %}
+            <div class="favorites-list">
+                {% for store in favoris %}
+                    <div class="favorite-card">
+                        {% if store.photo %}
+                            <div class="favorite-photo">
+                                <a href="{{ store.get_absolute_url }}">
+                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }}">
+                                </a>
+                            </div>
+                        {% endif %}
+                        <div class="favorite-info">
+                            <h2><a href="{{ store.get_absolute_url }}">{{ store.nom }}</a></h2>
+                            <p>{{ store.ville }}{% if store.categorie %} | {{ store.categorie }}{% endif %}</p>
+
+                            <!-- Bouton retirer des favoris -->
+                            <button class="favori-btn active" data-store-id="{{ store.id }}">
+                                <i class="fa-solid fa-heart"></i>
+                                <span>Retirer des favoris</span>
+                            </button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Vous n'avez ajouté aucun favori pour le moment.</p>
+        {% endif %}
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll(".favori-btn");
+
+    buttons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const storeId = btn.dataset.storeId;
+
+            fetch(`/store/${storeId}/favoris/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const icon = btn.querySelector("i");
+                const span = btn.querySelector("span");
+
+                if (data.action === "removed") {
+                    btn.classList.remove("active");
+                    icon.classList.remove("fa-solid");
+                    icon.classList.add("fa-regular");
+                    span.textContent = "Ajouter aux favoris";
+
+                    // Retirer la carte du DOM
+                    btn.closest(".favorite-card").remove();
+                }
+            })
+            .catch(err => console.error("Erreur :", err));
+        });
+    });
+
+    // Fonction pour récupérer le CSRF token
+    function getCookie(name) {
+        let cookieValue = null; 
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+});
+</script>
+{% endblock %}
