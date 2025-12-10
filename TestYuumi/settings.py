@@ -94,15 +94,12 @@ WSGI_APPLICATION = 'TestYuumi.wsgi.application'
 # -------------------------------------------------------------------
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'yuumi',
-        'USER': 'yuumi',
-        'PASSWORD': 'sZepB7QPfz4s42',   # TODO : mets ici ton mot de passe PostgreSQL
-        'HOST': 'localhost',
-        'PORT': '5432',
+    "default": {
+        "ENGINE": "django.db.backends.sqlite3",
+        "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
 
 
 # -------------------------------------------------------------------

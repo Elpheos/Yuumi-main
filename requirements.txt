@@ -5,3 +5,8 @@ django-nested-admin
 django-cors-headers
 geopy
 Pillow
+
+# Production (VPS)
+psycopg2-binary
+whitenoise
+gunicorn
