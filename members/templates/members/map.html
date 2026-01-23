@@ -1,0 +1,399 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+Carte des commerces - {{ departement }} | Yuumi
+{% endblock %}
+
+{% block content %}
+<main>
+
+    <h1>Commerces dans le département {{ departement }}</h1>
+
+    <!-- ===================== Filtres ===================== -->
+    <div class="category-filters">
+
+        <div class="parent-filter">
+            <label>
+                <input type="checkbox" data-category="all" checked>
+                Tous
+            </label>
+        </div>
+
+        <div class="parent-filter">
+            <div>
+                <label>
+                    <input type="checkbox"
+                           class="parent-checkbox"
+                           data-parent="alimentation">
+                    Alimentation
+                </label>
+                <button class="toggle-children"
+                        data-parent="alimentation">▶</button>
+            </div>
+
+            <div class="child-buttons" data-parent="alimentation">
+                <button data-category="Épicerie fine">Épicerie fine</button>
+                <button data-category="Primeurs">Primeurs</button>
+            </div>
+        </div>
+
+        <div class="parent-filter">
+            <div>
+                <label>
+                    <input type="checkbox"
+                           class="parent-checkbox"
+                           data-parent="restauration">
+                    Restauration
+                </label>
+                <button class="toggle-children"
+                        data-parent="restauration">▶</button>
+            </div>
+
+            <div class="child-buttons" data-parent="restauration">
+                <!-- enfants -->
+            </div>
+        </div>
+
+        <div class="parent-filter">
+            <div>
+                <label>
+                    <input type="checkbox"
+                           class="parent-checkbox"
+                           data-parent="autres">
+                    Autres commerces
+                </label>
+                <button class="toggle-children"
+                        data-parent="autres">▶</button>
+            </div>
+
+            <div class="child-buttons" data-parent="autres">
+                <button data-category="Fleuristes">Fleuristes</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================== Carte ===================== -->
+    <div id="map"></div>
+
+    {{ stores|json_script:"stores-data" }}
+
+</main>
+{% endblock %}
+
+
+{% block extra_js %}
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+#map {
+    height: 600px;
+    width: 85%;
+    margin-top: 20px;
+    align-items: center;
+}
+
+/* === Style popup Yuumi === */
+.leaflet-popup.yuumi-popup {
+    max-width: 380px !important;
+}
+
+.leaflet-popup-content-wrapper.yuumi-popup {
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.popup-content a {
+    text-decoration: none;
+    color: #ff8b38;
+    display: block;
+}
+
+.yuumi-popup-h3 {
+    color: #ff8b38;
+    font-size: 20px;
+    text-align: center;
+    margin: 0 0 6px;
+}
+
+.yuumi-popup-img {
+    border: 6px solid #ff8b38;
+    border-radius: 10px;
+    min-width: 220px;
+    max-width: 100%;
+    display: block;
+    margin: 8px auto 0;
+}
+
+/* === Filtres catégories === */
+.category-filters {
+    margin: 20px auto;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.parent-filter {
+    background: #fff;
+    border: 2px solid #ff8b38;
+    border-radius: 14px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.parent-filter > div {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-children {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #ff8b38;
+}
+
+.toggle-children.open {
+    transform: rotate(90deg);
+}
+
+.child-buttons {
+    margin-top: 10px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.child-buttons button {
+    padding: 6px 12px;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    background: #fff;
+    color: #ff8b38;
+    cursor: pointer;
+}
+
+.child-buttons button.active,
+.child-buttons button:hover {
+    background: #ff8b38;
+    color: #fff;
+}
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ===================== 1️⃣ Données & carte ===================== */
+    const stores = JSON.parse(
+        document.getElementById('stores-data').textContent
+    );
+
+    const centerLat = stores.length ? stores[0].lat : 46.0;
+    const centerLng = stores.length ? stores[0].lng : 2.0;
+
+    const map = L.map('map').setView([centerLat, centerLng], 10);
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(map);
+
+
+    /* ===================== 2️⃣ Icônes ===================== */
+    const categoryIcons = {
+        "Épicerie fine": "fa-utensils",
+        "Primeurs": "fa-apple-alt",
+        "Fleuristes": "fa-seedling"
+    };
+
+    function createIcon(category) {
+        const faClass = categoryIcons[category] || "fa-store";
+        const w = 30;
+        const h = 50;
+
+        return L.divIcon({
+            className: "custom-pin",
+            html: `
+                <div style="position:relative;width:${w}px;height:${h}px;">
+                    <svg viewBox="0 0 24 40" width="${w}" height="${h}">
+                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                              fill="#ff8b38"/>
+                    </svg>
+                    <i class="fas ${faClass}"
+                       style="position:absolute;top:${h*0.15}px;left:50%;
+                              transform:translateX(-50%);
+                              color:white;font-size:${w/2}px;"></i>
+                </div>
+            `,
+            iconSize: [w, h],
+            iconAnchor: [w / 2, h],
+            popupAnchor: [0, -h]
+        });
+    }
+
+
+    /* ===================== 3️⃣ Marqueurs ===================== */
+    const markers = stores.map(store => {
+
+        const marker = L.marker(
+            [store.lat, store.lng],
+            { icon: createIcon(store.categorie) }
+        ).bindPopup(
+            `
+            <div class="popup-content">
+                <a href="${store.url}" target="_blank">
+                    <h3 class="yuumi-popup-h3">
+                        ${store.nom}<br>
+                        <span>${store.categorie || ''}</span>
+                    </h3>
+                    ${store.photo
+                        ? `<img class="yuumi-popup-img"
+                                src="${store.photo}"
+                                alt="${store.nom}">`
+                        : ''}
+                </a>
+            </div>
+            `,
+            { className: 'yuumi-popup' }
+        );
+
+        marker.category = store.categorie;
+        marker.addTo(map);
+
+        return marker;
+    });
+
+    if (markers.length) {
+        const group = new L.featureGroup(markers);
+        map.fitBounds(group.getBounds().pad(0.1));
+    }
+
+
+    /* ===================== 4️⃣ Filtrage ===================== */
+    function updateMarkers() {
+        const activeCategories = [];
+
+        document.querySelectorAll('.child-buttons button.active')
+            .forEach(btn => activeCategories.push(btn.dataset.category));
+
+        const allCb = document.querySelector('input[data-category="all"]');
+        if (allCb.checked) activeCategories.push('all');
+
+        markers.forEach(marker => {
+            const visible =
+                activeCategories.includes('all') ||
+                activeCategories.includes(marker.category);
+
+            if (visible && !map.hasLayer(marker)) map.addLayer(marker);
+            if (!visible && map.hasLayer(marker)) map.removeLayer(marker);
+        });
+    }
+
+
+    /* ===================== 5️⃣ Checkbox "Tous" ===================== */
+    document.querySelector('input[data-category="all"]')
+        .addEventListener('change', function () {
+
+            const checked = this.checked;
+
+            document.querySelectorAll('.parent-checkbox')
+                .forEach(cb => cb.checked = checked);
+
+            document.querySelectorAll('.child-buttons')
+                .forEach(group => group.style.display = 'flex');
+
+            document.querySelectorAll('.child-buttons button')
+                .forEach(btn => btn.classList.toggle('active', checked));
+
+            document.querySelectorAll('.toggle-children')
+                .forEach(btn => btn.classList.toggle('open', checked));
+
+            updateMarkers();
+        });
+
+
+    /* ===================== 6️⃣ Parents ===================== */
+    document.querySelectorAll('.parent-checkbox')
+        .forEach(parentCb => {
+
+            parentCb.addEventListener('change', function () {
+
+                const parent = this.dataset.parent;
+
+                document.querySelectorAll(
+                    `.child-buttons[data-parent="${parent}"] button`
+                ).forEach(btn => btn.classList.toggle('active', this.checked));
+
+                if (!this.checked) {
+                    document.querySelector('input[data-category="all"]').checked = false;
+                }
+
+                updateMarkers();
+            });
+        });
+
+
+    /* ===================== 7️⃣ Enfants ===================== */
+    document.querySelectorAll('.child-buttons button')
+        .forEach(btn => {
+
+            btn.addEventListener('click', function () {
+                this.classList.toggle('active');
+
+                if (!this.classList.contains('active')) {
+                    document.querySelector('input[data-category="all"]').checked = false;
+                }
+
+                updateMarkers();
+            });
+        });
+
+
+    /* ===================== 8️⃣ Ouverture / fermeture ===================== */
+    document.querySelectorAll('.toggle-children')
+        .forEach(btn => {
+
+            btn.addEventListener('click', function () {
+                const parent = this.dataset.parent;
+                const group = document.querySelector(
+                    `.child-buttons[data-parent="${parent}"]`
+                );
+
+                const open = group.style.display === 'flex';
+                group.style.display = open ? 'none' : 'flex';
+                this.classList.toggle('open', !open);
+            });
+        });
+
+
+    /* ===================== 9️⃣ État initial ===================== */
+    document.querySelectorAll('.child-buttons')
+        .forEach(group => group.style.display = 'flex');
+
+    document.querySelectorAll('.toggle-children')
+        .forEach(btn => btn.classList.add('open'));
+
+    const allCb = document.querySelector('input[data-category="all"]');
+    if (allCb.checked) {
+        document.querySelectorAll('.parent-checkbox')
+            .forEach(cb => cb.checked = true);
+
+        document.querySelectorAll('.child-buttons button')
+            .forEach(btn => btn.classList.add('active'));
+    }
+
+    updateMarkers();
+
+});
+</script>
+
+{% endblock %}

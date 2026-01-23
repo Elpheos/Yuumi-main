@@ -1,0 +1,173 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Catégories à {{ ville }}{% endblock %}
+
+{% block content %}
+
+<style>
+/* ------------------------------------------------------------ */
+/* PAGE LISTE DES CATÉGORIES PAR VILLE — VERSION MASONRY PRO   */
+/* ------------------------------------------------------------ */
+
+.categ-ville-section {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.categ-ville-section h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 28px;
+    font-weight: 600;
+}
+
+/* ------------------------------------------------------------ */
+/* MASONRY — ZERO TROU — 4 COLONNES CENTRÉES                    */
+/* ------------------------------------------------------------ */
+
+.categ-ville-grid {
+    column-count: 4;          /* ⭐ 4 colonnes seulement (centrées et compactes) */
+    column-gap: 15px;         /* espace entre colonnes */
+    max-width: 900px;         /* ⭐ largeur idéale */
+    margin: 0 auto;
+}
+
+/* ------------------------------------------------------------ */
+/* TUYLES DE CATÉGORIES                                        */
+/* ------------------------------------------------------------ */
+
+.categ-tile {
+    display: inline-block;     /* ⭐ Masonry fonctionne avec inline-block */
+    width: 100%;
+    margin-bottom: 15px;
+    break-inside: avoid;       /* ⭐ empêche les trous */
+    
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.categ-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.23);
+}
+
+.categ-tile img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+/* Badge nom */
+.categ-tile span {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+
+    padding: 6px 12px;
+    background: #ffffff;
+    border: 2px solid #ff8b38;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* ------------------------------------------------------------ */
+/* Responsive                                                  */
+/* ------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+    .categ-ville-grid {
+        column-count: 2;
+        max-width: 600px;
+    }
+}
+
+@media (max-width: 600px) {
+    .categ-ville-grid {
+        column-count: 1;
+        max-width: 380px;
+    }
+}
+</style>
+
+
+
+<main>
+
+    <!-- ------------------------------------------ -->
+    <!-- SECTION : ALIMENTATION                    -->
+    <!-- ------------------------------------------ -->
+
+    <section class="categ-ville-section">
+        <h2>Alimentation</h2>
+
+        {% if alimentation %}
+        <div class="categ-ville-grid">
+            {% for cat in alimentation %}
+                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                    <span>{{ cat.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p style="text-align:center;">Aucune catégorie alimentation.</p>
+        {% endif %}
+    </section>
+
+
+    <!-- ------------------------------------------ -->
+    <!-- SECTION : RESTAURATION                    -->
+    <!-- ------------------------------------------ -->
+
+    <section class="categ-ville-section">
+        <h2>Restauration</h2>
+
+        {% if restauration %}
+        <div class="categ-ville-grid">
+            {% for cat in restauration %}
+                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                    <span>{{ cat.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p style="text-align:center;">Aucune catégorie restauration.</p>
+        {% endif %}
+    </section>
+
+
+    <!-- ------------------------------------------ -->
+    <!-- SECTION : AUTRES                           -->
+    <!-- ------------------------------------------ -->
+
+    <section class="categ-ville-section">
+        <h2>Autres catégories</h2>
+
+        {% if autres %}
+        <div class="categ-ville-grid">
+            {% for cat in autres %}
+                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                    <span>{{ cat.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p style="text-align:center;">Aucune autre catégorie.</p>
+        {% endif %}
+    </section>
+
+</main>
+
+{% endblock %}

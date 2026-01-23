@@ -1,0 +1,204 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block content %}
+<main class="my-favorite-main">
+    <section class="my-favorite-section">
+
+        <h1 class="my-favorite-title">Mes favoris</h1>
+
+        {% if user.is_authenticated %}
+            <p class="my-favorite-user">Connecté en tant que {{ user.username }}</p>
+        {% else %}
+            <p class="my-favorite-user">Non connecté</p>
+        {% endif %}
+
+        {% if favoris %}
+            <div class="my-favorite-list">
+                {% for store in favoris %}
+                    <div class="my-favorite-card">
+
+                        {% if store.photo %}
+                            <div class="my-favorite-photo">
+                                <a href="{{ store.get_absolute_url }}">
+                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }}">
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        <div class="my-favorite-info">
+                            <h2 class="my-favorite-name">
+                                <a href="{{ store.get_absolute_url }}">{{ store.nom }}</a>
+                            </h2>
+
+                            <p class="my-favorite-meta">
+                                {{ store.ville }}
+                                {% if store.categorie %} | {{ store.categorie }}{% endif %}
+                            </p>
+
+                            <button class="my-favorite-btn favori-btn active" data-store-id="{{ store.id }}">
+                                <i class="fa-solid fa-heart"></i>
+                                <span>Retirer des favoris</span>
+                            </button>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="my-favorite-empty">Vous n'avez ajouté aucun favori pour le moment.</p>
+        {% endif %}
+
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+/* ============================
+   YUUMI – PAGE MES FAVORIS
+   ============================ */
+
+.my-favorite-main {
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 16px;
+}
+
+.my-favorite-title {
+    font-size: 4rem;
+    margin-bottom: 6px;
+    font-weight: 600;
+    text-align : left;
+}
+
+.my-favorite-user {
+    font-size: 2rem;
+    color: black;
+    margin-bottom: 24px;
+}
+
+/* Liste simple */
+.my-favorite-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Carte sobre */
+.my-favorite-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Image limitée */
+.my-favorite-photo {
+    height: 140px;
+    background: #f4f4f4;
+}
+
+.my-favorite-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Infos */
+.my-favorite-info {
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+}
+
+.my-favorite-name {
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 600;
+}
+
+.my-favorite-name a {
+    color: #222;
+    text-decoration: none;
+}
+
+.my-favorite-meta {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 6px 0 12px;
+}
+
+/* Bouton discret */
+.my-favorite-btn {
+    margin-top: auto;
+    background: none;
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #ff8b38;
+}
+
+.my-favorite-btn.active {
+    border-color: #ff8b38;
+    color: #ff8b38;
+}
+
+.my-favorite-btn:hover {
+    background: #fafafa;
+}
+
+/* Vide */
+.my-favorite-empty {
+    text-align: center;
+    font-size: 0.95rem;
+    color: #666;
+    margin-top: 40px;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".favori-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const storeId = btn.dataset.storeId;
+
+            fetch(`/store/${storeId}/favoris/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.action === "removed") {
+                    btn.closest(".my-favorite-card").remove();
+                }
+            });
+        });
+    });
+
+    function getCookie(name) {
+        let value = null;
+        document.cookie.split(";").forEach(cookie => {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + "=")) {
+                value = decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        });
+        return value;
+    }
+});
+</script>
+{% endblock %}

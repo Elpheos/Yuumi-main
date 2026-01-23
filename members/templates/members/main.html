@@ -1,0 +1,232 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Accueil | Yuumi{% endblock %}
+
+{% block content %}
+<main>
+    <section class="page-accueil-container">
+        <div class="titre-page-annecy-container">
+            <h1>Bienvenue sur Yuumi</h1>
+            <h3>Choisissez un département, puis une ville pour découvrir les commerces autour de vous.</h3>
+        </div>
+
+        <!-- 🔍 Barre de recherche -->
+        <input type="text" id="recherche-ville" placeholder="Rechercher une ville..." class="search-input">
+
+        <!-- Résultats cliquables -->
+        <div id="resultats-recherche" class="resultats-recherche"></div>
+
+        <div class="liste-departements-container">
+            {% for departement, villes in departements_villes.items %}
+                <div class="departement-block">
+
+                    <!-- Bouton département -->
+                    <button class="departement-btn" data-departement="{{ departement }}">
+                        {{ departement }}
+                    </button>
+
+                    <!-- Liste des villes -->
+                    <div class="liste-villes" style="display: none;">
+                        {% for ville in villes %}
+                            <a href="{% url 'stores' departement=departement ville=ville %}" class="ville-link">
+                                {{ ville }}
+                            </a>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            {% empty %}
+                <p>Aucun commerce enregistré pour le moment.</p>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ------------------------------------------------------------
+// 🔸 Ouverture / fermeture DES DÉPARTEMENTS
+// ------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    const departementButtons = document.querySelectorAll(".departement-btn");
+
+    departementButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const villesList = btn.nextElementSibling;
+
+            document.querySelectorAll(".liste-villes").forEach(div => {
+                if (div !== villesList) div.style.display = "none";
+            });
+
+            villesList.style.display =
+                (villesList.style.display === "none" || villesList.style.display === "")
+                ? "flex"
+                : "none";
+        });
+    });
+});
+
+// ------------------------------------------------------------
+// 🔍 RECHERCHE INSTANTANÉE + RÉSULTATS CLIQUABLES
+// ------------------------------------------------------------
+const input = document.getElementById("recherche-ville");
+const resultBox = document.getElementById("resultats-recherche");
+
+input.addEventListener("input", () => {
+    const query = input.value.toLowerCase();
+
+    // Reset
+    resultBox.innerHTML = "";
+    resultBox.style.display = "none";
+
+    if (query.length < 2) return; // moins de 2 lettres = pas de résultats
+
+    let results = [];
+
+    document.querySelectorAll(".departement-block").forEach(block => {
+        const dep = block.querySelector(".departement-btn").textContent.trim();
+        const villes = block.querySelectorAll(".ville-link");
+
+        villes.forEach(v => {
+            const ville = v.textContent.trim();
+
+            if (ville.toLowerCase().includes(query)) {
+                results.push({
+                    ville: ville,
+                    departement: dep,
+                    url: v.getAttribute("href")
+                });
+            }
+        });
+    });
+
+    if (results.length === 0) {
+        resultBox.style.display = "block";
+        resultBox.innerHTML = `<div class="no-result">Aucun résultat</div>`;
+        return;
+    }
+
+    resultBox.style.display = "block";
+
+    results.forEach(r => {
+        resultBox.innerHTML += `
+            <a href="${r.url}">
+                ${r.ville}
+                <span style="font-size:12px;color:#777;">(${r.departement})</span>
+            </a>
+        `;
+    });
+});
+</script>
+
+<style>
+/* ------------------------------------------------------------ */
+/* Mise en page générale */
+/* ------------------------------------------------------------ */
+.page-accueil-container {
+    text-align: center;
+    margin: 40px auto;
+    max-width: 1000px;
+}
+
+/* ------------------------------------------------------------ */
+/* Barre de recherche */
+/* ------------------------------------------------------------ */
+.search-input {
+    width: 80%;
+    max-width: 500px;
+    padding: 10px;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* Bloc résultats */
+.resultats-recherche {
+    width: 80%;
+    max-width: 500px;
+    margin: 10px auto 20px auto;
+    background: white;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    display: none;
+    text-align: left;
+    padding: 10px;
+}
+
+.resultats-recherche a {
+    display: block;
+    padding: 8px 10px;
+    color: #ff8b38;
+    text-decoration: none;
+    border-bottom: 1px solid #ffe0c7;
+}
+
+.resultats-recherche a:hover {
+    background: #ff8b38;
+    color: white;
+}
+
+.resultats-recherche .no-result {
+    padding: 8px;
+    color: #888;
+    font-size: 14px;
+}
+
+/* ------------------------------------------------------------ */
+/* Liste des départements */
+/* ------------------------------------------------------------ */
+.liste-departements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.departement-btn {
+    background: #ff8b38;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 18px;
+    width: 80%;
+    max-width: 600px;
+    margin: 0 auto;
+    transition: background 0.3s;
+}
+
+.departement-btn:hover {
+    background: #e27930;
+}
+
+/* ------------------------------------------------------------ */
+/* Liste des villes */
+/* ------------------------------------------------------------ */
+.liste-villes {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.ville-link {
+    border: 2px solid #ff8b38;
+    color: #ff8b38;
+    padding: 8px 14px;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.ville-link:hover {
+    background: #ff8b38;
+    color: white;
+}
+</style>
+{% endblock %}

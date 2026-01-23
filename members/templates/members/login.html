@@ -1,0 +1,87 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block content %}
+<style>
+    .login-container {
+        width: 50%;
+        height: auto;
+        margin: 50px auto 10px;
+        padding: 20px;
+        border: 5px solid #ff8b38;
+        border-radius: 8px;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-h2-container {
+        margin-bottom: 30px;
+    }
+
+    .login-h2 {
+        text-align: center;
+        color:#ff8b38;
+        font-weight: bold;
+    }
+
+    .login-form-container {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        flex: 1;
+    }  
+    
+    .login-button-container {
+        text-align: center;
+        margin-top: 32px;
+    }
+
+    .login-button {
+        width: 40%;
+        padding: 10px;
+        background-color: #ff8b38;
+        border: none;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+    .login-noaccount-container {
+        text-align: center;
+    }
+
+    .login-noaccount-p {
+        font-size: 14px;
+    }
+
+    .login-noaccount-link {
+        color: #ff8b38;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+</style>
+<div class="login-container">
+    <div class="login-h2-container">
+        <h2 class="login-h2">Connexion</h2>
+    </div>
+    <div class="login-form-container">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="login-button-container">
+                <button class="login-button" type="submit">Se connecter</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div class="login-noaccount-container">
+<p class="login-noaccount-p">Vous n'avez pas de compte ? Inscrivez-vous <a class="login-noaccount-link" href="{% url 'register' %}">ici</a>.</p>
+</div>
+{% endblock %}
