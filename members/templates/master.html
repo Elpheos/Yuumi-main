@@ -1,0 +1,337 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Yuumi{% endblock %}</title>
+    <link rel="icon" type="image/webp" href="{% static 'images/logo.webp' %}">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="{% static 'myglobal.css' %}">
+
+<style>
+
+
+/* ================================ */
+/*            FOOTER               */
+/* ================================ */
+
+.yuumi-footer {
+    background: #fafafa;
+    padding: 30px 10px;
+    border-top: 2px solid #ff8b38;
+    margin-top: 50px;
+}
+
+.yuumi-footer-container {
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+}
+
+/* Icônes */
+.yuumi-footer-socials {
+    margin-bottom: 12px;
+}
+
+.yuumi-footer-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 10px;
+    transition: 0.25s ease;
+    filter: brightness(0) saturate(0%) opacity(0.7);
+}
+
+.yuumi-footer-icon:hover {
+    filter: brightness(1) saturate(150%) sepia(30%) hue-rotate(-10deg);
+    transform: scale(1.1);
+}
+
+/* Liens légaux */
+.yuumi-footer-links {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.yuumi-footer-links a {
+    color: #ff8b38;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0 6px;
+}
+
+.yuumi-footer-links a:hover {
+    text-decoration: underline;
+}
+
+.yuumi-footer-links span {
+    color: #ccc;
+    padding: 0 6px;
+}
+
+/* Copyright */
+.yuumi-footer-copy {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+</style>
+</head>
+
+<body>
+<div class="page-container">
+
+<!-- ============================= -->
+<!--            HEADER             -->
+<!-- ============================= -->
+
+<header>
+    <div class="header-container">
+        <nav class="nav-menu-header" style="position:relative;">
+
+            <div>
+                <a href="{% url 'main' %}">
+                    <img class="logo-header" src="{% static 'images/logo.webp' %}">
+                </a>
+            </div>
+
+            <div>
+                <ul class="li-onglets-header">
+
+                    <!-- CHERCHER UN COMMERCE -->
+                    <li class="menu-supercats">
+                        {% if menu_departement and menu_ville %}
+                            <a href="#" class="supercats-toggle">
+                                Chercher un commerce <i class="fa-solid fa-chevron-down"></i>
+                            </a>
+                        {% else %}
+                            <a class="disabled-link">Chercher un commerce</a>
+                        {% endif %}
+
+                        <div id="supercats-dropdown" class="supercats-container">
+                            {% if menu_supercategories %}
+                                {% for supercat, cats in menu_supercategories.items %}
+                                <div class="supercat-block">
+
+                                    <div class="supercat-header">
+                                        <span>{{ supercat }}</span>
+                                        <i class="fa-solid fa-chevron-down chevron"></i>
+                                    </div>
+
+                                    <ul class="subcats-list">
+                                        {% for cat in cats %}
+                                        <li>
+                                            {% if menu_ville %}
+                                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat|slugify %}">
+                                                    {{ cat }}
+                                                </a>
+                                            {% else %}
+                                                <span style="color:#aaa;">{{ cat }}</span>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+
+                                </div>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </li>
+
+                    <!-- CHERCHER UN PRODUIT -->
+                    <li style="position:relative;">
+                        {% if menu_departement and menu_ville %}
+                            <a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}">
+                                Chercher un produit
+                            </a>
+                        {% else %}
+                            <a class="disabled-link">Chercher un produit</a>
+                        {% endif %}
+
+                        <div id="search-product-container">
+                            <input type="text" id="search-product-input" placeholder="Tapez un nom de produit...">
+                            <ul id="search-product-results"></ul>
+                        </div>
+                    </li>
+
+                    <!-- AUTRES ONGLET -->
+                    {% if menu_departement %}
+                        {% url 'map-view' menu_departement as carte_url %}
+                    {% else %}
+                        {% url 'map-view' 'Haute-Savoie' as carte_url %}
+                    {% endif %}
+
+                    <li><a href="{{ carte_url }}">Carte des commerces</a></li>
+                    <li><a href="{% url 'notre_projet' %}">Notre projet</a></li>
+
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'account' %}">Mon compte</a></li>
+                    {% else %}
+                        <li><a href="{% url 'login' %}">Mon compte</a></li>
+                    {% endif %}
+
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- ICONES -->
+            <div>
+                <ul class="li-icones-header">
+                    <li><a href="{% url 'my-favorites' %}"><i class="fa-solid fa-heart"></i></a></li>
+
+                    {% if menu_departement and menu_ville %}
+                        <li><a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}">
+                            <i class="fa-solid fa-magnifying-glass"></i></a></li>
+                    {% else %}
+                        <li><a class="disabled-link"><i class="fa-solid fa-magnifying-glass"></i></a></li>
+                    {% endif %}
+
+                    <li><a href="#"><i class="fa-regular fa-user"></i></a></li>
+                </ul>
+            </div>
+
+        </nav>
+
+        <hr class="hr-full-width"/>
+    </div>
+</header>
+
+<!-- ============================= -->
+<!--             CONTENT           -->
+<!-- ============================= -->
+
+<main>
+    <div class="page-container">
+        {% block content %}{% endblock %}
+    </div>
+</main>
+
+<!-- ============================= -->
+<!--             FOOTER            -->
+<!-- ============================= -->
+
+<footer class="yuumi-footer">
+    <div class="yuumi-footer-container">
+
+        <div class="yuumi-footer-socials">
+            <a href="#"><img src="{% static 'images/facebook-yuumi.webp' %}" class="yuumi-footer-icon"></a>
+            <a href="#"><img src="{% static 'images/instagram-yuumi.webp' %}" class="yuumi-footer-icon"></a>
+        </div>
+
+        <div class="yuumi-footer-links">
+            <a href="{% url 'mentions_legales' %}">Mentions légales</a>
+            <span>|</span>
+            <a href="{% url 'cookies_policy' %}">Politique de cookies</a>
+            <span>|</span>
+            <a href="{% url 'cgu' %}">CGU</a>
+        </div>
+
+        <div class="yuumi-footer-copy">
+            © 2025 Yuumi S.A.S. | Tous droits réservés
+        </div>
+
+    </div>
+</footer>
+
+<!-- ============================= -->
+<!--             JS HEADER         -->
+<!-- ============================= -->
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* SUPER-CATEGORIES DROPDOWN */
+    const btn = document.querySelector(".supercats-toggle");
+    const dropdown = document.getElementById("supercats-dropdown");
+
+    if (btn && dropdown) {
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        });
+
+        document.addEventListener("click", e => {
+            if (!dropdown.contains(e.target) && e.target !== btn) {
+                dropdown.style.display = "none";
+            }
+        });
+    }
+
+    document.querySelectorAll(".supercat-header").forEach(header => {
+        const list = header.nextElementSibling;
+        const chevron = header.querySelector(".chevron");
+
+        header.addEventListener("click", () => {
+            const open = list.style.display === "block";
+            list.style.display = open ? "none" : "block";
+            chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
+        });
+    });
+
+    /* RECHERCHE PRODUIT */
+    const toggles = document.querySelectorAll(".search-product-toggle");
+    const box = document.getElementById("search-product-container");
+    const input = document.getElementById("search-product-input");
+    const list = document.getElementById("search-product-results");
+
+    toggles.forEach(toggle => {
+        toggle.addEventListener("click", e => {
+            e.preventDefault();
+            if (box.style.display === "block") {
+                box.style.display = "none";
+            } else {
+                box.style.display = "block";
+                input.focus();
+            }
+        });
+    });
+
+    let t = null;
+    input?.addEventListener("input", () => {
+        const q = input.value.trim();
+        clearTimeout(t);
+
+        if (!q) { list.innerHTML = ""; return; }
+
+        t = setTimeout(async () => {
+            try {
+                const url = toggles[0].dataset.url;
+                const resp = await fetch(url + "?q=" + encodeURIComponent(q), {
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+                const data = await resp.json();
+/*================================================================PRODUITS APPARAISSANTS LORS DE LA RECHERCHE*/
+                list.innerHTML = data.map(item => `
+                    <li class="search-product-store-container">
+                        <a href="${item.url}">
+                            ${item.photo ?
+                                `<img class="spr-thumb" src="${item.photo}">` :
+                                `<span class="spr-thumb">🛍️</span>`}
+                            <span><strong>${item.product}</strong><br><small>${item.store}</small></span>
+                        </a>
+                    </li>
+                `).join("");
+
+            } catch {
+                list.innerHTML = "<li>Erreur.</li>";
+            }
+        }, 250);
+    });
+
+});
+</script>
+
+{% block extra_js %}{% endblock %}
+
+</div>
+</body>
+</html>

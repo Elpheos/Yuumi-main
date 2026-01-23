@@ -1,0 +1,215 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+Mentions légales
+{% endblock %}
+
+{% block content %}
+<style>
+/* --- Style global (hérite de la police du site) --- */
+.mentions-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px auto;
+    padding: 0 5%;
+}
+
+/* Bandeau titre */
+.mentions-header {
+    background-color: #ff8b38;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mentions-header h1 {
+    margin: 0;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Bloc principal */
+.mentions-container {
+    background-color: #fff;
+    border: solid 5px #ff8b38;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+    margin-top: 35px;
+    padding: 50px 60px;
+    color: #000;
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+/* Titres */
+.mentions-container h2 {
+    color: #ff8b38;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    border-left: 6px solid #ff8b38;
+    padding-left: 10px;
+}
+
+.mentions-container h4 {
+    color: #ff8b38;
+    margin-top: 20px;
+    font-size: 19px;
+}
+
+.mentions-container p {
+    margin-bottom: 18px;
+}
+
+.mentions-container ul {
+    list-style-type: disc;
+    margin: 15px 0 25px 45px;
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+.mentions-container li {
+    margin-bottom: 10px;
+}
+
+.mentions-container a {
+    color: #ff8b38;
+    text-decoration: underline;
+}
+
+/* Pied de page */
+.mentions-footer {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.mentions-footer a {
+    background-color: #ff8b38;
+    color: #fff;
+    border: solid 3px #ff8b38;
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 15px;
+    transition: all 0.25s ease;
+}
+
+.mentions-footer a:hover {
+    background-color: #fff;
+    color: #ff8b38;
+    box-shadow: 0 0 10px rgba(255, 139, 56, 0.6);
+}
+
+@media (max-width: 768px) {
+    .mentions-container {
+        padding: 25px 20px;
+        font-size: 16px;
+    }
+    .mentions-container h2 {
+        font-size: 20px;
+    }
+}
+</style>
+
+<div class="mentions-wrapper">
+    <div class="mentions-header">
+        <h1>Mentions légales</h1>
+    </div>
+
+    <div class="mentions-container">
+        <h2>1. Éditeur du site</h2>
+        <p>
+            <strong>Nom ou raison sociale :</strong> Yuumi S.A.S.<br>
+            <strong>Adresse :</strong> 25 rue de Ponthieu, 75008 Paris, France<br>
+            <strong>Téléphone :</strong> +33 6 21 35 76 23<br>
+            <strong>E-mail :</strong> <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a><br>
+            <strong>Forme juridique :</strong> SAS<br>
+            <strong>Capital social :</strong> 1000€<br>
+            <strong>Numéro d’immatriculation :</strong> 940 025 844 00017<br>
+            <strong>Numéro de TVA intracommunautaire :</strong> FR36 940 025 844
+        </p>
+
+        <hr>
+
+        <h2>2. Hébergeur du site</h2>
+        <p>
+            <strong>Nom :</strong> Infomaniak Network SA<br>
+            <strong>Adresse :</strong> Rue Eugène-Marziano 25, 1227 Les Acacias, Genève, Suisse<br>
+            <strong>Téléphone :</strong> +41 22 820 35 44<br>
+            <strong>Site web :</strong> <a href="https://www.infomaniak.com" target="_blank">https://www.infomaniak.com</a>
+        </p>
+
+        <hr>
+
+        <h2>3. Responsable de la publication</h2>
+        <p>
+            <strong>Nom :</strong> Cardinal Luca<br>
+            <strong>Contact :</strong> lucacardinal@gmail.com
+        </p>
+
+        <hr>
+
+        <h2>4. Conditions d'utilisation du site</h2>
+        <h4>4.1 Acceptation des conditions d’utilisation</h4>
+        <p>En accédant au site Yuumi, l’utilisateur reconnaît avoir pris connaissance des présentes conditions d’utilisation et s’engage à les respecter. Yuumi se réserve le droit de modifier les présentes conditions à tout moment, les utilisateurs étant invités à les consulter régulièrement.</p>
+
+        <h4>4.2 Accès au site</h4>
+        <p>Le site Yuumi est accessible 24 heures sur 24 et 7 jours sur 7, sauf en cas de force majeure, de difficultés informatiques ou de problèmes techniques. Yuumi se réserve le droit d’interrompre l’accès pour des opérations de maintenance ou de mise à jour.</p>
+
+        <h4>4.3 Inscription et sécurité du compte</h4>
+        <p>Pour accéder à certaines fonctionnalités, les utilisateurs doivent créer un compte. Ils s’engagent à fournir des informations exactes et à maintenir la confidentialité de leurs identifiants. Yuumi ne saurait être tenu responsable des conséquences de l’utilisation du compte par une personne non autorisée.</p>
+
+        <h4>4.4 Règles de conduite</h4>
+        <ul>
+            <li>Ne pas publier de commentaires ou avis mensongers, volontairement négatifs ou injurieux à l’encontre des commerces présents sur le site, sous peine de suspension ou de suppression du compte.</li>
+        </ul>
+        <p>Yuumi se réserve le droit de modérer, supprimer ou signaler tout contenu ne respectant pas ces règles et de prendre des mesures appropriées, y compris la suspension ou la résiliation de l’accès au site pour les utilisateurs contrevenants.</p>
+
+        <h4>4.5 Droits de propriété intellectuelle</h4>
+        <p>Les utilisateurs s’engagent à ne pas utiliser les éléments présents sur le site (textes, images, logos, etc.) sans autorisation préalable, ces éléments étant protégés par les lois en vigueur.</p>
+
+        <hr>
+
+        <h2>5. Propriété intellectuelle</h2>
+        <p>Tous les éléments du site Yuumi (textes, images, logos, graphismes, design, bases de données, structure, etc.) sont protégés par les lois en vigueur en matière de propriété intellectuelle et appartiennent exclusivement à Yuumi ou à ses partenaires.</p>
+
+        <h4>5.2 Commentaires des utilisateurs</h4>
+        <ul>
+            <li>Qu’ils détiennent les droits nécessaires pour publier ce contenu.</li>
+            <li>Que leurs commentaires sont conformes aux lois en vigueur, ne sont ni diffamatoires, ni injurieux, ni mensongers.</li>
+        </ul>
+        <p>Yuumi se réserve le droit de modérer, modifier ou supprimer tout commentaire qui enfreindrait ces conditions.</p>
+
+        <hr>
+
+        <h2>6. Données personnelles</h2>
+        <p>Les informations relatives à la collecte, l’utilisation et la conservation des données personnelles sont décrites dans notre <a href="{% url 'cookies_policy' %}">Politique de cookies</a> et dans notre politique de confidentialité interne conforme au RGPD.</p>
+
+        <hr>
+
+        <h2>7. Loi applicable et juridiction</h2>
+        <p>Les présentes mentions légales et conditions d’utilisation sont soumises à la loi française. En cas de litige relatif à leur interprétation ou à leur exécution, les tribunaux compétents seront ceux d’Annecy, sauf disposition légale contraire.</p>
+
+        <hr>
+
+        <h2>8. Contact</h2>
+        <p>Pour toute question relative au site ou à son contenu, vous pouvez nous contacter à l’adresse suivante : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a></p>
+
+        <div class="mentions-footer">
+            <a href="{% url 'main' %}">Retour à l’accueil</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+    

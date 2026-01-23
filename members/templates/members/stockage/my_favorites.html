@@ -1,0 +1,15 @@
+{% extends "master.html" %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block content %}
+<h2>Mes commerces favoris</h2>
+{% if favoris %}
+    <ul>
+        {% for store in favoris %}
+            <li><a href="{{ store.get_absolute_url }}">{{ store.nom }} | {{ store.ville }}</a></li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Vous n'avez pas encore ajouté de favoris.</p>
+{% endif %}

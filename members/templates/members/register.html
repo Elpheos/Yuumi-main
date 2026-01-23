@@ -1,0 +1,56 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Mes favoris{% endblock %}
+
+{% block content %}
+<style>
+    .register-container {
+        width: 50%;
+        margin: 50px auto;
+        padding: 20px;
+        border: 5px solid #ff8b38;
+        border-radius: 8px;
+        background-color: white;
+        text-align: center;
+    }
+
+    .register-container h2 {
+        color:#ff8b38;
+        font-weight: bold;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .register-button {
+         width: 40%;
+        padding: 10px;
+        background-color: #ff8b38;
+        border: none;
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+    }
+
+</style>
+<div class="register-container">
+<h2>Créer un compte</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.username.label_tag }}<br>
+    {{ form.username }}<br><br>
+
+    {{ form.email.label_tag }}<br>
+    {{ form.email }}<br><br>
+
+    {{ form.password1.label_tag }}<br>
+    {{ form.password1 }}<br><br>
+
+    {{ form.password2.label_tag }}<br>
+    {{ form.password2 }}<br><br>
+
+    <button class="register-button" type="submit">S’inscrire</button>
+</form>
+</div>
+{% endblock %}

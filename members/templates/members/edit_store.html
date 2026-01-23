@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modifier mon commerce : {{ store.nom }}</title>
+    <link rel="stylesheet" href="{% static 'myglobal.css' %}">
+</head>
+
+<body>
+
+<div class="edit-store-page">
+
+    <header class="edit-store-header">
+        <h1 class="edit-store-title">
+            Modifier mon commerce : {{ store.nom }}
+        </h1>
+    </header>
+
+    <main class="edit-store-content">
+
+        <form method="post"
+              enctype="multipart/form-data"
+              class="edit-store-form">
+
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_nom">Nom du commerce</label>
+                {{ form.nom }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_ville">Ville</label>
+                {{ form.ville }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_departement">Département</label>
+                {{ form.departement }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_categorie">Catégorie</label>
+                {{ form.categorie }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_descriptionpetite">Description courte</label>
+                {{ form.descriptionpetite }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_descriptiongrande">Description détaillée</label>
+                {{ form.descriptiongrande }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_addressemaps">Adresse (Google Maps)</label>
+                {{ form.addressemaps }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_addresseitineraire">Adresse itinéraire</label>
+                {{ form.addresseitineraire }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_site">Site web</label>
+                {{ form.site }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_phone">Téléphone</label>
+                {{ form.phone }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_instagram">Instagram</label>
+                {{ form.instagram }}
+            </div>
+
+            <div class="form-group">
+                <label for="id_facebook">Facebook</label>
+                {{ form.facebook }}
+            </div>
+
+            <div class="form-group form-group-image">
+                <label for="id_photo">Photo principale</label>
+
+                {% if store.photo %}
+                    <div class="current-image">
+                        <p>Image actuelle</p>
+                        <img src="{{ store.photo.url }}"
+                             alt="Photo actuelle de {{ store.nom }}">
+                    </div>
+                {% endif %}
+
+                {{ form.photo }}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-save-store">
+                    Enregistrer les modifications
+                </button>
+            </div>
+
+        </form>
+        
+<div class="btn-retour-save-store">
+    <a href="{{ store.get_absolute_url }}">
+    ← Retour
+</a>
+
+</div>
+
+    </main>
+
+</div>
+
+</body>
+
+
+</html>

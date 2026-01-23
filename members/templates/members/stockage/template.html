@@ -1,0 +1,13 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<link rel="stylesheet" href="{% static 'myfirst.css' %}">
+<link rel="stylesheet" href="{% static 'myglobal.css' %}">
+<body>
+
+<table border='1'><tr><th>ID</th><th>Firstname</th><th>Lastname</th></tr>{% for x in mymembers %}<tr><td>{{ x.id }}</td><td>{{ x.firstname }}</td><td>{{ x.lastname }}</td></tr>{% endfor %}</table>
+<p class="new">test</p>
+
+
+</body>
+</html> 

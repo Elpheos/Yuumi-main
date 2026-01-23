@@ -1,0 +1,151 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'myglobal.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.2/css/all.min.css">
+    <title>page d'adcueil Annecy</title>
+</head>
+
+<body>
+<div class="page-container">
+    <header>
+        <div class="header-container">
+            <nav class="nav-menu-header">
+
+                <div>
+                    <img class="logo-header" src="{% static 'images/annecy/logo.webp' %}" alt="Logo Yuumi">
+                </div>
+
+                <div>
+                    <ul class="li-onglets-header">
+                        <li><a href="#" rel="noopener">Chercher un commerce</a></li>
+                        <li><a href="#" rel="noopener">Chercher un produit</a></li>
+                        <li><a href="#" rel="noopener">Carte des commerces</a></li>
+                        <li><a href="#" rel="noopener">Notre projet</a></li>
+                        <li><a href="#" rel="noopener">Mon compte</a></li>
+                        <li><a href="#" rel="noopener">Contact</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <ul class="li-icones-header">
+                        <li><a href="#" rel="noopener"><i class="fa-regular fa-heart"></i></a></li>
+                        <li><a href="#" rel="noopener"><i class="fa-solid fa-magnifying-glass"></i></a></li>
+                        <li><a href="#" rel="noopener"><i class="fa-regular fa-user"></i></a></li>
+                    </ul>
+                </div>
+            </nav>
+            <hr class="hr-full-width" />
+        </div>
+    </header>
+
+    <main>
+       <section aria-label="commerces mis en avant">
+           <div class="mise-en-avant-annecy-container">
+               <img class="mise-en-avant-annecy-image" src="{% static 'images/annecy/base-annecy.jpg' %}" alt="Image Annecy" />
+               <div class="mise-en-avant-annecy-text-container">
+                   <h2>Signorini Tartufi</h2>
+                   <h3>Épicerie spécialisée</h3>
+               </div>
+               <a class="mise-en-avant-bouton" href="#" rel="noopener">découvrir</a>
+           </div>
+       </section>
+
+        <section aria-label="Liste des catégories">
+            <div class="liste-des-catégories-container">
+                <div class="titre-page-annecy-container">
+                    <h2>Que cherchez-vous ?</h2>
+                    <h3>
+                        Un commerce avec des produits de qualité, un restaurant qui vous offrira un bon moment dans un cadre chaleureux. Le choix ne tient qu’à vous.
+                    </h3>
+                </div>
+                
+                <div class="liste-des-categories-grid-container">
+                    <div class="grid-image-1-container">
+                        <a href="#" rel="noopener">
+                            <img src="{% static 'images/annecy/ben.webp' %}" alt="image du bistroquet" />
+                            <h3 class="grid-nom-categories">Restaurants</h3>
+                        </a>
+                    </div>
+                    <div class="grid-image-2-container">
+                        <a href="#" rel="noopener">
+                            <img src="{% static 'images/annecy/saveurs-dici-et-la.webp' %}" alt="image de saveurs d'ici et là" />
+                            <h3 class="grid-nom-categories">Épiceries fines</h3>
+                        </a>
+                    </div>
+                    <div class="grid-image-3-container">
+                        <a href="#" rel="noopener">
+                            <img src="{% static 'images/annecy/cafes-brand.webp' %}" alt="image de cafés brand" />
+                            <h3 class="grid-nom-categories">Torréfacteurs</h3>
+                        </a>
+                    </div>
+                    <div class="grid-image-4-container">
+                        <a href="#" rel="noopener">
+                            <img src="{% static 'images/annecy/cave-filaterie.webp' %}" alt="image de la cave filaterie" />
+                            <h3 class="grid-nom-categories">Cavistes</h3>
+                        </a>
+                    </div>
+                </div>
+                <div class="liste-des-categories-button-container">
+                    <a class="liste-des-categories-button" href="#" rel="noopener">Toutes les catégories</a>
+                </div>
+            </div>
+            <hr class="hr-separator"/>
+        </section>
+
+        <section aria-label="les derniers arrivants">
+            <div class="derniers-arrivants-container">
+                <div class="titre-page-annecy-container">
+                    <h2>Les derniers arrivants</h2>
+                    <h3>Ils viennent de nous rejoindre ! Pensez à y jeter un œil.</h3>
+                </div>
+                <div class="derniers-arrivants-grid-container">
+
+                    {% for i in "12345678910"|make_list %}
+                    <div class="derniers-arrivants-grid-commerces">
+                        <a href="#" rel="noopener">
+                            <img src="{% static 'images/annecy/shy.webp' %}" alt="nouveau commerce" />
+                            <h4>Nom du magasin</h4>
+                        </a>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <section aria-label="réseaux-sociaux">
+                <div class="footer-reseaux">
+                    <a href="#" rel="noopener">
+                        <img class="footer-reseaux-image" src="{% static 'images/annecy/facebook-yuumi.webp' %}" alt="icône facebook yuumi" />
+                    </a>
+                    <a href="#" rel="noopener">
+                        <img class="footer-reseaux-image" src="{% static 'images/annecy/instagram-yuumi.webp' %}" alt="icône instagram yuumi" />
+                    </a>
+                </div>
+            </section>
+
+            <section aria-label="Informations supplémentaires">
+                <div class="footer-copyright">
+                    <p>© 2025 Yuumi S.A.S. | Tous droits réservés</p>
+                </div>
+
+                <div class="footer-links">
+                    <a href="#" rel="noopener">Mentions légales</a>
+                    <p>|</p>
+                    <a href="#" rel="noopener">Politique de cookies</a>
+                    <p>|</p>
+                    <a href="#" rel="noopener">CGU</a>
+                </div>
+            </section>
+        </div>
+    </footer>
+</div>
+</body>
+</html>

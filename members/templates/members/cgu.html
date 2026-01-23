@@ -1,0 +1,239 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+Conditions générales d’utilisation
+{% endblock %}
+
+{% block content %}
+<style>
+/* === Mise en page globale === */
+.cgu-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px auto;
+    padding: 0 5%;
+    font-family: inherit;
+}
+
+/* Bandeau titre */
+.cgu-header {
+    background-color: #ff8b38;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.cgu-header h1 {
+    margin: 0;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.cgu-header p {
+    margin-top: 8px;
+    font-size: 15px;
+}
+
+/* Bloc principal */
+.cgu-container {
+    background-color: #fff;
+    border: solid 5px #ff8b38;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 35px;
+    padding: 50px 60px;
+    color: #000;
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+/* Titres */
+.cgu-container h3 {
+    color: #ff8b38;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    border-left: 6px solid #ff8b38;
+    padding-left: 10px;
+}
+
+/* Séparateurs */
+.cgu-container hr {
+    border: none;
+    height: 3px;
+    background-color: #ff8b38;
+    border-radius: 2px;
+    margin: 40px 0;
+}
+
+/* Listes */
+.cgu-container ul {
+    list-style-type: disc;
+    margin: 15px 0 25px 50px;
+}
+
+.cgu-container li {
+    margin-bottom: 8px;
+}
+
+/* Liens */
+.cgu-container a {
+    color: #ff8b38;
+    text-decoration: underline;
+}
+
+/* Paragraphe & emphase */
+.cgu-container p {
+    margin-bottom: 18px;
+}
+
+.cgu-container strong {
+    color: #111;
+    font-weight: 600;
+}
+
+/* Pied de page */
+.cgu-footer {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.cgu-footer a {
+    background-color: #ff8b38;
+    color: #fff;
+    border: solid 3px #ff8b38;
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 15px;
+    transition: all 0.25s ease;
+}
+
+.cgu-footer a:hover {
+    background-color: #fff;
+    color: #ff8b38;
+    box-shadow: 0 0 10px rgba(255, 139, 56, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .cgu-container {
+        padding: 25px 20px;
+        font-size: 16px;
+    }
+
+    .cgu-container h3 {
+        font-size: 20px;
+    }
+}
+</style>
+
+<div class="cgu-wrapper">
+    <div class="cgu-header">
+        <h1>Conditions générales d’utilisation</h1>
+        <p><em>Dernière mise à jour : 12/01/2025</em></p>
+    </div>
+
+    <div class="cgu-container">
+        <h3>1. Introduction</h3>
+        <p>Bienvenue sur Yuumi ! Yuumi est une plateforme dédiée au recensement des magasins et commerces, offrant aux utilisateurs la possibilité de créer un compte et de mettre des magasins en favoris. L’accès et l’utilisation de Yuumi sont régis par les présentes CGU, que vous acceptez pleinement et sans réserve en naviguant sur le site ou en créant un compte.</p>
+        <p><strong>Informations légales :</strong><br>
+        Nom de l’entreprise : Yuumi S.A.S.<br>
+        Adresse : 25 rue de Ponthieu, 75008 Paris, France<br>
+        Contact : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a><br>
+        Numéro d’immatriculation : 940 025 844 00017</p>
+
+        <h3>2. Objet des CGU</h3>
+        <p>Les présentes CGU ont pour objet de définir les conditions dans lesquelles les utilisateurs peuvent accéder à Yuumi et utiliser ses services. Yuumi se réserve le droit de modifier ces CGU à tout moment, notamment pour se conformer aux évolutions législatives ou techniques. Les modifications entreront en vigueur dès leur publication sur le site. Si une disposition des présentes CGU est déclarée invalide ou inapplicable, les autres dispositions resteront en vigueur et pleinement applicables.</p>
+
+        <h3>3. Définitions</h3>
+        <p><strong>Utilisateur :</strong> Toute personne accédant au site Yuumi, inscrite ou non.<br>
+        <strong>Compte :</strong> Espace personnel accessible après inscription, permettant à l’utilisateur d’utiliser les fonctionnalités du site.<br>
+        <strong>Favoris :</strong> Fonctionnalité permettant à un utilisateur de sauvegarder des magasins pour un accès simplifié.</p>
+
+        <h3>4. Accès au Site</h3>
+        <p><strong>4.1. Conditions d’accès</strong><br>
+        L’accès à Yuumi est gratuit.<br>
+        L’inscription est réservée aux personnes âgées d’au moins 16 ans.</p>
+        <p><strong>4.2. Disponibilité du service</strong><br>
+        Yuumi s’efforce d’assurer un accès continu au site, mais ne garantit pas l’absence d’interruptions ou de dysfonctionnements.<br>
+        Yuumi se réserve le droit de suspendre temporairement l’accès au site pour des raisons de maintenance ou d’amélioration.</p>
+
+        <h3>5. Inscription et Gestion du Compte</h3>
+        <p><strong>5.1. Création du compte</strong><br>
+        Pour créer un compte, l’utilisateur doit fournir des informations exactes, complètes et à jour.<br>
+        Chaque utilisateur est responsable de la confidentialité de ses identifiants.</p>
+        <p><strong>5.2. Suppression du compte</strong><br>
+        L’utilisateur peut supprimer son compte à tout moment via les paramètres de son espace personnel.<br>
+        Yuumi se réserve le droit de supprimer ou suspendre un compte en cas de non-respect des présentes CGU ou d’utilisation abusive du site.</p>
+
+        <h3>6. Utilisation du Site</h3>
+        <p><strong>6.1. Fonctionnalités disponibles</strong><br>
+        Les utilisateurs peuvent rechercher des magasins et les ajouter à leurs favoris.<br>
+        Les utilisateurs ont accès à un outil de recherche.</p>
+        <p><strong>6.2. Engagements de l’utilisateur</strong><br>
+        L’utilisateur s’engage à utiliser le site de manière légale et respectueuse.<br>
+        Il est strictement interdit de :<br>
+        – Accéder ou tenter d’accéder aux données d’autres utilisateurs.<br>
+        – Utiliser le site à des fins frauduleuses ou illégales.<br>
+        – Reproduire ou exploiter le contenu de Yuumi sans autorisation.</p>
+        <p><strong>6.3. Restrictions techniques</strong><br>
+        Les utilisateurs ne doivent pas tenter de contourner les mesures de sécurité du site ou de perturber son fonctionnement (ex. : utilisation de bots, attaques DDoS, etc.).<br>
+        Toute tentative d’accès non autorisé à des parties protégées du site entraînera des poursuites judiciaires.</p>
+
+        <h3>7. Propriété Intellectuelle</h3>
+        <p>Tous les contenus disponibles sur Yuumi (textes, images, logos, design, etc.) sont protégés par les lois relatives à la propriété intellectuelle.<br>
+        Toute reproduction, modification, distribution ou exploitation non autorisée est strictement interdite.<br>
+        Le nom “Yuumi” est un nom déposé et est protégé par les lois sur la propriété intellectuelle. Toute reproduction ou utilisation non autorisée de ce nom est strictement interdite.</p>
+
+        <h3>8. Protection des Données Personnelles</h3>
+        <p><strong>8.1. Données collectées</strong><br>
+        Les données collectées lors de l’inscription ou de l’utilisation du site sont utilisées exclusivement pour fournir les services de Yuumi.<br>
+        Yuumi ne partage pas les données des utilisateurs avec des tiers sans leur consentement, sauf obligation légale.</p>
+        <p><strong>8.2. Droits des utilisateurs</strong><br>
+        Conformément au RGPD, les utilisateurs disposent d’un droit d’accès, de rectification, de suppression et de portabilité de leurs données.<br>
+        Toute demande relative aux données personnelles peut être adressée à : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a>.</p>
+        <p><strong>8.3. Cookies et traceurs</strong><br>
+        Yuumi utilise des cookies pour améliorer l’expérience utilisateur et analyser l’utilisation du site.<br>
+        Les utilisateurs peuvent gérer leurs préférences en matière de cookies via leur navigateur ou un outil de gestion des cookies sur le site.</p>
+
+        <h3>9. Responsabilité</h3>
+        <p><strong>9.1. Responsabilité de Yuumi</strong><br>
+        Yuumi met tout en œuvre pour assurer l’exactitude des informations disponibles, mais ne peut garantir leur exhaustivité ou leur actualité.<br>
+        Yuumi ne saurait être tenu responsable des dommages directs ou indirects liés à l’utilisation du site.</p>
+        <p><strong>9.2. Responsabilité de l’utilisateur</strong><br>
+        L’utilisateur est seul responsable de l’utilisation qu’il fait du site et des conséquences de ses actions.</p>
+
+        <h3>10. Modification des CGU</h3>
+        <p>Yuumi se réserve le droit de modifier ces CGU à tout moment. Les utilisateurs seront informés des modifications par un avis sur le site ou par e-mail.</p>
+
+        <h3>11. Loi Applicable et Juridiction</h3>
+        <p>Les présentes CGU sont régies par les lois de la France. En cas de litige, les parties s’engagent à rechercher une solution amiable avant toute action judiciaire. À défaut, les tribunaux compétents seront ceux de Annecy.</p>
+
+        <h3>12. Sécurité des données</h3>
+        <p>Yuumi met en œuvre des mesures techniques et organisationnelles appropriées pour protéger les données des utilisateurs contre tout accès non autorisé, perte, altération ou destruction.<br>
+        En cas de violation de données personnelles, Yuumi s’engage à notifier les utilisateurs concernés dans les délais prévus par la réglementation.</p>
+
+        <h3>13. Contact</h3>
+        <p>Pour toute question ou réclamation, vous pouvez nous contacter :<br>
+        Par e-mail : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a><br>
+        Par courrier : 25 rue de Ponthieu, 75008 Paris, France.</p>
+
+        <div class="cgu-footer">
+            <a href="{% url 'main' %}">Retour à l’accueil</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

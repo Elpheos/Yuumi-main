@@ -1,0 +1,579 @@
+    {% extends "master.html" %}
+    {% load static %}
+
+    {% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
+
+    {% block content %}
+
+{% if request.user == store.owner or request.user.is_superuser %}
+<div class="edit-store-button">
+    <a href="{% url 'edit_store' %}" class="btn btn-primary">
+        Modifier ce commerce
+    </a>
+</div>
+{% endif %}
+
+    {% if request.user.is_authenticated and request.user != store.owner %}
+<div class="store-action-button" style="margin-bottom :10px;">
+    <button class="btn btn-secondary"
+            onclick="claimStore({{ store.id }})">
+        Dire que ce commerce est le mien
+    </button>
+</div>
+{% endif %}
+
+
+    <main>
+        <section aria-label="Informations principales du commerce">
+            <div class="informations-principales-commerce-container">
+                <!-- 🖼️ CARROUSEL D’IMAGES -->
+    <div class="photo-commerce-container">
+    <div id="carouselStoreImages" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+        
+        <!-- 🔸 Points indicateurs -->
+        <div class="carousel-indicators">
+        {% if store.photo %}
+            <button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="0" class="active" aria-current="true"></button>
+        {% endif %}
+        {% for img in store.images.all %}
+            <button type="button"
+                    data-bs-target="#carouselStoreImages"
+                    data-bs-slide-to="{% if store.photo %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}">
+            </button>
+        {% endfor %}
+        </div>
+
+        <!-- 🔸 Conteneur des images -->
+        <div class="carousel-inner">
+        {% if store.photo %}
+        <div class="carousel-item active">
+            <img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
+        </div>
+        {% endif %}
+
+        {% for img in store.images.all %}
+        <div class="carousel-item {% if not store.photo and forloop.first %}active{% endif %}">
+            <img src="{{ img.image.url }}" class="d-block w-100 store-carousel-img" alt="Photo de {{ store.nom }}">
+        </div>
+        {% endfor %}
+        </div>
+
+        <!-- 🔸 Boutons de navigation -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Précédent</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Suivant</span>
+        </button>
+    </div>
+    </div>
+
+
+
+                <div class="commerce-right-part-container">
+
+                    <div class="description-container">
+                        <h1>{{ store.nom }} | {{ store.ville }}</h1>
+                        <hr class="hr-page-commerce" />
+
+                        <div class="description-principale">
+                            <p>{{ store.descriptionpetite }}</p>
+                        </div>
+
+                        <div class="description-secondaire">
+                            <p>{{ store.descriptiongrande }}</p>
+                        </div>
+
+                                        {% if store.addresseitineraire %}
+                        <a href="{{ store.addresseitineraire }}"
+                        rel="noopener"
+                        class="button-1-description">
+                            Je me rends sur place
+                        </a>
+                    {% endif %}
+
+                    {% if store.site %}
+                        <a href="{{ store.site }}"
+                        rel="noopener"
+                        class="button-1-description">
+                            Site du commerce
+                        </a>
+                    {% endif %}
+
+
+                        <div class="commerce-réseaux">
+                            {% if store.phone %}
+                                <a href="tel:{{ store.phone }}">
+                                    <img src="{% static 'images/telephone.webp' %}" alt="Téléphone {{ store.nom }}" />
+                                </a>
+                            {% endif %}
+                            {% if store.instagram %}
+                                <a href="{{ store.instagram }}" rel="noopener">
+                                    <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
+                                </a>
+                            {% endif %}
+                            {% if store.facebook %}
+                                <a href="{{ store.facebook }}" rel="noopener">
+                                    <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
+                                </a>
+                            {% endif %}
+                        </div>
+
+                        <!-- FAVORIS -->
+                                            <div class="commerce-wishlist">
+                                                    <button class="favori-btn"
+                                                            data-store-id="{{ store.id }}"
+                                                            data-is-favorite="{{ is_favorite|yesno:'true,false' }}">
+                                                        <i class="fa-regular fa-heart"></i>
+                                                        <span>Ajouter aux favoris</span>
+                                                    </button>
+                                                </div>
+        
+
+                        <!-- FIN FAVORIS -->
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- Boutons informations secondaires -->
+            <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
+                <div class="informations-secondaires-commerce-container">
+                    <div class="informations-secondaires-commerce-buttons-container">
+                        <button id="bouton1" onclick='
+                            document.getElementById("bouton1").style.backgroundColor = "#ff8b38";
+                            document.getElementById("bouton1").style.color = "white";
+                            document.getElementById("bouton2").style.backgroundColor = "white";
+                            document.getElementById("bouton2").style.color = "#333";
+                            document.getElementById("bouton3").style.backgroundColor = "white";
+                            document.getElementById("bouton3").style.color = "#333";
+                            document.getElementById("infospratiques").style.display = "block";
+                            document.getElementById("galerie").style.display = "none";
+                            document.getElementById("produits").style.display = "none";
+                        '>Informations pratiques</button>
+
+                        <button id="bouton2" onclick='
+                            document.getElementById("bouton2").style.backgroundColor = "#ff8b38";
+                            document.getElementById("bouton2").style.color = "white";
+                            document.getElementById("bouton1").style.backgroundColor = "white";
+                            document.getElementById("bouton1").style.color = "#333";
+                            document.getElementById("bouton3").style.backgroundColor = "white";
+                            document.getElementById("bouton3").style.color = "#333";
+                            document.getElementById("galerie").style.display = "flex";
+                            document.getElementById("infospratiques").style.display = "none";
+                            document.getElementById("produits").style.display = "none";
+                        '>Galerie</button>
+
+                        <button id="bouton3" onclick='
+                            document.getElementById("bouton3").style.backgroundColor = "#ff8b38";
+                            document.getElementById("bouton3").style.color = "white";
+                            document.getElementById("bouton1").style.backgroundColor = "white";
+                            document.getElementById("bouton1").style.color = "#333";
+                            document.getElementById("bouton2").style.backgroundColor = "white";
+                            document.getElementById("bouton2").style.color = "#333";
+                            document.getElementById("produits").style.display = "block";
+                            document.getElementById("infospratiques").style.display = "none";
+                            document.getElementById("galerie").style.display = "none";
+                        '>Liste des produits</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Infos pratiques -->
+            <section aria-label="Informations pratiques concernant le commerce" id="infospratiques" class="infopratiques-container">
+        <div class="infopratiques-content-container">
+
+            <!-- Horaires fixes -->
+            <div class="infopratiques-horaires-container" id="horairesip">
+                <table class="infopratiques-horaires-table">
+                    <thead>
+                        <tr><th colspan="2"><b>Horaires</b></th></tr>
+                    </thead>
+                    <tbody>
+                    {% for hour in opening_hours %}
+                        <tr>
+                            <td><b>{{ hour.get_jour_display }} :</b></td>
+                            <td>
+                                {% if hour.matin_ouverture and hour.matin_fermeture %}
+                                    {{ hour.matin_ouverture|time:"H:i" }} - {{ hour.matin_fermeture|time:"H:i" }}
+                                {% endif %}
+                                {% if hour.apresmidi_ouverture and hour.apresmidi_fermeture %}
+                                    {% if hour.matin_ouverture and hour.matin_fermeture %} / {% endif %}
+                                    {{ hour.apresmidi_ouverture|time:"H:i" }} - {{ hour.apresmidi_fermeture|time:"H:i" }}
+                                {% endif %}
+                                {% if not hour.matin_ouverture and not hour.apresmidi_ouverture %}
+                                    Fermé
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="2">Horaires non spécifiés.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                <p class="infopratiques-miseajour">
+                    <b>Dernière mise à jour :</b> 06.01.2026<br>
+                    Les horaires peuvent changer, assurez-vous de l'ouverture d'un commerce avant de vous rendre sur place.
+                </p>
+            </div>
+
+            <!-- Adresse -->
+            <div class="infopratiques-adresse-container" id="adresseip">
+                <i class="fa-solid fa-location-dot" style="color: #ff8b38;font-size: 40px;margin-bottom:15px;"></i>
+                <p class="infopratiques-adresse-texte">{{ store.addressemaps }}</p>
+            </div>
+
+        </div>
+    </section>
+
+            <!-- Galerie -->
+        <section aria-label="Galerie du commerce" class="galerie-container" id="galerie">
+
+        {% if store.galerie_title %}
+            <h2 class="galerie-title">{{ store.galerie_title }}</h2>
+        {% endif %}
+
+        {% if store.galerie_description %}
+            <p class="galerie-description">{{ store.galerie_description }}</p>
+        {% endif %}
+
+        {% if store.galerie_image %}
+            <div class="galerie-main-wrapper">
+                <img
+                    src="{{ store.galerie_image.url }}"
+                    alt="Image principale de la galerie {{ store.nom }}"
+                    class="galerie-main-img"
+                >
+            </div>
+        {% endif %}
+
+        {% if store.images.all %}
+            <div class="galerie-grid">
+                {% for img in store.images.all %}
+                    <div class="galerie-item">
+                        <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
+        {% endif %}
+
+
+        <!-- 🔍 Lightbox Galerie -->
+    <div class="galerie-lightbox" id="galerieLightbox">
+        <span class="galerie-lightbox-close">&times;</span>
+        <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
+    </div>
+
+
+    </section>
+
+            <!-- Produits -->
+            <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits">
+                {% for family in store.families.all %}
+                    <table>
+                        <thead>
+                            <tr><th colspan="4">{{ family.nom }}</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for product in family.products.all %}
+                                {% if forloop.first or forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                                <td>{{ product.nom }}</td>
+                                {% if forloop.counter|divisibleby:4 or forloop.last %}
+                                    {% for _ in " "|slice:":{{ 4 - forloop.counter|add:'0'|divisibleby:4|yesno:'0,1' }}" %}<td></td>{% endfor %}
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endfor %}
+            </section>
+
+        </section>
+    </main>
+
+    <!-- Modal de confirmation pour revendication -->
+    <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="claimModalLabel">Confirmer la revendication</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+            Êtes-vous sûr de vouloir dire que ce commerce est le vôtre ?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+            <button type="button" class="btn btn-primary" id="confirmClaim">Oui, revendiquer</button>
+        </div>
+        </div>
+    </div>
+    </div>
+
+    {% endblock %}
+
+    {% block extra_js %}
+    <script src="{% static 'admin/search-product.js' %}"></script>
+    <script>
+        window.stores = {{ stores|safe }};
+    </script>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const carouselEl = document.querySelector("#carouselStoreImages");
+        if (carouselEl) {
+            // Initialisation manuelle du carrousel Bootstrap
+            const carousel = new bootstrap.Carousel(carouselEl, {
+                interval: false, // pas de défilement automatique
+                ride: false,     // empêche l'auto-play
+                wrap: true       // permet de boucler les images (de la dernière à la première)
+            });
+            console.log("✅ Carrousel initialisé :", carousel);
+        } else {
+            console.warn("⚠️ Aucun élément #carouselStoreImages trouvé !");
+        }
+    });x
+    </script>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const buttons = document.querySelectorAll(".favori-btn");
+        console.log("Script favoris chargé !");
+
+        // Fonction pour récupérer le CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";").map(c => c.trim());
+                for (let cookie of cookies) {
+                    if (cookie.startsWith(name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        buttons.forEach(btn => {
+            const storeId = btn.dataset.storeId;
+            if (!storeId) return;
+
+            const isFavorite = btn.dataset.isFavorite === "true";
+            const icon = btn.querySelector("i");
+            const span = btn.querySelector("span");
+
+            // --- Affichage initial selon l'état du favori ---
+            if (isFavorite) {
+                btn.classList.add("active");
+                if (icon) {
+                    icon.classList.remove("fa-regular");
+                    icon.classList.add("fa-solid");
+                }
+                if (span) span.textContent = "Retirer des favoris";
+            }
+
+            // --- Clic pour basculer ---
+            btn.addEventListener("click", () => {
+                console.log("Bouton cliqué pour le store ID :", storeId);
+
+                fetch(`/store/${storeId}/favoris/`, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCookie("csrftoken"),
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                })
+                .then(res => {
+                    console.log("Réponse brute du serveur :", res.status, res.statusText);
+                    if (!res.ok) throw new Error("Erreur réseau");
+                    return res.json();
+                })
+                .then(data => {
+                    console.log("Réponse JSON :", data);
+
+                    if (data.action === "added") {
+                        btn.classList.add("active");
+                        icon.classList.remove("fa-regular");
+                        icon.classList.add("fa-solid");
+                        span.textContent = "Retirer des favoris";
+                    } else if (data.action === "removed") {
+                        btn.classList.remove("active");
+                        icon.classList.remove("fa-solid");
+                        icon.classList.add("fa-regular");
+                        span.textContent = "Ajouter aux favoris";
+                    }
+                })
+                .catch(err => console.error("Erreur lors de la mise à jour du favori :", err));
+            });
+        });
+    });
+    </script>
+
+    <script>
+    let currentStoreId = null;
+
+    function claimStore(storeId) {
+        currentStoreId = storeId;
+        const modal = new bootstrap.Modal(document.getElementById('claimModal'));
+        modal.show();
+    }
+
+    document.getElementById('confirmClaim').addEventListener('click', function() {
+        if (!currentStoreId) return;
+
+        // Fonction pour récupérer le CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";").map(c => c.trim());
+                for (let cookie of cookies) {
+                    if (cookie.startsWith(name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        fetch(`/store/${currentStoreId}/claim/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(res => {
+            if (!res.ok) throw new Error("Erreur");
+            return res.json();
+        })
+        .then(data => {
+            alert(data.message || "Commerce revendiqué avec succès.");
+            location.reload(); // Reload to update the page (hide button, show edit)
+        })
+        .catch(err => {
+            console.error("Erreur lors de la revendication :", err);
+            alert("Erreur lors de la revendication. Le commerce est peut-être déjà pris.");
+        });
+
+        // Hide modal
+        const modal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
+        modal.hide();
+    });
+    </script>
+
+    <style>
+    /* 🎨 Style du carrousel d’images Yuumi */
+    /* 🎨 Style du carrousel d’images Yuumi */
+    /* Conteneur du carousel */
+    #carouselStoreImages {
+        max-width: 80%;
+        margin: 0 auto 20px auto;
+        border: 5px solid #ff8b38;
+        border-radius: 15px;
+        overflow: hidden; /* indispensable */
+        background: #fff;
+    }
+
+    /* Le conteneur du slide */
+    .carousel-item {
+        height: 500px;
+    }
+
+    /* Images du carousel */
+    .store-carousel-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;      /* remplit complètement */
+        display: block;         /* enlève les espaces fantômes */
+    }
+    /* ✅ Points indicateurs */
+    .carousel-indicators [data-bs-target] {
+        background-color: #ff8b38;
+    }
+
+    /* ✅ Flèches personnalisées */
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        background-color: #ff8b38; /* orange fade */
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        background-size: 60%;
+        transition: all 0.2s ease;
+    }
+
+    .carousel-control-prev-icon:hover,
+    .carousel-control-next-icon:hover {
+        background-color: #ff8b38;
+        transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+        #carouselStoreImages {
+            max-width: 100%;
+            border-width: 3px;
+        }
+        .store-carousel-img {
+            max-height: 50vh;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            width: 40px;
+            height: 40px;
+        }
+    }
+
+    .edit-store-button {
+    margin: 20px 0;
+}
+
+.edit-store-button .btn {
+    display: inline-block;
+    width: auto;
+}
+
+
+    </style>
+    <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const lightbox = document.getElementById("galerieLightbox");
+        const lightboxImg = document.getElementById("galerieLightboxImg");
+        const closeBtn = document.querySelector(".galerie-lightbox-close");
+
+        // Clic sur une image de la galerie
+        document.querySelectorAll(".galerie-item img, .galerie-main-img").forEach(img => {
+            img.addEventListener("click", () => {
+                lightboxImg.src = img.src;
+                lightbox.style.display = "flex";
+                document.body.style.overflow = "hidden"; // bloque scroll
+            });
+        });
+
+        // Fermeture (clic fond ou bouton)
+        function closeLightbox() {
+            lightbox.style.display = "none";
+            lightboxImg.src = "";
+            document.body.style.overflow = "";
+        }
+
+        lightbox.addEventListener("click", closeLightbox);
+        closeBtn.addEventListener("click", closeLightbox);
+
+        // Fermeture via ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                closeLightbox();
+            }
+        });
+    });
+    </script>
+
+    {% endblock %}
+        
