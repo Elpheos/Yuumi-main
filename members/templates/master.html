@@ -249,14 +249,18 @@
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* SUPER-CATEGORIES DROPDOWN */
+    /* ============================= */
+    /*   SUPER-CATEGORIES DROPDOWN   */
+    /* ============================= */
+
     const btn = document.querySelector(".supercats-toggle");
     const dropdown = document.getElementById("supercats-dropdown");
 
     if (btn && dropdown) {
         btn.addEventListener("click", e => {
             e.preventDefault();
-            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+            dropdown.style.display =
+                dropdown.style.display === "block" ? "none" : "block";
         });
 
         document.addEventListener("click", e => {
@@ -270,6 +274,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const list = header.nextElementSibling;
         const chevron = header.querySelector(".chevron");
 
+        if (!list || !chevron) return;
+
         header.addEventListener("click", () => {
             const open = list.style.display === "block";
             list.style.display = open ? "none" : "block";
@@ -277,58 +283,72 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    /* RECHERCHE PRODUIT */
+    /* ============================= */
+    /*       RECHERCHE PRODUIT       */
+    /* ============================= */
+
     const toggles = document.querySelectorAll(".search-product-toggle");
     const box = document.getElementById("search-product-container");
     const input = document.getElementById("search-product-input");
     const list = document.getElementById("search-product-results");
 
-    toggles.forEach(toggle => {
-        toggle.addEventListener("click", e => {
-            e.preventDefault();
-            if (box.style.display === "block") {
-                box.style.display = "none";
-            } else {
-                box.style.display = "block";
+    if (toggles.length && box && input && list) {
+
+        toggles.forEach(toggle => {
+            toggle.addEventListener("click", e => {
+                e.preventDefault();
+                box.style.display =
+                    box.style.display === "block" ? "none" : "block";
                 input.focus();
-            }
+            });
         });
-    });
 
-    let t = null;
-    input?.addEventListener("input", () => {
-        const q = input.value.trim();
-        clearTimeout(t);
+        let timer = null;
 
-        if (!q) { list.innerHTML = ""; return; }
+        input.addEventListener("input", () => {
+            const q = input.value.trim();
+            clearTimeout(timer);
 
-        t = setTimeout(async () => {
-            try {
-                const url = toggles[0].dataset.url;
-                const resp = await fetch(url + "?q=" + encodeURIComponent(q), {
-                    headers: { "X-Requested-With": "XMLHttpRequest" }
-                });
-                const data = await resp.json();
-/*================================================================PRODUITS APPARAISSANTS LORS DE LA RECHERCHE*/
-                list.innerHTML = data.map(item => `
-                    <li class="search-product-store-container">
-                        <a href="${item.url}">
-                            ${item.photo ?
-                                `<img class="spr-thumb" src="${item.photo}">` :
-                                `<span class="spr-thumb">🛍️</span>`}
-                            <span><strong>${item.product}</strong><br><small>${item.store}</small></span>
-                        </a>
-                    </li>
-                `).join("");
-
-            } catch {
-                list.innerHTML = "<li>Erreur.</li>";
+            if (!q) {
+                list.innerHTML = "";
+                return;
             }
-        }, 250);
-    });
+
+            timer = setTimeout(async () => {
+                try {
+                    const url = toggles[0].dataset.url;
+                    if (!url) return;
+
+                    const resp = await fetch(url + "?q=" + encodeURIComponent(q), {
+                        headers: { "X-Requested-With": "XMLHttpRequest" }
+                    });
+
+                    const data = await resp.json();
+
+                    list.innerHTML = data.map(item => `
+                        <li class="search-product-store-container">
+                            <a href="${item.url}">
+                                ${item.photo
+                                    ? `<img class="spr-thumb" src="${item.photo}">`
+                                    : `<span class="spr-thumb">🛍️</span>`}
+                                <span>
+                                    <strong>${item.product}</strong><br>
+                                    <small>${item.store}</small>
+                                </span>
+                            </a>
+                        </li>
+                    `).join("");
+
+                } catch (err) {
+                    console.error("Erreur recherche produit :", err);
+                }
+            }, 250);
+        });
+    }
 
 });
 </script>
+
 
 {% block extra_js %}{% endblock %}
 
