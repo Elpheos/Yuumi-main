@@ -20,7 +20,7 @@
 
 <style>
 #supercats-dropdown {
-    display: none; !important
+    display: none !important; 
 }
 
 
@@ -267,9 +267,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
 
         document.addEventListener("click", e => {
-            if (!dropdown.contains(e.target) && e.target !== btn) {
-                dropdown.style.display = "none";
-            }
+           if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+        dropdown.style.display = "none";
+    }
         });
     }
 
