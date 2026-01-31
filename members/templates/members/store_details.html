@@ -543,40 +543,48 @@
 
 
     </style>
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
+   <script>
+document.addEventListener("DOMContentLoaded", () => {
 
-        const lightbox = document.getElementById("galerieLightbox");
-        const lightboxImg = document.getElementById("galerieLightboxImg");
-        const closeBtn = document.querySelector(".galerie-lightbox-close");
+    const lightbox = document.getElementById("galerieLightbox");
+    const lightboxImg = document.getElementById("galerieLightboxImg");
+    const closeBtn = document.querySelector(".galerie-lightbox-close");
 
-        // Clic sur une image de la galerie
-        document.querySelectorAll(".galerie-item img, .galerie-main-img").forEach(img => {
-            img.addEventListener("click", () => {
-                lightboxImg.src = img.src;
-                lightbox.style.display = "flex";
-                document.body.style.overflow = "hidden"; // bloque scroll
-            });
-        });
+    // 👉 Si la galerie n'existe pas, on sort immédiatement
+    if (!lightbox || !lightboxImg || !closeBtn) return;
 
-        // Fermeture (clic fond ou bouton)
-        function closeLightbox() {
-            lightbox.style.display = "none";
-            lightboxImg.src = "";
-            document.body.style.overflow = "";
-        }
+    // Fermeture lightbox
+    function closeLightbox() {
+        lightbox.style.display = "none";
+        lightboxImg.src = "";
+        document.body.style.overflow = "";
+    }
 
-        lightbox.addEventListener("click", closeLightbox);
-        closeBtn.addEventListener("click", closeLightbox);
-
-        // Fermeture via ESC
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "Escape") {
-                closeLightbox();
-            }
+    // Clic sur une image
+    document.querySelectorAll(".galerie-item img, .galerie-main-img").forEach(img => {
+        img.addEventListener("click", () => {
+            lightboxImg.src = img.src;
+            lightbox.style.display = "flex";
+            document.body.style.overflow = "hidden";
         });
     });
-    </script>
+
+    // Bouton X
+    closeBtn.addEventListener("click", closeLightbox);
+
+    // Clic sur le fond
+    lightbox.addEventListener("click", closeLightbox);
+
+    // Touche ESC
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+            closeLightbox();
+        }
+    });
+
+});
+</script>
+
 
     {% endblock %}
         
