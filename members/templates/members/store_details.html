@@ -7,9 +7,10 @@
 
 {% if request.user == store.owner or request.user.is_superuser %}
 <div class="edit-store-button">
-    <a href="{% url 'edit_store' %}" class="btn btn-primary">
-        Modifier ce commerce
-    </a>
+    <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
+   class="btn btn-primary">
+    Modifier ce commerce
+</a>
 </div>
 {% endif %}
 
