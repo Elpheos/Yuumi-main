@@ -231,40 +231,34 @@ def register(request):
 # Édition du commerce
 # ---------------------------
 
+from django.core.exceptions import PermissionDenied
+
 @login_required
-def edit_store(request):
-    store = Store.objects.filter(owner=request.user).first()
+def edit_store(request, departement, ville, slug):
+    store = get_object_or_404(
+        Store,
+        departement__iexact=departement,
+        ville__iexact=ville,
+        slug=slug
+    )
 
-    if not store and not request.user.is_superuser:
-        messages.error(request, "Vous n'avez pas de commerce associé.")
-        return redirect('main')
-
-    if not store and request.user.is_superuser:
-        store = Store(
-            nom="Nom du commerce",
-            ville="Ville",
-            departement="Département",
-            descriptionpetite="Description courte",
-            site="Site web"
-        )
+    # 🔒 Sécurité absolue
+    if request.user != store.owner and not request.user.is_superuser:
+        raise PermissionDenied("Accès interdit à ce commerce.")
 
     if request.method == "POST":
         form = StoreForm(request.POST, request.FILES, instance=store)
         if form.is_valid():
-            new_store = form.save(commit=False)
-            if not store.owner:
-                new_store.owner = request.user
-            new_store.save()
+            form.save()
             messages.success(request, "Le commerce a été mis à jour avec succès.")
-
-            # Redirection vers la page précédente si possible
-            next_url = request.POST.get('next') or request.META.get('HTTP_REFERER') or new_store.get_absolute_url()
-            return redirect(next_url)
+            return redirect(store.get_absolute_url())
     else:
         form = StoreForm(instance=store)
 
-    # On peut passer l'URL actuelle dans le formulaire pour le POST
-    return render(request, "members/edit_store.html", {"form": form, "store": store, "next": request.META.get('HTTP_REFERER')})
+    return render(request, "members/edit_store.html", {
+        "form": form,
+        "store": store,
+    })
 
 
 
