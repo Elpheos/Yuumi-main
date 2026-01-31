@@ -108,19 +108,19 @@
             </div>
 
         </form>
-        
-<div class="btn-retour-save-store">
-    <a href="{{ store.get_absolute_url }}">
-    ← Retour
-</a>
 
-</div>
+        {# 🔐 Lien retour sécurisé : uniquement si le slug existe #}
+        {% if store.slug %}
+        <div class="btn-retour-save-store">
+            <a href="{{ store.get_absolute_url }}">
+                ← Retour
+            </a>
+        </div>
+        {% endif %}
 
     </main>
 
 </div>
 
 </body>
-
-
 </html>
