@@ -264,10 +264,13 @@
 
 
         <!-- 🔍 Lightbox Galerie -->
+{% if store.galerie_image or store.images.exists %}
     <div class="galerie-lightbox" id="galerieLightbox">
         <span class="galerie-lightbox-close">&times;</span>
         <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
     </div>
+{% endif %}
+
 
 
     </section>
