@@ -1,16 +1,11 @@
+{% extends "master.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="fr">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifier mon commerce : {{ store.nom }}</title>
-    <link rel="stylesheet" href="{% static 'css/myglobal.css' %}">
+{% block title %}
+Modifier mon commerce : {{ store.nom }}
+{% endblock %}
 
-</head>
-
-<body>
+{% block content %}
 
 <div class="edit-store-page">
 
@@ -110,7 +105,6 @@
 
         </form>
 
-        {# 🔐 Lien retour sécurisé : uniquement si le slug existe #}
         {% if store.slug %}
         <div class="btn-retour-save-store">
             <a href="{{ store.get_absolute_url }}">
@@ -123,5 +117,4 @@
 
 </div>
 
-</body>
-</html>
+{% endblock %}
