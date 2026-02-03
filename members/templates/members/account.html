@@ -74,11 +74,14 @@
                     </a>
                 </li>
 
-                <li>
-                    <a href="{% url 'edit_store' %}">
-                        🛍️ Modifier mon commerce
-                    </a>
-                </li>
+                {% if store %}
+<li>
+    <a href="{% url 'edit_store' store.departement store.ville store.slug %}">
+        🛍️ Modifier mon commerce
+    </a>
+</li>
+{% endif %}
+
             </ul>
         </div>
 
