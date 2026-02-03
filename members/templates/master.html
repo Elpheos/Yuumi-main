@@ -241,7 +241,18 @@
                         <li><a class="disabled-link"><i class="fa-solid fa-magnifying-glass"></i></a></li>
                     {% endif %}
 
-                    <li><a href="#"><i class="fa-regular fa-user"></i></a></li>
+                    <li>
+    {% if user.is_authenticated %}
+        <a href="{% url 'account' %}">
+            <i class="fa-regular fa-user"></i>
+        </a>
+    {% else %}
+        <a href="{% url 'login' %}">
+            <i class="fa-regular fa-user"></i>
+        </a>
+    {% endif %}
+</li>
+
                 </ul>
             </div>
 
