@@ -387,5 +387,17 @@ def mentions_legales(request):
 
 @login_required
 def account(request):
-    return render(request, "members/account.html")
+    store = None
+
+    if hasattr(request.user, "store"):
+        store = request.user.store
+
+    return render(
+        request,
+        "members/account.html",
+        {
+            "store": store
+        }
+    )
+
     
