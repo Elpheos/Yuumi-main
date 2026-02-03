@@ -104,23 +104,26 @@
                     {% endif %}
 
 
-                        <div class="commerce-réseaux">
-                            {% if store.phone %}
-                                <a href="tel:{{ store.phone }}">
-                                    <img src="{% static 'images/telephone.webp' %}" alt="Téléphone {{ store.nom }}" />
-                                </a>
-                            {% endif %}
-                            {% if store.instagram %}
-                                <a href="{{ store.instagram }}" rel="noopener">
-                                    <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
-                                </a>
-                            {% endif %}
-                            {% if store.facebook %}
-                                <a href="{{ store.facebook }}" rel="noopener">
-                                    <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
-                                </a>
-                            {% endif %}
-                        </div>
+<div class="commerce-réseaux">
+    {% if store.phone %}
+        <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
+            <img src="{% static 'images/telephone.webp' %}" alt="Téléphone {{ store.nom }}" />
+        </a>
+    {% endif %}
+
+    {% if store.instagram %}
+        <a href="{{ store.instagram }}" rel="noopener">
+            <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
+        </a>
+    {% endif %}
+
+    {% if store.facebook %}
+        <a href="{{ store.facebook }}" rel="noopener">
+            <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
+        </a>
+    {% endif %}
+</div>
+
 
                         <!-- FAVORIS -->
                                             <div class="commerce-wishlist">
