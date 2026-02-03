@@ -219,11 +219,12 @@
                     <li><a href="{{ carte_url }}">Carte des commerces</a></li>
                     <li><a href="{% url 'notre_projet' %}">Notre projet</a></li>
 
-                    {% if user.is_authenticated %}
-                        <li><a href="{% url 'account' %}">Mon compte</a></li>
-                    {% else %}
-                        <li><a href="{% url 'login' %}">Mon compte</a></li>
-                    {% endif %}
+<li>
+    <a href="{% if user.is_authenticated %}{% url 'account' %}{% else %}{% url 'login' %}{% endif %}">
+        Mon compte
+    </a>
+</li>
+
 
                     <li><a href="{% url 'contact' %}">Contact</a></li>
                 </ul>
