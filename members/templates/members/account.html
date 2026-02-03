@@ -85,12 +85,20 @@
             </ul>
         </div>
 
-        <div class="account-section">
-            <h3>Session</h3>
-            <ul class="account-links">
-                <li><a href="{% url 'logout' %}">Déconnexion</a></li>
-            </ul>
-        </div>
+       <div class="account-section">
+    <h3>Session</h3>
+    <ul class="account-links">
+        <li>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-button">
+                    Déconnexion
+                </button>
+            </form>
+        </li>
+    </ul>
+</div>
+
 
     </div>
 
