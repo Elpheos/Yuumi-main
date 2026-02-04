@@ -174,3 +174,11 @@ CSRF_TRUSTED_ORIGINS = [
 
 CSRF_COOKIE_SECURE = False
 CORS_ALLOW_ALL_ORIGINS = True
+
+# -------------------------------------------------------------------
+# Authentication redirects
+# -------------------------------------------------------------------
+
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
