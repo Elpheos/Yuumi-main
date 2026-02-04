@@ -209,6 +209,12 @@ color: inherit;
     color: #fff;
 }
 
+@media (max-width: 767px) {
+	.header-container {
+		visibility: none;
+	}
+}
+
 /*================================================MENU - RECHERCHE DE PRODUIT*/
 #search-product-container {
     display:none;
