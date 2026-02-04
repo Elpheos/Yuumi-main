@@ -292,18 +292,40 @@ def claim_store(request, store_id):
     store = get_object_or_404(Store, id=store_id)
     user = request.user
 
+    # Si le commerce a déjà un propriétaire, on bloque
     if store.owner:
-        return JsonResponse({"error": "Ce commerce a déjà un propriétaire."}, status=400)
+        return JsonResponse(
+            {"error": "Ce commerce a déjà un propriétaire."},
+            status=400
+        )
 
-    store.owner = user
-    store.save()
+    subject = f"Demande de revendication – {store.nom}"
 
-    # Send email notification
-    subject = f"Nouveau commerce revendiqué : {store.nom}"
-    message = f"L'utilisateur {user.username} ({user.email}) a revendiqué le commerce '{store.nom}' situé à {store.ville}, {store.departement}."
-    send_mail(subject, message, 'noreply@yuumi-shop.com', ['contact@yuumi-shop.com'], fail_silently=True)
+    message = (
+        f"Une demande de revendication a été effectuée.\n\n"
+        f"Commerce : {store.nom}\n"
+        f"Ville : {store.ville}\n"
+        f"Département : {store.departement}\n\n"
+        f"Compte utilisateur : {user.username}\n"
+        f"Email utilisateur : {user.email}\n\n"
+        f"Aucune attribution n’a encore été faite.\n"
+        f"Vous pouvez contacter l’utilisateur pour vérification."
+    )
 
-    return JsonResponse({"message": "Commerce revendiqué avec succès. Un email de notification a été envoyé."})
+    send_mail(
+        subject,
+        message,
+        'noreply@yuumi-shop.com',
+        ['contact@yuumi-shop.com'],
+        fail_silently=False
+    )
+
+    return JsonResponse({
+        "message": (
+            "Votre demande de revendication a bien été envoyée. "
+            "Nous vous contacterons après vérification."
+        )
+    })
 
 
 # ---------------------------
