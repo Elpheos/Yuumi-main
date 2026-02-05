@@ -259,6 +259,7 @@ color: inherit;
     color: #333;
 }
 
+	
 @media (max-width: 767px) {
 
 	.nav-menu-bouton-mobile {
@@ -286,7 +287,7 @@ header {
 
 
     .header-container {
-        display: flex;
+		display: none;
         flex-direction: column;
         align-items: flex-end;
         height: 100%;
