@@ -209,11 +209,114 @@ color: inherit;
     color: #fff;
 }
 
-@media (max-width: 767px) {
-	.header-container {
-		display: none;
-	}
+#supercats-dropdown {
+    display: none ; 
 }
+/* ===== MENU SUPER CATEGORIES ===== */
+
+.menu-supercats {
+    position: relative;
+}
+
+.supercats-container {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: white;
+    border: 2px solid #ff8b38;
+    border-radius: 10px;
+    padding: 10px;
+    min-width: 260px;
+    z-index: 1000;
+}
+
+.supercat-block {
+    margin-bottom: 10px;
+}
+
+.supercat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #ff8b38;
+    cursor: pointer;
+}
+
+.subcats-list {
+    list-style: none;
+    padding-left: 10px;
+    margin-top: 6px;
+    display: none;
+}
+
+.subcats-list li a {
+    font-size: 16px;
+    color: #333;
+}
+
+@media (max-width: 767px) {
+	/*.header-container {
+		display: none;
+	}*/
+
+header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+        height: 100dvh;
+    }
+
+
+
+    .header-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        height: 100%;
+        width: 100vw;
+    }
+
+   .nav-menu-header {
+        flex-direction: column;
+        max-height: none;
+        background: white;
+        height: 100%;
+        width: 50vw;
+        border-left: solid 1px #ff8b38;
+
+    }
+
+    .li-onglets-header {
+        flex-direction: column;
+        padding: 8px;
+        gap: 10px;
+        
+    }
+
+    .li-onglets-header li {
+        width: 100%;
+    }
+
+    .li-onglets-header li a {
+        display: block;
+        width: 100%;
+        padding: 10px 0;
+        border: 0;
+    }
+
+    .li-icones-header {
+        margin-top: 10px;
+        padding: 0;
+    }
+
+    .nav-menu-header > div:last-child {
+        margin-left: 0;
+    }
+}
+
 
 /*================================================MENU - RECHERCHE DE PRODUIT*/
 #search-product-container {
