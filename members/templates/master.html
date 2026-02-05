@@ -130,6 +130,21 @@
     color: #666;
 }
 
+/* Sécurité Android : overlays cachés */
+.resultats-recherche,
+#supercats-dropdown,
+#search-product-container {
+    pointer-events: none;
+}
+
+.resultats-recherche.active,
+#supercats-dropdown[style*="display: block"],
+#search-product-container[style*="display: block"] {
+    pointer-events: auto;
+}
+
+
+    
 </style>
 </head>
 
