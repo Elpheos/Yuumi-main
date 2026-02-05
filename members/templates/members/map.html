@@ -11,71 +11,50 @@ Carte des commerces - {{ departement }} | Yuumi
     <h1>Commerces dans le département {{ departement }}</h1>
 
     <!-- ===================== Filtres ===================== -->
-    <div class="category-filters">
+   <div class="category-filters">
 
-        <div class="parent-filter">
-            <label>
-                <input type="checkbox" data-category="all" checked>
-                Tous
-            </label>
-        </div>
-
-        <div class="parent-filter">
-            <div>
-                <label>
-                    <input type="checkbox"
-                           class="parent-checkbox"
-                           data-parent="alimentation">
-                    Alimentation
-                </label>
-                <button class="toggle-children"
-                        data-parent="alimentation">▶</button>
-            </div>
-
-            <div class="child-buttons" data-parent="alimentation">
-                <button data-category="epiceries-fines">Épiceries fines</button>
-                <button data-category="primeurs">Primeurs</button>
-                <button data-category="epiceries-specialisees">Épiceries spécialisées</button>
-            </div>
-        </div>
-
-        <div class="parent-filter">
-            <div>
-                <label>
-                    <input type="checkbox"
-                           class="parent-checkbox"
-                           data-parent="restauration">
-                    Restauration
-                </label>
-                <button class="toggle-children"
-                        data-parent="restauration">▶</button>
-            </div>
-
-            <div class="child-buttons" data-parent="restauration">
-                <button data-category="restaurant">Restaurant</button>
-                <button data-category="fast-food">Fast-food</button>
-                <button data-category="boulangerie">Boulangerie</button>
-            </div>
-        </div>
-
-        <div class="parent-filter">
-            <div>
-                <label>
-                    <input type="checkbox"
-                           class="parent-checkbox"
-                           data-parent="autres">
-                    Autres commerces
-                </label>
-                <button class="toggle-children"
-                        data-parent="autres">▶</button>
-            </div>
-
-            <div class="child-buttons" data-parent="autres">
-                <button data-category="fleuristes">Fleuristes</button>
-            </div>
-        </div>
-
+    <!-- Tous -->
+    <div class="parent-filter">
+        <label>
+            <input type="checkbox" data-category="all" checked>
+            Tous
+        </label>
     </div>
+
+    {% regroup categories by super_categorie as grouped_categories %}
+
+    {% for group in grouped_categories %}
+    <div class="parent-filter">
+
+        <div>
+            <label>
+                <input type="checkbox"
+                       class="parent-checkbox"
+                       data-parent="{{ group.grouper }}">
+                {{ group.grouper|title }}
+            </label>
+
+            <button class="toggle-children"
+                    data-parent="{{ group.grouper }}">
+                ▶
+            </button>
+        </div>
+
+        <div class="child-buttons"
+             data-parent="{{ group.grouper }}">
+
+            {% for cat in group.list %}
+                <button data-category="{{ cat.slugcategorie }}">
+                    {{ cat.categorie }}
+                </button>
+            {% endfor %}
+
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+
 
     <!-- ===================== Carte ===================== -->
     <div id="map"></div>
