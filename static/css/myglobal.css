@@ -85,7 +85,11 @@ color: inherit;
 }
 
 /*=================================================================================MENU*/
-   .header-container {
+.nav-menu-bouton-mobile {
+	display: none;
+}
+
+.header-container {
 	margin-bottom: 20px;	
 }
 
@@ -254,11 +258,21 @@ color: inherit;
     font-size: 16px;
     color: #333;
 }
-/*====================================================RESPONSIVE*/
+
 @media (max-width: 767px) {
-	/*.header-container {
-		display: none;
-	}*/
+
+	.nav-menu-bouton-mobile {
+	display: block;
+        position: fixed;
+        top: 0;
+        right: 0;
+        z-index: 10000;
+        background: none;
+        border: none;
+        font-size: 26px;
+        color: #ff8b38;
+}	
+
 
 header {
         position: fixed;
@@ -316,9 +330,9 @@ header {
         margin-left: 0;
     }
 
-	.hr-full-width-menu {
-		display: none;
-	}
+.hr-full-width-menu {
+	display: none;
+}
 }
 
 
