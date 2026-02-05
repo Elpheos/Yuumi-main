@@ -58,7 +58,7 @@ color: inherit;
     font-size: 48px;
 }
 
-.hr-full-width {
+.hr-full-width-menu {
 	position: relative;
 	left: 50%;
 	margin-left: -50vw;
@@ -254,7 +254,7 @@ color: inherit;
     font-size: 16px;
     color: #333;
 }
-
+/*====================================================RESPONSIVE*/
 @media (max-width: 767px) {
 	/*.header-container {
 		display: none;
@@ -315,6 +315,10 @@ header {
     .nav-menu-header > div:last-child {
         margin-left: 0;
     }
+
+	.hr-full-width-menu {
+		display: none;
+	}
 }
 
 
