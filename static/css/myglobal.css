@@ -157,7 +157,7 @@ color: inherit;
         font-weight: bold;
         font-size: 18px;
     }
-*/
+
     /* Chevron aligné */
 .supercats-toggle i {
     margin-top: 1px;
@@ -262,79 +262,64 @@ color: inherit;
 	
 @media (max-width: 767px) {
 
-	.nav-menu-bouton-mobile {
-	display: block;
+    .nav-menu-bouton-mobile {
+        display: block;
         position: fixed;
         top: 0;
         right: 0;
-        z-index: 10000;
+        z-index: 10001;
         background: none;
         border: none;
         font-size: 26px;
         color: #ff8b38;
-}	
+        pointer-events: auto;
+    }
 
-
-header {
+    header {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        z-index: 9999;
-        height: 100dvh;
+        z-index: 10000;
+        height: auto;
+        pointer-events: none;
     }
-
-
 
     .header-container {
-		display: none;
-        flex-direction: column;
-        align-items: flex-end;
-        height: 100%;
-        width: 100vw;
+        display: none;
+        pointer-events: none;
     }
 
-   .nav-menu-header {
+    .header-container[style*="display: flex"] {
+        display: flex;
         flex-direction: column;
-        max-height: none;
-        background: white;
-        height: 100%;
-        width: 50vw;
-        border-left: solid 1px #ff8b38;
+        align-items: flex-end;
+        width: 100vw;
+        height: 100dvh;
+        pointer-events: auto;
+    }
 
+    .nav-menu-header {
+        flex-direction: column;
+        background: white;
+        width: 50vw;
+        height: 100%;
+        border-left: solid 1px #ff8b38;
+        pointer-events: auto;
     }
 
     .li-onglets-header {
         flex-direction: column;
         padding: 8px;
         gap: 10px;
-        
     }
 
-    .li-onglets-header li {
-        width: 100%;
+    .hr-full-width-menu {
+        display: none;
     }
-
-    .li-onglets-header li a {
-        display: block;
-        width: 100%;
-        padding: 10px 0;
-        border: 0;
-    }
-
-    .li-icones-header {
-        margin-top: 10px;
-        padding: 0;
-    }
-
-    .nav-menu-header > div:last-child {
-        margin-left: 0;
-    }
-
-.hr-full-width-menu {
-	display: none;
 }
-}
+
+
 
 
 /*================================================MENU - RECHERCHE DE PRODUIT*/
