@@ -192,208 +192,153 @@ Carte des commerces - {{ departement }} | Yuumi
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* ===================== 1️⃣ Données & carte ===================== */
+    /* ========= Données ========= */
     const stores = JSON.parse(
         document.getElementById('stores-data').textContent
     );
 
-    const centerLat = stores.length ? stores[0].lat : 46.0;
-    const centerLng = stores.length ? stores[0].lng : 2.0;
-
-    const map = L.map('map').setView([centerLat, centerLng], 10);
+    const map = L.map('map').setView(
+        [stores[0]?.lat || 46, stores[0]?.lng || 2], 10
+    );
 
     L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         { maxZoom: 19 }
     ).addTo(map);
 
-
-    /* ===================== 2️⃣ Icônes ===================== */
-    const categoryIcons = {
-        "Épicerie fine": "fa-utensils",
-        "Primeurs": "fa-apple-alt",
-        "Fleuristes": "fa-seedling"
-    };
-
-    function createIcon(category) {
-        const faClass = categoryIcons[category] || "fa-store";
-        const w = 30;
-        const h = 50;
-
-        return L.divIcon({
-            className: "custom-pin",
-            html: `
-                <div style="position:relative;width:${w}px;height:${h}px;">
-                    <svg viewBox="0 0 24 40" width="${w}" height="${h}">
-                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                              fill="#ff8b38"/>
-                    </svg>
-                    <i class="fas ${faClass}"
-                       style="position:absolute;top:${h*0.15}px;left:50%;
-                              transform:translateX(-50%);
-                              color:white;font-size:${w/2}px;"></i>
-                </div>
-            `,
-            iconSize: [w, h],
-            iconAnchor: [w / 2, h],
-            popupAnchor: [0, -h]
-        });
-    }
-
-
-    /* ===================== 3️⃣ Marqueurs ===================== */
+    /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
-
-        const marker = L.marker(
-            [store.lat, store.lng],
-            { icon: createIcon(store.categorie) }
-        ).bindPopup(
-            `
-            <div class="popup-content">
-                <a href="${store.url}" target="_blank">
-                    <h3 class="yuumi-popup-h3">
-                        ${store.nom}<br>
-                        <span>${store.categorie || ''}</span>
-                    </h3>
-                    ${store.photo
-                        ? `<img class="yuumi-popup-img"
-                                src="${store.photo}"
-                                alt="${store.nom}">`
-                        : ''}
-                </a>
-            </div>
-            `,
-            { className: 'yuumi-popup' }
-        );
-
-        marker.category = store.categorie;
-        marker.addTo(map);
-
-        return marker;
+        const m = L.marker([store.lat, store.lng])
+            .addTo(map);
+        m.category = store.categorie;
+        return m;
     });
 
-    if (markers.length) {
-        const group = new L.featureGroup(markers);
-        map.fitBounds(group.getBounds().pad(0.1));
+    /* ========= Utils ========= */
+    function getActiveChildren() {
+        return Array.from(
+            document.querySelectorAll('.child-buttons button.active')
+        ).map(btn => btn.dataset.category);
     }
 
-
-    /* ===================== 4️⃣ Filtrage ===================== */
-    function updateMarkers() {
-        const activeCategories = [];
-
-        document.querySelectorAll('.child-buttons button.active')
-            .forEach(btn => activeCategories.push(btn.dataset.category));
-
-        const allCb = document.querySelector('input[data-category="all"]');
-        if (allCb.checked) activeCategories.push('all');
+    function updateMap() {
+        const active = getActiveChildren();
 
         markers.forEach(marker => {
-            const visible =
-                activeCategories.includes('all') ||
-                activeCategories.includes(marker.category);
-
+            const visible = active.includes(marker.category);
             if (visible && !map.hasLayer(marker)) map.addLayer(marker);
             if (!visible && map.hasLayer(marker)) map.removeLayer(marker);
         });
     }
 
+    function updateParentsState() {
+        document.querySelectorAll('.parent-checkbox').forEach(parent => {
+            const group = document.querySelector(
+                `.child-buttons[data-parent="${parent.dataset.parent}"]`
+            );
+            const children = group.querySelectorAll('button');
+            const hasActive = Array.from(children)
+                .some(btn => btn.classList.contains('active'));
 
-    /* ===================== 5️⃣ Checkbox "Tous" ===================== */
+            parent.checked = hasActive;
+            if (hasActive) {
+                group.style.display = 'flex';
+                document.querySelector(
+                    `.toggle-children[data-parent="${parent.dataset.parent}"]`
+                ).classList.add('open');
+            }
+        });
+    }
+
+    function updateAllState() {
+        const allChildren = document.querySelectorAll('.child-buttons button');
+        const allActive = Array.from(allChildren)
+            .every(btn => btn.classList.contains('active'));
+
+        document.querySelector(
+            'input[data-category="all"]'
+        ).checked = allActive;
+    }
+
+    function syncUI() {
+        updateParentsState();
+        updateAllState();
+        updateMap();
+    }
+
+    /* ========= Events ========= */
+
+    // Tous
     document.querySelector('input[data-category="all"]')
         .addEventListener('change', function () {
 
-            const checked = this.checked;
+            if (this.checked) {
+                document.querySelectorAll('.child-buttons button')
+                    .forEach(btn => btn.classList.add('active'));
 
-            document.querySelectorAll('.parent-checkbox')
-                .forEach(cb => cb.checked = checked);
+                document.querySelectorAll('.child-buttons')
+                    .forEach(g => g.style.display = 'flex');
 
-            document.querySelectorAll('.child-buttons')
-                .forEach(group => group.style.display = 'flex');
+                document.querySelectorAll('.toggle-children')
+                    .forEach(t => t.classList.add('open'));
+            }
 
-            document.querySelectorAll('.child-buttons button')
-                .forEach(btn => btn.classList.toggle('active', checked));
-
-            document.querySelectorAll('.toggle-children')
-                .forEach(btn => btn.classList.toggle('open', checked));
-
-            updateMarkers();
+            syncUI();
         });
 
-
-    /* ===================== 6️⃣ Parents ===================== */
+    // Parents
     document.querySelectorAll('.parent-checkbox')
-        .forEach(parentCb => {
+        .forEach(parent => {
+            parent.addEventListener('change', function () {
 
-            parentCb.addEventListener('change', function () {
-
-                const parent = this.dataset.parent;
-
-                document.querySelectorAll(
-                    `.child-buttons[data-parent="${parent}"] button`
-                ).forEach(btn => btn.classList.toggle('active', this.checked));
-
-                if (!this.checked) {
-                    document.querySelector('input[data-category="all"]').checked = false;
-                }
-
-                updateMarkers();
-            });
-        });
-
-
-    /* ===================== 7️⃣ Enfants ===================== */
-    document.querySelectorAll('.child-buttons button')
-        .forEach(btn => {
-
-            btn.addEventListener('click', function () {
-                this.classList.toggle('active');
-
-                if (!this.classList.contains('active')) {
-                    document.querySelector('input[data-category="all"]').checked = false;
-                }
-
-                updateMarkers();
-            });
-        });
-
-
-    /* ===================== 8️⃣ Ouverture / fermeture ===================== */
-    document.querySelectorAll('.toggle-children')
-        .forEach(btn => {
-
-            btn.addEventListener('click', function () {
-                const parent = this.dataset.parent;
                 const group = document.querySelector(
-                    `.child-buttons[data-parent="${parent}"]`
+                    `.child-buttons[data-parent="${this.dataset.parent}"]`
+                );
+                const children = group.querySelectorAll('button');
+
+                children.forEach(btn =>
+                    btn.classList.toggle('active', this.checked)
                 );
 
+                group.style.display = 'flex';
+                document.querySelector(
+                    `.toggle-children[data-parent="${this.dataset.parent}"]`
+                ).classList.add('open');
+
+                syncUI();
+            });
+        });
+
+    // Enfants
+    document.querySelectorAll('.child-buttons button')
+        .forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.classList.toggle('active');
+                syncUI();
+            });
+        });
+
+    // Flèches
+    document.querySelectorAll('.toggle-children')
+        .forEach(btn => {
+            btn.addEventListener('click', function () {
+                const group = document.querySelector(
+                    `.child-buttons[data-parent="${this.dataset.parent}"]`
+                );
                 const open = group.style.display === 'flex';
                 group.style.display = open ? 'none' : 'flex';
                 this.classList.toggle('open', !open);
             });
         });
 
-
-    /* ===================== 9️⃣ État initial ===================== */
-    document.querySelectorAll('.child-buttons')
-        .forEach(group => group.style.display = 'flex');
-
-    document.querySelectorAll('.toggle-children')
-        .forEach(btn => btn.classList.add('open'));
-
-    const allCb = document.querySelector('input[data-category="all"]');
-    if (allCb.checked) {
-        document.querySelectorAll('.parent-checkbox')
-            .forEach(cb => cb.checked = true);
-
-        document.querySelectorAll('.child-buttons button')
-            .forEach(btn => btn.classList.add('active'));
-    }
-
-    updateMarkers();
+    /* ========= Init ========= */
+    document.querySelector('input[data-category="all"]').checked = true;
+    document.querySelectorAll('.child-buttons button')
+        .forEach(btn => btn.classList.add('active'));
+    syncUI();
 
 });
 </script>
+
 
 {% endblock %}
