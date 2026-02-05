@@ -187,23 +187,34 @@ def search_product(request):
 
 def map_view(request, departement):
     stores_qs = Store.objects.filter(departement__iexact=departement)
-    store_data = []
 
+    store_data = []
     for store in stores_qs:
         if store.latitude and store.longitude and store.slugcategorie:
             store_data.append({
                 "nom": store.nom,
-                "categorie": store.slugcategorie,  # 🔑 ICI
+                "categorie": store.slugcategorie,
                 "lat": store.latitude,
                 "lng": store.longitude,
                 "url": store.get_absolute_url(),
                 "photo": store.photo.url if store.photo else "",
             })
 
+    categories = (
+        stores_qs
+        .exclude(slugcategorie__isnull=True)
+        .exclude(slugcategorie__exact="")
+        .values("slugcategorie", "categorie", "super_categorie")
+        .distinct()
+        .order_by("super_categorie", "categorie")
+    )
+
     return render(request, "members/map.html", {
         "stores": store_data,
+        "categories": categories,
         "departement": departement,
     })
+
 
 
 
