@@ -262,8 +262,8 @@ color: inherit;
 	
 @media (max-width: 767px) {
 
-	.nav-menu-bouton-mobile {
-	display: block;
+    .nav-menu-bouton-mobile {
+        display: block;
         position: fixed;
         top: 0;
         right: 0;
@@ -272,43 +272,49 @@ color: inherit;
         border: none;
         font-size: 26px;
         color: #ff8b38;
-}	
+    }
 
-
-header {
+    /* HEADER GLOBAL — ne capte JAMAIS les clics */
+    header {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 9999;
         height: 100dvh;
+        pointer-events: none;
     }
 
-
-
+    /* CONTENEUR MENU — fermé par défaut */
     .header-container {
-		display: none;
+        display: none;
         flex-direction: column;
         align-items: flex-end;
         height: 100%;
         width: 100vw;
+        pointer-events: none;
     }
 
-   .nav-menu-header {
+    /* MENU OUVERT — devient interactif */
+    .header-container[style*="display: flex"] {
+        pointer-events: auto;
+    }
+
+    /* PANNEAU BLANC — toujours cliquable */
+    .nav-menu-header {
         flex-direction: column;
         max-height: none;
         background: white;
         height: 100%;
         width: 50vw;
         border-left: solid 1px #ff8b38;
-
+        pointer-events: auto;
     }
 
     .li-onglets-header {
         flex-direction: column;
         padding: 8px;
         gap: 10px;
-        
     }
 
     .li-onglets-header li {
@@ -331,10 +337,11 @@ header {
         margin-left: 0;
     }
 
-.hr-full-width-menu {
-	display: none;
+    .hr-full-width-menu {
+        display: none;
+    }
 }
-}
+
 
 
 /*================================================MENU - RECHERCHE DE PRODUIT*/
