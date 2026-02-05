@@ -188,15 +188,12 @@ def search_product(request):
 def map_view(request, departement):
     stores_qs = Store.objects.filter(departement__iexact=departement)
     store_data = []
-    categories = set()
 
     for store in stores_qs:
-        if store.latitude and store.longitude:
-            categorie = store.categorie or ""
-            categories.add(categorie)
+        if store.latitude and store.longitude and store.slugcategorie:
             store_data.append({
                 "nom": store.nom,
-                "categorie": categorie,
+                "categorie": store.slugcategorie,  # 🔑 ICI
                 "lat": store.latitude,
                 "lng": store.longitude,
                 "url": store.get_absolute_url(),
@@ -206,8 +203,8 @@ def map_view(request, departement):
     return render(request, "members/map.html", {
         "stores": store_data,
         "departement": departement,
-        "categories": sorted(categories),
     })
+
 
 
 # ---------------------------
