@@ -33,8 +33,8 @@ Carte des commerces - {{ departement }} | Yuumi
             </div>
 
             <div class="child-buttons" data-parent="alimentation">
-                <button data-category="Épicerie fine">Épicerie fine</button>
-                <button data-category="Primeurs">Primeurs</button>
+                <button data-category="epicerie-fine">Épicerie fine</button>
+                <button data-category="primeurs">Primeurs</button>
             </div>
         </div>
 
@@ -51,7 +51,9 @@ Carte des commerces - {{ departement }} | Yuumi
             </div>
 
             <div class="child-buttons" data-parent="restauration">
-                <!-- enfants -->
+                <button data-category="restaurant">Restaurant</button>
+                <button data-category="fast-food">Fast-food</button>
+                <button data-category="boulangerie">Boulangerie</button>
             </div>
         </div>
 
@@ -68,7 +70,7 @@ Carte des commerces - {{ departement }} | Yuumi
             </div>
 
             <div class="child-buttons" data-parent="autres">
-                <button data-category="Fleuristes">Fleuristes</button>
+                <button data-category="fleuristes">Fleuristes</button>
             </div>
         </div>
 
@@ -82,12 +84,10 @@ Carte des commerces - {{ departement }} | Yuumi
 </main>
 {% endblock %}
 
-
 {% block extra_js %}
 
 <link rel="stylesheet"
       href="https://unpkg.com/leaflet/dist/leaflet.css" />
-
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
@@ -188,7 +188,6 @@ Carte des commerces - {{ departement }} | Yuumi
 }
 </style>
 
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -208,11 +207,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
-        const m = L.marker([store.lat, store.lng])
-            .addTo(map);
-        m.category = store.categorie;
+        if (!store.lat || !store.lng || !store.categorie) return null;
+        const m = L.marker([store.lat, store.lng]).addTo(map);
+        m.category = store.categorie; // slugcategorie
         return m;
-    });
+    }).filter(Boolean);
 
     /* ========= Utils ========= */
     function getActiveChildren() {
@@ -223,7 +222,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateMap() {
         const active = getActiveChildren();
-
         markers.forEach(marker => {
             const visible = active.includes(marker.category);
             if (visible && !map.hasLayer(marker)) map.addLayer(marker);
@@ -241,6 +239,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 .some(btn => btn.classList.contains('active'));
 
             parent.checked = hasActive;
+
             if (hasActive) {
                 group.style.display = 'flex';
                 document.querySelector(
@@ -255,9 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const allActive = Array.from(allChildren)
             .every(btn => btn.classList.contains('active'));
 
-        document.querySelector(
-            'input[data-category="all"]'
-        ).checked = allActive;
+        document.querySelector('input[data-category="all"]').checked = allActive;
     }
 
     function syncUI() {
@@ -268,10 +265,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ========= Events ========= */
 
-    // Tous
     document.querySelector('input[data-category="all"]')
         .addEventListener('change', function () {
-
             if (this.checked) {
                 document.querySelectorAll('.child-buttons button')
                     .forEach(btn => btn.classList.add('active'));
@@ -282,15 +277,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.querySelectorAll('.toggle-children')
                     .forEach(t => t.classList.add('open'));
             }
-
             syncUI();
         });
 
-    // Parents
     document.querySelectorAll('.parent-checkbox')
         .forEach(parent => {
             parent.addEventListener('change', function () {
-
                 const group = document.querySelector(
                     `.child-buttons[data-parent="${this.dataset.parent}"]`
                 );
@@ -309,7 +301,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-    // Enfants
     document.querySelectorAll('.child-buttons button')
         .forEach(btn => {
             btn.addEventListener('click', function () {
@@ -318,7 +309,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-    // Flèches
     document.querySelectorAll('.toggle-children')
         .forEach(btn => {
             btn.addEventListener('click', function () {
@@ -332,13 +322,16 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
     /* ========= Init ========= */
-    document.querySelector('input[data-category="all"]').checked = true;
+    document.querySelectorAll('.child-buttons')
+        .forEach(g => g.style.display = 'flex');
+
     document.querySelectorAll('.child-buttons button')
         .forEach(btn => btn.classList.add('active'));
+
+    document.querySelector('input[data-category="all"]').checked = true;
     syncUI();
 
 });
 </script>
-
 
 {% endblock %}
