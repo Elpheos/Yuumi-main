@@ -5,15 +5,47 @@ from django.contrib.auth.models import User
 from geopy.geocoders import Nominatim
 
 
+# ===========================================================
+# 🔹 Catégories (avec icônes)
+# ===========================================================
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True, blank=True)
+
+    icon = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Icône Font Awesome, ex : fa-store, fa-utensils"
+    )
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+
+# ===========================================================
+# 🔹 Commerces
+# ===========================================================
+
 class Store(models.Model):
     # 🔹 Infos principales
     nom = models.CharField(max_length=255)
     ville = models.CharField(max_length=255)
     departement = models.CharField(max_length=255)
 
-    # 🔹 Catégories
-    categorie = models.CharField(max_length=100, null=True, blank=True)
-    slugcategorie = models.SlugField(max_length=255, blank=True)
+    # 🔹 Catégorie (relation propre)
+    categorie = models.ForeignKey(
+        Category,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="stores"
+    )
 
     SUPER_CATEGORIES = [
         ("alimentation", "Alimentation"),
@@ -27,7 +59,7 @@ class Store(models.Model):
     )
 
     # 🔹 Descriptions
-    descriptionpetite = models.CharField(max_length=255)    
+    descriptionpetite = models.CharField(max_length=255)
     descriptiongrande = models.TextField(null=True, blank=True)
 
     # 🔹 Contact & liens
@@ -71,12 +103,9 @@ class Store(models.Model):
     )
 
     def save(self, *args, **kwargs):
-        # Slugs
+        # Slug du commerce
         if not self.slug:
             self.slug = slugify(self.nom)
-
-        if self.categorie and not self.slugcategorie:
-            self.slugcategorie = slugify(self.categorie)
 
         # Géocodage
         if self.addressemaps and (self.latitude is None or self.longitude is None):
@@ -101,7 +130,10 @@ class Store(models.Model):
         )
 
 
+# ===========================================================
 # 🔹 Images supplémentaires
+# ===========================================================
+
 class StoreImage(models.Model):
     store = models.ForeignKey(
         Store,
@@ -114,7 +146,10 @@ class StoreImage(models.Model):
         return f"Image de {self.store.nom}"
 
 
+# ===========================================================
 # 🔹 Familles de produits
+# ===========================================================
+
 class ProductFamily(models.Model):
     store = models.ForeignKey(
         Store,
@@ -127,7 +162,10 @@ class ProductFamily(models.Model):
         return f"{self.nom} - {self.store.nom}"
 
 
+# ===========================================================
 # 🔹 Produits
+# ===========================================================
+
 class Product(models.Model):
     family = models.ForeignKey(
         ProductFamily,
@@ -143,8 +181,11 @@ class Product(models.Model):
     def __str__(self):
         return f"{self.nom} ({self.family.nom})"
 
-###########################################################
+
+# ===========================================================
 # 🔹 Horaires d'ouverture
+# ===========================================================
+
 class OpeningHour(models.Model):
     JOURS_SEMAINE = [
         ("lundi", "Lundi"),
@@ -155,6 +196,7 @@ class OpeningHour(models.Model):
         ("samedi", "Samedi"),
         ("dimanche", "Dimanche"),
     ]
+
     store = models.ForeignKey(
         Store,
         on_delete=models.CASCADE,
@@ -171,9 +213,17 @@ class OpeningHour(models.Model):
         ordering = ["store", "jour"]
 
     def __str__(self):
-        return f"{self.get_jour_display()} : {self.matin_ouverture} - {self.matin_fermeture}, {self.apresmidi_ouverture} - {self.apresmidi_fermeture}"
+        return (
+            f"{self.get_jour_display()} : "
+            f"{self.matin_ouverture} - {self.matin_fermeture}, "
+            f"{self.apresmidi_ouverture} - {self.apresmidi_fermeture}"
+        )
 
+
+# ===========================================================
 # 🔹 Favoris utilisateurs
+# ===========================================================
+
 User.add_to_class(
     "favoris",
     models.ManyToManyField(Store, blank=True, related_name="favorited_by")
