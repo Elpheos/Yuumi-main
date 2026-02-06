@@ -200,7 +200,7 @@ def map_view(request, departement):
                 "photo": store.photo.url if store.photo else "",
             })
 
-    categories = (
+    categories = list(
         stores_qs
         .exclude(slugcategorie__isnull=True)
         .exclude(slugcategorie__exact="")
