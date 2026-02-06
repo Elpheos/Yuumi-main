@@ -60,6 +60,8 @@ Carte des commerces - {{ departement }} | Yuumi
     <div id="map"></div>
 
     {{ stores|json_script:"stores-data" }}
+    {{ categories|json_script:"categories-data" }}
+
 
 </main>
 {% endblock %}
@@ -186,51 +188,41 @@ document.addEventListener("DOMContentLoaded", function () {
     ).addTo(map);
 
     /* ========= Mapping catégories ========= */
+const categories = JSON.parse(
+    document.getElementById("categories-data").textContent
+);
 
-    // slug → label affiché
-    const categoryLabels = {
-        "epiceries-fines": "Épicerie fine",
-        "primeurs": "Primeurs",
-        "fleuristes": "Fleuristes",
-        "restaurant": "Restaurant",
-        "fast-food": "Fast-food",
-        "boulangerie": "Boulangerie"
-    };
+const categoryLabels = {};
 
-    // slug → icône FontAwesome
-    const categoryIcons = {
-        "epiceries-fines": "fa-utensils",
-        "primeurs": "fa-apple-alt",
-        "fleuristes": "fa-seedling",
-        "restaurant": "fa-utensils",
-        "fast-food": "fa-hamburger",
-        "boulangerie": "fa-bread-slice"
-    };
+categories.forEach(cat => {
+    categoryLabels[cat.slugcategorie] = cat.categorie;
+});
+
 
     function createIcon(categorySlug) {
-        const faClass = categoryIcons[categorySlug] || "fa-store";
-        const w = 30;
-        const h = 50;
+    const w = 30;
+    const h = 50;
 
-        return L.divIcon({
-            className: "custom-pin",
-            html: `
-                <div style="position:relative;width:${w}px;height:${h}px;">
-                    <svg viewBox="0 0 24 40" width="${w}" height="${h}">
-                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                              fill="#ff8b38"/>
-                    </svg>
-                    <i class="fas ${faClass}"
-                       style="position:absolute;top:${h*0.15}px;left:50%;
-                              transform:translateX(-50%);
-                              color:white;font-size:${w/2}px;"></i>
-                </div>
-            `,
-            iconSize: [w, h],
-            iconAnchor: [w / 2, h],
-            popupAnchor: [0, -h]
-        });
-    }
+    return L.divIcon({
+        className: "custom-pin",
+        html: `
+            <div style="position:relative;width:${w}px;height:${h}px;">
+                <svg viewBox="0 0 24 40" width="${w}" height="${h}">
+                    <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                          fill="#ff8b38"/>
+                </svg>
+                <i class="fas fa-store"
+                   style="position:absolute;top:${h*0.15}px;left:50%;
+                          transform:translateX(-50%);
+                          color:white;font-size:${w/2}px;"></i>
+            </div>
+        `,
+        iconSize: [w, h],
+        iconAnchor: [w / 2, h],
+        popupAnchor: [0, -h]
+    });
+}
+
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
