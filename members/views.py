@@ -9,7 +9,7 @@ from random import choice
 from django.templatetags.static import static
 from django.utils.text import slugify
 
-from .models import Store, ProductFamily, Product
+from .models import Store, ProductFamily, Product, Category
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
 
 
@@ -61,7 +61,11 @@ def by_category(request, departement, ville, category):
         ville__iexact=ville
     )
 
-    commerces = [c for c in commerces_qs if slugify(c.categorie or "") == category]
+    commerces = [
+    c for c in commerces_qs
+    if c.categorie and c.categorie.slug == category
+]
+
 
     message = None
     if not commerces:
@@ -348,23 +352,18 @@ def categories_ville(request, departement, ville):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville
-    )
+    ).select_related("categorie")
 
-    raw_categories = (
-        stores_qs.exclude(categorie__isnull=True)
-        .values_list('categorie', flat=True)
+    categories_qs = (
+        Category.objects
+        .filter(stores__in=stores_qs)
         .distinct()
     )
 
     categories = []
 
-    for cat in raw_categories:
+    for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
-
-        if not commerces_cat.exists():
-            continue
-
-        super_cat = commerces_cat.first().super_categorie
 
         commerces_with_photo = commerces_cat.filter(photo__isnull=False)
 
@@ -375,10 +374,10 @@ def categories_ville(request, departement, ville):
             image_url = static("placeholder.png")
 
         categories.append({
-            "name": cat,
-            "slug": slugify(cat),
+            "name": cat.name,
+            "slug": cat.slug,
             "image": image_url,
-            "super": super_cat,
+            "super": cat.super_categorie,
         })
 
     alimentation = [c for c in categories if c["super"] == "alimentation"]
