@@ -8,16 +8,29 @@ from geopy.geocoders import Nominatim
 # ===========================================================
 # 🔹 Catégories (avec icônes)
 # ===========================================================
-
 class Category(models.Model):
+<<<<<<< Updated upstream
     SUPER_CATEGORIES = [
         ("alimentation", "Alimentation"),
         ("restauration", "Restauration"),
         ("autres", "Autres catégories"),
+=======
+
+    SUPER_CATEGORIES = [
+        ("alimentation", "Alimentation"),
+        ("restauration", "Restauration"),
+        ("autres", "Autres"),
+>>>>>>> Stashed changes
     ]
 
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True, blank=True)
+
+    super_categorie = models.CharField(
+        max_length=50,
+        choices=SUPER_CATEGORIES,
+        default="autres",
+    )
 
     icon = models.CharField(
         max_length=50,
@@ -38,7 +51,10 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 # ===========================================================
 # 🔹 Commerces
 # ===========================================================
@@ -58,16 +74,6 @@ class Store(models.Model):
         related_name="stores"
     )
 
-    SUPER_CATEGORIES = [
-        ("alimentation", "Alimentation"),
-        ("restauration", "Restauration"),
-        ("autres", "Autres catégories"),
-    ]
-    super_categorie = models.CharField(
-        max_length=50,
-        choices=SUPER_CATEGORIES,
-        default="autres",
-    )
 
     # 🔹 Descriptions
     descriptionpetite = models.CharField(max_length=255)

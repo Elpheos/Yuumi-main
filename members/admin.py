@@ -55,13 +55,12 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         "owner",
     )
     search_fields = ("nom", "ville", "departement")
-    list_filter = ("ville", "departement", "super_categorie")
+    list_filter = ("ville", "departement")
     fields = (
         "nom",
         "ville",
         "departement",
         "categorie",    
-        "super_categorie",
         "descriptionpetite",
         "descriptiongrande",
         "addressemaps",
