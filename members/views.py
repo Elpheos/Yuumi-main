@@ -352,7 +352,6 @@ def categories_ville(request, departement, ville):
 
     raw_categories = (
         stores_qs.exclude(categorie__isnull=True)
-        .exclude(categorie__exact="")
         .values_list('categorie', flat=True)
         .distinct()
     )
