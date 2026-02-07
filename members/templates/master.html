@@ -154,14 +154,13 @@
 <!-- ============================= -->
 <!--            HEADER             -->
 <!-- ============================= -->
-
-<header>
-    <button
+<button
   class="nav-menu-bouton-mobile" style="" onclick="
     var h = document.getElementById('header-container-id');
     var isOpen = h.style.display === 'flex';
     h.style.display = isOpen ? 'none' : 'flex';
     this.innerHTML = isOpen ? '☰' : '✕';"> ☰</button>
+<header>
     <div class="header-container" id="header-container-id">
         <nav class="nav-menu-header" style="position:relative;">
 
