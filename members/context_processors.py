@@ -1,7 +1,8 @@
 # members/context_processors.py
 
 from urllib.parse import unquote
-from .models import Store
+from .models import Store, Category
+
 
 def menu_context(request):
     """
@@ -53,7 +54,7 @@ def menu_context(request):
         categories = [c for c in categories if c]
 
     # -----------------------------------------
-    # 📌 menu_supercategories (NOUVEAU)
+    # 📌 menu_supercategories
     # -----------------------------------------
     menu_supercategories = {
         "Alimentation": [],
@@ -62,14 +63,17 @@ def menu_context(request):
     }
 
     for store in qs:
-        # Label lisible (Alimentation / Restauration / Autres catégories)
-        super_label = dict(Store.SUPER_CATEGORIES).get(store.super_categorie)
+        super_label = None
+
+        if store.categorie:
+            super_label = dict(Category.SUPER_CATEGORIES).get(
+                store.categorie.super_categorie
+            )
 
         if not super_label:
             continue
 
-        # Ajouter la catégorie fine si présente
-        if store.categorie and store.categorie not in menu_supercategories[super_label]:
+        if store.categorie not in menu_supercategories[super_label]:
             menu_supercategories[super_label].append(store.categorie)
 
     return {
