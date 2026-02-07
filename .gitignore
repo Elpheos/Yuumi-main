@@ -6,3 +6,16 @@ media/
 staticfiles/
 mystaticfiles/
 productionfiles/
+# Virtualenv (selon le nom utilisé)
+venv/
+.venv/
+
+# Fichiers / dossiers locaux
+nano
+ssh
+
+# Static Django local
+members/static/
+
+# Fichier de test / erreur
+members/templates/master.htmly
