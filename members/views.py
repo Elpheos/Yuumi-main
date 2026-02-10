@@ -8,6 +8,8 @@ from django.core.mail import send_mail
 from random import choice
 from django.templatetags.static import static
 from django.utils.text import slugify
+from django.utils import timezone
+from datetime import timedelta
 
 from .models import Store, ProductFamily, Product, Category
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
@@ -310,14 +312,29 @@ def my_favorites(request):
 def claim_store(request, store_id):
     store = get_object_or_404(Store, id=store_id)
     user = request.user
+    now = timezone.now()
 
-    # Si le commerce a déjà un propriétaire, on bloque
+    # ❌ Si le commerce a déjà un propriétaire
     if store.owner:
         return JsonResponse(
             {"error": "Ce commerce a déjà un propriétaire."},
             status=400
         )
 
+    # ⏳ Cooldown : 1 heure par commerce
+    if store.last_claim_request:
+        delta = now - store.last_claim_request
+        if delta < timedelta(hours=1):
+            remaining = int(3600 - delta.total_seconds())
+            return JsonResponse(
+                {
+                    "error": "cooldown",
+                    "remaining": remaining
+                },
+                status=429
+            )
+
+    # 📧 Envoi du mail
     subject = f"Demande de revendication – {store.nom}"
 
     message = (
@@ -339,14 +356,16 @@ def claim_store(request, store_id):
         fail_silently=False
     )
 
+    # ✅ On enregistre l'heure APRÈS succès
+    store.last_claim_request = now
+    store.save(update_fields=["last_claim_request"])
+
     return JsonResponse({
         "message": (
             "Votre demande de revendication a bien été envoyée. "
             "Nous vous contacterons après vérification."
         )
     })
-
-
 # ---------------------------
 # Autres pages
 # ---------------------------
