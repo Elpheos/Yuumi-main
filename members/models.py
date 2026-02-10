@@ -47,6 +47,7 @@ class Store(models.Model):
     nom = models.CharField(max_length=255)
     ville = models.CharField(max_length=255)
     departement = models.CharField(max_length=255)
+    last_claim_request = models.DateTimeField(null=True, blank=True)
 
     # 🔹 Catégorie (relation propre)
     categorie = models.ForeignKey(
