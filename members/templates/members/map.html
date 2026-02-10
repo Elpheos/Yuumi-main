@@ -11,57 +11,55 @@ Carte des commerces - {{ departement }} | Yuumi
     <h1>Commerces dans le département {{ departement }}</h1>
 
     <!-- ===================== Filtres ===================== -->
-   <div class="category-filters">
+    <div class="category-filters">
 
-    <!-- Tous -->
-    <div class="parent-filter">
-        <label>
-            <input type="checkbox" data-category="all" checked>
-            Tous
-        </label>
-    </div>
-
-    {% regroup categories by super_categorie as grouped_categories %}
-
-    {% for group in grouped_categories %}
-    <div class="parent-filter">
-
-        <div>
+        <!-- Tous -->
+        <div class="parent-filter">
             <label>
-                <input type="checkbox"
-                       class="parent-checkbox"
-                       data-parent="{{ group.grouper }}">
-                {{ group.grouper|title }}
+                <input type="checkbox" data-category="all" checked>
+                Tous
             </label>
-
-            <button class="toggle-children"
-                    data-parent="{{ group.grouper }}">
-                ▶
-            </button>
         </div>
 
-        <div class="child-buttons"
-             data-parent="{{ group.grouper }}">
+        {% regroup categories by super_categorie as grouped_categories %}
 
-            {% for cat in group.list %}
-                <button data-category="{{ cat.slugcategorie }}">
-                    {{ cat.categorie }}
+        {% for group in grouped_categories %}
+        <div class="parent-filter">
+
+            <div>
+                <label>
+                    <input type="checkbox"
+                           class="parent-checkbox"
+                           data-parent="{{ group.grouper }}">
+                    {{ group.grouper|title }}
+                </label>
+
+                <button class="toggle-children"
+                        data-parent="{{ group.grouper }}">
+                    ▶
                 </button>
-            {% endfor %}
+            </div>
 
+            <div class="child-buttons"
+                 data-parent="{{ group.grouper }}">
+
+                {% for cat in group.list %}
+                    <button data-category="{{ cat.slug }}">
+                        {{ cat.name }}
+                    </button>
+                {% endfor %}
+
+            </div>
         </div>
+        {% endfor %}
+
     </div>
-    {% endfor %}
-
-</div>
-
 
     <!-- ===================== Carte ===================== -->
     <div id="map"></div>
 
     {{ stores|json_script:"stores-data" }}
     {{ categories|json_script:"categories-data" }}
-
 
 </main>
 {% endblock %}
@@ -188,41 +186,38 @@ document.addEventListener("DOMContentLoaded", function () {
     ).addTo(map);
 
     /* ========= Mapping catégories ========= */
-const categories = JSON.parse(
-    document.getElementById("categories-data").textContent
-);
+    const categories = JSON.parse(
+        document.getElementById("categories-data").textContent
+    );
 
-const categoryLabels = {};
-
-categories.forEach(cat => {
-    categoryLabels[cat.slugcategorie] = cat.categorie;
-});
-
+    const categoryLabels = {};
+    categories.forEach(cat => {
+        categoryLabels[cat.slug] = cat.name;
+    });
 
     function createIcon(categorySlug) {
-    const w = 30;
-    const h = 50;
+        const w = 30;
+        const h = 50;
 
-    return L.divIcon({
-        className: "custom-pin",
-        html: `
-            <div style="position:relative;width:${w}px;height:${h}px;">
-                <svg viewBox="0 0 24 40" width="${w}" height="${h}">
-                    <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                          fill="#ff8b38"/>
-                </svg>
-                <i class="fas fa-store"
-                   style="position:absolute;top:${h*0.15}px;left:50%;
-                          transform:translateX(-50%);
-                          color:white;font-size:${w/2}px;"></i>
-            </div>
-        `,
-        iconSize: [w, h],
-        iconAnchor: [w / 2, h],
-        popupAnchor: [0, -h]
-    });
-}
-
+        return L.divIcon({
+            className: "custom-pin",
+            html: `
+                <div style="position:relative;width:${w}px;height:${h}px;">
+                    <svg viewBox="0 0 24 40" width="${w}" height="${h}">
+                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                              fill="#ff8b38"/>
+                    </svg>
+                    <i class="fas fa-store"
+                       style="position:absolute;top:${h*0.15}px;left:50%;
+                              transform:translateX(-50%);
+                              color:white;font-size:${w/2}px;"></i>
+                </div>
+            `,
+            iconSize: [w, h],
+            iconAnchor: [w / 2, h],
+            popupAnchor: [0, -h]
+        });
+    }
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
@@ -236,7 +231,7 @@ categories.forEach(cat => {
         ).bindPopup(
             `
             <div class="popup-content">
-                <a href="${store.url}" target="_blank">
+                <a href="${store.url}">
                     <h3 class="yuumi-popup-h3">
                         ${store.nom}<br>
                         <span>${label}</span>
@@ -252,7 +247,7 @@ categories.forEach(cat => {
             { className: 'yuumi-popup' }
         );
 
-        marker.category = store.categorie; // slug
+        marker.category = store.categorie;
         marker.addTo(map);
         return marker;
     }).filter(Boolean);
@@ -377,6 +372,5 @@ categories.forEach(cat => {
 
 });
 </script>
-
 
 {% endblock %}
