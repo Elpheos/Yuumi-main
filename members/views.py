@@ -190,32 +190,39 @@ def search_product(request):
 # ---------------------------
 
 def map_view(request, departement):
-    stores_qs = Store.objects.filter(departement__iexact=departement)
+    stores_qs = (
+        Store.objects
+        .filter(departement__iexact=departement)
+        .select_related("categorie")
+    )
 
     store_data = []
     for store in stores_qs:
-        if store.latitude and store.longitude and store.slugcategorie:
+        if store.latitude and store.longitude and store.categorie:
             store_data.append({
                 "nom": store.nom,
-                "categorie": store.slugcategorie,
+                "categorie": store.categorie.slug,   # ✅ slug
                 "lat": store.latitude,
                 "lng": store.longitude,
                 "url": store.get_absolute_url(),
                 "photo": store.photo.url if store.photo else "",
             })
 
-    categories = list(
-        stores_qs
-        .exclude(slugcategorie__isnull=True)
-        .exclude(slugcategorie__exact="")
-        .values("slugcategorie", "categorie", "super_categorie")
+    categories = (
+        Category.objects
+        .filter(stores__in=stores_qs)
         .distinct()
-        .order_by("super_categorie", "categorie")
+        .values(
+            "slug",
+            "name",
+            "super_categorie",
+        )
+        .order_by("super_categorie", "name")
     )
 
     return render(request, "members/map.html", {
         "stores": store_data,
-        "categories": categories,
+        "categories": list(categories),
         "departement": departement,
     })
 
