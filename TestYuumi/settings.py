@@ -179,7 +179,7 @@ CORS_ALLOW_ALL_ORIGINS = True
 # -------------------------------------------------------------------
 # Authentication redirects
 # -------------------------------------------------------------------
-
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
