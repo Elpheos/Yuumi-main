@@ -14,14 +14,20 @@
 </div>
 {% endif %}
 
-    {% if request.user.is_authenticated and request.user != store.owner %}
-<div class="store-action-button" style="margin-bottom :10px;">
+{% if request.user.is_authenticated and request.user != store.owner %}
+<div class="store-action-button" style="margin-bottom:10px;">
     <button class="btn btn-secondary"
+            id="claimButton"
             onclick="claimStore({{ store.id }})">
         Revendiquer ce commerce
     </button>
+
+    <p id="claimTimer"
+       style="display:none; font-size:14px; margin-top:6px; color:#666;">
+    </p>
 </div>
 {% endif %}
+
 
 
     <main>
@@ -452,24 +458,36 @@
         }
 
         fetch(`/store/${currentStoreId}/claim/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        })
-        .then(res => {
-            if (!res.ok) throw new Error("Erreur");
-            return res.json();
-        })
-        .then(data => {
-            alert(data.message || "Commerce revendiqué avec succès.");
-            location.reload(); // Reload to update the page (hide button, show edit)
-        })
-        .catch(err => {
-            console.error("Erreur lors de la revendication :", err);
-            alert("Erreur lors de la revendication. Le commerce est peut-être déjà pris.");
-        });
+    method: "POST",
+    headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "X-Requested-With": "XMLHttpRequest",
+    },
+})
+.then(async res => {
+    const data = await res.json();
+
+    // ⏳ Cooldown actif
+    if (res.status === 429 && data.error === "cooldown") {
+        startCooldown(data.remaining);
+        return;
+    }
+
+    // ❌ Autre erreur
+    if (!res.ok) {
+        alert(data.error || "Erreur lors de la revendication.");
+        return;
+    }
+
+    // ✅ Succès
+    alert(data.message || "Demande envoyée avec succès.");
+    location.reload();
+})
+.catch(err => {
+    console.error("Erreur réseau :", err);
+    alert("Erreur réseau lors de la revendication.");
+});
+
 
         // Hide modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
@@ -590,6 +608,34 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 });
+</script>
+
+<script>
+function startCooldown(seconds) {
+    const btn = document.getElementById("claimButton");
+    const timer = document.getElementById("claimTimer");
+
+    if (!btn || !timer) return;
+
+    btn.disabled = true;
+    timer.style.display = "block";
+
+    const interval = setInterval(() => {
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+
+        timer.textContent =
+            `Nouvelle demande possible dans ${min}m ${sec}s`;
+
+        if (seconds <= 0) {
+            clearInterval(interval);
+            btn.disabled = false;
+            timer.style.display = "none";
+        }
+
+        seconds--;
+    }, 1000);
+}
 </script>
 
 
