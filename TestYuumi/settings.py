@@ -23,6 +23,7 @@ ALLOWED_HOSTS = [
     "www.yuumi-shop.com",
     "127.0.0.1",
     "localhost",
+    "37.66.56.14",
 ]
 
 
