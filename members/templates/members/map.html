@@ -21,7 +21,8 @@ Carte des commerces - {{ departement }} | Yuumi
             </label>
         </div>
 
-        {% regroup categories by super_categorie as grouped_categories %}
+    {% regroup categories by super_categorie__name as grouped_categories %}
+
 
         {% for group in grouped_categories %}
         <div class="parent-filter">
