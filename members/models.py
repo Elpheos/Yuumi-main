@@ -265,11 +265,36 @@ User.add_to_class(
 # 🔹 catégories mises en avant par ville
 # ===========================================================
 
-class CityCategoryHighlight(models.Model):
-    departement = models.CharField(max_length=100)
-    ville = models.CharField(max_length=100)
-    categories = models.ManyToManyField(Category, blank=True)
+class CityCategoryItem(models.Model):
+    city = models.ForeignKey(
+        CityCategoryHighlight,
+        on_delete=models.CASCADE,
+        related_name="items"
+    )
+
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    super_category = models.ForeignKey(
+        SuperCategory,
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+
+    ordre = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["ordre"]
 
     def __str__(self):
-        return f"{self.ville} ({self.departement})"
+        if self.category:
+            return f"{self.category.name} - {self.city.ville}"
+        if self.super_category:
+            return f"{self.super_category.name} - {self.city.ville}"
+        return "Item vide"
 
