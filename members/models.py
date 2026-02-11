@@ -265,6 +265,17 @@ User.add_to_class(
 # 🔹 catégories mises en avant par ville
 # ===========================================================
 
+class CityCategoryHighlight(models.Model):
+    departement = models.CharField(max_length=100)
+    ville = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.ville} ({self.departement})"
+
+# ===========================================================
+# 🔹 catégories mises en avant par ville
+# ===========================================================
+
 class CityCategoryItem(models.Model):
     city = models.ForeignKey(
         CityCategoryHighlight,
