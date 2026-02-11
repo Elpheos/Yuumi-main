@@ -56,11 +56,7 @@ def menu_context(request):
     # -----------------------------------------
     # 📌 menu_supercategories
     # -----------------------------------------
-    menu_supercategories = {
-        "Alimentation": [],
-        "Restauration": [],
-        "Autres catégories": [],
-    }
+    SuperCategory.objects.all()
 
     for store in qs:
         super_label = None
