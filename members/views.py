@@ -378,15 +378,16 @@ def categories_ville(request, departement, ville):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville
-    ).select_related("categorie")
+    ).select_related("categorie__super_categorie")
 
     categories_qs = (
         Category.objects
         .filter(stores__in=stores_qs)
         .distinct()
+        .select_related("super_categorie")
     )
 
-    categories = []
+    categories_by_super = {}
 
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
@@ -399,24 +400,26 @@ def categories_ville(request, departement, ville):
         else:
             image_url = static("placeholder.png")
 
-        categories.append({
+        super_cat = cat.super_categorie
+
+        if not super_cat:
+            continue
+
+        if super_cat not in categories_by_super:
+            categories_by_super[super_cat] = []
+
+        categories_by_super[super_cat].append({
             "name": cat.name,
             "slug": cat.slug,
             "image": image_url,
-            "super": cat.super_categorie,
         })
 
-    alimentation = [c for c in categories if c["super"] == "alimentation"]
-    restauration = [c for c in categories if c["super"] == "restauration"]
-    autres = [c for c in categories if c["super"] == "autres"]
-
     return render(request, 'members/categories_villes.html', {
-        'alimentation': alimentation,
-        'restauration': restauration,
-        'autres': autres,
+        'categories_by_super': categories_by_super,
         'departement': departement,
         'ville': ville,
     })
+
 
 
 def notre_projet(request):
