@@ -195,7 +195,7 @@ def map_view(request, departement):
     stores_qs = (
         Store.objects
         .filter(departement__iexact=departement)
-        .select_related("categorie")
+        .select_related("categorie__super_categorie")
     )
 
     store_data = []
@@ -203,7 +203,7 @@ def map_view(request, departement):
         if store.latitude and store.longitude and store.categorie:
             store_data.append({
                 "nom": store.nom,
-                "categorie": store.categorie.slug,   # ✅ slug
+                "categorie": store.categorie.slug,
                 "lat": store.latitude,
                 "lng": store.longitude,
                 "url": store.get_absolute_url(),
@@ -213,13 +213,15 @@ def map_view(request, departement):
     categories = (
         Category.objects
         .filter(stores__in=stores_qs)
+        .select_related("super_categorie")
         .distinct()
         .values(
             "slug",
             "name",
-            "super_categorie",
+            "super_categorie__slug",
+            "super_categorie__name",
         )
-        .order_by("super_categorie", "name")
+        .order_by("super_categorie__name", "name")
     )
 
     return render(request, "members/map.html", {
