@@ -103,70 +103,29 @@
 
 <main>
 
-    <!-- ------------------------------------------ -->
-    <!-- SECTION : ALIMENTATION                    -->
-    <!-- ------------------------------------------ -->
+    {% for super_cat, categories in categories_by_super.items %}
 
-    <section class="categ-ville-section">
-        <h2>Alimentation</h2>
+        <section class="categ-ville-section">
+            <h2>{{ super_cat.name }}</h2>
 
-        {% if alimentation %}
-        <div class="categ-ville-grid">
-            {% for cat in alimentation %}
-                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
-                    <span>{{ cat.name }}</span>
-                </a>
-            {% endfor %}
-        </div>
-        {% else %}
-            <p style="text-align:center;">Aucune catégorie alimentation.</p>
-        {% endif %}
-    </section>
+            {% if categories %}
+                <div class="categ-ville-grid">
+                    {% for cat in categories %}
+                        <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                            <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                            <span>{{ cat.name }}</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p style="text-align:center;">
+                    Aucune catégorie dans cette section.
+                </p>
+            {% endif %}
 
+        </section>
 
-    <!-- ------------------------------------------ -->
-    <!-- SECTION : RESTAURATION                    -->
-    <!-- ------------------------------------------ -->
-
-    <section class="categ-ville-section">
-        <h2>Restauration</h2>
-
-        {% if restauration %}
-        <div class="categ-ville-grid">
-            {% for cat in restauration %}
-                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
-                    <span>{{ cat.name }}</span>
-                </a>
-            {% endfor %}
-        </div>
-        {% else %}
-            <p style="text-align:center;">Aucune catégorie restauration.</p>
-        {% endif %}
-    </section>
-
-
-    <!-- ------------------------------------------ -->
-    <!-- SECTION : AUTRES                           -->
-    <!-- ------------------------------------------ -->
-
-    <section class="categ-ville-section">
-        <h2>Autres catégories</h2>
-
-        {% if autres %}
-        <div class="categ-ville-grid">
-            {% for cat in autres %}
-                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
-                    <span>{{ cat.name }}</span>
-                </a>
-            {% endfor %}
-        </div>
-        {% else %}
-            <p style="text-align:center;">Aucune autre catégorie.</p>
-        {% endif %}
-    </section>
+    {% endfor %}
 
 </main>
 
