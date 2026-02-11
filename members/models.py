@@ -12,6 +12,13 @@ class SuperCategory(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
 
+    image = models.ImageField(
+        upload_to="super_categories/",
+        null=True,
+        blank=True,
+        help_text="Image affichée pour la super catégorie"
+    )
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -43,6 +50,13 @@ class Category(models.Model):
         help_text="Icône Font Awesome, ex : fa-store, fa-utensils"
     )
 
+    image = models.ImageField(
+        upload_to="categories/",
+        null=True,
+        blank=True,
+        help_text="Image affichée sur la page ville"
+    )
+
     class Meta:
         unique_together = ("slug", "super_categorie")
 
@@ -53,6 +67,7 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
 
 # ===========================================================
 # 🔹 Commerces
@@ -245,3 +260,16 @@ User.add_to_class(
     "favoris",
     models.ManyToManyField(Store, blank=True, related_name="favorited_by")
 )
+
+# ===========================================================
+# 🔹 catégories mises en avant par ville
+# ===========================================================
+
+class CityCategoryHighlight(models.Model):
+    departement = models.CharField(max_length=100)
+    ville = models.CharField(max_length=100)
+    categories = models.ManyToManyField(Category, blank=True)
+
+    def __str__(self):
+        return f"{self.ville} ({self.departement})"
+
