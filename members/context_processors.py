@@ -1,13 +1,13 @@
 # members/context_processors.py
 
 from urllib.parse import unquote
-from .models import Store, Category
+from .models import Store, Category, SuperCategory
 
 
 def menu_context(request):
     """
     Fournit :
-    - menu_categories : catégories fines (pour compatibilité)
+    - menu_categories : catégories fines (compatibilité)
     - menu_supercategories : super catégories → sous-catégories
     - menu_departement / menu_ville : emplacement actuel
     """
@@ -50,27 +50,29 @@ def menu_context(request):
     # 📌 menu_categories (compatibilité)
     # -----------------------------------------
     if qs.exists():
-        categories = list(qs.values_list("categorie", flat=True).distinct())
+        categories = list(
+            qs.values_list("categorie__name", flat=True).distinct()
+        )
         categories = [c for c in categories if c]
 
     # -----------------------------------------
-    # 📌 menu_supercategories
+    # 📌 menu_supercategories (100% dynamique)
     # -----------------------------------------
-    SuperCategory.objects.all()
+    menu_supercategories = {}
 
-    for store in qs:
-        super_label = None
+    # On initialise toutes les super catégories existantes
+    for super_cat in SuperCategory.objects.all():
+        menu_supercategories[super_cat.name] = []
 
-        if store.categorie:
-            super_label = dict(Category.SUPER_CATEGORIES).get(
-                store.categorie.super_categorie
-            )
-
-        if not super_label:
+    # On remplit avec les catégories réellement présentes
+    for store in qs.select_related("categorie__super_categorie"):
+        if not store.categorie or not store.categorie.super_categorie:
             continue
 
-        if store.categorie not in menu_supercategories[super_label]:
-            menu_supercategories[super_label].append(store.categorie)
+        super_cat = store.categorie.super_categorie
+
+        if store.categorie not in menu_supercategories[super_cat.name]:
+            menu_supercategories[super_cat.name].append(store.categorie)
 
     return {
         "menu_categories": categories,
