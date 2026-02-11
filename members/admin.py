@@ -2,8 +2,15 @@ from django.contrib import admin
 from django.utils.html import format_html
 import nested_admin
 
-from .models import Store, StoreImage, ProductFamily, Product
-from .models import OpeningHour
+from .models import (
+    Store,
+    StoreImage,
+    ProductFamily,
+    Product,
+    OpeningHour,
+    Category,
+    SuperCategory,
+)
 from .forms import StoreForm
 
 
@@ -102,3 +109,20 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ("nom", "family")
     search_fields = ("nom",)
     list_filter = ("family",)
+
+# 🔹 Super catégories
+@admin.register(SuperCategory)
+class SuperCategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "slug")
+    search_fields = ("name",)
+    prepopulated_fields = {"slug": ("name",)}
+
+
+# 🔹 Catégories
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ("name", "super_categorie")
+    list_filter = ("super_categorie",)
+    search_fields = ("name",)
+    prepopulated_fields = {"slug": ("name",)}
+
