@@ -354,7 +354,7 @@ def claim_store(request, store_id):
         subject,
         message,
         'noreply@yuumi-shop.com',
-        ['lucacardinal@gmail.com'],
+        ['contact@yuumi-shop.com'],
         fail_silently=False
     )
 
