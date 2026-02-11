@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from .models import CityCategoryHighlight, CityCategoryItem
+
 import nested_admin
 
 from .models import (
@@ -125,4 +127,15 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ("super_categorie",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
+
+class CityCategoryItemInline(admin.TabularInline):
+    model = CityCategoryItem
+    extra = 1
+
+
+@admin.register(CityCategoryHighlight)
+class CityCategoryHighlightAdmin(admin.ModelAdmin):
+    list_display = ("ville", "departement")
+    search_fields = ("ville", "departement")
+    inlines = [CityCategoryItemInline]
 
