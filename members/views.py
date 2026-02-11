@@ -10,6 +10,8 @@ from django.templatetags.static import static
 from django.utils.text import slugify
 from django.utils import timezone
 from datetime import timedelta
+from .models import CityCategoryHighlight
+
 
 from .models import Store, ProductFamily, Product, Category
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
@@ -47,13 +49,23 @@ def stores(request, departement, ville):
         departement__iexact=departement,
         ville__iexact=ville
     )
+
     derniers_arrivants = stores_qs.order_by('-id')[:10]
+
+    # 🔹 Récupération configuration catégories ville
+    city_config = CityCategoryHighlight.objects.filter(
+        departement__iexact=departement,
+        ville__iexact=ville
+    ).first()
+
+    city_category_items = city_config.items.all() if city_config else []
 
     return render(request, 'members/all_stores.html', {
         'stores': stores_qs,
         'departement': departement,
         'ville': ville,
         'derniers_arrivants': derniers_arrivants,
+        'city_category_items': city_category_items,   # 🔥 AJOUT ICI
     })
 
 
