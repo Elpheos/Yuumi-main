@@ -4,32 +4,13 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from geopy.geocoders import Nominatim
 
-
 # ===========================================================
-# 🔹 Catégories (avec icônes)
+# 🔹 Super catégories
 # ===========================================================
 
-class Category(models.Model):
-    SUPER_CATEGORIES = [
-        ("alimentation", "Alimentation"),
-        ("restauration", "Restauration"),
-        ("autres", "Autres catégories"),
-    ]
-
+class SuperCategory(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
-
-    super_categorie = models.CharField(
-        max_length=50,
-        choices=SUPER_CATEGORIES,
-        default="autres",
-    )
-
-    icon = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="Icône Font Awesome, ex : fa-store, fa-utensils"
-    )
+    slug = models.SlugField(unique=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -38,6 +19,41 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+
+# ===========================================================
+# 🔹 Catégories (avec icônes)
+# ===========================================================
+
+class Category(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(blank=True)
+
+    super_categorie = models.ForeignKey(
+        SuperCategory,
+        on_delete=models.CASCADE,
+        related_name="categories",
+        null=True,
+        blank=True,
+    )
+
+    icon = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Icône Font Awesome, ex : fa-store, fa-utensils"
+    )
+
+    class Meta:
+        unique_together = ("slug", "super_categorie")
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.super_categorie.name} → {self.name}"
+
 # ===========================================================
 # 🔹 Commerces
 # ===========================================================
