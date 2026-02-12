@@ -1,0 +1,34 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+{{ super_cat.name }} à {{ ville }}
+{% endblock %}
+
+{% block content %}
+
+<main>
+
+<section class="categ-ville-section">
+    <h2>{{ super_cat.name }} à {{ ville }}</h2>
+
+    {% if categories %}
+        <div class="categ-ville-grid">
+            {% for cat in categories %}
+                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                    <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                    <span>{{ cat.name }}</span>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p style="text-align:center;">
+            Aucune catégorie disponible.
+        </p>
+    {% endif %}
+
+</section>
+
+</main>
+
+{% endblock %}
