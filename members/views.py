@@ -511,7 +511,7 @@ def by_super_category(request, departement, ville, super_slug):
             "image": image_url,
         })
 
-    return render(request, "members//by_supercategory.html", {
+ return render(request, "members/by_supercategory.html", {
         "super_cat": super_cat,
         "categories": categories,
         "departement": departement,
