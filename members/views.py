@@ -11,6 +11,8 @@ from django.utils.text import slugify
 from django.utils import timezone
 from datetime import timedelta
 from .models import CityCategoryHighlight
+from .models import SuperCategory
+
 
 
 from .models import Store, ProductFamily, Product, Category
