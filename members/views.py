@@ -471,4 +471,50 @@ def account(request):
         }
     )
 
-    
+def by_super_category(request, departement, ville, super_slug):
+    stores_qs = Store.objects.filter(
+        departement__iexact=departement,
+        ville__iexact=ville
+    ).select_related("categorie__super_categorie")
+
+    # Récupération de la super catégorie
+    super_cat = get_object_or_404(
+        SuperCategory,
+        slug=super_slug
+    )
+
+    # Catégories de cette super catégorie présentes dans la ville
+    categories_qs = (
+        Category.objects
+        .filter(
+            super_categorie=super_cat,
+            stores__in=stores_qs
+        )
+        .distinct()
+    )
+
+    categories = []
+
+    for cat in categories_qs:
+        commerces_cat = stores_qs.filter(categorie=cat)
+        commerces_with_photo = commerces_cat.filter(photo__isnull=False)
+
+        if commerces_with_photo.exists():
+            random_store = choice(list(commerces_with_photo))
+            image_url = random_store.photo.url
+        else:
+            image_url = static("placeholder.png")
+
+        categories.append({
+            "name": cat.name,
+            "slug": cat.slug,
+            "image": image_url,
+        })
+
+    return render(request, "members/by_super_category.html", {
+        "super_cat": super_cat,
+        "categories": categories,
+        "departement": departement,
+        "ville": ville,
+    })
+
