@@ -72,54 +72,50 @@
 
     <!-- ======================= CATEGORIES ======================= -->
     <section aria-label="Liste des catégories">
-        <div class="liste-des-catégories-container">
+       <div class="liste-des-categories-grid-container">
 
-            <div class="titre-page-annecy-container">
-                <h2>Que cherchez-vous ?</h2>
-                <h3>
-                    Un commerce avec des produits de qualité, un restaurant qui vous offrira un bon moment.
-                </h3>
-            </div>
-            
-            <div class="liste-des-categories-grid-container">
+    {% for item in city_category_items %}
 
-                <div class="grid-image-1-container">
-                    <a href="#" rel="noopener">
-                        {% with image_path='images/'|add:ville|lower|add:'/ben.webp' %}
-                            <img src="{% static image_path %}" alt="image du bistroquet"/>
-                        {% endwith %}
-                        <h3 class="grid-nom-categories">Restaurants</h3>
-                    </a>
-                </div>
+        <div class="grid-image-{{ forloop.counter }}-container">
+            <a 
+            {% if item.category %}
+                href="{% url 'by_category' departement ville item.category.slug %}"
+            {% elif item.super_category %}
+                href="{% url 'categories_ville' departement ville %}"
+            {% endif %}
+            rel="noopener">
 
-                <div class="grid-image-2-container">
-                    <a href="#" rel="noopener">
-                        {% with image_path='images/'|add:ville|lower|add:'/saveurs-dici-et-la.webp' %}
-                            <img src="{% static image_path %}" alt="saveurs d'ici et là"/>
-                        {% endwith %}
-                        <h3 class="grid-nom-categories">Épiceries fines</h3>
-                    </a>
-                </div>
+                {% if item.category %}
+                    {% if item.category.image %}
+                        <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}">
+                    {% else %}
+                        <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
+                    {% endif %}
+                    <h3 class="grid-nom-categories">
+                        {{ item.category.name }}
+                    </h3>
 
-                <div class="grid-image-3-container">
-                    <a href="#" rel="noopener">
-                        {% with image_path='images/'|add:ville|lower|add:'/cafes-brand.webp' %}
-                            <img src="{% static image_path %}" alt="image de cafés brand"/>
-                        {% endwith %}
-                        <h3 class="grid-nom-categories">Torréfacteurs</h3>
-                    </a>
-                </div>
+                {% elif item.super_category %}
+                    {% if item.super_category.image %}
+                        <img src="{{ item.super_category.image.url }}" alt="{{ item.super_category.name }}">
+                    {% else %}
+                        <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
+                    {% endif %}
+                    <h3 class="grid-nom-categories">
+                        {{ item.super_category.name }}
+                    </h3>
+                {% endif %}
 
-                <div class="grid-image-4-container">
-                    <a href="#" rel="noopener">
-                        {% with image_path='images/'|add:ville|lower|add:'/cave-filaterie.webp' %}
-                            <img src="{% static image_path %}" alt="image de la cave filaterie"/>
-                        {% endwith %}
-                        <h3 class="grid-nom-categories">Cavistes</h3>
-                    </a>
-                </div>
+            </a>
+        </div>
 
-            </div>
+    {% empty %}
+        <p>Aucune catégorie configurée pour cette ville.</p>
+    {% endfor %}
+
+</div>
+
+
 
             <div class="liste-des-categories-button-container">
                 <a class="liste-des-categories-button"
