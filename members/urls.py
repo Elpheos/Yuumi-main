@@ -46,5 +46,11 @@ urlpatterns = [
     path('<str:departement>/<str:ville>/categorie/<str:category>/', views.by_category, name='by_category'),
     path('<str:departement>/<str:ville>/categories/', views.categories_ville, name='categories_ville'),
     path('<str:departement>/<str:ville>/<slug:slug>/', views.store_details, name='store_details'),
+    path(
+    "<str:departement>/<str:ville>/super/<slug:super_slug>/",
+    views.by_super_category,
+    name="by_super_category"
+),
+
 ]
 
