@@ -259,11 +259,10 @@ color: inherit;
     color: #333;
 }
 
-	
 @media (max-width: 767px) {
 
-    .nav-menu-bouton-mobile {
-        display: block;
+	.nav-menu-bouton-mobile {
+	display: block;
         position: fixed;
         top: 0;
         right: 0;
@@ -272,49 +271,43 @@ color: inherit;
         border: none;
         font-size: 26px;
         color: #ff8b38;
-    }
+}	
 
-    /* HEADER GLOBAL — ne capte JAMAIS les clics */
-    header {
+
+header {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
         z-index: 9999;
         height: 100dvh;
-        pointer-events: none;
     }
 
-    /* CONTENEUR MENU — fermé par défaut */
+
+
     .header-container {
-        display: none;
+        display: flex;
         flex-direction: column;
         align-items: flex-end;
         height: 100%;
         width: 100vw;
-        pointer-events: none;
     }
 
-    /* MENU OUVERT — devient interactif */
-    .header-container[style*="display: flex"] {
-        pointer-events: auto;
-    }
-
-    /* PANNEAU BLANC — toujours cliquable */
-    .nav-menu-header {
+   .nav-menu-header {
         flex-direction: column;
         max-height: none;
         background: white;
         height: 100%;
         width: 50vw;
         border-left: solid 1px #ff8b38;
-        pointer-events: auto;
+
     }
 
     .li-onglets-header {
         flex-direction: column;
         padding: 8px;
         gap: 10px;
+        
     }
 
     .li-onglets-header li {
@@ -337,11 +330,10 @@ color: inherit;
         margin-left: 0;
     }
 
-    .hr-full-width-menu {
-        display: none;
-    }
+.hr-full-width-menu {
+	display: none;
 }
-
+}
 
 
 /*================================================MENU - RECHERCHE DE PRODUIT*/
@@ -473,10 +465,14 @@ color: inherit;
     width: 90%;
     margin: auto;
     position: relative;
+    text-align: center;
 }
 
 .mise-en-avant-annecy-image {
    max-width: 100%;
+   width: 90%;
+   object-fit: cover;
+   max-height: 1000px;
 }
 
 .mise-en-avant-annecy-text-container {
@@ -672,6 +668,64 @@ color: inherit;
 
 .derniers-arrivants-grid-commerces a:hover > img {
     transform: scale(1.02);
+}
+
+@media (max-width: 767px) {
+
+.page-container {
+	padding: 0;	
+}
+
+.mise-en-avant-annecy-image {
+    max-width: 100%;
+    height: 500px;
+    object-fit: cover;
+    margin-top: 32px;
+}
+
+.mise-en-avant-annecy-text-container {
+    top: 150px;
+    width: 75%;
+}
+
+.mise-en-avant-annecy-container h2 {
+    font-size: 32px;
+}
+
+.mise-en-avant-annecy-container h3 {
+    font-size: 16px;
+}
+
+.mise-en-avant-bouton {
+    top: 90%;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.titre-page-annecy-container {
+    width: 90%;
+    margin-top: 48px
+}
+
+.liste-des-categories-grid-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: auto;
+}
+
+.liste-des-categories-grid-container > div > a > img {
+    height: 200px;
+}
+
+.derniers-arrivants-grid-container {
+    display: flex;
+}
+
+.derniers-arrivants-grid-commerces {
+    flex: 0 0 calc(50% - 5px);
+}
+
 }
 
 /*=============================================================TOUTES LES CATEGORIES*/
@@ -1288,7 +1342,58 @@ color: inherit;
 
 
 
+@media (max-width: 767px) {
+.informations-principales-commerce-container {
+    display: block;
+    width: 100%;
+    margin-top: 16px;
+}
 
+.photo-commerce-container {
+    width: 100%;
+}
+
+.commerce-right-part-container {
+    width: 100%;
+    height: auto;
+}
+
+.description-container {
+    display: block;
+    text-align: center;
+}
+
+.description-container h1 {
+    font-size: 25px;
+}
+
+.description-principale {
+    font-size: 16px;
+}
+
+.informations-secondaires-commerce-container {
+    width: 100%;
+}
+
+.informations-secondaires-commerce-buttons-container {
+    display: flex;
+    gap: 10px;
+}
+
+.informations-secondaires-commerce-buttons-container > button {
+    width: 33%;
+}
+
+.infopratiques-container {
+    max-width: none;
+    margin-left: 0;
+}
+
+
+}
+
+
+/*===========================================================CARTE INTERACTIVE*/
 
 /* =========================== 
    🎨 CARTE LEAFLET (FINAL)*/
@@ -1558,3 +1663,4 @@ color: inherit;
         text-align: center;
     }
 }
+
