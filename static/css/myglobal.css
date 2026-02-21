@@ -275,13 +275,14 @@ color: inherit;
 
 
 header {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 9999;
-        height: 100dvh;
-    }
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 9999;
+    height: auto;
+    pointer-events: none;
+}
 
 
 
@@ -335,6 +336,10 @@ header {
 }
 }
 
+.nav-menu-header,
+.nav-menu-bouton-mobile {
+    pointer-events: auto;
+}
 
 /*================================================MENU - RECHERCHE DE PRODUIT*/
 #search-product-container {
