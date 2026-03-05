@@ -39,11 +39,18 @@ class ProductInline(nested_admin.NestedTabularInline):
 
 class OpeningHourInline(nested_admin.NestedTabularInline):
     model = OpeningHour
-    extra = 7
+    extra = 0          # Pas de lignes vides — on pré-remplit via get_queryset
     max_num = 7
-    fields = ("jour", "matin_ouverture", "matin_fermeture", "apresmidi_ouverture", "apresmidi_fermeture")
+    can_delete = False # On ne supprime pas un jour, on laisse les horaires vides
+    fields = ("jour_display", "matin_ouverture", "matin_fermeture", "apresmidi_ouverture", "apresmidi_fermeture")
+    readonly_fields = ("jour_display",)  # Le jour est affiché en lecture seule
     verbose_name = "Horaire d'ouverture"
     verbose_name_plural = "Horaires d'ouverture"
+
+    def jour_display(self, obj):
+        """Affiche le jour en toutes lettres, non modifiable."""
+        return obj.get_jour_display() if obj.pk else ""
+    jour_display.short_description = "Jour"
 
 class ProductFamilyInline(nested_admin.NestedStackedInline):
     model = ProductFamily
@@ -55,6 +62,19 @@ class ProductFamilyInline(nested_admin.NestedStackedInline):
 
 class StoreAdmin(nested_admin.NestedModelAdmin):
     form = StoreForm
+
+    def get_object(self, request, object_id, from_field=None):
+        """Pré-remplit les 7 jours d'horaires si le commerce n'en a pas encore."""
+        obj = super().get_object(request, object_id, from_field)
+        if obj:
+            jours_existants = set(
+                OpeningHour.objects.filter(store=obj).values_list('jour', flat=True)
+            )
+            jours_semaine = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+            for jour in jours_semaine:
+                if jour not in jours_existants:
+                    OpeningHour.objects.create(store=obj, jour=jour)
+        return obj
     list_display = (
         "nom",
         "ville",
@@ -138,4 +158,3 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
     list_display = ("ville", "departement")
     search_fields = ("ville", "departement")
     inlines = [CityCategoryItemInline]
-
