@@ -134,23 +134,43 @@ class Store(models.Model):
         default=None,
     )
 
+    def _geocode(self):
+        """Géocodage en arrière-plan — appelé depuis un thread séparé."""
+        geolocator = Nominatim(user_agent="yuumi_geocoder")
+        try:
+            location = geolocator.geocode(self.addressemaps)
+            if location:
+                # update() au lieu de save() pour éviter une boucle infinie
+                Store.objects.filter(pk=self.pk).update(
+                    latitude=location.latitude,
+                    longitude=location.longitude
+                )
+        except Exception:
+            pass
+
     def save(self, *args, **kwargs):
+        import threading
+
         # Slug du commerce
         if not self.slug:
             self.slug = slugify(self.nom)
 
-        # Géocodage
-        if self.addressemaps and (self.latitude is None or self.longitude is None):
-            geolocator = Nominatim(user_agent="yuumi_geocoder")
-            try:
-                location = geolocator.geocode(self.addressemaps)
-                if location:
-                    self.latitude = location.latitude
-                    self.longitude = location.longitude
-            except Exception:
-                pass
+        # Détecter si l'adresse a changé sur un commerce existant
+        adresse_changee = False
+        if self.pk:
+            ancien = Store.objects.filter(pk=self.pk).values('addressemaps').first()
+            if ancien and ancien['addressemaps'] != self.addressemaps:
+                adresse_changee = True
+                self.latitude = None   # forcer un nouveau géocodage
+                self.longitude = None
 
         super().save(*args, **kwargs)
+
+        # Lancer le géocodage en arrière-plan si nécessaire
+        if self.addressemaps and (adresse_changee or self.latitude is None):
+            thread = threading.Thread(target=self._geocode)
+            thread.daemon = True
+            thread.start()
 
     def __str__(self):
         return f"{self.nom} ({self.ville}, {self.departement})"
@@ -308,4 +328,3 @@ class CityCategoryItem(models.Model):
         if self.super_category:
             return f"{self.super_category.name} - {self.city.ville}"
         return "Item vide"
-
