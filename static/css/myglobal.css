@@ -1461,7 +1461,7 @@ body.menu-open {
 .informations-principales-commerce-container {
     display: block;
     width: 100%;
-    margin-top: 16px;
+    margin-top: 70px; /* Espace sous le bouton ☰ */
 }
 
 .photo-commerce-container {
@@ -1492,11 +1492,12 @@ body.menu-open {
 
 .informations-secondaires-commerce-buttons-container {
     display: flex;
-    gap: 10px;
+    flex-direction: column; /* Boutons en colonne sur mobile */
+    gap: 8px;
 }
 
 .informations-secondaires-commerce-buttons-container > button {
-    width: 33%;
+    width: 100%; /* Pleine largeur au lieu de 33% */
 }
 
 .infopratiques-container {
@@ -1510,6 +1511,16 @@ body.menu-open {
     max-width: 100%;
     margin-left: 0;
     width: 100%;
+}
+
+/* Horaires et adresse en colonne */
+.infopratiques-horaires-container {
+    width: 100%;
+}
+
+.infopratiques-adresse-container {
+    width: 100%;
+    margin-top: 20px;
 }
 
 }
