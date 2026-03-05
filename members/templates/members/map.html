@@ -3,6 +3,401 @@
 
 {% block title %}
 Carte des commerces - {{ departement }} | Yuumi
+{% endblock %}{% extends "master.html" %}
+{% load static %}
+
+{% block title %}
+Carte des commerces - {{ departement }} | Yuumi
+{% endblock %}
+
+{% block content %}
+<main>
+
+    <h1>Commerces dans le département {{ departement }}</h1>
+
+    <!-- ===================== Filtres ===================== -->
+    <div class="category-filters">
+
+        <!-- Tous -->
+        <div class="parent-filter">
+            <label>
+                <input type="checkbox" data-category="all" checked>
+                Tous
+            </label>
+        </div>
+
+    {% regroup categories by super_categorie__name as grouped_categories %}
+
+
+        {% for group in grouped_categories %}
+        <div class="parent-filter">
+
+            <div>
+                <label>
+                    <input type="checkbox"
+                           class="parent-checkbox"
+                           data-parent="{{ group.grouper }}">
+                    {{ group.grouper|title }}
+                </label>
+
+                <button class="toggle-children"
+                        data-parent="{{ group.grouper }}">
+                    ▶
+                </button>
+            </div>
+
+            <div class="child-buttons"
+                 data-parent="{{ group.grouper }}">
+
+                {% for cat in group.list %}
+                    <button data-category="{{ cat.slug }}">
+                        {{ cat.name }}
+                    </button>
+                {% endfor %}
+
+            </div>
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- ===================== Carte ===================== -->
+    <div id="map"></div>
+
+    {{ stores|json_script:"stores-data" }}
+    {{ categories|json_script:"categories-data" }}
+
+</main>
+{% endblock %}
+
+{% block extra_js %}
+
+<link rel="stylesheet"
+      href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+#map {
+    height: 600px;
+    width: 85%;
+    margin-top: 20px;
+    align-items: center;
+}
+
+/* === Style popup Yuumi === */
+.leaflet-popup.yuumi-popup {
+    max-width: 380px !important;
+}
+
+.leaflet-popup-content-wrapper.yuumi-popup {
+    border-radius: 12px;
+    padding: 8px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+}
+
+.popup-content a {
+    text-decoration: none;
+    color: #ff8b38;
+    display: block;
+}
+
+.yuumi-popup-h3 {
+    color: #ff8b38;
+    font-size: 20px;
+    text-align: center;
+    margin: 0 0 6px;
+}
+
+.yuumi-popup-img {
+    border: 6px solid #ff8b38;
+    border-radius: 10px;
+    min-width: 220px;
+    max-width: 100%;
+    display: block;
+    margin: 8px auto 0;
+}
+
+/* === Filtres catégories === */
+.category-filters {
+    margin: 20px auto;
+    max-width: 800px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.parent-filter {
+    background: #fff;
+    border: 2px solid #ff8b38;
+    border-radius: 14px;
+    padding: 12px 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.parent-filter > div {
+    display: flex;
+    align-items: center;
+}
+
+.toggle-children {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #ff8b38;
+}
+
+.toggle-children.open {
+    transform: rotate(90deg);
+}
+
+.child-buttons {
+    margin-top: 10px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.child-buttons button {
+    padding: 6px 12px;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    background: #fff;
+    color: #ff8b38;
+    cursor: pointer;
+}
+
+.child-buttons button.active,
+.child-buttons button:hover {
+    background: #ff8b38;
+    color: #fff;
+}
+
+@media (max-width: 767px) {
+    /* Marge haute sous le bouton ☰ */
+    #map {
+        margin-top: 70px;
+        width: 100%;        /* Pleine largeur sur mobile */
+        height: 400px;      /* Hauteur réduite */
+    }
+
+    /* Filtres pleine largeur */
+    .category-filters {
+        padding: 0 8px;
+    }
+
+    /* Popup plus compacte */
+    .yuumi-popup-img {
+        min-width: 160px;
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    /* ========= Données ========= */
+    const stores = JSON.parse(
+        document.getElementById('stores-data').textContent
+    );
+
+    const map = L.map('map').setView(
+        [stores[0]?.lat || 46, stores[0]?.lng || 2], 10
+    );
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        { maxZoom: 19 }
+    ).addTo(map);
+
+    /* ========= Mapping catégories ========= */
+    const categories = JSON.parse(
+        document.getElementById("categories-data").textContent
+    );
+
+    const categoryLabels = {};
+    categories.forEach(cat => {
+        categoryLabels[cat.slug] = cat.name;
+    });
+
+    function createIcon(categorySlug) {
+        const w = 30;
+        const h = 50;
+
+        return L.divIcon({
+            className: "custom-pin",
+            html: `
+                <div style="position:relative;width:${w}px;height:${h}px;">
+                    <svg viewBox="0 0 24 40" width="${w}" height="${h}">
+                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                              fill="#ff8b38"/>
+                    </svg>
+                    <i class="fas fa-store"
+                       style="position:absolute;top:${h*0.15}px;left:50%;
+                              transform:translateX(-50%);
+                              color:white;font-size:${w/2}px;"></i>
+                </div>
+            `,
+            iconSize: [w, h],
+            iconAnchor: [w / 2, h],
+            popupAnchor: [0, -h]
+        });
+    }
+
+    /* ========= Marqueurs ========= */
+    const markers = stores.map(store => {
+        if (!store.lat || !store.lng || !store.categorie) return null;
+
+        const label = categoryLabels[store.categorie] || store.categorie;
+
+        const marker = L.marker(
+            [store.lat, store.lng],
+            { icon: createIcon(store.categorie) }
+        ).bindPopup(
+            `
+            <div class="popup-content">
+                <a href="${store.url}">
+                    <h3 class="yuumi-popup-h3">
+                        ${store.nom}<br>
+                        <span>${label}</span>
+                    </h3>
+                    ${store.photo
+                        ? `<img class="yuumi-popup-img"
+                                src="${store.photo}"
+                                alt="${store.nom}">`
+                        : ''}
+                </a>
+            </div>
+            `,
+            { className: 'yuumi-popup' }
+        );
+
+        marker.category = store.categorie;
+        marker.addTo(map);
+        return marker;
+    }).filter(Boolean);
+
+    /* ========= Utils ========= */
+    function getActiveChildren() {
+        return Array.from(
+            document.querySelectorAll('.child-buttons button.active')
+        ).map(btn => btn.dataset.category);
+    }
+
+    function updateMap() {
+        const active = getActiveChildren();
+        markers.forEach(marker => {
+            const visible = active.includes(marker.category);
+            if (visible && !map.hasLayer(marker)) map.addLayer(marker);
+            if (!visible && map.hasLayer(marker)) map.removeLayer(marker);
+        });
+    }
+
+    function updateParentsState() {
+        document.querySelectorAll('.parent-checkbox').forEach(parent => {
+            const group = document.querySelector(
+                `.child-buttons[data-parent="${parent.dataset.parent}"]`
+            );
+            const children = group.querySelectorAll('button');
+            const hasActive = Array.from(children)
+                .some(btn => btn.classList.contains('active'));
+
+            parent.checked = hasActive;
+
+            if (hasActive) {
+                group.style.display = 'flex';
+                document.querySelector(
+                    `.toggle-children[data-parent="${parent.dataset.parent}"]`
+                ).classList.add('open');
+            }
+        });
+    }
+
+    function updateAllState() {
+        const allChildren = document.querySelectorAll('.child-buttons button');
+        const allActive = Array.from(allChildren)
+            .every(btn => btn.classList.contains('active'));
+
+        document.querySelector('input[data-category="all"]').checked = allActive;
+    }
+
+    function syncUI() {
+        updateParentsState();
+        updateAllState();
+        updateMap();
+    }
+
+    /* ========= Events ========= */
+
+    document.querySelector('input[data-category="all"]')
+        .addEventListener('change', function () {
+            if (this.checked) {
+                document.querySelectorAll('.child-buttons button')
+                    .forEach(btn => btn.classList.add('active'));
+
+                document.querySelectorAll('.child-buttons')
+                    .forEach(g => g.style.display = 'flex');
+
+                document.querySelectorAll('.toggle-children')
+                    .forEach(t => t.classList.add('open'));
+            }
+            syncUI();
+        });
+
+    document.querySelectorAll('.parent-checkbox')
+        .forEach(parent => {
+            parent.addEventListener('change', function () {
+                const group = document.querySelector(
+                    `.child-buttons[data-parent="${this.dataset.parent}"]`
+                );
+                const children = group.querySelectorAll('button');
+
+                children.forEach(btn =>
+                    btn.classList.toggle('active', this.checked)
+                );
+
+                group.style.display = 'flex';
+                document.querySelector(
+                    `.toggle-children[data-parent="${this.dataset.parent}"]`
+                ).classList.add('open');
+
+                syncUI();
+            });
+        });
+
+    document.querySelectorAll('.child-buttons button')
+        .forEach(btn => {
+            btn.addEventListener('click', function () {
+                this.classList.toggle('active');
+                syncUI();
+            });
+        });
+
+    document.querySelectorAll('.toggle-children')
+        .forEach(btn => {
+            btn.addEventListener('click', function () {
+                const group = document.querySelector(
+                    `.child-buttons[data-parent="${this.dataset.parent}"]`
+                );
+                const open = group.style.display === 'flex';
+                group.style.display = open ? 'none' : 'flex';
+                this.classList.toggle('open', !open);
+            });
+        });
+
+    /* ========= Init ========= */
+    document.querySelectorAll('.child-buttons')
+        .forEach(g => g.style.display = 'flex');
+
+    document.querySelectorAll('.child-buttons button')
+        .forEach(btn => btn.classList.add('active'));
+
+    document.querySelector('input[data-category="all"]').checked = true;
+    syncUI();
+
+});
+</script>
+
 {% endblock %}
 
 {% block content %}
