@@ -229,5 +229,34 @@ input.addEventListener("input", () => {
     background: #ff8b38;
     color: white;
 }
+
+/* ------------------------------------------------------------ */
+/* Responsive mobile                                            */
+/* ------------------------------------------------------------ */
+@media (max-width: 767px) {
+
+    .page-accueil-container {
+        margin: 70px auto 40px auto; /* 70px en haut pour ne pas passer sous le bouton ☰ */
+        padding: 0 8px;
+    }
+
+    .search-input {
+        width: 95%; /* Plus large sur mobile pour bien utiliser l'écran */
+    }
+
+    .resultats-recherche {
+        width: 95%;
+    }
+
+    .departement-btn {
+        width: 95%; /* Bouton large, facile à tapper */
+        font-size: 16px;
+    }
+
+    .ville-link {
+        padding: 10px 12px; /* Zone de tap plus grande sur mobile */
+        font-size: 15px;
+    }
+}
 </style>
 {% endblock %}
