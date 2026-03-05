@@ -172,8 +172,8 @@ Carte des commerces - {{ departement }} | Yuumi
     /* Marge haute sous le bouton ☰ */
     #map {
         margin-top: 70px;
-        width: 100%;        /* Pleine largeur sur mobile */
-        height: 400px;      /* Hauteur réduite */
+        width: 100%;
+        height: 400px;
     }
 
     /* Filtres pleine largeur */
@@ -181,9 +181,24 @@ Carte des commerces - {{ departement }} | Yuumi
         padding: 0 8px;
     }
 
-    /* Popup plus compacte */
+    /* Popup compacte */
     .yuumi-popup-img {
-        min-width: 160px;
+        min-width: unset;   /* supprime le min-width: 220px */
+        width: 100%;
+        max-height: 120px;
+        object-fit: cover;
+    }
+
+    .yuumi-popup-h3 {
+        font-size: 14px;
+    }
+
+    .leaflet-popup-content-wrapper {
+        max-width: 180px !important;
+    }
+
+    .leaflet-popup-content {
+        margin: 8px !important;
     }
 }
 </style>
