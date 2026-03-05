@@ -1,3 +1,4 @@
+================================================
 {% load static %}
 
 <!DOCTYPE html>
@@ -154,13 +155,11 @@
 <!-- ============================= -->
 <!--            HEADER             -->
 <!-- ============================= -->
-<button
-  class="nav-menu-bouton-mobile" style="" onclick="
-    var h = document.getElementById('header-container-id');
-    var isOpen = h.style.display === 'flex';
-    h.style.display = isOpen ? 'none' : 'flex';
-    this.innerHTML = isOpen ? '☰' : '✕';"> ☰</button>
 <header>
+    <!-- Bouton hamburger mobile -->
+    <button class="nav-menu-bouton-mobile" id="nav-mobile-btn">☰</button>
+    <!-- Overlay sombre derrière le panneau -->
+    <div class="nav-overlay" id="nav-overlay"></div>
     <div class="header-container" id="header-container-id">
         <nav class="nav-menu-header" style="position:relative;">
 
@@ -333,6 +332,43 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
+    /* ============================= */
+    /*       MENU MOBILE             */
+    /* ============================= */
+
+    const mobileBtn = document.getElementById("nav-mobile-btn");
+    const headerContainer = document.getElementById("header-container-id");
+    const overlay = document.getElementById("nav-overlay");
+
+    function openMenu() {
+        headerContainer.classList.add("open");
+        overlay.classList.add("open");
+        document.body.classList.add("menu-open");
+        mobileBtn.textContent = "✕";
+    }
+
+    function closeMenu() {
+        headerContainer.classList.remove("open");
+        overlay.classList.remove("open");
+        document.body.classList.remove("menu-open");
+        mobileBtn.textContent = "☰";
+    }
+
+    if (mobileBtn) {
+        mobileBtn.addEventListener("click", () => {
+            headerContainer.classList.contains("open") ? closeMenu() : openMenu();
+        });
+    }
+
+    if (overlay) {
+        overlay.addEventListener("click", closeMenu);
+    }
+
+    // Fermer avec la touche Échap
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") closeMenu();
+    });
 
     /* ============================= */
     /*   SUPER-CATEGORIES DROPDOWN   */
