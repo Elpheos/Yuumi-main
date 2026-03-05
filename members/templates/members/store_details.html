@@ -1,4 +1,4 @@
-    {% extends "master.html" %}
+{% extends "master.html" %}
     {% load static %}
 
     {% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
@@ -566,6 +566,18 @@
     width: auto;
 }
 
+    @media (max-width: 767px) {
+        /* Carousel pleine largeur sur mobile */
+        #carouselStoreImages {
+            max-width: 100%;
+            border-radius: 0;
+        }
+
+        /* Hauteur réduite sur mobile */
+        .carousel-item {
+            height: 260px;
+        }
+    }
 
     </style>
    <script>
@@ -640,4 +652,3 @@ function startCooldown(seconds) {
 
 
     {% endblock %}
-        
