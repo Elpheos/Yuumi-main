@@ -577,8 +577,29 @@
         .carousel-item {
             height: 260px;
         }
+   
+
+    /* Carousel pleine largeur sur mobile */
+    #carouselStoreImages {
+        max-width: 100%;
+        border-radius: 0;
     }
 
+    /* Hauteur réduite sur mobile */
+    .carousel-item {
+        height: 260px;
+    }
+
+    /* ← AJOUTER CES LIGNES */
+    .informations-secondaires-commerce-buttons-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .informations-secondaires-commerce-buttons-container > button {
+        width: 100%;
+    }
+ }
     </style>
    <script>
 document.addEventListener("DOMContentLoaded", () => {
