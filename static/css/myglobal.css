@@ -8,6 +8,8 @@ Concerne les styles applicables à toutes les pages
 
 * {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Evite les débordements : padding inclus dans la width */
 }
 
 html, body {
@@ -32,6 +34,12 @@ main {
     flex-direction: column;
 }
 
+@media (max-width: 767px) {
+    .page-container {
+        padding: 0 12px; /* Remplace le padding: 0 du media query existant qui supprimait tout espace */
+    }
+}
+
 h1, h2, h3, h4, h5, a, p, table{
 font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -51,11 +59,11 @@ color: inherit;
 }
 
 .page-title-h1 {
-    font-size: 64px;
+    font-size: clamp(28px, 6vw, 64px); /* 28px sur mobile → 64px sur desktop */
 }
 
 .page-title-h2 {
-    font-size: 48px;
+    font-size: clamp(22px, 4.5vw, 48px); /* 22px sur mobile → 48px sur desktop */
 }
 
 .hr-full-width-menu {
@@ -387,7 +395,7 @@ header {
 /*=================================================================================FOOTER*/
 
  .footer-container {
-     margin-top: 256px;
+     margin-top: clamp(64px, 10vw, 256px); /* Réduit progressivement sur petits écrans */
      padding-bottom: 32px;
  }
 
@@ -677,9 +685,7 @@ header {
 
 @media (max-width: 767px) {
 
-.page-container {
-	padding: 0;	
-}
+/* page-container géré dans la section GLOBAL ci-dessus */
 
 .mise-en-avant-annecy-image {
     max-width: 100%;
@@ -725,10 +731,14 @@ header {
 
 .derniers-arrivants-grid-container {
     display: flex;
+    overflow-x: auto;          /* Scroll horizontal plutôt qu'écrasement */
+    -webkit-overflow-scrolling: touch; /* Scroll fluide iOS */
+    gap: 10px;
+    padding-bottom: 8px;       /* Espace pour la scrollbar */
 }
 
 .derniers-arrivants-grid-commerces {
-    flex: 0 0 calc(50% - 5px);
+    flex: 0 0 calc(50% - 5px); /* 2 items visibles, les autres scrollables */
 }
 
 }
@@ -920,6 +930,53 @@ header {
     transform: scale(1.05);
 }
 
+
+/* ── Responsive grids catégories (manquant) ───────────────────────── */
+@media (max-width: 1024px) {
+    /* Tablette : réduire à 3 colonnes */
+    .toutes-les-catégories-grid-alimentaire,
+    .toutes-les-catégories-grid-divers-commerces {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: auto;
+        height: auto;
+    }
+
+    .toutes-les-catégories-grid-restauration {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+        height: auto;
+    }
+
+    /* Réinitialiser les placements fixes pour laisser auto-placement */
+    .toutes-les-catégories-grid-alimentaire > div,
+    .toutes-les-catégories-grid-restauration > div,
+    .toutes-les-catégories-grid-divers-commerces > div {
+        grid-column: auto;
+        grid-row: auto;
+        height: 220px;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Mobile : 1 seule colonne, hauteur fixe par image */
+    .toutes-les-catégories-grid-alimentaire,
+    .toutes-les-catégories-grid-restauration,
+    .toutes-les-catégories-grid-divers-commerces {
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        width: 100%;
+    }
+
+    .toutes-les-catégories-grid-alimentaire > div,
+    .toutes-les-catégories-grid-restauration > div,
+    .toutes-les-catégories-grid-divers-commerces > div {
+        grid-column: auto;
+        grid-row: auto;
+        height: 180px;
+    }
+}
+
 /*==============================================================================TEMPLATE PAGE CATEGORIE*/
 
 .url-path-page-catégorie {
@@ -931,6 +988,20 @@ header {
     grid-template-columns: repeat(5, 1fr);
     margin-top: 128px;
     gap: 10px;
+}
+
+@media (max-width: 1024px) {
+    .liste-des-commerces-page-categorie-grid {
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 48px;
+    }
+}
+
+@media (max-width: 767px) {
+    .liste-des-commerces-page-categorie-grid {
+        grid-template-columns: repeat(2, 1fr);
+        margin-top: 32px;
+    }
 }
 
 .liste-des-commerces-page-categorie-grid > article {
@@ -1390,10 +1461,17 @@ header {
 }
 
 .infopratiques-container {
-    max-width: none;
+    max-width: 100%;
     margin-left: 0;
+    width: 100%;
 }
 
+.galerie-container,
+.liste-produits-container {
+    max-width: 100%;
+    margin-left: 0;
+    width: 100%;
+}
 
 }
 
@@ -1668,4 +1746,3 @@ header {
         text-align: center;
     }
 }
-
