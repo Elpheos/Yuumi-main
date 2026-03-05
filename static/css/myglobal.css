@@ -267,56 +267,96 @@ color: inherit;
     color: #333;
 }
 
-@media (max-width: 767px) {
-
-	.nav-menu-bouton-mobile {
-	display: block;
-        position: fixed;
-        top: 0;
-        right: 0;
-        z-index: 10000;
-        background: none;
-        border: none;
-        font-size: 26px;
-        color: #ff8b38;
-}	
-
-
-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    height: 100dvh;
-    pointer-events: none;
+/* ── Scroll bloqué quand le menu mobile est ouvert ───────────────── */
+body.menu-open {
+    overflow: hidden;
 }
 
+@media (max-width: 767px) {
 
-
-    .header-container {
-        display: none;
-        flex-direction: column;
-        align-items: flex-end;
-        height: 100%;
-        width: 100vw;
+    /* Bouton hamburger : visible en mobile, positionné dans le header */
+    .nav-menu-bouton-mobile {
+        display: block;
+        position: fixed;
+        top: 12px;
+        right: 16px;
+        z-index: 10001;        /* Au-dessus du panneau et de l'overlay */
+        background: white;
+        border: 2px solid #ff8b38;
+        border-radius: 8px;
+        font-size: 22px;
+        color: #ff8b38;
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        line-height: 1;
     }
 
-   .nav-menu-header {
+    /* Header : juste un conteneur, plus de position fixed ni pointer-events */
+    header {
+        position: static;
+    }
+
+    /* Overlay sombre derrière le panneau */
+    .nav-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;                          /* couvre toute la page */
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 9998;
+        cursor: pointer;
+    }
+
+    .nav-overlay.open {
+        display: block;
+    }
+
+    /* Panneau latéral : caché à droite par défaut */
+    .header-container {
+        display: flex !important;          /* toujours dans le DOM, jamais display:none */
+        flex-direction: column;
+        position: fixed;
+        top: 0;
+        right: -100%;                      /* caché hors écran */
+        width: 75vw;
+        max-width: 320px;
+        height: 100dvh;
+        background: white;
+        border-left: 2px solid #ff8b38;
+        z-index: 9999;
+        overflow-y: auto;                  /* scroll interne si contenu long */
+        transition: right 0.3s ease;       /* animation de glissement */
+        padding: 60px 0 20px 0;           /* espace en haut pour le bouton ✕ */
+    }
+
+    /* Panneau ouvert : glisse dans l'écran */
+    .header-container.open {
+        right: 0;
+    }
+
+    /* Nav intérieure : colonne */
+    .nav-menu-header {
         flex-direction: column;
         max-height: none;
-        background: white;
-        height: 100%;
-        width: 50vw;
-        border-left: solid 1px #ff8b38;
-
+        width: 100%;
+        padding: 0 16px;
     }
 
+    /* Logo centré en haut du panneau */
+    .nav-menu-header > div:first-child {
+        text-align: center;
+        margin-bottom: 16px;
+    }
+
+    .logo-header {
+        width: 100px;
+    }
+
+    /* Liste des onglets en colonne */
     .li-onglets-header {
         flex-direction: column;
-        padding: 8px;
-        gap: 10px;
-        
+        padding: 0;
+        gap: 8px;
     }
 
     .li-onglets-header li {
@@ -326,27 +366,26 @@ header {
     .li-onglets-header li a {
         display: block;
         width: 100%;
-        padding: 10px 0;
+        padding: 10px 8px;
         border: 0;
+        border-bottom: 1px solid #f0f0f0; /* séparateur léger */
     }
 
+    /* Icônes en bas du panneau */
     .li-icones-header {
-        margin-top: 10px;
+        margin-top: 16px;
         padding: 0;
+        justify-content: center;
+        gap: 16px;
     }
 
     .nav-menu-header > div:last-child {
         margin-left: 0;
     }
 
-.hr-full-width-menu {
-	display: none;
-}
-}
-
-.nav-menu-header,
-.nav-menu-bouton-mobile {
-    pointer-events: auto;
+    .hr-full-width-menu {
+        display: none;
+    }
 }
 
 /*================================================MENU - RECHERCHE DE PRODUIT*/
