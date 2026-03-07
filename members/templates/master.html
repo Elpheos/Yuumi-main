@@ -215,7 +215,7 @@
                     <!-- CHERCHER UN PRODUIT -->
                     <li style="position:relative;">
                         {% if menu_departement and menu_ville %}
-                            <a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}">
+<a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}" data-ville="{{ menu_ville }}">
                                 Chercher un produit
                             </a>
                         {% else %}
