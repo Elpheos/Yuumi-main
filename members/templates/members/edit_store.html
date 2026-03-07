@@ -231,7 +231,36 @@ Modifier mon commerce : {{ store.nom }}
 
                 {{ form.photo }}
             </div>
+<hr style="border-color: #ff8b38; margin: 30px 0;">
 
+<h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
+    Horaires d'ouverture
+</h3>
+
+{{ opening_formset.management_form }}
+
+{% for form in opening_formset %}
+<div class="form-group" style="display: grid; grid-template-columns: 120px 1fr 1fr 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 12px;">
+    <strong>{{ form.instance.get_jour_display }}</strong>
+    <div>
+        <label style="font-size:12px;">Matin ouverture</label>
+        {{ form.matin_ouverture }}
+    </div>
+    <div>
+        <label style="font-size:12px;">Matin fermeture</label>
+        {{ form.matin_fermeture }}
+    </div>
+    <div>
+        <label style="font-size:12px;">Après-midi ouverture</label>
+        {{ form.apresmidi_ouverture }}
+    </div>
+    <div>
+        <label style="font-size:12px;">Après-midi fermeture</label>
+        {{ form.apresmidi_fermeture }}
+    </div>
+    {{ form.id }}
+</div>
+{% endfor %}
             <div class="form-actions">
                 <button type="submit" class="btn-save-store">
                     Enregistrer les modifications
