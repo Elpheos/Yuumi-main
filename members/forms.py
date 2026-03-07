@@ -54,7 +54,24 @@ class RegisterForm(UserCreationForm):
 class StoreForm(forms.ModelForm):
     class Meta:
         model = Store
-        fields = "__all__"
+        fields = [
+            'nom',
+            'ville',
+            'departement',
+            'categorie',
+            'descriptionpetite',
+            'descriptiongrande',
+            'addressemaps',
+            'addresseitineraire',
+            'site',
+            'phone',
+            'instagram',
+            'facebook',
+            'photo',
+            'galerie_title',
+            'galerie_description',
+            'galerie_image',
+        ]
         widgets = {
             'departement': forms.TextInput(attrs={'placeholder': 'Tapez un département...'}),
             'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
