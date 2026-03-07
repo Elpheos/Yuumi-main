@@ -15,8 +15,8 @@ from .models import SuperCategory
 
 
 
-from .models import Store, ProductFamily, Product, Category
-from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
+from .models import Store, ProductFamily, Product, Category, OpeningHour
+from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, OpeningHourFormSet
 
 
 # ---------------------------
@@ -162,14 +162,6 @@ def store_details(request, departement, ville, slug):
     })
 
 
-# ---------------------------
-# Page de test
-# ---------------------------
-
-def testing(request):
-    fruits = ['Apple', 'Banana', 'Cherry']
-    return render(request, 'template.html', {'fruits': fruits})
-
 
 # ---------------------------
 # Recherche produit
@@ -279,21 +271,31 @@ def edit_store(request, departement, ville, slug):
         slug=slug
     )
 
-    # 🔒 Sécurité absolue
     if request.user != store.owner and not request.user.is_superuser:
         raise PermissionDenied("Accès interdit à ce commerce.")
 
+    # Pré-remplir les 7 jours si pas encore créés
+    jours_semaine = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+    jours_existants = set(store.opening_hours.values_list('jour', flat=True))
+    for jour in jours_semaine:
+        if jour not in jours_existants:
+            OpeningHour.objects.create(store=store, jour=jour)
+
     if request.method == "POST":
         form = StoreForm(request.POST, request.FILES, instance=store)
-        if form.is_valid():
+        opening_formset = OpeningHourFormSet(request.POST, instance=store, prefix="horaires")
+        if form.is_valid() and opening_formset.is_valid():
             form.save()
+            opening_formset.save()
             messages.success(request, "Le commerce a été mis à jour avec succès.")
             return redirect(store.get_absolute_url())
     else:
         form = StoreForm(instance=store)
+        opening_formset = OpeningHourFormSet(instance=store, prefix="horaires")
 
     return render(request, "members/edit_store.html", {
         "form": form,
+        "opening_formset": opening_formset,
         "store": store,
     })
 
