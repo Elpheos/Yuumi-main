@@ -76,6 +76,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+
+        # Force no-cache sur les pages HTML (évite le cache mobile)
+    'members.cache_middleware.NoCacheHTMLMiddleware',
 ]
 
 
