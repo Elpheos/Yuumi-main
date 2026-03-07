@@ -7,7 +7,7 @@ Modifier mon commerce : {{ store.nom }}
 
 {% block content %}
 <style>
-       /* ===========================
+/* ===========================
    📝 ÉDITION COMMERCE
 =========================== */
 
@@ -15,10 +15,9 @@ Modifier mon commerce : {{ store.nom }}
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* 🔹 police appliquée ici */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Header */
 .edit-store-header {
     margin-bottom: 30px;
 }
@@ -29,30 +28,27 @@ Modifier mon commerce : {{ store.nom }}
     padding-bottom: 10px;
 }
 
-/* Carte formulaire */
 .edit-store-form {
     background: #fff;
     border: 5px solid #ff8b38;
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: inherit; /* 🔹 hérite de la police définie dans .edit-store-page */
+    font-family: inherit;
 }
 
-/* Groupe champ */
 .form-group {
     margin-bottom: 18px;
-    font-family: inherit; /* 🔹 héritage pour labels */
+    font-family: inherit;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 6px;
     font-weight: bold;
-    font-family: inherit; /* 🔹 labels */
+    font-family: inherit;
 }
 
-/* Champs */
 .form-group input,
 .form-group textarea,
 .form-group select {
@@ -61,14 +57,13 @@ Modifier mon commerce : {{ store.nom }}
     border-radius: 8px;
     border: 2px solid #ddd;
     font-size: 15px;
-    font-family: inherit; /* 🔹 champs */
+    font-family: inherit;
 }
 
 .form-group textarea {
     min-height: 120px;
 }
 
-/* Focus */
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
@@ -77,7 +72,6 @@ Modifier mon commerce : {{ store.nom }}
     box-shadow: 0 0 0 2px rgba(255,139,56,0.2);
 }
 
-/* Image actuelle */
 .form-group-image img {
     margin-top: 10px;
     max-width: 200px;
@@ -85,7 +79,6 @@ Modifier mon commerce : {{ store.nom }}
     border: 3px solid #ff8b38;
 }
 
-/* Actions */
 .form-actions {
     margin-top: 30px;
     text-align: right;
@@ -100,8 +93,8 @@ Modifier mon commerce : {{ store.nom }}
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    font-family: inherit; /* 🔹 bouton aussi */
-    margin-top:10px;
+    font-family: inherit;
+    margin-top: 10px;
 }
 
 .btn-save-store:hover {
@@ -109,6 +102,7 @@ Modifier mon commerce : {{ store.nom }}
 }
 
 .btn-retour-save-store {
+    display: inline-block;
     background: #ff8b38;
     color: #fff;
     padding: 14px 26px;
@@ -119,11 +113,36 @@ Modifier mon commerce : {{ store.nom }}
     cursor: pointer;
     font-family: inherit;
     margin-top: 10px;
-    width: 10%;
     text-align: center;
+    text-decoration: none;
 }
 
-/* Responsive */
+.btn-retour-save-store:hover {
+    background: #e67626;
+}
+
+/* Grille horaires */
+.horaire-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.horaire-row input {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 2px solid #ddd;
+    font-size: 14px;
+    width: 100%;
+}
+
+.horaire-row input:focus {
+    border-color: #ff8b38;
+    outline: none;
+}
+
 @media (max-width: 768px) {
     .edit-store-page {
         padding: 10px;
@@ -140,8 +159,13 @@ Modifier mon commerce : {{ store.nom }}
     .form-actions {
         text-align: center;
     }
+
+    .horaire-row {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
+
 <div class="edit-store-page">
 
     <header class="edit-store-header">
@@ -158,6 +182,7 @@ Modifier mon commerce : {{ store.nom }}
 
             {% csrf_token %}
 
+            <!-- ===== INFOS GÉNÉRALES ===== -->
             <div class="form-group">
                 <label for="id_nom">Nom du commerce</label>
                 {{ form.nom }}
@@ -218,49 +243,82 @@ Modifier mon commerce : {{ store.nom }}
                 {{ form.facebook }}
             </div>
 
+            <!-- ===== PHOTO PRINCIPALE ===== -->
+            <hr style="border-color: #ff8b38; margin: 30px 0;">
+            <h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
+                Photo principale
+            </h3>
+
             <div class="form-group form-group-image">
                 <label for="id_photo">Photo principale</label>
-
                 {% if store.photo %}
                     <div class="current-image">
                         <p>Image actuelle</p>
-                        <img src="{{ store.photo.url }}"
-                             alt="Photo actuelle de {{ store.nom }}">
+                        <img src="{{ store.photo.url }}" alt="Photo actuelle de {{ store.nom }}">
                     </div>
                 {% endif %}
-
                 {{ form.photo }}
             </div>
-<hr style="border-color: #ff8b38; margin: 30px 0;">
 
-<h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
-    Horaires d'ouverture
-</h3>
+            <!-- ===== GALERIE ===== -->
+            <hr style="border-color: #ff8b38; margin: 30px 0;">
+            <h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
+                Galerie
+            </h3>
 
-{{ opening_formset.management_form }}
+            <div class="form-group">
+                <label for="id_galerie_title">Titre de la galerie</label>
+                {{ form.galerie_title }}
+            </div>
 
-{% for form in opening_formset %}
-<div class="form-group" style="display: grid; grid-template-columns: 120px 1fr 1fr 1fr 1fr; gap: 10px; align-items: center; margin-bottom: 12px;">
-    <strong>{{ form.instance.get_jour_display }}</strong>
-    <div>
-        <label style="font-size:12px;">Matin ouverture</label>
-        {{ form.matin_ouverture }}
-    </div>
-    <div>
-        <label style="font-size:12px;">Matin fermeture</label>
-        {{ form.matin_fermeture }}
-    </div>
-    <div>
-        <label style="font-size:12px;">Après-midi ouverture</label>
-        {{ form.apresmidi_ouverture }}
-    </div>
-    <div>
-        <label style="font-size:12px;">Après-midi fermeture</label>
-        {{ form.apresmidi_fermeture }}
-    </div>
-    {{ form.id }}
-</div>
-{% endfor %}
+            <div class="form-group">
+                <label for="id_galerie_description">Description de la galerie</label>
+                {{ form.galerie_description }}
+            </div>
+
+            <div class="form-group form-group-image">
+                <label for="id_galerie_image">Image principale de la galerie</label>
+                {% if store.galerie_image %}
+                    <div class="current-image">
+                        <p>Image actuelle</p>
+                        <img src="{{ store.galerie_image.url }}" alt="Galerie de {{ store.nom }}">
+                    </div>
+                {% endif %}
+                {{ form.galerie_image }}
+            </div>
+
+            <!-- ===== HORAIRES ===== -->
+            <hr style="border-color: #ff8b38; margin: 30px 0;">
+            <h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
+                Horaires d'ouverture
+            </h3>
+
+            {{ opening_formset.management_form }}
+
+            {% for horaire_form in opening_formset %}
+            <div class="horaire-row">
+                <strong>{{ horaire_form.instance.get_jour_display }}</strong>
+                <div>
+                    <label style="font-size:12px;">Matin ouverture</label>
+                    {{ horaire_form.matin_ouverture }}
+                </div>
+                <div>
+                    <label style="font-size:12px;">Matin fermeture</label>
+                    {{ horaire_form.matin_fermeture }}
+                </div>
+                <div>
+                    <label style="font-size:12px;">Après-midi ouverture</label>
+                    {{ horaire_form.apresmidi_ouverture }}
+                </div>
+                <div>
+                    <label style="font-size:12px;">Après-midi fermeture</label>
+                    {{ horaire_form.apresmidi_fermeture }}
+                </div>
+                {{ horaire_form.id }}
+            </div>
+            {% endfor %}
+
+            <!-- ===== BOUTON ENREGISTRER ===== -->
             <div class="form-actions">
                 <button type="submit" class="btn-save-store">
                     Enregistrer les modifications
@@ -270,8 +328,8 @@ Modifier mon commerce : {{ store.nom }}
         </form>
 
         {% if store.slug %}
-        <div class="btn-retour-save-store">
-            <a href="{{ store.get_absolute_url }}">
+        <div style="margin-top: 15px;">
+            <a href="{{ store.get_absolute_url }}" class="btn-retour-save-store">
                 ← Retour
             </a>
         </div>
