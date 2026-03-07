@@ -554,7 +554,7 @@ body.menu-open {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: ##1d6fdb;
+    background-color: #ff8b38;
     color: white;
     text-decoration: none;
     text-transform: uppercase;
@@ -564,7 +564,7 @@ body.menu-open {
 }
 
 .mise-en-avant-bouton:hover {
-    background-color: ##1d6fdb;
+    background-color: #FF6A00;
 }
 
 
