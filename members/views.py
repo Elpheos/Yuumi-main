@@ -169,13 +169,17 @@ def store_details(request, departement, ville, slug):
 
 def search_product(request):
     q = request.GET.get("q", "").strip()
+    ville = request.GET.get("ville", "").strip()
     results = []
 
     if q:
         try:
-            products = Product.objects.filter(
+            qs = Product.objects.filter(
                 nom__istartswith=q
             ).select_related('family', 'family__store')
+            if ville:
+                qs = qs.filter(family__store__ville__iexact=ville)
+            products = qs
 
             for p in products:
                 store = p.family.store
