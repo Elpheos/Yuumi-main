@@ -473,7 +473,44 @@ body.menu-open {
 
 /*=================================================================================ACCUEIL - CHOIX DES VILLES*/
 
+.choix-ville-texte-container {
+    text-align: center;
+    font-size: 36px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
 
+.choix-ville-container {
+     display: flex;
+     gap: 20px;
+     max-width: 100%;
+     flex-wrap: wrap;
+     justify-content: center;
+     margin-top: 32px;
+}
+
+.ville-annecy-container {
+    text-align: center;
+    font-size: 14px;
+    width: 25%;
+    text-wrap: wrap;
+    border: #ededed solid 1px;
+    background-color: #fcfcfc;
+    box-shadow: 2px 2px 3px #ededed;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.image-ville {
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform .5s ease;
+}
+
+.image-ville:hover {
+    transform: scale(1.1);
+}
 
 
 /*===============================================================================PAGE ANNECY*/
@@ -517,7 +554,7 @@ body.menu-open {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ff8b38;
+    background-color: ##1d6fdb;
     color: white;
     text-decoration: none;
     text-transform: uppercase;
@@ -527,7 +564,7 @@ body.menu-open {
 }
 
 .mise-en-avant-bouton:hover {
-    background-color: #FF6A00;
+    background-color: ##1d6fdb;
 }
 
 
@@ -635,7 +672,7 @@ body.menu-open {
     border-radius: 8px;
     border: none;
     padding: 12px 24px;
- 	 background: linear-gradient(45deg, #0000ff, #0000aa);
+    background: linear-gradient(45deg, #ff8b38, #ff7033);
     text-decoration: none;
     transition: transform 0.2s, box-shadow 0.2s;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
@@ -1761,4 +1798,3 @@ body.menu-open {
         text-align: center;
     }
 }
-
