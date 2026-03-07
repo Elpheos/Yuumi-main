@@ -386,8 +386,6 @@ def claim_store(request, store_id):
 # Autres pages
 # ---------------------------
 
-def about(request):
-    return render(request, "members/about.html")
 
 
 def categories_ville(request, departement, ville):
