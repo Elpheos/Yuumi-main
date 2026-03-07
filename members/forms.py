@@ -2,9 +2,8 @@ from django import forms
 from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from dal import autocomplete  # ✅ Ajout important
-from .models import Store, ProductFamily, Product
-
+from dal import autocomplete
+from .models import Store, ProductFamily, Product, OpeningHour
 
 # -------------------------------
 # Formulaire famille
@@ -76,4 +75,18 @@ class StoreForm(forms.ModelForm):
             'departement': forms.TextInput(attrs={'placeholder': 'Tapez un département...'}),
             'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
         }
+
+OpeningHourFormSet = inlineformset_factory(
+    Store,
+    OpeningHour,
+    fields=[
+        'jour',
+        'matin_ouverture',
+        'matin_fermeture',
+        'apresmidi_ouverture',
+        'apresmidi_fermeture',
+    ],
+    extra=0,
+    can_delete=False,
+)
 
