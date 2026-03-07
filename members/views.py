@@ -285,10 +285,11 @@ def edit_store(request, departement, ville, slug):
         form = StoreForm(request.POST, request.FILES, instance=store)
         opening_formset = OpeningHourFormSet(request.POST, instance=store, prefix="horaires")
         if form.is_valid() and opening_formset.is_valid():
-            form.save()
-            opening_formset.save()
-            messages.success(request, "Le commerce a été mis à jour avec succès.")
-            return redirect(store.get_absolute_url())
+        form.save()
+        opening_formset.save()
+        Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
+        messages.success(request, "Le commerce a été mis à jour avec succès.")
+        return redirect(store.get_absolute_url())
     else:
         form = StoreForm(instance=store)
         opening_formset = OpeningHourFormSet(instance=store, prefix="horaires")
