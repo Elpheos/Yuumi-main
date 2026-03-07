@@ -22,7 +22,6 @@ urlpatterns = [
     path("mon-compte/", views.account, name="account"),
 
     # Pages informatives
-    path("a-propos/", views.about, name="about"),
     path("contact/", views.contact, name="contact"),
     path("notre-projet/", views.notre_projet, name="notre_projet"),
     path("cgu/", views.cgu, name="cgu"),
