@@ -327,11 +327,13 @@ body.menu-open {
         overflow-y: auto;                  /* scroll interne si contenu long */
         transition: right 0.3s ease;       /* animation de glissement */
         padding: 60px 0 20px 0;           /* espace en haut pour le bouton ✕ */
+        pointer-events: none;              /* ne capture pas les touches quand fermé */
     }
 
     /* Panneau ouvert : glisse dans l'écran */
     .header-container.open {
         right: 0;
+        pointer-events: auto;              /* réactivé quand ouvert */
     }
 
     /* Nav intérieure : colonne */
@@ -1670,7 +1672,7 @@ body.menu-open {
     max-width: 900px;
     margin: 40px auto;
     padding: 20px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; /* 🔹 police appliquée ici */
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 /* Header */
@@ -1691,20 +1693,20 @@ body.menu-open {
     border-radius: 15px;
     padding: 30px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: inherit; /* 🔹 hérite de la police définie dans .edit-store-page */
+    font-family: inherit;
 }
 
 /* Groupe champ */
 .form-group {
     margin-bottom: 18px;
-    font-family: inherit; /* 🔹 héritage pour labels */
+    font-family: inherit;
 }
 
 .form-group label {
     display: block;
     margin-bottom: 6px;
     font-weight: bold;
-    font-family: inherit; /* 🔹 labels */
+    font-family: inherit;
 }
 
 /* Champs */
@@ -1716,7 +1718,7 @@ body.menu-open {
     border-radius: 8px;
     border: 2px solid #ddd;
     font-size: 15px;
-    font-family: inherit; /* 🔹 champs */
+    font-family: inherit;
 }
 
 .form-group textarea {
@@ -1755,7 +1757,7 @@ body.menu-open {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    font-family: inherit; /* 🔹 bouton aussi */
+    font-family: inherit;
     margin-top:10px;
 }
 
