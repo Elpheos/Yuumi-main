@@ -156,6 +156,7 @@ STORAGES = {
 
 STATICFILES_DIRS = [
     BASE_DIR / "static",
+    BASE_DIR / "members" / "static",
 ]
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
