@@ -473,44 +473,7 @@ body.menu-open {
 
 /*=================================================================================ACCUEIL - CHOIX DES VILLES*/
 
-.choix-ville-texte-container {
-    text-align: center;
-    font-size: 36px;
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-}
 
-.choix-ville-container {
-     display: flex;
-     gap: 20px;
-     max-width: 100%;
-     flex-wrap: wrap;
-     justify-content: center;
-     margin-top: 32px;
-}
-
-.ville-annecy-container {
-    text-align: center;
-    font-size: 14px;
-    width: 25%;
-    text-wrap: wrap;
-    border: #ededed solid 1px;
-    background-color: #fcfcfc;
-    box-shadow: 2px 2px 3px #ededed;
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-
-.image-ville {
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    object-fit: cover;
-    transition: transform .5s ease;
-}
-
-.image-ville:hover {
-    transform: scale(1.1);
-}
 
 
 /*===============================================================================PAGE ANNECY*/
