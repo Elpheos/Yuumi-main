@@ -440,7 +440,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     const url = toggles[0].dataset.url;
                     if (!url) return;
 
-                    const resp = await fetch(url + "?q=" + encodeURIComponent(q), {
+                    const ville = toggles[0].dataset.ville || "";
+        const resp = await fetch(url + "?q=" + encodeURIComponent(q) + (ville ? "&ville=" + encodeURIComponent(ville) : ""), {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
 
