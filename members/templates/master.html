@@ -196,9 +196,9 @@
                                         {% for cat in cats %}
                                         <li>
                                             {% if menu_ville %}
-                                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat|slugify %}">
-                                                    {{ cat }}
-                                                </a>
+                                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">
+    {{ cat }}
+</a>
                                             {% else %}
                                                 <span style="color:#aaa;">{{ cat }}</span>
                                             {% endif %}
