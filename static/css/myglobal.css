@@ -1131,10 +1131,11 @@ body.menu-open {
 }
 
 .button-1-description {
+    display: block; /* ✅ FIX : empêche les boutons de se coller inline */
     font-weight: bold;
     border: solid #ff8b38 3px;
     width: 75%;
-    margin:auto;
+    margin: auto;
     margin-top: 16px;
     padding: 5px;
     text-align: center;
@@ -1359,7 +1360,7 @@ body.menu-open {
 /* Item image */
 .galerie-item {
     width: 100%;
-    height: 240px;
+    aspect-ratio: 1 / 1; /* ✅ FIX : carré parfait, remplace height: 240px */
     overflow: hidden;
     border: 4px solid #ff8b38;
     border-radius: 12px;
@@ -1402,9 +1403,7 @@ body.menu-open {
         gap: 15px;
     }
 
-    .galerie-item {
-        height: 160px;
-    }
+    /* ✅ FIX : height: 160px supprimé, aspect-ratio: 1/1 s'adapte seul */
 }
 
 /* ===========================
@@ -1450,7 +1449,7 @@ body.menu-open {
     justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 10000;
+    z-index: 10002; /* ✅ FIX : burger = 10001, la croix doit être au-dessus */
 }
 
 .galerie-lightbox-close:hover {
