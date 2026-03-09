@@ -262,13 +262,14 @@
 
         {% if store.images.all %}
             <div class="galerie-grid">
-                <img
+                
+                {% for img in store.images.all %}
+                    <div class="galerie-item">
+                        <img
                     src="{{ store.galerie_image.url }}"
                     alt="Image principale de la galerie {{ store.nom }}"
                     class="galerie-main-img"
                 >
-                {% for img in store.images.all %}
-                    <div class="galerie-item">
                         <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
                     </div>
                 {% endfor %}
