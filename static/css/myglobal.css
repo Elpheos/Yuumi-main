@@ -1130,6 +1130,12 @@ body.menu-open {
     margin-top: 32px;
 }
 
+
+.itinéraire-commerce {
+    margin-bottom: 3vh;
+}
+                                        
+
 .button-1-description {
     display: block; /* ✅ FIX : empêche les boutons de se coller inline */
     font-weight: bold;
