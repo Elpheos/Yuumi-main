@@ -245,53 +245,49 @@
     </section>
 
             <!-- Galerie -->
-        <section aria-label="Galerie du commerce" class="galerie-container" id="galerie">
+      <section aria-label="Galerie du commerce" class="galerie-container" id="galerie">
 
-        {% if store.galerie_title %}
-            <h2 class="galerie-title">{{ store.galerie_title }}</h2>
-        {% endif %}
+    {% if store.galerie_title %}
+        <h2 class="galerie-title">{{ store.galerie_title }}</h2>
+    {% endif %}
 
-        {% if store.galerie_description %}
-            <p class="galerie-description">{{ store.galerie_description }}</p>
-                {% endif %}
+    {% if store.galerie_description %}
+        <p class="galerie-description">{{ store.galerie_description }}</p>
+    {% endif %}
 
-        {% if store.galerie_image %}
-            <div class="galerie-main-wrapper">
-                <img
-                    src="{{ store.galerie_image.url }}"
-                    alt="Image principale de la galerie {{ store.nom }}"
-                    class="galerie-main-img"
-                >
-            <div class="galerie-main-wrapper"> 
-            </div>
-        {% endif %}
+    {% if store.galerie_image or store.images.exists %}
+        <div class="galerie-grid">
 
-        {% if store.images.all %}
-            <div class="galerie-grid">
-                <img
-                    src="{{ store.galerie_image.url }}"
-                    alt="Image principale de la galerie {{ store.nom }}"
-                    class="galerie-main-img"
-                >
-                {% for img in store.images.all %}
-                    <div class="galerie-item">
-                        <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
-                        <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
-        {% endif %}
+            {% if store.galerie_image %}
+                <div class="galerie-item">
+                    <img
+                        src="{{ store.galerie_image.url }}"
+                        alt="Image principale de la galerie {{ store.nom }}"
+                        class="galerie-main-img"
+                    >
+                </div>
+            {% endif %}
 
+            {% for img in store.images.all %}
+                <div class="galerie-item">
+                    <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
+                </div>
+            {% endfor %}
 
-        <!-- 🔍 Lightbox Galerie -->
-{% if store.galerie_image or store.images.exists %}
-    <div class="galerie-lightbox" id="galerieLightbox">
-        <span class="galerie-lightbox-close">&times;</span>
-        <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
-    </div>
-{% endif %}
+        </div>
+    {% else %}
+        <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
+    {% endif %}
+
+    <!-- 🔍 Lightbox Galerie -->
+    {% if store.galerie_image or store.images.exists %}
+        <div class="galerie-lightbox" id="galerieLightbox">
+            <span class="galerie-lightbox-close">&times;</span>
+            <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
+        </div>
+    {% endif %}
+
+</section>
 
 
 
