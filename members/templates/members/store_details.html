@@ -256,17 +256,17 @@
         {% endif %}
 
         {% if store.galerie_image %}
-            <div class="galerie-main-wrapper">
-                <img
-                    src="{{ store.galerie_image.url }}"
-                    alt="Image principale de la galerie {{ store.nom }}"
-                    class="galerie-main-img"
-                >
+            <div class="galerie-main-wrapper"> 
             </div>
         {% endif %}
 
         {% if store.images.all %}
             <div class="galerie-grid">
+                <img
+                    src="{{ store.galerie_image.url }}"
+                    alt="Image principale de la galerie {{ store.nom }}"
+                    class="galerie-main-img"
+                >
                 {% for img in store.images.all %}
                     <div class="galerie-item">
                         <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
