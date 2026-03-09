@@ -1417,10 +1417,9 @@ body.menu-open {
 =========================== */
 
 .galerie-lightbox-wrapper {
-    position: relative;        /* La croix sera positionnée par rapport à ce wrapper */
-    display: inline-block;     /* L'image garde sa taille naturelle */
+    position: relative;
+    display: inline-block;
 }
-
 .galerie-lightbox-img {
     max-width: 85vw;
     max-height: 85vh;
@@ -1430,27 +1429,23 @@ body.menu-open {
     background: #fff;
     display: block;
 }
-
 .galerie-lightbox-close {
     position: absolute;
-    top: -10px;      /* Ajuste pour dépasser légèrement le coin supérieur */
-    right: -10px;    /* Ajuste pour dépasser légèrement le coin droit */
+    top: -10px;
+    right: -10px;
     width: 40px;
     height: 40px;
     background: #fff;
-    color: #ff8b38;
-    font-size: 28px;
-    font-weight: bold;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     z-index: 10002;
     transition: transform 0.2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath stroke='%23ff8b38' stroke-width='2.5' stroke-linecap='round' d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 55%;
 }
-
 .galerie-lightbox-close:hover {
     transform: scale(1.1);
 }
