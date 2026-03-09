@@ -1441,21 +1441,22 @@ body.menu-open {
 
 .galerie-lightbox-close {
     position: absolute;
-    top: 30px;
-    right: 30px;
+    top: 20px;
+    right: 70px;
     width: 50px;
     height: 50px;
     background: #fff;
     color: #ff8b38;
-    font-size: 34px;
+    font-size: 28px;
     font-weight: bold;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 50px;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 10002; /* ✅ FIX : burger = 10001, la croix doit être au-dessus */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 10002;
 }
 
 .galerie-lightbox-close:hover {
