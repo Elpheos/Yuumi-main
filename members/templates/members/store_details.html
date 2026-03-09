@@ -92,7 +92,8 @@
                         <div class="description-secondaire">
                             <p>{{ store.descriptiongrande }}</p>
                         </div>
-
+                        
+                        <div class="itinéraire-commerce">
                                         {% if store.addresseitineraire %}
                         <a href="{{ store.addresseitineraire }}"
                         rel="noopener"
@@ -100,7 +101,8 @@
                             Je me rends sur place
                         </a>
                     {% endif %}
-
+                        </div>
+                        <div class="site-commerce">
                     {% if store.site %}
                         <a href="{{ store.site }}"
                         rel="noopener"
@@ -108,7 +110,7 @@
                             Site du commerce
                         </a>
                     {% endif %}
-
+        </div>
 
 <div class="commerce-réseaux">
     {% if store.phone %}
