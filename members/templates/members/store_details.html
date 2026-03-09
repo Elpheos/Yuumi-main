@@ -281,10 +281,12 @@
 
     <!-- 🔍 Lightbox Galerie -->
     {% if store.galerie_image or store.images.exists %}
-        <div class="galerie-lightbox" id="galerieLightbox">
-            <span class="galerie-lightbox-close">&times;</span>
-            <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
-        </div>
+<div class="galerie-lightbox" id="galerieLightbox">
+    <div class="galerie-lightbox-wrapper">
+        <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
+        <span class="galerie-lightbox-close">&times;</span>
+    </div>
+</div>
     {% endif %}
 
 </section>
