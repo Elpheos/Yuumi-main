@@ -1449,6 +1449,15 @@ body.menu-open {
 .galerie-lightbox-close:hover {
     transform: scale(1.1);
 }
+.galerie-lightbox {
+    display: none;          /* caché par défaut */
+    position: fixed;        /* overlay plein écran */
+    inset: 0;               /* top/right/bottom/left: 0 */
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 10001;
+    justify-content: center;
+    align-items: center;
+}
 
 
 
