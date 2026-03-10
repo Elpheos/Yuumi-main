@@ -54,9 +54,10 @@ def stores(request, departement, ville):
 
     derniers_arrivants = stores_qs.order_by('-id')[:10]
 
-    # 🔹 Commerce aléatoire pour la mise en avant
+    # 🔹 Commerces aléatoires pour le carousel de mise en avant (5 max)
+    import random
     stores_list = list(stores_qs)
-    commerce_mis_en_avant = choice(stores_list) if stores_list else None
+    commerces_carousel = random.sample(stores_list, min(5, len(stores_list)))
 
     # 🔹 Récupération configuration catégories ville
     city_config = CityCategoryHighlight.objects.filter(
@@ -72,7 +73,7 @@ def stores(request, departement, ville):
         'ville': ville,
         'derniers_arrivants': derniers_arrivants,
         'city_category_items': city_category_items,
-        'commerce_mis_en_avant': commerce_mis_en_avant,
+        'commerces_carousel': commerces_carousel,
     })
 
 
