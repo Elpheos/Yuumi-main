@@ -279,16 +279,6 @@
         <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
     {% endif %}
 
-    <!-- 🔍 Lightbox Galerie -->
-    {% if store.galerie_image or store.images.exists %}
-<div class="galerie-lightbox" id="galerieLightbox">
-    <div class="galerie-lightbox-wrapper">
-        <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="">
-        <span class="galerie-lightbox-close">&times;</span>
-    </div>
-</div>
-    {% endif %}
-
 </section>
 
 
@@ -337,6 +327,16 @@
         </div>
     </div>
     </div>
+
+    <!-- 🔍 Lightbox Galerie — EN DEHORS de tout conteneur pour éviter les problèmes de stacking context -->
+    {% if store.galerie_image or store.images.exists %}
+    <div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
+        <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
+            <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="" style="max-width:85vw;max-height:85vh;object-fit:contain;border:4px solid #ff8b38;border-radius:14px;background:#fff;display:block;">
+            <span class="galerie-lightbox-close" style="position:absolute;top:-10px;right:-10px;width:40px;height:40px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);z-index:100000;display:flex;align-items:center;justify-content:center;font-size:20px;color:#ff8b38;font-weight:bold;">&times;</span>
+        </div>
+    </div>
+    {% endif %}
 
     {% endblock %}
 
