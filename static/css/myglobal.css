@@ -1131,10 +1131,7 @@ body.menu-open {
 }
 
 
-.itinéraire-commerce {
-    margin-bottom: 3vh;
-}
-                                        
+                              
 
 .button-1-description {
     display: block; /* ✅ FIX : empêche les boutons de se coller inline */
@@ -1408,6 +1405,11 @@ body.menu-open {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 15px;
     }
+	
+	.itinéraire-commerce {
+    margin-bottom: 3vh;
+}
+          
 
     /* ✅ FIX : height: 160px supprimé, aspect-ratio: 1/1 s'adapte seul */
 }
