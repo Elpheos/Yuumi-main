@@ -64,14 +64,16 @@
                      src="{% static image_path %}" />
             {% endwith %}
 
+            {% if commerce_mis_en_avant %}
             <div class="mise-en-avant-annecy-text-container">
-                <h2>Signorini Tartufi</h2>
-                <h3>Épicerie spécialisée</h3>
+                <h2>{{ commerce_mis_en_avant.nom }}</h2>
+                <h3>{{ commerce_mis_en_avant.categorie }}</h3>
             </div>
 
-            <a class="mise-en-avant-bouton" href="#" rel="noopener">
+            <a class="mise-en-avant-bouton" href="{% url 'store_details' commerce_mis_en_avant.departement commerce_mis_en_avant.ville commerce_mis_en_avant.slug %}" rel="noopener">
                 découvrir
             </a>
+            {% endif %}
         </div>
     </section>
 
