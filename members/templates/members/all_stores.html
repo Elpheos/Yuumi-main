@@ -59,10 +59,15 @@
     <!-- ======================= MISE EN AVANT ======================= -->
     <section aria-label="commerces mis en avant">
         <div class="mise-en-avant-annecy-container">
-            {% with image_path='images/'|add:ville|lower|add:'/base-annecy.jpg' %}
+            {% if commerce_mis_en_avant and commerce_mis_en_avant.photo %}
+                <img class="mise-en-avant-annecy-image"
+                     src="{{ commerce_mis_en_avant.photo.url }}" />
+            {% else %}
+                {% with image_path='images/'|add:ville|lower|add:'/base-annecy.jpg' %}
                 <img class="mise-en-avant-annecy-image"
                      src="{% static image_path %}" />
-            {% endwith %}
+                {% endwith %}
+            {% endif %}
 
             {% if commerce_mis_en_avant %}
             <div class="mise-en-avant-annecy-text-container">
