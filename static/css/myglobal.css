@@ -1212,6 +1212,13 @@ body.menu-open {
     justify-content: center;
 }
 
+@media (max-width: 767px) {
+			.itinéraire-commerce {
+   				 margin-bottom: 3vh;
+	
+    }
+}
+
 .infopratiques-horaires-container {
     display: flex;
     flex-direction: column;
