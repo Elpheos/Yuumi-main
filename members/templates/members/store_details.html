@@ -626,6 +626,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Clic sur une image
     document.querySelectorAll(".galerie-item img, .galerie-main-img").forEach(img => {
+        img.style.cursor = "zoom-in";
         img.addEventListener("click", () => {
             lightboxImg.src = img.src;
             lightbox.style.display = "flex";
@@ -633,17 +634,20 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Bouton X
-    closeBtn.addEventListener("click", closeLightbox);
+    // Bouton X — stopPropagation pour ne pas déclencher le fond
+    closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeLightbox();
+    });
 
-    // Clic sur le fond
-    lightbox.addEventListener("click", closeLightbox);
+    // Clic sur le fond seulement (pas sur l'image ou le wrapper)
+    lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
 
     // Touche ESC
     document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape") {
-            closeLightbox();
-        }
+        if (e.key === "Escape") closeLightbox();
     });
 
 });
