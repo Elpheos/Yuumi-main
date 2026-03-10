@@ -1,3 +1,4 @@
+================================================
 #supercats-dropdown {
     display: none;
 }
@@ -1131,7 +1132,10 @@ body.menu-open {
 }
 
 
-                              
+.itinéraire-commerce {
+    margin-bottom: 3vh;
+}
+                                        
 
 .button-1-description {
     display: block; /* ✅ FIX : empêche les boutons de se coller inline */
@@ -1210,13 +1214,6 @@ body.menu-open {
     display: flex; 
     flex-wrap: wrap;
     justify-content: center;
-}
-
-@media (max-width: 767px) {
-			.itinéraire-commerce {
-   				 margin-bottom: 3vh;
-	
-    }
 }
 
 .infopratiques-horaires-container {
@@ -1412,11 +1409,6 @@ body.menu-open {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 15px;
     }
-	
-	.itinéraire-commerce {
-    margin-bottom: 3vh;
-}
-          
 
     /* ✅ FIX : height: 160px supprimé, aspect-ratio: 1/1 s'adapte seul */
 }
@@ -1807,5 +1799,47 @@ body.menu-open {
 
     .form-actions {
         text-align: center;
+    }
+}
+
+
+
+/* =========================================================
+   SEARCH PRODUCT — RESPONSIVE MOBILE
+   Sur mobile, le container est dans le panneau latéral,
+   donc on le passe en position static + pleine largeur.
+   On réduit aussi max-height des résultats pour tenir
+   compte du clavier virtuel (~45% de l'écran).
+   ========================================================= */
+@media (max-width: 767px) {
+    #search-product-container {
+        position: static;
+        width: 100%;
+        box-shadow: none;
+        border: none;
+        border-radius: 0;
+        padding: 10px 0 0 0;
+        background: transparent;
+    }
+
+    #search-product-input {
+        width: 100%;
+        font-size: 16px; /* évite le zoom auto iOS au focus */
+        box-sizing: border-box;
+    }
+
+    #search-product-results {
+        max-height: 35vh; /* clavier virtuel prend ~45vh, on laisse de la marge */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .search-product-store-container a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 6px 4px;
+        text-decoration: none;
+        color: inherit;
     }
 }
