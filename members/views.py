@@ -54,6 +54,10 @@ def stores(request, departement, ville):
 
     derniers_arrivants = stores_qs.order_by('-id')[:10]
 
+    # 🔹 Commerce aléatoire pour la mise en avant
+    stores_list = list(stores_qs)
+    commerce_mis_en_avant = choice(stores_list) if stores_list else None
+
     # 🔹 Récupération configuration catégories ville
     city_config = CityCategoryHighlight.objects.filter(
         departement__iexact=departement,
@@ -67,7 +71,8 @@ def stores(request, departement, ville):
         'departement': departement,
         'ville': ville,
         'derniers_arrivants': derniers_arrivants,
-        'city_category_items': city_category_items,   # 🔥 AJOUT ICI
+        'city_category_items': city_category_items,
+        'commerce_mis_en_avant': commerce_mis_en_avant,
     })
 
 
