@@ -10,6 +10,10 @@ def menu_context(request):
     - menu_categories : catégories fines (compatibilité)
     - menu_supercategories : super catégories → sous-catégories
     - menu_departement / menu_ville : emplacement actuel
+
+    Si l'URL ne contient pas de ville (pages neutres comme /notre-projet/,
+    /mes-favoris/, etc.), on utilise les cookies yuumi_departement et
+    yuumi_ville comme fallback pour maintenir le contexte de navigation.
     """
 
     # Découpe du chemin
@@ -30,6 +34,17 @@ def menu_context(request):
     elif len(path_parts) >= 2 and path_parts[0] in deps:
         departement = path_parts[0]
         ville = path_parts[1]
+
+    # -------------------------------------------------------
+    # 🍪 Fallback cookie : si l'URL ne contient pas de ville,
+    # on récupère la dernière ville visitée depuis le cookie.
+    # -------------------------------------------------------
+    if not ville:
+        cookie_dep   = request.COOKIES.get("yuumi_departement", "")
+        cookie_ville = request.COOKIES.get("yuumi_ville", "")
+        if cookie_dep in deps and cookie_ville:
+            departement = cookie_dep
+            ville = cookie_ville
 
     # -----------------------------------------
     # 📌 Récupération des commerces concernés
