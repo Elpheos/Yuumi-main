@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Case, When, IntegerField
 from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -263,7 +264,19 @@ class OpeningHour(models.Model):
 
     class Meta:
         unique_together = ("store", "jour")
-        ordering = ["store", "jour"]
+        ordering = [
+            "store",
+            Case(
+                When(jour="lundi", then=0),
+                When(jour="mardi", then=1),
+                When(jour="mercredi", then=2),
+                When(jour="jeudi", then=3),
+                When(jour="vendredi", then=4),
+                When(jour="samedi", then=5),
+                When(jour="dimanche", then=6),
+                output_field=IntegerField(),
+            ),
+        ]
 
     def __str__(self):
         return (
