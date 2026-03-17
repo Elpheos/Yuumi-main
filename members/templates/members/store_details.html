@@ -33,7 +33,7 @@
     <main>
         <section aria-label="Informations principales du commerce">
             <div class="informations-principales-commerce-container">
-                <!-- 🖼️ CARROUSEL D’IMAGES -->
+                <!-- 🖼️ CARROUSEL D'IMAGES -->
     <div class="photo-commerce-container">
     <div id="carouselStoreImages" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
         
@@ -94,13 +94,13 @@
                         </div>
                         
                         <div class="itinéraire-commerce">
-                                        {% if store.addresseitineraire %}
-                        <a href="{{ store.addresseitineraire }}"
-                        rel="noopener"
-                        class="button-1-description">
-                            Je me rends sur place
-                        </a>
-                    {% endif %}
+                            {% if store.addresseitineraire %}
+                            <a href="{{ store.addresseitineraire }}"
+                            rel="noopener"
+                            class="button-1-description">
+                                Je me rends sur place
+                            </a>
+                        {% endif %}
                         </div>
                         <div class="site-commerce">
                     {% if store.site %}
@@ -137,17 +137,14 @@
 
 
                         <!-- FAVORIS -->
-                                            <div class="commerce-wishlist">
-                                                    <button class="favori-btn"
-                                                            data-store-id="{{ store.id }}"
-                                                            data-is-favorite="{{ is_favorite|yesno:'true,false' }}">
-                                                        <i class="fa-regular fa-heart"></i>
-                                                        <span>Ajouter aux favoris</span>
-                                                    </button>
-                                                </div>
-        
-
-                        <!-- FIN FAVORIS -->
+                        <div class="commerce-wishlist">
+                            <button class="favori-btn"
+                                    data-store-id="{{ store.id }}"
+                                    data-is-favorite="{{ is_favorite|yesno:'true,false' }}">
+                                <i class="fa-regular fa-heart"></i>
+                                <span>Ajouter aux favoris</span>
+                            </button>
+                        </div>
 
                     </div>
                 </div>
@@ -200,37 +197,46 @@
             <section aria-label="Informations pratiques concernant le commerce" id="infospratiques" class="infopratiques-container">
         <div class="infopratiques-content-container">
 
-            <!-- Horaires fixes -->
+            <!-- Horaires -->
             <div class="infopratiques-horaires-container" id="horairesip">
                 <table class="infopratiques-horaires-table">
                     <thead>
                         <tr><th colspan="2"><b>Horaires</b></th></tr>
                     </thead>
                     <tbody>
-                    {% for hour in opening_hours %}
+                    {% if horaires_renseignes %}
+                        {% for hour in opening_hours %}
+                            <tr>
+                                <td><b>{{ hour.get_jour_display }} :</b></td>
+                                <td>
+                                    {% if hour.matin_ouverture and hour.matin_fermeture %}
+                                        {{ hour.matin_ouverture|time:"H:i" }} - {{ hour.matin_fermeture|time:"H:i" }}
+                                    {% endif %}
+                                    {% if hour.apresmidi_ouverture and hour.apresmidi_fermeture %}
+                                        {% if hour.matin_ouverture and hour.matin_fermeture %} / {% endif %}
+                                        {{ hour.apresmidi_ouverture|time:"H:i" }} - {{ hour.apresmidi_fermeture|time:"H:i" }}
+                                    {% endif %}
+                                    {% if not hour.matin_ouverture and not hour.apresmidi_ouverture %}
+                                        Fermé
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% else %}
                         <tr>
-                            <td><b>{{ hour.get_jour_display }} :</b></td>
-                            <td>
-                                {% if hour.matin_ouverture and hour.matin_fermeture %}
-                                    {{ hour.matin_ouverture|time:"H:i" }} - {{ hour.matin_fermeture|time:"H:i" }}
-                                {% endif %}
-                                {% if hour.apresmidi_ouverture and hour.apresmidi_fermeture %}
-                                    {% if hour.matin_ouverture and hour.matin_fermeture %} / {% endif %}
-                                    {{ hour.apresmidi_ouverture|time:"H:i" }} - {{ hour.apresmidi_fermeture|time:"H:i" }}
-                                {% endif %}
-                                {% if not hour.matin_ouverture and not hour.apresmidi_ouverture %}
-                                    Fermé
-                                {% endif %}
+                            <td colspan="2" style="text-align:center; color:#aaa; font-style:italic; padding: 12px 0;">
+                                Horaires non renseignés
                             </td>
                         </tr>
-                    {% empty %}
-                        <tr><td colspan="2">Horaires non spécifiés.</td></tr>
-                    {% endfor %}
+                    {% endif %}
                     </tbody>
                 </table>
 
+                <!-- FIX : date dynamique depuis horaires_updated_at -->
                 <p class="infopratiques-miseajour">
-                    <b>Dernière mise à jour :</b> 06.01.2026<br>
+                    {% if store.horaires_updated_at %}
+                        <b>Dernière mise à jour :</b> {{ store.horaires_updated_at|date:"d.m.Y" }}<br>
+                    {% endif %}
                     Les horaires peuvent changer, assurez-vous de l'ouverture d'un commerce avant de vous rendre sur place.
                 </p>
             </div>
@@ -328,7 +334,7 @@
     </div>
     </div>
 
-    <!-- 🔍 Lightbox Galerie — EN DEHORS de tout conteneur pour éviter les problèmes de stacking context -->
+    <!-- Lightbox Galerie -->
     {% if store.galerie_image or store.images.exists %}
     <div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
         <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
@@ -348,15 +354,11 @@
     document.addEventListener("DOMContentLoaded", () => {
         const carouselEl = document.querySelector("#carouselStoreImages");
         if (carouselEl) {
-            // Initialisation manuelle du carrousel Bootstrap
             const carousel = new bootstrap.Carousel(carouselEl, {
-                interval: false, // pas de défilement automatique
-                ride: false,     // empêche l'auto-play
-                wrap: true       // permet de boucler les images (de la dernière à la première)
+                interval: false,
+                ride: false,
+                wrap: true
             });
-            console.log("✅ Carrousel initialisé :", carousel);
-        } else {
-            console.warn("⚠️ Aucun élément #carouselStoreImages trouvé !");
         }
     });
     </script>
@@ -364,9 +366,7 @@
     <script>
     document.addEventListener("DOMContentLoaded", () => {
         const buttons = document.querySelectorAll(".favori-btn");
-        console.log("Script favoris chargé !");
 
-        // Fonction pour récupérer le CSRF token
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== "") {
@@ -389,7 +389,6 @@
             const icon = btn.querySelector("i");
             const span = btn.querySelector("span");
 
-            // --- Affichage initial selon l'état du favori ---
             if (isFavorite) {
                 btn.classList.add("active");
                 if (icon) {
@@ -399,10 +398,7 @@
                 if (span) span.textContent = "Retirer des favoris";
             }
 
-            // --- Clic pour basculer ---
             btn.addEventListener("click", () => {
-                console.log("Bouton cliqué pour le store ID :", storeId);
-
                 fetch(`/store/${storeId}/favoris/`, {
                     method: "POST",
                     headers: {
@@ -411,13 +407,10 @@
                     },
                 })
                 .then(res => {
-                    console.log("Réponse brute du serveur :", res.status, res.statusText);
                     if (!res.ok) throw new Error("Erreur réseau");
                     return res.json();
                 })
                 .then(data => {
-                    console.log("Réponse JSON :", data);
-
                     if (data.action === "added") {
                         btn.classList.add("active");
                         icon.classList.remove("fa-regular");
@@ -430,7 +423,7 @@
                         span.textContent = "Ajouter aux favoris";
                     }
                 })
-                .catch(err => console.error("Erreur lors de la mise à jour du favori :", err));
+                .catch(err => console.error("Erreur favori :", err));
             });
         });
     });
@@ -448,7 +441,6 @@
     document.getElementById('confirmClaim').addEventListener('click', function() {
         if (!currentStoreId) return;
 
-        // Fonction pour récupérer le CSRF token
         function getCookie(name) {
             let cookieValue = null;
             if (document.cookie && document.cookie !== "") {
@@ -464,77 +456,63 @@
         }
 
         fetch(`/store/${currentStoreId}/claim/`, {
-    method: "POST",
-    headers: {
-        "X-CSRFToken": getCookie("csrftoken"),
-        "X-Requested-With": "XMLHttpRequest",
-    },
-})
-.then(async res => {
-    const data = await res.json();
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "X-Requested-With": "XMLHttpRequest",
+            },
+        })
+        .then(async res => {
+            const data = await res.json();
+            if (res.status === 429 && data.error === "cooldown") {
+                startCooldown(data.remaining);
+                return;
+            }
+            if (!res.ok) {
+                alert(data.error || "Erreur lors de la revendication.");
+                return;
+            }
+            alert(data.message || "Demande envoyée avec succès.");
+            location.reload();
+        })
+        .catch(err => {
+            console.error("Erreur réseau :", err);
+            alert("Erreur réseau lors de la revendication.");
+        });
 
-    // ⏳ Cooldown actif
-    if (res.status === 429 && data.error === "cooldown") {
-        startCooldown(data.remaining);
-        return;
-    }
-
-    // ❌ Autre erreur
-    if (!res.ok) {
-        alert(data.error || "Erreur lors de la revendication.");
-        return;
-    }
-
-    // ✅ Succès
-    alert(data.message || "Demande envoyée avec succès.");
-    location.reload();
-})
-.catch(err => {
-    console.error("Erreur réseau :", err);
-    alert("Erreur réseau lors de la revendication.");
-});
-
-
-        // Hide modal
         const modal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
         modal.hide();
     });
     </script>
 
     <style>
-    /* 🎨 Style du carrousel d’images Yuumi */
-    /* 🎨 Style du carrousel d’images Yuumi */
-    /* Conteneur du carousel */
     #carouselStoreImages {
         max-width: 80%;
         margin: 0 auto 20px auto;
         border: 5px solid #ff8b38;
         border-radius: 15px;
-        overflow: hidden; /* indispensable */
+        overflow: hidden;
         background: #fff;
     }
 
-    /* Le conteneur du slide */
     .carousel-item {
         height: 500px;
     }
 
-    /* Images du carousel */
     .store-carousel-img {
         width: 100%;
         height: 100%;
-        object-fit: cover;      /* remplit complètement */
-        display: block;         /* enlève les espaces fantômes */
+        object-fit: cover;
+        display: block;
     }
-    /* ✅ Points indicateurs */
+
     .carousel-indicators [data-bs-target] {
         background-color: #ff8b38;
     }
 
-    /* ✅ Flèches personnalisées */
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
-        background-color: #ff8b38; /* orange fade */
+        background-color: #ff8b38;
         border-radius: 50%;
         width: 50px;
         height: 50px;
@@ -546,6 +524,15 @@
     .carousel-control-next-icon:hover {
         background-color: #ff8b38;
         transform: scale(1.1);
+    }
+
+    .edit-store-button {
+        margin: 20px 0;
+    }
+
+    .edit-store-button .btn {
+        display: inline-block;
+        width: auto;
     }
 
     @media (max-width: 768px) {
@@ -563,50 +550,27 @@
         }
     }
 
-    .edit-store-button {
-    margin: 20px 0;
-}
-
-.edit-store-button .btn {
-    display: inline-block;
-    width: auto;
-}
-
     @media (max-width: 767px) {
-        /* Carousel pleine largeur sur mobile */
         #carouselStoreImages {
             max-width: 100%;
             border-radius: 0;
         }
 
-        /* Hauteur réduite sur mobile */
         .carousel-item {
             height: 260px;
         }
-   
 
-    /* Carousel pleine largeur sur mobile */
-    #carouselStoreImages {
-        max-width: 100%;
-        border-radius: 0;
-    }
+        .informations-secondaires-commerce-buttons-container {
+            flex-direction: column;
+            gap: 8px;
+        }
 
-    /* Hauteur réduite sur mobile */
-    .carousel-item {
-        height: 260px;
+        .informations-secondaires-commerce-buttons-container > button {
+            width: 100%;
+        }
     }
-
-    /* ← AJOUTER CES LIGNES */
-    .informations-secondaires-commerce-buttons-container {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .informations-secondaires-commerce-buttons-container > button {
-        width: 100%;
-    }
- }
     </style>
+
    <script>
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -614,17 +578,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const lightboxImg = document.getElementById("galerieLightboxImg");
     const closeBtn = document.querySelector(".galerie-lightbox-close");
 
-    // 👉 Si la galerie n'existe pas, on sort immédiatement
     if (!lightbox || !lightboxImg || !closeBtn) return;
 
-    // Fermeture lightbox
     function closeLightbox() {
         lightbox.style.display = "none";
         lightboxImg.src = "";
         document.body.style.overflow = "";
     }
 
-    // Clic sur une image
     document.querySelectorAll(".galerie-item img, .galerie-main-img").forEach(img => {
         img.style.cursor = "zoom-in";
         img.addEventListener("click", () => {
@@ -634,18 +595,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // Bouton X — stopPropagation pour ne pas déclencher le fond
     closeBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         closeLightbox();
     });
 
-    // Clic sur le fond seulement (pas sur l'image ou le wrapper)
     lightbox.addEventListener("click", (e) => {
         if (e.target === lightbox) closeLightbox();
     });
 
-    // Touche ESC
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeLightbox();
     });
@@ -680,6 +638,5 @@ function startCooldown(seconds) {
     }, 1000);
 }
 </script>
-
 
     {% endblock %}
