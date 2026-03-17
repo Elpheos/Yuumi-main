@@ -530,3 +530,22 @@ def by_super_category(request, departement, ville, super_slug):
         "departement": departement,
         "ville": ville,
     })
+
+def changer_ville(request):
+    stores = Store.objects.all().values('departement', 'ville').distinct()
+ 
+    departements_villes = {}
+    for s in stores:
+        dep = s['departement'].strip().title() if s['departement'] else ""
+        ville = s['ville'].strip().title() if s['ville'] else ""
+        if dep and ville:
+            departements_villes.setdefault(dep, set()).add(ville)
+ 
+    sorted_data = {
+        dep: sorted(villes, key=str.casefold)
+        for dep, villes in sorted(departements_villes.items(), key=lambda x: x[0].casefold())
+    }
+ 
+    return render(request, 'members/changer_ville.html', {
+        'departements_villes': sorted_data,
+    })

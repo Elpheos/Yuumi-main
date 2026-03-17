@@ -1,0 +1,344 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Changer de ville | Yuumi{% endblock %}
+
+{% block content %}
+<style>
+
+/* ============================================================
+   PAGE CHANGER DE VILLE
+   ============================================================ */
+
+.changer-ville-page {
+    max-width: 600px;
+    margin: 80px auto 60px;
+    padding: 0 20px;
+}
+
+/* Titre */
+.changer-ville-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.changer-ville-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #ff8b38;
+    margin-bottom: 8px;
+}
+
+.changer-ville-header p {
+    color: #888;
+    font-size: 1rem;
+}
+
+/* Barre de recherche */
+.changer-ville-search {
+    position: relative;
+    margin-bottom: 28px;
+}
+
+.changer-ville-search input {
+    width: 100%;
+    padding: 14px 16px 14px 44px;
+    border: 2px solid #ff8b38;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+    box-sizing: border-box;
+    transition: box-shadow 0.2s;
+}
+
+.changer-ville-search input:focus {
+    box-shadow: 0 0 0 3px rgba(255, 139, 56, 0.15);
+}
+
+.changer-ville-search .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ff8b38;
+    font-size: 16px;
+    pointer-events: none;
+}
+
+/* Résultats de recherche */
+#cv-resultats {
+    display: none;
+    background: white;
+    border: 2px solid #ff8b38;
+    border-radius: 12px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+#cv-resultats a {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background 0.15s;
+}
+
+#cv-resultats a:last-child {
+    border-bottom: none;
+}
+
+#cv-resultats a:hover {
+    background: #fff5ee;
+    color: #ff8b38;
+}
+
+#cv-resultats .cv-ville-nom {
+    font-weight: 600;
+}
+
+#cv-resultats .cv-dep-nom {
+    font-size: 0.82rem;
+    color: #aaa;
+}
+
+#cv-resultats a:hover .cv-dep-nom {
+    color: #ffb07a;
+}
+
+.cv-no-result {
+    padding: 14px 16px;
+    color: #aaa;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Liste des départements */
+.cv-deps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cv-dep-block {
+    border: 2px solid #eee;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+}
+
+.cv-dep-block.open {
+    border-color: #ff8b38;
+}
+
+.cv-dep-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: white;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: inherit;
+    color: #333;
+    text-align: left;
+    transition: background 0.15s;
+}
+
+.cv-dep-block.open .cv-dep-btn {
+    background: #fff5ee;
+    color: #ff8b38;
+}
+
+.cv-dep-btn:hover {
+    background: #fff5ee;
+}
+
+.cv-dep-chevron {
+    color: #ff8b38;
+    font-size: 13px;
+    transition: transform 0.25s ease;
+}
+
+.cv-dep-block.open .cv-dep-chevron {
+    transform: rotate(180deg);
+}
+
+/* Villes */
+.cv-villes {
+    display: none;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 12px 16px 16px;
+    background: #fafafa;
+    border-top: 1px solid #f0f0f0;
+}
+
+.cv-dep-block.open .cv-villes {
+    display: flex;
+}
+
+.cv-ville-link {
+    display: inline-block;
+    padding: 7px 14px;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    color: #ff8b38;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.cv-ville-link:hover,
+.cv-ville-link.active {
+    background: #ff8b38;
+    color: white;
+}
+
+/* Ville actuelle mise en avant */
+.cv-ville-link.active {
+    background: #ff8b38;
+    color: white;
+    font-weight: 700;
+}
+
+@media (max-width: 767px) {
+    .changer-ville-page {
+        margin-top: 70px;
+    }
+}
+</style>
+
+<div class="changer-ville-page">
+
+    <div class="changer-ville-header">
+        <h1><i class="fa-solid fa-location-dot"></i> Changer de ville</h1>
+        <p>Choisissez un département puis une ville pour explorer ses commerces.</p>
+    </div>
+
+    <!-- Barre de recherche instantanée -->
+    <div class="changer-ville-search">
+        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+        <input
+            type="text"
+            id="cv-search-input"
+            placeholder="Rechercher une ville..."
+            autocomplete="off"
+        >
+        <div id="cv-resultats"></div>
+    </div>
+
+    <!-- Liste départements / villes -->
+    <div class="cv-deps-list" id="cv-deps-list">
+        {% for departement, villes in departements_villes.items %}
+        <div class="cv-dep-block {% if departement|lower == menu_departement|lower %}open{% endif %}"
+             data-dep="{{ departement }}">
+
+            <button class="cv-dep-btn">
+                <span>{{ departement }}</span>
+                <i class="fa-solid fa-chevron-down cv-dep-chevron"></i>
+            </button>
+
+            <div class="cv-villes">
+                {% for ville in villes %}
+                <a href="{% url 'stores' departement=departement ville=ville %}"
+                   class="cv-ville-link {% if ville|lower == menu_ville|lower %}active{% endif %}">
+                    {{ ville }}
+                </a>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    /* ===== Accordéon départements ===== */
+    document.querySelectorAll(".cv-dep-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const block = btn.closest(".cv-dep-block");
+            const isOpen = block.classList.contains("open");
+
+            // Fermer tous les autres
+            document.querySelectorAll(".cv-dep-block").forEach(b => b.classList.remove("open"));
+
+            // Ouvrir celui-ci si c'était fermé
+            if (!isOpen) block.classList.add("open");
+        });
+    });
+
+    /* ===== Recherche instantanée ===== */
+    const input = document.getElementById("cv-search-input");
+    const resultBox = document.getElementById("cv-resultats");
+
+    // Collecter toutes les villes
+    const allVilles = [];
+    document.querySelectorAll(".cv-dep-block").forEach(block => {
+        const dep = block.dataset.dep;
+        block.querySelectorAll(".cv-ville-link").forEach(link => {
+            allVilles.push({
+                ville: link.textContent.trim(),
+                dep: dep,
+                url: link.getAttribute("href"),
+                isCurrent: link.classList.contains("active"),
+            });
+        });
+    });
+
+    input.addEventListener("input", () => {
+        const q = input.value.trim().toLowerCase();
+        resultBox.innerHTML = "";
+
+        if (q.length < 2) {
+            resultBox.style.display = "none";
+            return;
+        }
+
+        const matches = allVilles.filter(v => v.ville.toLowerCase().includes(q));
+
+        if (matches.length === 0) {
+            resultBox.innerHTML = `<p class="cv-no-result">Aucune ville trouvée</p>`;
+        } else {
+            matches.forEach(v => {
+                resultBox.innerHTML += `
+                    <a href="${v.url}">
+                        <span class="cv-ville-nom">${v.ville}</span>
+                        <span class="cv-dep-nom">${v.dep}</span>
+                    </a>`;
+            });
+        }
+
+        resultBox.style.display = "block";
+    });
+
+    // Cacher résultats si clic ailleurs
+    document.addEventListener("click", e => {
+        if (!e.target.closest(".changer-ville-search")) {
+            resultBox.style.display = "none";
+        }
+    });
+
+    // Scroll automatique vers le département actuel
+    const openBlock = document.querySelector(".cv-dep-block.open");
+    if (openBlock) {
+        setTimeout(() => {
+            openBlock.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 200);
+    }
+});
+</script>
+{% endblock %}

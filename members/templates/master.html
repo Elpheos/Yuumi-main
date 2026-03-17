@@ -143,7 +143,16 @@
     pointer-events: auto;
 }
 
-
+/* Changer de ville : uniquement visible sur mobile */
+    .menu-changer-ville-mobile {
+        display: none;
+    }
+ 
+    @media (max-width: 767px) {
+        .menu-changer-ville-mobile {
+            display: block;
+        }
+    }
     
 </style>
 </head>
@@ -227,6 +236,14 @@
                         </div>
                     </li>
 
+    <!-- CHANGER DE VILLE — visible seulement si on est sur une ville, mobile uniquement -->
+    {% if menu_departement and menu_ville %}
+    <li class="menu-changer-ville-mobile">
+        <a href="{% url 'changer_ville' %}">
+            <i class="fa-solid fa-location-dot"></i> Changer de ville
+        </a>
+    </li>
+    {% endif %}
                     <!-- AUTRES ONGLET -->
                     {% if menu_departement %}
                         {% url 'map-view' menu_departement as carte_url %}
