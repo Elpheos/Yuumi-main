@@ -10,6 +10,7 @@ urlpatterns = [
     path('store/<int:store_id>/favoris/', views.toggle_favoris, name='toggle-favoris'),
     path('store/<int:store_id>/claim/', views.claim_store, name='claim-store'),
     path('mes-favoris/', views.my_favorites, name='my-favorites'),
+    path('changer-de-ville/', views.changer_ville, name='changer_ville'),
 
     # Recherche / carte
     path('search-product/', views.search_product, name='search-product'),
