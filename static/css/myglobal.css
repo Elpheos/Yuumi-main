@@ -37,7 +37,7 @@ main {
 
 @media (max-width: 767px) {
     .page-container {
-        padding: 0 12px; /* Remplace le padding: 0 du media query existant qui supprimait tout espace */
+        padding: 0 12px;
     }
 }
 
@@ -60,11 +60,11 @@ color: inherit;
 }
 
 .page-title-h1 {
-    font-size: clamp(28px, 6vw, 64px); /* 28px sur mobile → 64px sur desktop */
+    font-size: clamp(28px, 6vw, 64px);
 }
 
 .page-title-h2 {
-    font-size: clamp(22px, 4.5vw, 48px); /* 22px sur mobile → 48px sur desktop */
+    font-size: clamp(22px, 4.5vw, 48px);
 }
 
 .hr-full-width-menu {
@@ -166,7 +166,19 @@ color: inherit;
         font-weight: bold;
         font-size: 18px;
     }
-*/
+
+/* ── Breakpoint tablette intermédiaire (768px–1024px) ───────── */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .li-onglets-header {
+        gap: 8px;
+    }
+
+    .li-onglets-header > li > a {
+        font-size: 13px;
+        padding: 7px 10px;
+    }
+}
+
     /* Chevron aligné */
 .supercats-toggle i {
     margin-top: 1px;
@@ -268,6 +280,17 @@ color: inherit;
     color: #333;
 }
 
+/* Changer de ville : uniquement visible sur mobile */
+.menu-changer-ville-mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
+    .menu-changer-ville-mobile {
+        display: block;
+    }
+}
+
 /* ── Scroll bloqué quand le menu mobile est ouvert ───────────────── */
 body.menu-open {
     overflow: hidden;
@@ -275,13 +298,12 @@ body.menu-open {
 
 @media (max-width: 767px) {
 
-    /* Bouton hamburger : visible en mobile, positionné dans le header */
     .nav-menu-bouton-mobile {
         display: block;
         position: fixed;
         top: 12px;
         right: 16px;
-        z-index: 10001;        /* Au-dessus du panneau et de l'overlay */
+        z-index: 10001;
         background: white;
         border: 2px solid #ff8b38;
         border-radius: 8px;
@@ -293,16 +315,14 @@ body.menu-open {
         line-height: 1;
     }
 
-    /* Header : juste un conteneur, plus de position fixed ni pointer-events */
     header {
         position: static;
     }
 
-    /* Overlay sombre derrière le panneau */
     .nav-overlay {
         display: none;
         position: fixed;
-        inset: 0;                          /* couvre toute la page */
+        inset: 0;
         background: rgba(0, 0, 0, 0.45);
         z-index: 9998;
         cursor: pointer;
@@ -312,32 +332,29 @@ body.menu-open {
         display: block;
     }
 
-    /* Panneau latéral : caché à droite par défaut */
     .header-container {
-        display: flex !important;          /* toujours dans le DOM, jamais display:none */
+        display: flex !important;
         flex-direction: column;
         position: fixed;
         top: 0;
-        right: -100%;                      /* caché hors écran */
+        right: -100%;
         width: 75vw;
         max-width: 320px;
         height: 100dvh;
         background: white;
         border-left: 2px solid #ff8b38;
         z-index: 9999;
-        overflow-y: auto;                  /* scroll interne si contenu long */
-        transition: right 0.3s ease;       /* animation de glissement */
-        padding: 60px 0 20px 0;           /* espace en haut pour le bouton ✕ */
-        pointer-events: none;              /* ne capture pas les touches quand fermé */
+        overflow-y: auto;
+        transition: right 0.3s ease;
+        padding: 60px 0 20px 0;
+        pointer-events: none;
     }
 
-    /* Panneau ouvert : glisse dans l'écran */
     .header-container.open {
         right: 0;
-        pointer-events: auto;              /* réactivé quand ouvert */
+        pointer-events: auto;
     }
 
-    /* Nav intérieure : colonne */
     .nav-menu-header {
         flex-direction: column;
         max-height: none;
@@ -345,7 +362,6 @@ body.menu-open {
         padding: 0 16px;
     }
 
-    /* Logo centré en haut du panneau */
     .nav-menu-header > div:first-child {
         text-align: center;
         margin-bottom: 16px;
@@ -355,7 +371,6 @@ body.menu-open {
         width: 100px;
     }
 
-    /* Liste des onglets en colonne */
     .li-onglets-header {
         flex-direction: column;
         padding: 0;
@@ -371,10 +386,9 @@ body.menu-open {
         width: 100%;
         padding: 10px 8px;
         border: 0;
-        border-bottom: 1px solid #f0f0f0; /* séparateur léger */
+        border-bottom: 1px solid #f0f0f0;
     }
 
-    /* Icônes en bas du panneau */
     .li-icones-header {
         margin-top: 16px;
         padding: 0;
@@ -437,7 +451,7 @@ body.menu-open {
 /*=================================================================================FOOTER*/
 
  .footer-container {
-     margin-top: clamp(64px, 10vw, 256px); /* Réduit progressivement sur petits écrans */
+     margin-top: clamp(64px, 10vw, 256px);
      padding-bottom: 32px;
  }
 
@@ -523,7 +537,6 @@ body.menu-open {
     text-align: center;
 }
 
-/* Carousel mise en avant — hauteur fixe */
 #carouselMiseEnAvant {
     width: 100%;
     border-radius: 12px;
@@ -583,7 +596,6 @@ body.menu-open {
     color: white;
 }
 
-/* Flèches carousel — rond orange, icône blanche */
 #carouselMiseEnAvant .carousel-control-prev,
 #carouselMiseEnAvant .carousel-control-next {
     width: 48px;
@@ -601,7 +613,7 @@ body.menu-open {
 #carouselMiseEnAvant .carousel-control-next-icon {
     width: 22px;
     height: 22px;
-    filter: brightness(0) invert(1); /* force blanc */
+    filter: brightness(0) invert(1);
 }
 
 #carouselMiseEnAvant .carousel-control-prev:hover,
@@ -609,7 +621,6 @@ body.menu-open {
     background-color: #FF6A00;
 }
 
-/* Points indicateurs */
 #carouselMiseEnAvant .carousel-indicators {
     bottom: 14px;
 }
@@ -790,8 +801,6 @@ body.menu-open {
 
 @media (max-width: 767px) {
 
-/* page-container géré dans la section GLOBAL ci-dessus */
-
 .mise-en-avant-annecy-container {
     width: 100%;
     margin-top: 60px;
@@ -823,7 +832,6 @@ body.menu-open {
     font-size: 14px;
 }
 
-/* Flèches plus petites sur mobile */
 #carouselMiseEnAvant .carousel-control-prev,
 #carouselMiseEnAvant .carousel-control-next {
     width: 36px;
@@ -855,14 +863,14 @@ body.menu-open {
 
 .derniers-arrivants-grid-container {
     display: flex;
-    overflow-x: auto;          /* Scroll horizontal plutôt qu'écrasement */
-    -webkit-overflow-scrolling: touch; /* Scroll fluide iOS */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     gap: 10px;
-    padding-bottom: 8px;       /* Espace pour la scrollbar */
+    padding-bottom: 8px;
 }
 
 .derniers-arrivants-grid-commerces {
-    flex: 0 0 calc(50% - 5px); /* 2 items visibles, les autres scrollables */
+    flex: 0 0 calc(50% - 5px);
 }
 
 }
@@ -1055,9 +1063,8 @@ body.menu-open {
 }
 
 
-/* ── Responsive grids catégories (manquant) ───────────────────────── */
+/* ── Responsive grids catégories ───────────────────────── */
 @media (max-width: 1024px) {
-    /* Tablette : réduire à 3 colonnes */
     .toutes-les-catégories-grid-alimentaire,
     .toutes-les-catégories-grid-divers-commerces {
         grid-template-columns: repeat(3, 1fr);
@@ -1071,7 +1078,6 @@ body.menu-open {
         height: auto;
     }
 
-    /* Réinitialiser les placements fixes pour laisser auto-placement */
     .toutes-les-catégories-grid-alimentaire > div,
     .toutes-les-catégories-grid-restauration > div,
     .toutes-les-catégories-grid-divers-commerces > div {
@@ -1082,7 +1088,6 @@ body.menu-open {
 }
 
 @media (max-width: 767px) {
-    /* Mobile : 1 seule colonne, hauteur fixe par image */
     .toutes-les-catégories-grid-alimentaire,
     .toutes-les-catégories-grid-restauration,
     .toutes-les-catégories-grid-divers-commerces {
@@ -1105,6 +1110,21 @@ body.menu-open {
 
 .url-path-page-catégorie {
     margin-top: 32px;
+}
+
+/* ── FIX : titre de page responsive ── */
+.page-category-title {
+    font-size: clamp(18px, 4vw, 32px);
+    padding: 0 16px;
+    text-align: center;
+    margin: 24px auto 0;
+    word-break: break-word;
+}
+
+@media (max-width: 767px) {
+    .page-category-title {
+        margin-top: 70px;
+    }
 }
 
 .liste-des-commerces-page-categorie-grid {
@@ -1217,10 +1237,10 @@ body.menu-open {
 .itinéraire-commerce {
     margin-bottom: 3vh;
 }
-                                        
+                                    
 
 .button-1-description {
-    display: block; /* ✅ FIX : empêche les boutons de se coller inline */
+    display: block;
     font-weight: bold;
     border: solid #ff8b38 3px;
     width: 75%;
@@ -1256,10 +1276,6 @@ body.menu-open {
     width: 90%;
     margin: auto;
     margin-top: 32px;
-
-}
-
-.informations-secondaires-commerce-buttons-container {
 
 }
 
@@ -1308,10 +1324,6 @@ body.menu-open {
 
 .infopratiques-horaires-table {
     border-collapse: collapse;
-}
-
-.infopratiques-horaires-table tr {
-    
 }
 
 .infopratiques-horaires-table th {
@@ -1392,12 +1404,13 @@ body.menu-open {
     hyphens: auto; 
     color: black;
 }
+
 /* ===========================
-   🎨 GALERIE COMMERCE (FINAL)
+   GALERIE COMMERCE
 =========================== */
 
 .galerie-container {
-    display: none; /* affiché via le bouton */
+    display: none;
     padding: 25px;
     border: 5px solid #ff8b38;
     border-radius: 15px;
@@ -1405,7 +1418,6 @@ body.menu-open {
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* Titre galerie */
 .galerie-title {
     font-size: 26px;
     margin-bottom: 10px;
@@ -1414,14 +1426,12 @@ body.menu-open {
     padding-bottom: 6px;
 }
 
-/* Description */
 .galerie-description {
     margin-bottom: 25px;
     color: #555;
     line-height: 1.6;
 }
 
-/* Image principale */
 .galerie-main-wrapper {
     width: 100%;
     max-height: 420px;
@@ -1438,25 +1448,21 @@ body.menu-open {
     object-fit: contain;
 }
 
-/* Grille images */
 .galerie-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 images côte à côte */
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 
-
-/* Item image */
 .galerie-item {
     width: 100%;
-    aspect-ratio: 1 / 1; /* ✅ FIX : carré parfait, remplace height: 240px */
+    aspect-ratio: 1 / 1;
     overflow: hidden;
     border: 4px solid #ff8b38;
     border-radius: 12px;
     background: #fff;
 }
 
-/* Image */
 .galerie-item img {
     width: 100%;
     height: 100%;
@@ -1464,19 +1470,16 @@ body.menu-open {
     transition: transform 0.25s ease;
 }
 
-/* Hover */
 .galerie-item img:hover {
     transform: scale(1.06);
 }
 
-/* Aucun contenu */
 .galerie-empty {
     text-align: center;
     color: #777;
     font-style: italic;
 }
 
-/* Responsive */
 @media (max-width: 768px) {
 
     .galerie-title {
@@ -1491,12 +1494,10 @@ body.menu-open {
         grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
         gap: 15px;
     }
-
-    /* ✅ FIX : height: 160px supprimé, aspect-ratio: 1/1 s'adapte seul */
 }
 
 /* ===========================
-   🔍 LIGHTBOX GALERIE
+   LIGHTBOX GALERIE
 =========================== */
 
 .galerie-lightbox-wrapper {
@@ -1533,9 +1534,9 @@ body.menu-open {
     transform: scale(1.1);
 }
 .galerie-lightbox {
-    display: none;          /* caché par défaut */
-    position: fixed;        /* overlay plein écran */
-    inset: 0;               /* top/right/bottom/left: 0 */
+    display: none;
+    position: fixed;
+    inset: 0;
     background: rgba(0, 0, 0, 0.85);
     z-index: 10001;
     justify-content: center;
@@ -1543,80 +1544,101 @@ body.menu-open {
 }
 
 
+/* ===========================
+   PAGE COMMERCE — RESPONSIVE
+=========================== */
 
 @media (max-width: 767px) {
-.informations-principales-commerce-container {
-    display: block;
-    width: 100%;
-    margin-top: 70px; /* Espace sous le bouton ☰ */
-}
+    .informations-principales-commerce-container {
+        display: block;
+        width: 100%;
+        margin-top: 70px;
+    }
 
-.photo-commerce-container {
-    width: 100%;
-}
+    .photo-commerce-container {
+        width: 100%;
+    }
 
-.commerce-right-part-container {
-    width: 100%;
-    height: auto;
-}
+    .commerce-right-part-container {
+        width: 100%;
+        height: auto;
+    }
 
-.description-container {
-    display: block;
-    text-align: center;
-}
+    .description-container {
+        display: block;
+        text-align: center;
+    }
 
-.description-container h1 {
-    font-size: 25px;
-}
+    .description-container h1 {
+        font-size: 25px;
+    }
 
-.description-principale {
-    font-size: 16px;
-}
+    .description-principale {
+        font-size: 16px;
+    }
 
-.informations-secondaires-commerce-container {
-    width: 100%;
-}
+    .informations-secondaires-commerce-container {
+        width: 100%;
+    }
 
-.informations-secondaires-commerce-buttons-container {
-    display: flex;
-    flex-direction: column; /* Boutons en colonne sur mobile */
-    gap: 8px;
-}
+    .informations-secondaires-commerce-buttons-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
 
-.informations-secondaires-commerce-buttons-container > button {
-    width: 100%; /* Pleine largeur au lieu de 33% */
-}
+    .informations-secondaires-commerce-buttons-container > button {
+        width: 100%;
+    }
 
-.infopratiques-container {
-    max-width: 100%;
-    margin-left: 0;
-    width: 100%;
-}
+    /* ── FIX : infos pratiques pleine largeur ── */
+    .infopratiques-container {
+        max-width: 100%;
+        margin-left: 0;
+        width: 100%;
+    }
 
-.galerie-container,
-.liste-produits-container {
-    max-width: 100%;
-    margin-left: 0;
-    width: 100%;
-}
+    /* ── FIX : colonnes horaires + adresse en colonne ── */
+    .infopratiques-content-container {
+        flex-direction: column;
+        align-items: center;
+    }
 
-/* Horaires et adresse en colonne */
-.infopratiques-horaires-container {
-    width: 100%;
-}
+    .infopratiques-horaires-container {
+        width: 100%;
+    }
 
-.infopratiques-adresse-container {
-    width: 100%;
-    margin-top: 20px;
-}
+    .infopratiques-adresse-container {
+        width: 100%;
+        margin-top: 20px;
+    }
 
+    .galerie-container,
+    .liste-produits-container {
+        max-width: 100%;
+        margin-left: 0;
+        width: 100%;
+    }
+
+    /* ── FIX : bouton revendication responsive ── */
+    .store-action-button {
+        padding: 0 16px;
+        margin-bottom: 10px;
+    }
+
+    .store-action-button button,
+    .store-action-button .btn {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    #claimTimer {
+        text-align: center;
+    }
 }
 
 
 /*===========================================================CARTE INTERACTIVE*/
-
-/* =========================== 
-   🎨 CARTE LEAFLET (FINAL)*/
 
 #map {
         height: 600px;
@@ -1625,7 +1647,6 @@ body.menu-open {
         align-items: center;
     }
 
-    /* Style popup Yuumi */
     .leaflet-popup.yuumi-popup {
         max-width: 380px !important;
     }
@@ -1672,7 +1693,6 @@ body.menu-open {
         margin: 8px auto 0;
     }
 
-    /* === Filtres catégories revisité Yuumi === */
     .category-filters {
         margin: 20px auto;
         max-width: 800px;
@@ -1721,16 +1741,14 @@ body.menu-open {
         transform: rotate(90deg);
     }
 
-    /* Boutons enfants */
     .child-buttons {
-            margin-top: 10px;
-            display: none;
-            display: flex;
-            flex-direction: row;  
-            flex-wrap: wrap;      
-            gap: 8px;            
-            justify-content: flex-start; 
-        }
+        margin-top: 10px;
+        display: none;
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: flex-start;
+    }
 
     .child-buttons button {
         padding: 6px 12px;
@@ -1749,8 +1767,49 @@ body.menu-open {
         color: #fff;
     }
 
+/* ── FIX carte : filtres et boutons responsive ── */
+@media (max-width: 767px) {
+    #map {
+        margin-top: 70px;
+        width: 100%;
+        height: 400px;
+    }
+
+    .category-filters {
+        padding: 0 8px;
+        margin-top: 12px;
+    }
+
+    /* Boutons de catégorie : taille de texte réduite + padding compact */
+    .child-buttons button {
+        font-size: 12px;
+        padding: 5px 10px;
+        word-break: break-word;
+        max-width: 100%;
+    }
+
+    .yuumi-popup-img {
+        min-width: unset;
+        width: 100%;
+        max-height: 120px;
+        object-fit: cover;
+    }
+
+    .yuumi-popup-h3 {
+        font-size: 14px;
+    }
+
+    .leaflet-popup-content-wrapper {
+        max-width: 180px !important;
+    }
+
+    .leaflet-popup-content {
+        margin: 8px !important;
+    }
+}
+
    /* ===========================
-   📝 ÉDITION COMMERCE
+   ÉDITION COMMERCE
 =========================== */
 
 .edit-store-page {
@@ -1760,7 +1819,6 @@ body.menu-open {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-/* Header */
 .edit-store-header {
     margin-bottom: 30px;
 }
@@ -1771,7 +1829,6 @@ body.menu-open {
     padding-bottom: 10px;
 }
 
-/* Carte formulaire */
 .edit-store-form {
     background: #fff;
     border: 5px solid #ff8b38;
@@ -1781,7 +1838,6 @@ body.menu-open {
     font-family: inherit;
 }
 
-/* Groupe champ */
 .form-group {
     margin-bottom: 18px;
     font-family: inherit;
@@ -1794,7 +1850,6 @@ body.menu-open {
     font-family: inherit;
 }
 
-/* Champs */
 .form-group input,
 .form-group textarea,
 .form-group select {
@@ -1810,7 +1865,6 @@ body.menu-open {
     min-height: 120px;
 }
 
-/* Focus */
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
@@ -1819,7 +1873,6 @@ body.menu-open {
     box-shadow: 0 0 0 2px rgba(255,139,56,0.2);
 }
 
-/* Image actuelle */
 .form-group-image img {
     margin-top: 10px;
     max-width: 200px;
@@ -1827,7 +1880,6 @@ body.menu-open {
     border: 3px solid #ff8b38;
 }
 
-/* Actions */
 .form-actions {
     margin-top: 30px;
     text-align: right;
@@ -1865,7 +1917,28 @@ body.menu-open {
     text-align: center;
 }
 
-/* Responsive */
+/* ── FIX : grille horaires edit_store ── */
+.horaire-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.horaire-row input {
+    padding: 6px 8px;
+    border-radius: 6px;
+    border: 2px solid #ddd;
+    font-size: 14px;
+    width: 100%;
+}
+
+.horaire-row input:focus {
+    border-color: #ff8b38;
+    outline: none;
+}
+
 @media (max-width: 768px) {
     .edit-store-page {
         padding: 10px;
@@ -1882,16 +1955,26 @@ body.menu-open {
     .form-actions {
         text-align: center;
     }
-}
 
+    /* ── FIX : horaires en 2 colonnes sur mobile ── */
+    .horaire-row {
+        grid-template-columns: 1fr 1fr;
+        row-gap: 6px;
+    }
+
+    /* Le nom du jour occupe toute la largeur */
+    .horaire-row strong {
+        grid-column: 1 / -1;
+        font-size: 14px;
+        color: #ff8b38;
+        padding-bottom: 2px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+}
 
 
 /* =========================================================
    SEARCH PRODUCT — RESPONSIVE MOBILE
-   Sur mobile, le container est dans le panneau latéral,
-   donc on le passe en position static + pleine largeur.
-   On réduit aussi max-height des résultats pour tenir
-   compte du clavier virtuel (~45% de l'écran).
    ========================================================= */
 @media (max-width: 767px) {
     #search-product-container {
@@ -1906,12 +1989,12 @@ body.menu-open {
 
     #search-product-input {
         width: 100%;
-        font-size: 16px; /* évite le zoom auto iOS au focus */
+        font-size: 16px;
         box-sizing: border-box;
     }
 
     #search-product-results {
-        max-height: 35vh; /* clavier virtuel prend ~45vh, on laisse de la marge */
+        max-height: 35vh;
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
     }
@@ -1923,5 +2006,86 @@ body.menu-open {
         padding: 6px 4px;
         text-decoration: none;
         color: inherit;
+    }
+}
+
+/* =========================================================
+   CATEGORIES VILLES — FIX MASONRY
+   ========================================================= */
+
+.categ-ville-section {
+    max-width: 1000px;
+    margin: 60px auto;
+    padding: 0 20px;
+}
+
+.categ-ville-section h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 28px;
+    font-weight: 600;
+}
+
+.categ-ville-grid {
+    column-count: 4;
+    column-gap: 15px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.categ-tile {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 15px;
+    break-inside: avoid;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.18);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.categ-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 22px rgba(0,0,0,0.23);
+}
+
+.categ-tile img {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+}
+
+.categ-tile span {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    background: #ffffff;
+    border: 2px solid #ff8b38;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* ── FIX masonry : breakpoints sans trou ── */
+@media (max-width: 767px) {
+    .page-title-container { margin-top: 60px; }
+}
+
+@media (max-width: 900px) {
+    .categ-ville-grid {
+        column-count: 2;
+        max-width: 100%; /* ← FIX : plus de max-width rigide qui laisse des blancs */
+    }
+}
+
+@media (max-width: 480px) {
+    .categ-ville-grid {
+        column-count: 1;
+        max-width: 100%;
     }
 }
