@@ -84,7 +84,6 @@
     text-align: center;
 }
 
-/* Icônes */
 .yuumi-footer-socials {
     margin-bottom: 12px;
 }
@@ -102,7 +101,6 @@
     transform: scale(1.1);
 }
 
-/* Liens légaux */
 .yuumi-footer-links {
     margin-bottom: 10px;
     font-size: 0.95rem;
@@ -124,7 +122,6 @@
     padding: 0 6px;
 }
 
-/* Copyright */
 .yuumi-footer-copy {
     font-size: 0.85rem;
     color: #666;
@@ -144,16 +141,77 @@
 }
 
 /* Changer de ville : uniquement visible sur mobile */
+.menu-changer-ville-mobile {
+    display: none;
+}
+
+@media (max-width: 767px) {
     .menu-changer-ville-mobile {
-        display: none;
+        display: block;
     }
- 
-    @media (max-width: 767px) {
-        .menu-changer-ville-mobile {
-            display: block;
-        }
+}
+
+/* ── Messages Django (succès, erreurs) ── */
+.django-messages {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99998;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 90%;
+    max-width: 500px;
+    pointer-events: none;
+}
+
+.django-message {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    pointer-events: auto;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.django-message--success {
+    background: #fff5ee;
+    border: 2px solid #ff8b38;
+    color: #cc5500;
+}
+
+.django-message--error {
+    background: #fff0f0;
+    border: 2px solid #e55;
+    color: #c00;
+}
+
+.django-message-close {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: inherit;
+    padding: 0 0 0 12px;
+    line-height: 1;
+}
+
+@media (max-width: 767px) {
+    .django-messages {
+        top: 60px;
     }
-    
+}
+
 </style>
 </head>
 
@@ -236,15 +294,16 @@
                         </div>
                     </li>
 
-    <!-- CHANGER DE VILLE — visible seulement si on est sur une ville, mobile uniquement -->
-    {% if menu_departement and menu_ville %}
-    <li class="menu-changer-ville-mobile">
-        <a href="{% url 'changer_ville' %}">
-        Changer de ville
-        </a>
-    </li>
-    {% endif %}
-                    <!-- AUTRES ONGLET -->
+                    <!-- CHANGER DE VILLE — visible seulement si on est sur une ville, mobile uniquement -->
+                    {% if menu_departement and menu_ville %}
+                    <li class="menu-changer-ville-mobile">
+                        <a href="{% url 'changer_ville' %}">
+                            Changer de ville
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    <!-- AUTRES ONGLETS -->
                     {% if menu_departement %}
                         {% url 'map-view' menu_departement as carte_url %}
                     {% else %}
@@ -259,7 +318,6 @@
         Mon compte
     </a>
 </li>
-
 
                     <li><a href="{% url 'contact' %}">Contact</a></li>
                 </ul>
@@ -303,6 +361,19 @@
 <!-- ============================= -->
 
 <main>
+
+    <!-- Messages Django -->
+    {% if messages %}
+    <div class="django-messages">
+        {% for message in messages %}
+        <div class="django-message django-message--{{ message.tags }}">
+            {{ message }}
+            <button class="django-message-close" onclick="this.parentElement.remove()">×</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <div class="page-container">
         {% block content %}{% endblock %}
     </div>
@@ -492,8 +563,6 @@ document.addEventListener("DOMContentLoaded", () => {
 {% if menu_departement and menu_ville %}
 <script>
 // 🍪 Mémoriser la ville courante dans un cookie (durée 30 jours)
-// pour que les pages neutres (favoris, notre-projet, etc.)
-// conservent le contexte de navigation.
 (function() {
     var expires = new Date();
     expires.setDate(expires.getDate() + 30);

@@ -108,6 +108,8 @@ def by_category(request, departement, ville, category):
 # Détails d’un commerce
 # ---------------------------
 
+# Remplacer la fonction store_details dans views.py par celle-ci :
+
 def store_details(request, departement, ville, slug):
     store = get_object_or_404(Store, slug=slug, departement=departement, ville=ville)
 
@@ -152,12 +154,18 @@ def store_details(request, departement, ville, slug):
     if request.user.is_authenticated:
         is_favorite = store in request.user.favoris.all()
 
-    # Horaires d'ouverture, ordonnés selon la semaine française
     jours_ordre = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
     opening_hours = sorted(
         store.opening_hours.all(),
         key=lambda h: jours_ordre.index(h.jour)
     )
+
+    # FIX : détecter si au moins un horaire a été renseigné
+    horaires_renseignes = any(
+        h.matin_ouverture or h.matin_fermeture or h.apresmidi_ouverture or h.apresmidi_fermeture
+        for h in opening_hours
+    )
+
     return render(request, "members/store_details.html", {
         "store": store,
         "family_formset": family_formset,
@@ -165,8 +173,8 @@ def store_details(request, departement, ville, slug):
         "stores": store_data,
         "is_favorite": is_favorite,
         "opening_hours": opening_hours,
+        "horaires_renseignes": horaires_renseignes,
     })
-
 
 
 # ---------------------------
