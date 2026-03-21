@@ -455,9 +455,7 @@
     <form method="post" enctype="multipart/form-data" id="edit-store-form" novalidate>
         {% csrf_token %}
 
-        {# ============================================================
-           SECTION 1 — INFOS GÉNÉRALES
-        ============================================================ #}
+
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-store"></i> Informations générales
@@ -508,9 +506,7 @@
             </div>
         </div>
 
-        {# ============================================================
-           SECTION 2 — CONTACT & LIENS
-        ============================================================ #}
+
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-address-card"></i> Contact & liens
@@ -568,9 +564,6 @@
             </div>
         </div>
 
-        {# ============================================================
-           SECTION 3 — PHOTO PRINCIPALE
-        ============================================================ #}
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-image"></i> Photo principale
@@ -598,9 +591,7 @@
             </div>
         </div>
 
-        {# ============================================================
-           SECTION 4 — GALERIE
-        ============================================================ #}
+
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-images"></i> Galerie
@@ -675,9 +666,7 @@
             </div>
         </div>
 
-        {# ============================================================
-           SECTION 5 — HORAIRES
-        ============================================================ #}
+
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-clock"></i> Horaires d'ouverture
@@ -726,9 +715,7 @@
             {% endif %}
         </div>
 
-        {# ============================================================
-           BOUTONS D'ACTION
-        ============================================================ #}
+
         <div class="edit-actions">
             {% if store.slug %}
             <a href="{{ store.get_absolute_url }}" class="btn-retour" id="btn-retour">
