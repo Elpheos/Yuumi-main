@@ -408,12 +408,52 @@
 }
 
 /* ============================================================
+   FIX GLOBAL DÉBORDEMENTS MOBILE
+   ============================================================ */
+@media (max-width: 768px) {
+
+    /* Tous les inputs, textarea, select : pleine largeur stricte */
+    .edit-store-page input,
+    .edit-store-page textarea,
+    .edit-store-page select {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        min-width: 0 !important;
+    }
+
+    /* Input file : tronquer le texte long */
+    .edit-store-page input[type="file"] {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Textes longs (URLs, chemins de fichiers) */
+    .edit-store-page p,
+    .edit-store-page label,
+    .field-note,
+    .edit-section {
+        overflow-wrap: break-word;
+        word-break: break-word;
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    /* Grille 2 colonnes → 1 colonne */
+    .form-row-2 {
+        grid-template-columns: 1fr !important;
+        gap: 0;
+    }
+}
+
+/* ============================================================
    RESPONSIVE — Mobile (≤ 560px) : horaires en cartes
    ============================================================ */
 @media (max-width: 560px) {
     .horaire-header-row { display: none; }
+    .horaire-separator  { display: none; }
 
-    /* Chaque jour devient une carte */
     .horaire-row {
         display: block;
         background: #fafafa;
@@ -422,9 +462,6 @@
         padding: 14px;
         margin-bottom: 10px;
     }
-
-    /* Le séparateur <hr> est inutile entre les cartes */
-    .horaire-separator { display: none; }
 
     .horaire-jour-label {
         display: block;
@@ -436,11 +473,34 @@
         border-bottom: 1px solid #ffe0c7;
     }
 
-    /* Les 2 périodes côte à côte sur mobile aussi */
+    /* 2 colonnes Matin / Après-midi dans la carte jour */
     .horaire-periods-wrap {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 10px;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .horaire-period {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .horaire-period-field {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        width: 100%;
+        min-width: 0;
+    }
+
+    .horaire-period-field input[type="time"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        font-size: 12px;
+        padding: 6px 4px;
+        text-align: center;
     }
 }
 </style>
