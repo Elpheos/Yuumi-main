@@ -60,8 +60,6 @@ class StoreForm(forms.ModelForm):
             'categorie',
             'descriptionpetite',
             'descriptiongrande',
-            'addressemaps',
-            'addresseitineraire',
             'site',
             'phone',
             'instagram',
