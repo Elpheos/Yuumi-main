@@ -55,8 +55,6 @@ class StoreForm(forms.ModelForm):
         model = Store
         fields = [
             'nom',
-            'ville',
-            'departement',
             'categorie',
             'descriptionpetite',
             'descriptiongrande',
