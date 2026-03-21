@@ -14,6 +14,7 @@
     margin: 40px auto 60px;
     padding: 0 20px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
 }
 
 /* ── En-tête ── */
@@ -26,6 +27,10 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 /* ── Carte de section ── */
