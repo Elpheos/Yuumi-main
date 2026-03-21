@@ -294,6 +294,12 @@
     box-shadow: 0 0 0 2px rgba(255,139,56,0.12);
 }
 
+.horaire-separator {
+    border: none;
+    border-top: 1px solid #f0f0f0;
+    margin: 4px 0;
+}
+
 /* ── Boutons ── */
 .edit-actions {
     display: flex;
@@ -342,7 +348,7 @@
     transition: background 0.2s, opacity 0.2s;
 }
 
-.btn-save:hover   { background: #e67626; }
+.btn-save:hover    { background: #e67626; }
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ============================================================
@@ -387,6 +393,12 @@
         display: none;
     }
 
+    /* Le séparateur entre jours devient invisible sur mobile
+       car chaque jour est déjà une carte séparée */
+    .horaire-separator {
+        display: none;
+    }
+
     .horaire-row {
         display: block;
         background: #fafafa;
@@ -405,8 +417,6 @@
         border-bottom: 1px solid #ffe0c7;
     }
 
-    /* On utilise display:contents sur desktop,
-       mais on le réécrase en block sur mobile */
     .horaire-field-wrap {
         display: block;
     }
@@ -444,7 +454,6 @@
         Modifier — {{ store.nom }}
     </h1>
 
-    {# Bandeau erreurs globales #}
     {% if form.errors or opening_formset.errors %}
     <div class="form-error-banner">
         <i class="fa-solid fa-circle-exclamation"></i>
@@ -455,7 +464,7 @@
     <form method="post" enctype="multipart/form-data" id="edit-store-form" novalidate>
         {% csrf_token %}
 
-
+        {# ── SECTION 1 : Informations générales ── #}
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-store"></i> Informations générales
@@ -506,7 +515,7 @@
             </div>
         </div>
 
-
+        {# ── SECTION 2 : Contact & liens ── #}
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-address-card"></i> Contact & liens
@@ -564,6 +573,7 @@
             </div>
         </div>
 
+        {# ── SECTION 3 : Photo principale ── #}
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-image"></i> Photo principale
@@ -591,7 +601,7 @@
             </div>
         </div>
 
-
+        {# ── SECTION 4 : Galerie ── #}
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-images"></i> Galerie
@@ -628,7 +638,6 @@
                 {% endif %}
             </div>
 
-            {# Photos supplémentaires #}
             <hr style="border:none;border-top:1px solid #f0f0f0;margin:20px 0 16px;">
             <p style="font-size:0.8rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">
                 Photos supplémentaires du carrousel
@@ -666,7 +675,7 @@
             </div>
         </div>
 
-
+        {# ── SECTION 5 : Horaires ── #}
         <div class="edit-section">
             <h2 class="edit-section-title">
                 <i class="fa-solid fa-clock"></i> Horaires d'ouverture
@@ -674,7 +683,6 @@
 
             {{ opening_formset.management_form }}
 
-            {# En-têtes colonnes — cachées sur mobile #}
             <div class="horaire-header-row">
                 <span>Jour</span>
                 <span>Matin ouverture</span>
@@ -703,9 +711,12 @@
                     <label>Après-midi fermeture</label>
                     {{ horaire_form.apresmidi_fermeture }}
                 </div>
-<hr>
+
                 {{ horaire_form.id }}
             </div>
+            {% if not forloop.last %}
+            <hr class="horaire-separator">
+            {% endif %}
             {% endfor %}
 
             {% if opening_formset.errors %}
@@ -715,7 +726,7 @@
             {% endif %}
         </div>
 
-
+        {# ── Boutons d'action ── #}
         <div class="edit-actions">
             {% if store.slug %}
             <a href="{{ store.get_absolute_url }}" class="btn-retour" id="btn-retour">
@@ -778,9 +789,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
     // 3. GARDE-FOU "MODIFICATIONS NON SAUVEGARDÉES"
     // ============================================================
-    let formDirty  = false;
-    let formSaving = false;
-    const form     = document.getElementById("edit-store-form");
+    let formDirty   = false;
+    let formSaving  = false;
+    const form      = document.getElementById("edit-store-form");
     const btnRetour = document.getElementById("btn-retour");
 
     if (form) {
@@ -819,23 +830,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // ============================================================
     // 5. RESTRUCTURATION DOM HORAIRES SUR MOBILE
-    //    Sur mobile (< 600px), on regroupe les 4 champs dans
-    //    une grille 2×2 à l'intérieur de chaque .horaire-row.
     // ============================================================
     function restructureHoraires() {
         const isMobile = window.innerWidth < 600;
+
         document.querySelectorAll(".horaire-row").forEach(row => {
             const alreadyMobile = !!row.querySelector(".horaire-fields-grid");
 
             if (isMobile && !alreadyMobile) {
-                // Récupérer les éléments
                 const jour   = row.querySelector(".horaire-jour-label");
                 const wraps  = Array.from(row.querySelectorAll(".horaire-field-wrap"));
                 const hidden = row.querySelector("input[type='hidden']");
 
-                // Vider la row
                 row.innerHTML = "";
-                if (jour)   row.appendChild(jour);
+                if (jour) row.appendChild(jour);
 
                 const grid = document.createElement("div");
                 grid.className = "horaire-fields-grid";
@@ -844,14 +852,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (hidden) row.appendChild(hidden);
 
             } else if (!isMobile && alreadyMobile) {
-                // Restaurer la structure grille 5 colonnes
                 const jour   = row.querySelector(".horaire-jour-label");
                 const wraps  = Array.from(row.querySelectorAll(".horaire-field-wrap"));
                 const hidden = row.querySelector("input[type='hidden']");
-                const grid   = row.querySelector(".horaire-fields-grid");
 
                 row.innerHTML = "";
-                if (jour)   row.appendChild(jour);
+                if (jour) row.appendChild(jour);
                 wraps.forEach(w => row.appendChild(w));
                 if (hidden) row.appendChild(hidden);
             }
