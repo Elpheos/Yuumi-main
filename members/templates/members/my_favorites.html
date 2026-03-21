@@ -71,7 +71,7 @@
     font-size: 4rem;
     margin-bottom: 6px;
     font-weight: 600;
-    text-align : left;
+    text-align: left;
 }
 
 .my-favorite-user {
@@ -80,7 +80,7 @@
     margin-bottom: 24px;
 }
 
-/* Liste simple */
+/* Liste en grille */
 .my-favorite-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -167,10 +167,50 @@
     margin-top: 40px;
 }
 
+/* ============================
+   RESPONSIVE MOBILE
+   ============================ */
 @media (max-width: 767px) {
-    .page-title-container { margin-top: 60px; }
-    .favorites-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+    .my-favorite-main {
+        margin-top: 80px; /* compense la navbar fixe */
+        padding: 0 12px;
+    }
+
+    .my-favorite-title {
+        font-size: 2rem; /* 4rem → trop grand sur mobile */
+    }
+
+    .my-favorite-user {
+        font-size: 1rem; /* 2rem → trop grand sur mobile */
+        margin-bottom: 16px;
+    }
+
+    .my-favorite-list {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur mobile */
+        gap: 12px;
+    }
+
+    .my-favorite-photo {
+        height: 110px;
+    }
+
+    .my-favorite-info {
+        padding: 10px;
+    }
+
+    .my-favorite-name {
+        font-size: 0.9rem;
+    }
+
+    .my-favorite-btn {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 400px) {
+    .my-favorite-list {
+        grid-template-columns: 1fr; /* 1 colonne sur très petits écrans */
     }
 }
 </style>
