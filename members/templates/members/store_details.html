@@ -1,579 +1,502 @@
 {% extends "master.html" %}
-    {% load static %}
+{% load static %}
 
-    {% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
+{% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
 
-    {% block content %}
+{% block content %}
 
-{% if request.user == store.owner or request.user.is_superuser %}
-<div class="edit-store-button">
-    <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
-   class="btn btn-primary">
-    Modifier ce commerce
-</a>
+{# ============================================================
+   BOUTONS D'ACTION — regroupés dans un seul conteneur flex
+   pour un alignement propre sur desktop ET mobile
+   ============================================================ #}
+<div class="store-action-bar">
+    {% if request.user == store.owner or request.user.is_superuser %}
+        <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
+           class="btn btn-primary">
+            Modifier ce commerce
+        </a>
+    {% endif %}
+
+    {% if request.user.is_authenticated and request.user != store.owner %}
+        <button class="btn btn-secondary"
+                id="claimButton"
+                onclick="claimStore({{ store.id }})">
+            Revendiquer ce commerce
+        </button>
+    {% endif %}
 </div>
-{% endif %}
 
 {% if request.user.is_authenticated and request.user != store.owner %}
-<div class="store-action-button" style="margin-bottom:10px;">
-    <button class="btn btn-secondary"
-            id="claimButton"
-            onclick="claimStore({{ store.id }})">
-        Revendiquer ce commerce
-    </button>
-
-    <p id="claimTimer"
-       style="display:none; font-size:14px; margin-top:6px; color:#666;">
-    </p>
-</div>
+<p id="claimTimer" style="display:none; font-size:14px; margin: 0 16px 10px; color:#666;"></p>
 {% endif %}
 
 
+<main>
+    <section aria-label="Informations principales du commerce">
+        <div class="informations-principales-commerce-container">
 
-    <main>
-        <section aria-label="Informations principales du commerce">
-            <div class="informations-principales-commerce-container">
-                <!-- 🖼️ CARROUSEL D'IMAGES -->
-    <div class="photo-commerce-container">
-    <div id="carouselStoreImages" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
-        
-        <!-- 🔸 Points indicateurs -->
-        <div class="carousel-indicators">
-        {% if store.photo %}
-            <button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="0" class="active" aria-current="true"></button>
-        {% endif %}
-        {% for img in store.images.all %}
-            <button type="button"
-                    data-bs-target="#carouselStoreImages"
-                    data-bs-slide-to="{% if store.photo %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}">
-            </button>
-        {% endfor %}
-        </div>
+            <!-- 🖼️ CARROUSEL D'IMAGES -->
+            <div class="photo-commerce-container">
+                <div id="carouselStoreImages" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
 
-        <!-- 🔸 Conteneur des images -->
-        <div class="carousel-inner">
-        {% if store.photo %}
-        <div class="carousel-item active">
-            <img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
-        </div>
-        {% endif %}
+                    <!-- Points indicateurs -->
+                    <div class="carousel-indicators">
+                        {% if store.photo %}
+                            <button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                        {% endif %}
+                        {% for img in store.images.all %}
+                            <button type="button"
+                                    data-bs-target="#carouselStoreImages"
+                                    data-bs-slide-to="{% if store.photo %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}">
+                            </button>
+                        {% endfor %}
+                    </div>
 
-        {% for img in store.images.all %}
-        <div class="carousel-item {% if not store.photo and forloop.first %}active{% endif %}">
-            <img src="{{ img.image.url }}" class="d-block w-100 store-carousel-img" alt="Photo de {{ store.nom }}">
-        </div>
-        {% endfor %}
-        </div>
+                    <!-- Conteneur des images -->
+                    <div class="carousel-inner">
+                        {% if store.photo %}
+                            <div class="carousel-item active">
+                                <img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
+                            </div>
+                        {% endif %}
 
-        <!-- 🔸 Boutons de navigation -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Précédent</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Suivant</span>
-        </button>
-    </div>
-    </div>
+                        {% for img in store.images.all %}
+                            <div class="carousel-item {% if not store.photo and forloop.first %}active{% endif %}">
+                                <img src="{{ img.image.url }}" class="d-block w-100 store-carousel-img" alt="Photo de {{ store.nom }}">
+                            </div>
+                        {% endfor %}
+                    </div>
 
+                    <!-- Boutons de navigation -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Précédent</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Suivant</span>
+                    </button>
+                </div>
+            </div>
 
+            <!-- PARTIE DROITE : infos + liens -->
+            <div class="commerce-right-part-container">
+                <div class="description-container">
+                    <h1>{{ store.nom }} | {{ store.ville }}</h1>
+                    <hr class="hr-page-commerce" />
 
-                <div class="commerce-right-part-container">
+                    <div class="description-principale">
+                        <p>{{ store.descriptionpetite }}</p>
+                    </div>
 
-                    <div class="description-container">
-                        <h1>{{ store.nom }} | {{ store.ville }}</h1>
-                        <hr class="hr-page-commerce" />
+                    <div class="description-secondaire">
+                        <p>{{ store.descriptiongrande }}</p>
+                    </div>
 
-                        <div class="description-principale">
-                            <p>{{ store.descriptionpetite }}</p>
-                        </div>
-
-                        <div class="description-secondaire">
-                            <p>{{ store.descriptiongrande }}</p>
-                        </div>
-                        
-                        <div class="itinéraire-commerce">
-                            {% if store.addresseitineraire %}
-                            <a href="{{ store.addresseitineraire }}"
-                            rel="noopener"
-                            class="button-1-description">
+                    <div class="itinéraire-commerce">
+                        {% if store.addresseitineraire %}
+                            <a href="{{ store.addresseitineraire }}" rel="noopener" class="button-1-description">
                                 Je me rends sur place
                             </a>
                         {% endif %}
-                        </div>
-                        <div class="site-commerce">
-                    {% if store.site %}
-                        <a href="{{ store.site }}"
-                        rel="noopener"
-                        class="button-1-description">
-                            Site du commerce
-                        </a>
-                    {% endif %}
-        </div>
+                    </div>
 
-<div class="commerce-réseaux">
-    {% if store.phone %}
-        <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
-            {% with image_path='images/'|add:store.ville|lower|add:'/telephone.webp' %}
-    <img src="{% static image_path %}" alt="Téléphone {{ store.nom }}">
-{% endwith %}
+                    <div class="site-commerce">
+                        {% if store.site %}
+                            <a href="{{ store.site }}" rel="noopener" class="button-1-description">
+                                Site du commerce
+                            </a>
+                        {% endif %}
+                    </div>
 
-        </a>
-    {% endif %}
+                    <div class="commerce-réseaux">
+                        {% if store.phone %}
+                            <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
+                                {% with image_path='images/'|add:store.ville|lower|add:'/telephone.webp' %}
+                                    <img src="{% static image_path %}" alt="Téléphone {{ store.nom }}">
+                                {% endwith %}
+                            </a>
+                        {% endif %}
 
-    {% if store.instagram %}
-        <a href="{{ store.instagram }}" rel="noopener">
-            <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
-        </a>
-    {% endif %}
+                        {% if store.instagram %}
+                            <a href="{{ store.instagram }}" rel="noopener">
+                                <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
+                            </a>
+                        {% endif %}
 
-    {% if store.facebook %}
-        <a href="{{ store.facebook }}" rel="noopener">
-            <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
-        </a>
-    {% endif %}
-</div>
+                        {% if store.facebook %}
+                            <a href="{{ store.facebook }}" rel="noopener">
+                                <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
+                            </a>
+                        {% endif %}
+                    </div>
 
-
-                        <!-- FAVORIS -->
-                        <div class="commerce-wishlist">
-                            <button class="favori-btn"
-                                    data-store-id="{{ store.id }}"
-                                    data-is-favorite="{{ is_favorite|yesno:'true,false' }}">
-                                <i class="fa-regular fa-heart"></i>
-                                <span>Ajouter aux favoris</span>
-                            </button>
-                        </div>
-
+                    <!-- FAVORIS -->
+                    <div class="commerce-wishlist">
+                        <button class="favori-btn"
+                                data-store-id="{{ store.id }}"
+                                data-is-favorite="{{ is_favorite|yesno:'true,false' }}">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>Ajouter aux favoris</span>
+                        </button>
                     </div>
                 </div>
             </div>
-
-            <!-- Boutons informations secondaires -->
-            <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
-                <div class="informations-secondaires-commerce-container">
-                    <div class="informations-secondaires-commerce-buttons-container">
-                        <button id="bouton1" onclick='
-                            document.getElementById("bouton1").style.backgroundColor = "#ff8b38";
-                            document.getElementById("bouton1").style.color = "white";
-                            document.getElementById("bouton2").style.backgroundColor = "white";
-                            document.getElementById("bouton2").style.color = "#333";
-                            document.getElementById("bouton3").style.backgroundColor = "white";
-                            document.getElementById("bouton3").style.color = "#333";
-                            document.getElementById("infospratiques").style.display = "block";
-                            document.getElementById("galerie").style.display = "none";
-                            document.getElementById("produits").style.display = "none";
-                        '>Informations pratiques</button>
-
-                        <button id="bouton2" onclick='
-                            document.getElementById("bouton2").style.backgroundColor = "#ff8b38";
-                            document.getElementById("bouton2").style.color = "white";
-                            document.getElementById("bouton1").style.backgroundColor = "white";
-                            document.getElementById("bouton1").style.color = "#333";
-                            document.getElementById("bouton3").style.backgroundColor = "white";
-                            document.getElementById("bouton3").style.color = "#333";
-                            document.getElementById("galerie").style.display = "flex";
-                            document.getElementById("infospratiques").style.display = "none";
-                            document.getElementById("produits").style.display = "none";
-                        '>Galerie</button>
-
-                        <button id="bouton3" onclick='
-                            document.getElementById("bouton3").style.backgroundColor = "#ff8b38";
-                            document.getElementById("bouton3").style.color = "white";
-                            document.getElementById("bouton1").style.backgroundColor = "white";
-                            document.getElementById("bouton1").style.color = "#333";
-                            document.getElementById("bouton2").style.backgroundColor = "white";
-                            document.getElementById("bouton2").style.color = "#333";
-                            document.getElementById("produits").style.display = "block";
-                            document.getElementById("infospratiques").style.display = "none";
-                            document.getElementById("galerie").style.display = "none";
-                        '>Liste des produits</button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Infos pratiques -->
-            <section aria-label="Informations pratiques concernant le commerce" id="infospratiques" class="infopratiques-container">
-        <div class="infopratiques-content-container">
-
-            <!-- Horaires -->
-            <div class="infopratiques-horaires-container" id="horairesip">
-                <table class="infopratiques-horaires-table">
-                    <thead>
-                        <tr><th colspan="2"><b>Horaires</b></th></tr>
-                    </thead>
-                    <tbody>
-                    {% if horaires_renseignes %}
-                        {% for hour in opening_hours %}
-                            <tr>
-                                <td><b>{{ hour.get_jour_display }} :</b></td>
-                                <td>
-                                    {% if hour.matin_ouverture and hour.matin_fermeture %}
-                                        {{ hour.matin_ouverture|time:"H:i" }} - {{ hour.matin_fermeture|time:"H:i" }}
-                                    {% endif %}
-                                    {% if hour.apresmidi_ouverture and hour.apresmidi_fermeture %}
-                                        {% if hour.matin_ouverture and hour.matin_fermeture %} / {% endif %}
-                                        {{ hour.apresmidi_ouverture|time:"H:i" }} - {{ hour.apresmidi_fermeture|time:"H:i" }}
-                                    {% endif %}
-                                    {% if not hour.matin_ouverture and not hour.apresmidi_ouverture %}
-                                        Fermé
-                                    {% endif %}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="2" style="text-align:center; color:#aaa; font-style:italic; padding: 12px 0;">
-                                Horaires non renseignés
-                            </td>
-                        </tr>
-                    {% endif %}
-                    </tbody>
-                </table>
-
-                <!-- FIX : date dynamique depuis horaires_updated_at -->
-                <p class="infopratiques-miseajour">
-                    {% if store.horaires_updated_at %}
-                        <b>Dernière mise à jour :</b> {{ store.horaires_updated_at|date:"d.m.Y" }}<br>
-                    {% endif %}
-                    Les horaires peuvent changer, assurez-vous de l'ouverture d'un commerce avant de vous rendre sur place.
-                </p>
-            </div>
-
-            <!-- Adresse -->
-            <div class="infopratiques-adresse-container" id="adresseip">
-                <i class="fa-solid fa-location-dot" style="color: #ff8b38;font-size: 40px;margin-bottom:15px;"></i>
-                <p class="infopratiques-adresse-texte">{{ store.addressemaps }}</p>
-            </div>
-
         </div>
-    </section>
 
-            <!-- Galerie -->
-      <section aria-label="Galerie du commerce" class="galerie-container" id="galerie">
+        <!-- Boutons onglets secondaires -->
+        <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
+            <div class="informations-secondaires-commerce-container">
+                <div class="informations-secondaires-commerce-buttons-container">
+                    <button id="bouton1" onclick='
+                        document.getElementById("bouton1").style.backgroundColor = "#ff8b38";
+                        document.getElementById("bouton1").style.color = "white";
+                        document.getElementById("bouton2").style.backgroundColor = "white";
+                        document.getElementById("bouton2").style.color = "#333";
+                        document.getElementById("bouton3").style.backgroundColor = "white";
+                        document.getElementById("bouton3").style.color = "#333";
+                        document.getElementById("infospratiques").style.display = "block";
+                        document.getElementById("galerie").style.display = "none";
+                        document.getElementById("produits").style.display = "none";
+                    '>Informations pratiques</button>
 
-    {% if store.galerie_title %}
-        <h2 class="galerie-title">{{ store.galerie_title }}</h2>
-    {% endif %}
+                    <button id="bouton2" onclick='
+                        document.getElementById("bouton2").style.backgroundColor = "#ff8b38";
+                        document.getElementById("bouton2").style.color = "white";
+                        document.getElementById("bouton1").style.backgroundColor = "white";
+                        document.getElementById("bouton1").style.color = "#333";
+                        document.getElementById("bouton3").style.backgroundColor = "white";
+                        document.getElementById("bouton3").style.color = "#333";
+                        document.getElementById("galerie").style.display = "flex";
+                        document.getElementById("infospratiques").style.display = "none";
+                        document.getElementById("produits").style.display = "none";
+                    '>Galerie</button>
 
-    {% if store.galerie_description %}
-        <p class="galerie-description">{{ store.galerie_description }}</p>
-    {% endif %}
-
-    {% if store.galerie_image or store.images.exists %}
-        <div class="galerie-grid">
-
-            {% if store.galerie_image %}
-                <div class="galerie-item">
-                    <img
-                        src="{{ store.galerie_image.url }}"
-                        alt="Image principale de la galerie {{ store.nom }}"
-                        class="galerie-main-img"
-                    >
+                    <button id="bouton3" onclick='
+                        document.getElementById("bouton3").style.backgroundColor = "#ff8b38";
+                        document.getElementById("bouton3").style.color = "white";
+                        document.getElementById("bouton1").style.backgroundColor = "white";
+                        document.getElementById("bouton1").style.color = "#333";
+                        document.getElementById("bouton2").style.backgroundColor = "white";
+                        document.getElementById("bouton2").style.color = "#333";
+                        document.getElementById("produits").style.display = "block";
+                        document.getElementById("infospratiques").style.display = "none";
+                        document.getElementById("galerie").style.display = "none";
+                    '>Liste des produits</button>
                 </div>
-            {% endif %}
+            </div>
+        </section>
 
-            {% for img in store.images.all %}
-                <div class="galerie-item">
-                    <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
-                </div>
-            {% endfor %}
+        <!-- Infos pratiques -->
+        <section aria-label="Informations pratiques concernant le commerce" id="infospratiques" class="infopratiques-container">
+            <div class="infopratiques-content-container">
 
-        </div>
-    {% else %}
-        <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
-    {% endif %}
-
-</section>
-
-
-
-    </section>
-
-            <!-- Produits -->
-            <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits">
-                {% for family in store.families.all %}
-                    <table>
+                <!-- Horaires -->
+                <div class="infopratiques-horaires-container" id="horairesip">
+                    <table class="infopratiques-horaires-table">
                         <thead>
-                            <tr><th colspan="4">{{ family.nom }}</th></tr>
+                            <tr><th colspan="2"><b>Horaires</b></th></tr>
                         </thead>
                         <tbody>
-                            {% for product in family.products.all %}
-                                {% if forloop.first or forloop.counter0|divisibleby:4 %}<tr>{% endif %}
-                                <td>{{ product.nom }}</td>
-                                {% if forloop.counter|divisibleby:4 or forloop.last %}
-                                    {% for _ in " "|slice:":{{ 4 - forloop.counter|add:'0'|divisibleby:4|yesno:'0,1' }}" %}<td></td>{% endfor %}
+                            {% if horaires_renseignes %}
+                                {% for hour in opening_hours %}
+                                    <tr>
+                                        <td><b>{{ hour.get_jour_display }} :</b></td>
+                                        <td>
+                                            {% if hour.matin_ouverture and hour.matin_fermeture %}
+                                                {{ hour.matin_ouverture|time:"H:i" }} - {{ hour.matin_fermeture|time:"H:i" }}
+                                            {% endif %}
+                                            {% if hour.apresmidi_ouverture and hour.apresmidi_fermeture %}
+                                                {% if hour.matin_ouverture and hour.matin_fermeture %} / {% endif %}
+                                                {{ hour.apresmidi_ouverture|time:"H:i" }} - {{ hour.apresmidi_fermeture|time:"H:i" }}
+                                            {% endif %}
+                                            {% if not hour.matin_ouverture and not hour.apresmidi_ouverture %}
+                                                Fermé
+                                            {% endif %}
+                                        </td>
                                     </tr>
-                                {% endif %}
-                            {% endfor %}
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" style="text-align:center; color:#aaa; font-style:italic; padding: 12px 0;">
+                                        Horaires non renseignés
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
-                {% endfor %}
-            </section>
 
+                    <p class="infopratiques-miseajour">
+                        {% if store.horaires_updated_at %}
+                            <b>Dernière mise à jour :</b> {{ store.horaires_updated_at|date:"d.m.Y" }}<br>
+                        {% endif %}
+                        Les horaires peuvent changer, assurez-vous de l'ouverture d'un commerce avant de vous rendre sur place.
+                    </p>
+                </div>
+
+                <!-- Adresse -->
+                <div class="infopratiques-adresse-container" id="adresseip">
+                    <i class="fa-solid fa-location-dot" style="color: #ff8b38; font-size: 40px; margin-bottom:15px;"></i>
+                    <p class="infopratiques-adresse-texte">{{ store.addressemaps }}</p>
+                </div>
+
+            </div>
         </section>
-    </main>
 
-    <!-- Modal de confirmation pour revendication -->
-    <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
+        <!-- Galerie -->
+        <section aria-label="Galerie du commerce" class="galerie-container" id="galerie">
+            {% if store.galerie_title %}
+                <h2 class="galerie-title">{{ store.galerie_title }}</h2>
+            {% endif %}
+
+            {% if store.galerie_description %}
+                <p class="galerie-description">{{ store.galerie_description }}</p>
+            {% endif %}
+
+            {% if store.galerie_image or store.images.exists %}
+                <div class="galerie-grid">
+                    {% if store.galerie_image %}
+                        <div class="galerie-item">
+                            <img src="{{ store.galerie_image.url }}"
+                                 alt="Image principale de la galerie {{ store.nom }}"
+                                 class="galerie-main-img">
+                        </div>
+                    {% endif %}
+
+                    {% for img in store.images.all %}
+                        <div class="galerie-item">
+                            <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
+            {% endif %}
+        </section>
+
+    </section>
+
+    <!-- Produits -->
+    <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits">
+        {% for family in store.families.all %}
+            <table>
+                <thead>
+                    <tr><th colspan="4">{{ family.nom }}</th></tr>
+                </thead>
+                <tbody>
+                    {% for product in family.products.all %}
+                        {% if forloop.first or forloop.counter0|divisibleby:4 %}<tr>{% endif %}
+                        <td>{{ product.nom }}</td>
+                        {% if forloop.counter|divisibleby:4 or forloop.last %}
+                            {% for _ in " "|slice:":{{ 4 - forloop.counter|add:'0'|divisibleby:4|yesno:'0,1' }}" %}<td></td>{% endfor %}
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endfor %}
+    </section>
+
+</main>
+
+<!-- Modal de confirmation pour revendication -->
+<div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title" id="claimModalLabel">Confirmer la revendication</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-        <div class="modal-body">
-            Êtes-vous sûr de vouloir dire que ce commerce est le vôtre ?
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-            <button type="button" class="btn btn-primary" id="confirmClaim">Oui, revendiquer</button>
-        </div>
-        </div>
-    </div>
-    </div>
-
-    <!-- Lightbox Galerie -->
-    {% if store.galerie_image or store.images.exists %}
-    <div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
-        <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
-            <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="" style="max-width:85vw;max-height:85vh;object-fit:contain;border:4px solid #ff8b38;border-radius:14px;background:#fff;display:block;">
-            <span class="galerie-lightbox-close" style="position:absolute;top:-10px;right:-10px;width:40px;height:40px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);z-index:100000;display:flex;align-items:center;justify-content:center;font-size:20px;color:#ff8b38;font-weight:bold;">&times;</span>
+            <div class="modal-header">
+                <h5 class="modal-title" id="claimModalLabel">Confirmer la revendication</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir dire que ce commerce est le vôtre ?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="confirmClaim">Oui, revendiquer</button>
+            </div>
         </div>
     </div>
-    {% endif %}
+</div>
 
-    {% endblock %}
+<!-- Lightbox Galerie -->
+{% if store.galerie_image or store.images.exists %}
+<div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
+    <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
+        <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="" style="max-width:85vw;max-height:85vh;object-fit:contain;border:4px solid #ff8b38;border-radius:14px;background:#fff;display:block;">
+        <span class="galerie-lightbox-close" style="position:absolute;top:-10px;right:-10px;width:40px;height:40px;background:#fff;border-radius:50%;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,0.3);z-index:100000;display:flex;align-items:center;justify-content:center;font-size:20px;color:#ff8b38;font-weight:bold;">&times;</span>
+    </div>
+</div>
+{% endif %}
 
-    {% block extra_js %}
-    <script>
-        window.stores = {{ stores|safe }};
-    </script>
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const carouselEl = document.querySelector("#carouselStoreImages");
-        if (carouselEl) {
-            const carousel = new bootstrap.Carousel(carouselEl, {
-                interval: false,
-                ride: false,
-                wrap: true
-            });
-        }
-    });
-    </script>
+{% endblock %}
 
-    <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const buttons = document.querySelectorAll(".favori-btn");
+{% block extra_js %}
+<script>
+    window.stores = {{ stores|safe }};
+</script>
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== "") {
-                const cookies = document.cookie.split(";").map(c => c.trim());
-                for (let cookie of cookies) {
-                    if (cookie.startsWith(name + "=")) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const carouselEl = document.querySelector("#carouselStoreImages");
+    if (carouselEl) {
+        new bootstrap.Carousel(carouselEl, {
+            interval: false,
+            ride: false,
+            wrap: true
+        });
+    }
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const buttons = document.querySelectorAll(".favori-btn");
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";").map(c => c.trim());
+            for (let cookie of cookies) {
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
+        }
+        return cookieValue;
+    }
+
+    buttons.forEach(btn => {
+        const storeId = btn.dataset.storeId;
+        if (!storeId) return;
+
+        const isFavorite = btn.dataset.isFavorite === "true";
+        const icon = btn.querySelector("i");
+        const span = btn.querySelector("span");
+
+        if (isFavorite) {
+            btn.classList.add("active");
+            if (icon) {
+                icon.classList.remove("fa-regular");
+                icon.classList.add("fa-solid");
+            }
+            if (span) span.textContent = "Retirer des favoris";
         }
 
-        buttons.forEach(btn => {
-            const storeId = btn.dataset.storeId;
-            if (!storeId) return;
-
-            const isFavorite = btn.dataset.isFavorite === "true";
-            const icon = btn.querySelector("i");
-            const span = btn.querySelector("span");
-
-            if (isFavorite) {
-                btn.classList.add("active");
-                if (icon) {
+        btn.addEventListener("click", () => {
+            fetch(`/store/${storeId}/favoris/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Erreur réseau");
+                return res.json();
+            })
+            .then(data => {
+                if (data.action === "added") {
+                    btn.classList.add("active");
                     icon.classList.remove("fa-regular");
                     icon.classList.add("fa-solid");
+                    span.textContent = "Retirer des favoris";
+                } else if (data.action === "removed") {
+                    btn.classList.remove("active");
+                    icon.classList.remove("fa-solid");
+                    icon.classList.add("fa-regular");
+                    span.textContent = "Ajouter aux favoris";
                 }
-                if (span) span.textContent = "Retirer des favoris";
-            }
-
-            btn.addEventListener("click", () => {
-                fetch(`/store/${storeId}/favoris/`, {
-                    method: "POST",
-                    headers: {
-                        "X-CSRFToken": getCookie("csrftoken"),
-                        "X-Requested-With": "XMLHttpRequest",
-                    },
-                })
-                .then(res => {
-                    if (!res.ok) throw new Error("Erreur réseau");
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.action === "added") {
-                        btn.classList.add("active");
-                        icon.classList.remove("fa-regular");
-                        icon.classList.add("fa-solid");
-                        span.textContent = "Retirer des favoris";
-                    } else if (data.action === "removed") {
-                        btn.classList.remove("active");
-                        icon.classList.remove("fa-solid");
-                        icon.classList.add("fa-regular");
-                        span.textContent = "Ajouter aux favoris";
-                    }
-                })
-                .catch(err => console.error("Erreur favori :", err));
-            });
+            })
+            .catch(err => console.error("Erreur favori :", err));
         });
     });
-    </script>
+});
+</script>
 
-    <script>
-    let currentStoreId = null;
+<script>
+let currentStoreId = null;
 
-    function claimStore(storeId) {
-        currentStoreId = storeId;
-        const modal = new bootstrap.Modal(document.getElementById('claimModal'));
-        modal.show();
-    }
+function claimStore(storeId) {
+    currentStoreId = storeId;
+    const modal = new bootstrap.Modal(document.getElementById('claimModal'));
+    modal.show();
+}
 
-    document.getElementById('confirmClaim').addEventListener('click', function() {
-        if (!currentStoreId) return;
+document.getElementById('confirmClaim').addEventListener('click', function () {
+    if (!currentStoreId) return;
 
-        function getCookie(name) {
-            let cookieValue = null;
-            if (document.cookie && document.cookie !== "") {
-                const cookies = document.cookie.split(";").map(c => c.trim());
-                for (let cookie of cookies) {
-                    if (cookie.startsWith(name + "=")) {
-                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                        break;
-                    }
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";").map(c => c.trim());
+            for (let cookie of cookies) {
+                if (cookie.startsWith(name + "=")) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
                 }
             }
-            return cookieValue;
         }
+        return cookieValue;
+    }
 
-        fetch(`/store/${currentStoreId}/claim/`, {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": getCookie("csrftoken"),
-                "X-Requested-With": "XMLHttpRequest",
-            },
-        })
-        .then(async res => {
-            const data = await res.json();
-            if (res.status === 429 && data.error === "cooldown") {
-                startCooldown(data.remaining);
-                return;
-            }
-            if (!res.ok) {
-                alert(data.error || "Erreur lors de la revendication.");
-                return;
-            }
-            alert(data.message || "Demande envoyée avec succès.");
-            location.reload();
-        })
-        .catch(err => {
-            console.error("Erreur réseau :", err);
-            alert("Erreur réseau lors de la revendication.");
-        });
-
-        const modal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
-        modal.hide();
+    fetch(`/store/${currentStoreId}/claim/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    })
+    .then(async res => {
+        const data = await res.json();
+        if (res.status === 429 && data.error === "cooldown") {
+            startCooldown(data.remaining);
+            return;
+        }
+        if (!res.ok) {
+            alert(data.error || "Erreur lors de la revendication.");
+            return;
+        }
+        alert(data.message || "Demande envoyée avec succès.");
+        location.reload();
+    })
+    .catch(err => {
+        console.error("Erreur réseau :", err);
+        alert("Erreur réseau lors de la revendication.");
     });
-    </script>
 
-    <style>
-    #carouselStoreImages {
-        max-width: 80%;
-        margin: 0 auto 20px auto;
-        border: 5px solid #ff8b38;
-        border-radius: 15px;
-        overflow: hidden;
-        background: #fff;
-    }
+    const modal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
+    modal.hide();
+});
+</script>
 
-    .carousel-item {
-        height: 500px;
-    }
+<script>
+function startCooldown(seconds) {
+    const btn = document.getElementById("claimButton");
+    const timer = document.getElementById("claimTimer");
 
-    .store-carousel-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-    }
+    if (!btn || !timer) return;
 
-    .carousel-indicators [data-bs-target] {
-        background-color: #ff8b38;
-    }
+    btn.disabled = true;
+    timer.style.display = "block";
 
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        background-color: #ff8b38;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        background-size: 60%;
-        transition: all 0.2s ease;
-    }
+    const interval = setInterval(() => {
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
+        timer.textContent = `Nouvelle demande possible dans ${min}m ${sec}s`;
 
-    .carousel-control-prev-icon:hover,
-    .carousel-control-next-icon:hover {
-        background-color: #ff8b38;
-        transform: scale(1.1);
-    }
-
-    .edit-store-button {
-        margin: 20px 0;
-    }
-
-    .edit-store-button .btn {
-        display: inline-block;
-        width: auto;
-    }
-
-    @media (max-width: 768px) {
-        #carouselStoreImages {
-            max-width: 100%;
-            border-width: 3px;
+        if (seconds <= 0) {
+            clearInterval(interval);
+            btn.disabled = false;
+            timer.style.display = "none";
         }
-        .store-carousel-img {
-            max-height: 50vh;
-        }
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            width: 40px;
-            height: 40px;
-        }
-    }
+        seconds--;
+    }, 1000);
+}
+</script>
 
-    @media (max-width: 767px) {
-        #carouselStoreImages {
-            max-width: 100%;
-            border-radius: 0;
-        }
-
-        .carousel-item {
-            height: 260px;
-        }
-
-        .informations-secondaires-commerce-buttons-container {
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .informations-secondaires-commerce-buttons-container > button {
-            width: 100%;
-        }
-    }
-    </style>
-
-   <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
-
     const lightbox = document.getElementById("galerieLightbox");
     const lightboxImg = document.getElementById("galerieLightboxImg");
     const closeBtn = document.querySelector(".galerie-lightbox-close");
@@ -607,36 +530,124 @@ document.addEventListener("DOMContentLoaded", () => {
     document.addEventListener("keydown", (e) => {
         if (e.key === "Escape") closeLightbox();
     });
-
 });
 </script>
 
-<script>
-function startCooldown(seconds) {
-    const btn = document.getElementById("claimButton");
-    const timer = document.getElementById("claimTimer");
-
-    if (!btn || !timer) return;
-
-    btn.disabled = true;
-    timer.style.display = "block";
-
-    const interval = setInterval(() => {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-
-        timer.textContent =
-            `Nouvelle demande possible dans ${min}m ${sec}s`;
-
-        if (seconds <= 0) {
-            clearInterval(interval);
-            btn.disabled = false;
-            timer.style.display = "none";
-        }
-
-        seconds--;
-    }, 1000);
+<style>
+/* ============================================================
+   BOUTONS D'ACTION (Modifier / Revendiquer)
+   ============================================================ */
+.store-action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 16px 10px;
 }
-</script>
 
-    {% endblock %}
+.store-action-bar .btn {
+    white-space: nowrap;
+}
+
+/* ============================================================
+   CARROUSEL
+   ============================================================ */
+#carouselStoreImages {
+    max-width: 80%;
+    margin: 0 auto 20px auto;
+    border: 5px solid #ff8b38;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.carousel-item {
+    height: 500px;
+}
+
+.store-carousel-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.carousel-indicators [data-bs-target] {
+    background-color: #ff8b38;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #ff8b38;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    background-size: 60%;
+    transition: all 0.2s ease;
+}
+
+.carousel-control-prev-icon:hover,
+.carousel-control-next-icon:hover {
+    background-color: #ff8b38;
+    transform: scale(1.1);
+}
+
+/* ============================================================
+   RESPONSIVE — tablette
+   ============================================================ */
+@media (max-width: 768px) {
+    #carouselStoreImages {
+        max-width: 100%;
+        border-width: 3px;
+    }
+
+    .store-carousel-img {
+        max-height: 50vh;
+    }
+
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — mobile
+   ============================================================ */
+@media (max-width: 767px) {
+    /* Boutons d'action empilés pleine largeur */
+    .store-action-bar {
+        flex-direction: column;
+        align-items: stretch;
+        margin: 12px 12px 8px;
+        gap: 8px;
+    }
+
+    .store-action-bar .btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Carrousel */
+    #carouselStoreImages {
+        max-width: 100%;
+        border-radius: 0;
+    }
+
+    .carousel-item {
+        height: 260px;
+    }
+
+    /* Onglets secondaires */
+    .informations-secondaires-commerce-buttons-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .informations-secondaires-commerce-buttons-container > button {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}
