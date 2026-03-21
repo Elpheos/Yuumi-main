@@ -15,7 +15,7 @@ from .models import SuperCategory
 
 
 
-from .models import Store, ProductFamily, Product, Category, OpeningHour
+from .models import Store, ProductFamily, Product, Category, OpeningHour, StoreImage
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, OpeningHourFormSet
 
 
@@ -305,6 +305,17 @@ def edit_store(request, departement, ville, slug):
         if form.is_valid() and opening_formset.is_valid():
             form.save()
             opening_formset.save()
+
+            # Supprimer les images marquées via les checkboxes du template
+            for key in request.POST:
+                if key.startswith('delete_image_'):
+                    img_id = key.split('_')[-1]
+                    StoreImage.objects.filter(id=img_id, store=store).delete()
+
+            # Ajouter les nouvelles images supplémentaires
+            for image in request.FILES.getlist('extra_images'):
+                StoreImage.objects.create(store=store, image=image)
+
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
             return redirect(store.get_absolute_url())
