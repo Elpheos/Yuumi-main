@@ -5,10 +5,6 @@
 
 {% block content %}
 
-{# ============================================================
-   BOUTONS D'ACTION — regroupés dans un seul conteneur flex
-   pour un alignement propre sur desktop ET mobile
-   ============================================================ #}
 <div class="store-action-bar">
     {% if request.user == store.owner or request.user.is_superuser %}
         <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
