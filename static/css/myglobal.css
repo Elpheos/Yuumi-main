@@ -33,6 +33,13 @@ main {
     min-height: 100%;
     display: flex;
     flex-direction: column;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+.page-container * {
+    max-width: 100%;
+    box-sizing: border-box;
 }
 
 @media (max-width: 767px) {
@@ -1805,6 +1812,7 @@ body.menu-open {
     .leaflet-popup-content {
         margin: 8px !important;
     }
+}
 
 /* =========================================================
    SEARCH PRODUCT — RESPONSIVE MOBILE
@@ -1904,6 +1912,7 @@ body.menu-open {
     font-size: 1rem;
 }
 
+/* ── FIX masonry : breakpoints sans trou ── */
 @media (max-width: 767px) {
     .page-title-container { margin-top: 60px; }
 }
@@ -1911,7 +1920,7 @@ body.menu-open {
 @media (max-width: 900px) {
     .categ-ville-grid {
         column-count: 2;
-        max-width: 100%;
+        max-width: 100%; /* ← FIX : plus de max-width rigide qui laisse des blancs */
     }
 }
 
