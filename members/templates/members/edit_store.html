@@ -677,10 +677,10 @@
             {# En-têtes colonnes — cachées sur mobile #}
             <div class="horaire-header-row">
                 <span>Jour</span>
-                <span>Matin ouv.</span>
-                <span>Matin ferm.</span>
-                <span>A-midi ouv.</span>
-                <span>A-midi ferm.</span>
+                <span>Matin ouverture</span>
+                <span>Matin fermeture</span>
+                <span>Après-midi ouverture</span>
+                <span>Après-midi fermeture</span>
             </div>
 
             {% for horaire_form in opening_formset %}
@@ -688,19 +688,19 @@
                 <span class="horaire-jour-label">{{ horaire_form.instance.get_jour_display }}</span>
 
                 <div class="horaire-field-wrap">
-                    <label>Matin ouv.</label>
+                    <label>Matin ouverture</label>
                     {{ horaire_form.matin_ouverture }}
                 </div>
                 <div class="horaire-field-wrap">
-                    <label>Matin ferm.</label>
+                    <label>Matin fermeture</label>
                     {{ horaire_form.matin_fermeture }}
                 </div>
                 <div class="horaire-field-wrap">
-                    <label>A-midi ouv.</label>
+                    <label>Après-midi ouverture</label>
                     {{ horaire_form.apresmidi_ouverture }}
                 </div>
                 <div class="horaire-field-wrap">
-                    <label>A-midi ferm.</label>
+                    <label>Après-midi fermeture</label>
                     {{ horaire_form.apresmidi_fermeture }}
                 </div>
 
