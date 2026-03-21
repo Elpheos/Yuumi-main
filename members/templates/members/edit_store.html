@@ -549,20 +549,15 @@
             </div>
 
             <div class="form-group">
-                <label for="id_addressemaps">Adresse (affichée sur la fiche)</label>
-                {{ form.addressemaps }}
-                {% if form.addressemaps.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.addressemaps.errors.0 }}</p>
-                {% endif %}
+                <label>Adresse (affichée sur la fiche)</label>
+                <input type="text" value="{{ store.addressemaps }}" readonly>
+                <p class="field-note">Contactez-nous pour modifier l'adresse.</p>
             </div>
 
             <div class="form-group">
-                <label for="id_addresseitineraire">Lien itinéraire (Google Maps / Waze…)</label>
-                {{ form.addresseitineraire }}
-                <p class="field-note">URL complète vers Google Maps ou Waze pour l'itinéraire.</p>
-                {% if form.addresseitineraire.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.addresseitineraire.errors.0 }}</p>
-                {% endif %}
+                <label>Lien itinéraire (Google Maps / Waze…)</label>
+                <input type="text" value="{{ store.addresseitineraire }}" readonly>
+                <p class="field-note">Contactez-nous pour modifier le lien itinéraire.</p>
             </div>
         </div>
 
