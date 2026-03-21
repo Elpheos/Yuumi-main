@@ -1,67 +1,82 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}
-Modifier mon commerce : {{ store.nom }}
-{% endblock %}
+{% block title %}Modifier mon commerce : {{ store.nom }}{% endblock %}
 
 {% block content %}
 <style>
-/* ===========================
-   📝 ÉDITION COMMERCE
-=========================== */
+/* ============================================================
+   PAGE MODIFICATION COMMERCE
+   ============================================================ */
 
 .edit-store-page {
     max-width: 900px;
-    margin: 40px auto;
-    padding: 20px;
+    margin: 40px auto 60px;
+    padding: 0 20px;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.edit-store-header {
-    margin-bottom: 30px;
-}
-
+/* ── En-tête ── */
 .edit-store-title {
-    font-size: 28px;
+    font-size: 1.8rem;
+    font-weight: 700;
     border-bottom: 4px solid #ff8b38;
     padding-bottom: 10px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
-.edit-store-form {
+/* ── Carte de section ── */
+.edit-section {
     background: #fff;
-    border: 5px solid #ff8b38;
-    border-radius: 15px;
-    padding: 30px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    font-family: inherit;
+    border: 2px solid #e8e8e8;
+    border-radius: 14px;
+    padding: 28px 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
+.edit-section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #ff8b38;
+    margin: 0 0 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #fff0e6;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ── Champs ── */
 .form-group {
-    margin-bottom: 18px;
-    font-family: inherit;
+    margin-bottom: 16px;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 6px;
-    font-weight: bold;
-    font-family: inherit;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #555;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .form-group input,
 .form-group textarea,
 .form-group select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 10px 13px;
     border-radius: 8px;
     border: 2px solid #ddd;
     font-size: 15px;
     font-family: inherit;
-}
-
-.form-group textarea {
-    min-height: 120px;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #fff;
 }
 
 .form-group input:focus,
@@ -69,202 +84,527 @@ Modifier mon commerce : {{ store.nom }}
 .form-group select:focus {
     outline: none;
     border-color: #ff8b38;
-    box-shadow: 0 0 0 2px rgba(255,139,56,0.2);
+    box-shadow: 0 0 0 3px rgba(255,139,56,0.12);
 }
 
-.form-group-image img {
-    margin-top: 10px;
-    max-width: 200px;
+.form-group textarea {
+    min-height: 110px;
+    resize: vertical;
+}
+
+/* Champs lecture seule */
+.form-group input[readonly] {
+    background: #f7f7f7;
+    color: #999;
+    cursor: not-allowed;
+    border-style: dashed;
+}
+
+/* Grille 2 colonnes */
+.form-row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+/* ── Notes et erreurs ── */
+.field-note {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin-top: 4px;
+}
+
+.field-error {
+    color: #d00;
+    font-size: 0.82rem;
+    margin-top: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.form-error-banner {
+    background: #fff0f0;
+    border: 2px solid #e55;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    color: #c00;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ── Aperçu images ── */
+.image-preview-zone {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+}
+
+.image-thumb-block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.image-thumb-block span {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #aaa;
+}
+
+.image-thumb-block.is-new span {
+    color: #ff8b38;
+}
+
+.image-thumb-block img {
+    width: 120px;
+    height: 90px;
+    object-fit: cover;
     border-radius: 10px;
     border: 3px solid #ff8b38;
 }
 
-.form-actions {
-    margin-top: 30px;
-    text-align: right;
+.image-thumb-block.is-new img {
+    border-style: dashed;
 }
 
-.btn-save-store {
-    background: #ff8b38;
+.image-thumb-block.hidden {
+    display: none;
+}
+
+/* ── Photos supplémentaires ── */
+.galerie-grid-edit {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.galerie-img-item {
+    position: relative;
+}
+
+.galerie-img-item img {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 2px solid #e8e8e8;
+    display: block;
+    transition: opacity 0.2s, filter 0.2s;
+}
+
+.galerie-img-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(200,0,0,0.85);
     color: #fff;
-    padding: 14px 26px;
-    border-radius: 10px;
     border: none;
-    font-size: 16px;
-    font-weight: bold;
     cursor: pointer;
-    font-family: inherit;
-    margin-top: 10px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    line-height: 1;
+    transition: background 0.2s;
 }
 
-.btn-save-store:hover {
-    background: #e67626;
+.galerie-img-delete:hover { background: #c00; }
+
+.galerie-img-item.marked-delete img {
+    opacity: 0.3;
+    filter: grayscale(1);
 }
 
-.btn-retour-save-store {
-    display: inline-block;
-    background: #ff8b38;
-    color: #fff;
-    padding: 14px 26px;
-    border-radius: 10px;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    font-family: inherit;
-    margin-top: 10px;
+.galerie-img-item.marked-delete .galerie-img-delete {
+    background: #888;
+}
+
+.galerie-empty-note {
+    color: #bbb;
+    font-size: 0.88rem;
+    font-style: italic;
+    margin-bottom: 12px;
+}
+
+/* ── Horaires — Desktop ── */
+.horaire-header-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 1fr 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.horaire-header-row span {
+    font-size: 10px;
+    font-weight: 700;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
     text-align: center;
-    text-decoration: none;
 }
 
-.btn-retour-save-store:hover {
-    background: #e67626;
-}
+.horaire-header-row span:first-child { text-align: left; }
 
-/* Grille horaires */
 .horaire-row {
     display: grid;
     grid-template-columns: 120px 1fr 1fr 1fr 1fr;
     gap: 10px;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
 }
 
-.horaire-row input {
-    padding: 6px 8px;
+.horaire-jour-label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #333;
+}
+
+.horaire-field-wrap { display: contents; }
+
+.horaire-row input[type="time"] {
+    padding: 7px 6px;
     border-radius: 6px;
     border: 2px solid #ddd;
     font-size: 14px;
     width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    font-family: inherit;
+    transition: border-color 0.2s;
 }
 
-.horaire-row input:focus {
+.horaire-row input[type="time"]:focus {
     border-color: #ff8b38;
     outline: none;
+    box-shadow: 0 0 0 2px rgba(255,139,56,0.12);
 }
 
+/* ── Boutons ── */
+.edit-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-retour {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 13px 22px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    background: #fff;
+    color: #555;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.btn-retour:hover {
+    border-color: #ff8b38;
+    color: #ff8b38;
+}
+
+.btn-save {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ff8b38;
+    color: #fff;
+    padding: 13px 28px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.2s, opacity 0.2s;
+}
+
+.btn-save:hover   { background: #e67626; }
+.btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ============================================================
+   RESPONSIVE — Tablette (≤ 768px)
+   ============================================================ */
 @media (max-width: 768px) {
     .edit-store-page {
-        padding: 10px;
+        margin-top: 75px;
+        padding: 0 12px;
     }
 
     .edit-store-title {
-        font-size: 22px;
+        font-size: 1.3rem;
     }
 
-    .edit-store-form {
-        padding: 20px;
+    .edit-section {
+        padding: 18px 14px;
     }
 
-    .form-actions {
-        text-align: center;
+    .form-row-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .edit-actions {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .btn-retour,
+    .btn-save {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ============================================================
+   RESPONSIVE — Mobile (≤ 600px) : horaires en cartes
+   ============================================================ */
+@media (max-width: 600px) {
+    .horaire-header-row {
+        display: none;
     }
 
     .horaire-row {
-        grid-template-columns: 1fr;
+        display: block;
+        background: #fafafa;
+        border: 1px solid #ececec;
+        border-radius: 10px;
+        padding: 12px 14px;
+        margin-bottom: 12px;
+    }
+
+    .horaire-jour-label {
+        display: block;
+        color: #ff8b38;
+        font-size: 15px;
+        margin-bottom: 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #ffe0c7;
+    }
+
+    /* On utilise display:contents sur desktop,
+       mais on le réécrase en block sur mobile */
+    .horaire-field-wrap {
+        display: block;
+    }
+
+    .horaire-fields-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .horaire-field-wrap label {
+        display: block;
+        font-size: 10px;
+        font-weight: 700;
+        color: #bbb;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin-bottom: 3px;
+    }
+
+    .horaire-field-wrap input[type="time"] {
+        padding: 9px 8px;
+        font-size: 15px;
+        text-align: center;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 </style>
 
 <div class="edit-store-page">
 
-    <header class="edit-store-header">
-        <h1 class="edit-store-title">
-            Modifier mon commerce : {{ store.nom }}
-        </h1>
-    </header>
+    <h1 class="edit-store-title">
+        <i class="fa-solid fa-pen-to-square" style="color:#ff8b38;"></i>
+        Modifier — {{ store.nom }}
+    </h1>
 
-    <main class="edit-store-content">
+    {# Bandeau erreurs globales #}
+    {% if form.errors or opening_formset.errors %}
+    <div class="form-error-banner">
+        <i class="fa-solid fa-circle-exclamation"></i>
+        Des erreurs empêchent la sauvegarde. Vérifiez les champs surlignés ci-dessous.
+    </div>
+    {% endif %}
 
-        <form method="post"
-              enctype="multipart/form-data"
-              class="edit-store-form">
+    <form method="post" enctype="multipart/form-data" id="edit-store-form" novalidate>
+        {% csrf_token %}
 
-            {% csrf_token %}
+        {# ============================================================
+           SECTION 1 — INFOS GÉNÉRALES
+        ============================================================ #}
+        <div class="edit-section">
+            <h2 class="edit-section-title">
+                <i class="fa-solid fa-store"></i> Informations générales
+            </h2>
 
-            <!-- ===== INFOS GÉNÉRALES ===== -->
             <div class="form-group">
                 <label for="id_nom">Nom du commerce</label>
                 {{ form.nom }}
+                {% if form.nom.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.nom.errors.0 }}</p>
+                {% endif %}
             </div>
 
-            <div class="form-group">
-                <label for="id_ville">Ville</label>
-                {{ form.ville }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_departement">Département</label>
-                {{ form.departement }}
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label>Ville</label>
+                    <input type="text" value="{{ store.ville }}" readonly>
+                    <p class="field-note">Contactez-nous pour modifier la ville.</p>
+                </div>
+                <div class="form-group">
+                    <label>Département</label>
+                    <input type="text" value="{{ store.departement }}" readonly>
+                </div>
             </div>
 
             <div class="form-group">
                 <label for="id_categorie">Catégorie</label>
                 {{ form.categorie }}
+                {% if form.categorie.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.categorie.errors.0 }}</p>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="id_descriptionpetite">Description courte</label>
                 {{ form.descriptionpetite }}
+                {% if form.descriptionpetite.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.descriptionpetite.errors.0 }}</p>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="id_descriptiongrande">Description détaillée</label>
                 {{ form.descriptiongrande }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_addressemaps">Adresse (Google Maps)</label>
-                {{ form.addressemaps }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_addresseitineraire">Adresse itinéraire</label>
-                {{ form.addresseitineraire }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_site">Site web</label>
-                {{ form.site }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_phone">Téléphone</label>
-                {{ form.phone }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_instagram">Instagram</label>
-                {{ form.instagram }}
-            </div>
-
-            <div class="form-group">
-                <label for="id_facebook">Facebook</label>
-                {{ form.facebook }}
-            </div>
-
-            <!-- ===== PHOTO PRINCIPALE ===== -->
-            <hr style="border-color: #ff8b38; margin: 30px 0;">
-            <h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
-                Photo principale
-            </h3>
-
-            <div class="form-group form-group-image">
-                <label for="id_photo">Photo principale</label>
-                {% if store.photo %}
-                    <div class="current-image">
-                        <p>Image actuelle</p>
-                        <img src="{{ store.photo.url }}" alt="Photo actuelle de {{ store.nom }}">
-                    </div>
+                {% if form.descriptiongrande.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.descriptiongrande.errors.0 }}</p>
                 {% endif %}
-                {{ form.photo }}
+            </div>
+        </div>
+
+        {# ============================================================
+           SECTION 2 — CONTACT & LIENS
+        ============================================================ #}
+        <div class="edit-section">
+            <h2 class="edit-section-title">
+                <i class="fa-solid fa-address-card"></i> Contact & liens
+            </h2>
+
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="id_phone">Téléphone</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.phone.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_site">Site web</label>
+                    {{ form.site }}
+                    {% if form.site.errors %}
+                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.site.errors.0 }}</p>
+                    {% endif %}
+                </div>
             </div>
 
-            <!-- ===== GALERIE ===== -->
-            <hr style="border-color: #ff8b38; margin: 30px 0;">
-            <h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
-                Galerie
-            </h3>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label for="id_instagram">Instagram</label>
+                    {{ form.instagram }}
+                    {% if form.instagram.errors %}
+                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.instagram.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_facebook">Facebook</label>
+                    {{ form.facebook }}
+                    {% if form.facebook.errors %}
+                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.facebook.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_addressemaps">Adresse (affichée sur la fiche)</label>
+                {{ form.addressemaps }}
+                {% if form.addressemaps.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.addressemaps.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_addresseitineraire">Lien itinéraire (Google Maps / Waze…)</label>
+                {{ form.addresseitineraire }}
+                <p class="field-note">URL complète vers Google Maps ou Waze pour l'itinéraire.</p>
+                {% if form.addresseitineraire.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.addresseitineraire.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# ============================================================
+           SECTION 3 — PHOTO PRINCIPALE
+        ============================================================ #}
+        <div class="edit-section">
+            <h2 class="edit-section-title">
+                <i class="fa-solid fa-image"></i> Photo principale
+            </h2>
+
+            <div class="image-preview-zone">
+                {% if store.photo %}
+                <div class="image-thumb-block" id="photo-current-block">
+                    <span>Actuelle</span>
+                    <img src="{{ store.photo.url }}" alt="Photo actuelle">
+                </div>
+                {% endif %}
+                <div class="image-thumb-block is-new hidden" id="photo-preview-block">
+                    <span>Nouvelle</span>
+                    <img src="" alt="Aperçu" id="photo-preview-img">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="id_photo">Choisir une nouvelle photo</label>
+                {{ form.photo }}
+                {% if form.photo.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.photo.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# ============================================================
+           SECTION 4 — GALERIE
+        ============================================================ #}
+        <div class="edit-section">
+            <h2 class="edit-section-title">
+                <i class="fa-solid fa-images"></i> Galerie
+            </h2>
 
             <div class="form-group">
                 <label for="id_galerie_title">Titre de la galerie</label>
@@ -276,67 +616,269 @@ Modifier mon commerce : {{ store.nom }}
                 {{ form.galerie_description }}
             </div>
 
-            <div class="form-group form-group-image">
-                <label for="id_galerie_image">Image principale de la galerie</label>
+            <div class="image-preview-zone" style="margin-top:4px;">
                 {% if store.galerie_image %}
-                    <div class="current-image">
-                        <p>Image actuelle</p>
-                        <img src="{{ store.galerie_image.url }}" alt="Galerie de {{ store.nom }}">
-                    </div>
+                <div class="image-thumb-block">
+                    <span>Image galerie actuelle</span>
+                    <img src="{{ store.galerie_image.url }}" alt="Galerie actuelle">
+                </div>
                 {% endif %}
-                {{ form.galerie_image }}
+                <div class="image-thumb-block is-new hidden" id="galerie-preview-block">
+                    <span>Nouvelle image galerie</span>
+                    <img src="" alt="Aperçu galerie" id="galerie-preview-img">
+                </div>
             </div>
 
-            <!-- ===== HORAIRES ===== -->
-            <hr style="border-color: #ff8b38; margin: 30px 0;">
-            <h3 style="font-size: 1.3rem; margin-bottom: 20px; border-bottom: 3px solid #ff8b38; padding-bottom: 8px;">
-                Horaires d'ouverture
-            </h3>
+            <div class="form-group">
+                <label for="id_galerie_image">Image principale de la galerie</label>
+                {{ form.galerie_image }}
+                {% if form.galerie_image.errors %}
+                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.galerie_image.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            {# Photos supplémentaires #}
+            <hr style="border:none;border-top:1px solid #f0f0f0;margin:20px 0 16px;">
+            <p style="font-size:0.8rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">
+                Photos supplémentaires du carrousel
+            </p>
+
+            {% if store.images.exists %}
+                <div class="galerie-grid-edit">
+                    {% for img in store.images.all %}
+                    <div class="galerie-img-item" id="img-item-{{ img.id }}">
+                        <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}">
+                        <button type="button"
+                                class="galerie-img-delete"
+                                title="Supprimer cette photo"
+                                onclick="markImageDelete({{ img.id }}, this)">
+                            &times;
+                        </button>
+                        <input type="checkbox"
+                               name="delete_image_{{ img.id }}"
+                               id="del-img-{{ img.id }}"
+                               style="display:none;">
+                    </div>
+                    {% endfor %}
+                </div>
+                <p class="field-note" style="margin-bottom:14px;">
+                    Cliquez <strong>×</strong> pour marquer une photo à supprimer, puis sauvegardez.
+                </p>
+            {% else %}
+                <p class="galerie-empty-note">Aucune photo supplémentaire pour l'instant.</p>
+            {% endif %}
+
+            <div class="form-group">
+                <label>Ajouter des photos supplémentaires</label>
+                <input type="file" name="extra_images" multiple accept="image/*">
+                <p class="field-note">Vous pouvez sélectionner plusieurs fichiers à la fois.</p>
+            </div>
+        </div>
+
+        {# ============================================================
+           SECTION 5 — HORAIRES
+        ============================================================ #}
+        <div class="edit-section">
+            <h2 class="edit-section-title">
+                <i class="fa-solid fa-clock"></i> Horaires d'ouverture
+            </h2>
 
             {{ opening_formset.management_form }}
 
+            {# En-têtes colonnes — cachées sur mobile #}
+            <div class="horaire-header-row">
+                <span>Jour</span>
+                <span>Matin ouv.</span>
+                <span>Matin ferm.</span>
+                <span>A-midi ouv.</span>
+                <span>A-midi ferm.</span>
+            </div>
+
             {% for horaire_form in opening_formset %}
             <div class="horaire-row">
-                <strong>{{ horaire_form.instance.get_jour_display }}</strong>
-                <div>
-                    <label style="font-size:12px;">Matin ouverture</label>
+                <span class="horaire-jour-label">{{ horaire_form.instance.get_jour_display }}</span>
+
+                <div class="horaire-field-wrap">
+                    <label>Matin ouv.</label>
                     {{ horaire_form.matin_ouverture }}
                 </div>
-                <div>
-                    <label style="font-size:12px;">Matin fermeture</label>
+                <div class="horaire-field-wrap">
+                    <label>Matin ferm.</label>
                     {{ horaire_form.matin_fermeture }}
                 </div>
-                <div>
-                    <label style="font-size:12px;">Après-midi ouverture</label>
+                <div class="horaire-field-wrap">
+                    <label>A-midi ouv.</label>
                     {{ horaire_form.apresmidi_ouverture }}
                 </div>
-                <div>
-                    <label style="font-size:12px;">Après-midi fermeture</label>
+                <div class="horaire-field-wrap">
+                    <label>A-midi ferm.</label>
                     {{ horaire_form.apresmidi_fermeture }}
                 </div>
+
                 {{ horaire_form.id }}
             </div>
             {% endfor %}
 
-            <!-- ===== BOUTON ENREGISTRER ===== -->
-            <div class="form-actions">
-                <button type="submit" class="btn-save-store">
-                    Enregistrer les modifications
-                </button>
-            </div>
-
-        </form>
-
-        {% if store.slug %}
-        <div style="margin-top: 15px;">
-            <a href="{{ store.get_absolute_url }}" class="btn-retour-save-store">
-                ← Retour
-            </a>
+            {% if opening_formset.errors %}
+            <p class="field-error" style="margin-top:8px;">
+                <i class="fa-solid fa-triangle-exclamation"></i> Vérifiez les horaires saisis.
+            </p>
+            {% endif %}
         </div>
-        {% endif %}
 
-    </main>
+        {# ============================================================
+           BOUTONS D'ACTION
+        ============================================================ #}
+        <div class="edit-actions">
+            {% if store.slug %}
+            <a href="{{ store.get_absolute_url }}" class="btn-retour" id="btn-retour">
+                <i class="fa-solid fa-arrow-left"></i> Retour à la fiche
+            </a>
+            {% endif %}
 
+            <button type="submit" class="btn-save" id="btn-save">
+                <i class="fa-solid fa-floppy-disk"></i>
+                Enregistrer les modifications
+            </button>
+        </div>
+
+    </form>
 </div>
+{% endblock %}
 
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+    // ============================================================
+    // 1. APERÇU IMAGE AVANT UPLOAD
+    // ============================================================
+    function bindImagePreview(inputId, previewBlockId, previewImgId) {
+        const input = document.getElementById(inputId);
+        const block = document.getElementById(previewBlockId);
+        const img   = document.getElementById(previewImgId);
+        if (!input || !block || !img) return;
+
+        input.addEventListener("change", () => {
+            const file = input.files[0];
+            if (!file) { block.classList.add("hidden"); return; }
+            const reader = new FileReader();
+            reader.onload = e => {
+                img.src = e.target.result;
+                block.classList.remove("hidden");
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    bindImagePreview("id_photo",         "photo-preview-block",   "photo-preview-img");
+    bindImagePreview("id_galerie_image", "galerie-preview-block", "galerie-preview-img");
+
+    // ============================================================
+    // 2. MARQUER UNE PHOTO SUPPLÉMENTAIRE À SUPPRIMER
+    // ============================================================
+    window.markImageDelete = function(imgId, btn) {
+        const item     = document.getElementById("img-item-" + imgId);
+        const checkbox = document.getElementById("del-img-" + imgId);
+        if (!item || !checkbox) return;
+
+        const isMarked = item.classList.toggle("marked-delete");
+        checkbox.checked = isMarked;
+        btn.title = isMarked ? "Annuler la suppression" : "Supprimer cette photo";
+        formDirty = true;
+    };
+
+    // ============================================================
+    // 3. GARDE-FOU "MODIFICATIONS NON SAUVEGARDÉES"
+    // ============================================================
+    let formDirty  = false;
+    let formSaving = false;
+    const form     = document.getElementById("edit-store-form");
+    const btnRetour = document.getElementById("btn-retour");
+
+    if (form) {
+        form.addEventListener("input",  () => formDirty = true);
+        form.addEventListener("change", () => formDirty = true);
+        form.addEventListener("submit", () => formSaving = true);
+
+        window.addEventListener("beforeunload", e => {
+            if (formDirty && !formSaving) {
+                e.preventDefault();
+                e.returnValue = "";
+            }
+        });
+
+        if (btnRetour) {
+            btnRetour.addEventListener("click", e => {
+                if (formDirty && !formSaving) {
+                    const ok = confirm("Vous avez des modifications non sauvegardées. Quitter quand même ?");
+                    if (!ok) e.preventDefault();
+                }
+            });
+        }
+    }
+
+    // ============================================================
+    // 4. DÉSACTIVER LE BOUTON PENDANT LA SOUMISSION
+    // ============================================================
+    const btnSave = document.getElementById("btn-save");
+
+    if (form && btnSave) {
+        form.addEventListener("submit", () => {
+            btnSave.disabled = true;
+            btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enregistrement…';
+        });
+    }
+
+    // ============================================================
+    // 5. RESTRUCTURATION DOM HORAIRES SUR MOBILE
+    //    Sur mobile (< 600px), on regroupe les 4 champs dans
+    //    une grille 2×2 à l'intérieur de chaque .horaire-row.
+    // ============================================================
+    function restructureHoraires() {
+        const isMobile = window.innerWidth < 600;
+        document.querySelectorAll(".horaire-row").forEach(row => {
+            const alreadyMobile = !!row.querySelector(".horaire-fields-grid");
+
+            if (isMobile && !alreadyMobile) {
+                // Récupérer les éléments
+                const jour   = row.querySelector(".horaire-jour-label");
+                const wraps  = Array.from(row.querySelectorAll(".horaire-field-wrap"));
+                const hidden = row.querySelector("input[type='hidden']");
+
+                // Vider la row
+                row.innerHTML = "";
+                if (jour)   row.appendChild(jour);
+
+                const grid = document.createElement("div");
+                grid.className = "horaire-fields-grid";
+                wraps.forEach(w => grid.appendChild(w));
+                row.appendChild(grid);
+                if (hidden) row.appendChild(hidden);
+
+            } else if (!isMobile && alreadyMobile) {
+                // Restaurer la structure grille 5 colonnes
+                const jour   = row.querySelector(".horaire-jour-label");
+                const wraps  = Array.from(row.querySelectorAll(".horaire-field-wrap"));
+                const hidden = row.querySelector("input[type='hidden']");
+                const grid   = row.querySelector(".horaire-fields-grid");
+
+                row.innerHTML = "";
+                if (jour)   row.appendChild(jour);
+                wraps.forEach(w => row.appendChild(w));
+                if (hidden) row.appendChild(hidden);
+            }
+        });
+    }
+
+    restructureHoraires();
+
+    let resizeTimer;
+    window.addEventListener("resize", () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(restructureHoraires, 150);
+    });
+
+});
+</script>
 {% endblock %}
