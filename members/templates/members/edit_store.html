@@ -161,9 +161,7 @@
     color: #aaa;
 }
 
-.image-thumb-block.is-new span {
-    color: #ff8b38;
-}
+.image-thumb-block.is-new span { color: #ff8b38; }
 
 .image-thumb-block img {
     width: 120px;
@@ -173,13 +171,8 @@
     border: 3px solid #ff8b38;
 }
 
-.image-thumb-block.is-new img {
-    border-style: dashed;
-}
-
-.image-thumb-block.hidden {
-    display: none;
-}
+.image-thumb-block.is-new img { border-style: dashed; }
+.image-thumb-block.hidden     { display: none; }
 
 /* ── Photos supplémentaires ── */
 .galerie-grid-edit {
@@ -189,9 +182,7 @@
     margin-bottom: 12px;
 }
 
-.galerie-img-item {
-    position: relative;
-}
+.galerie-img-item { position: relative; }
 
 .galerie-img-item img {
     width: 100%;
@@ -230,9 +221,7 @@
     filter: grayscale(1);
 }
 
-.galerie-img-item.marked-delete .galerie-img-delete {
-    background: #888;
-}
+.galerie-img-item.marked-delete .galerie-img-delete { background: #888; }
 
 .galerie-empty-note {
     color: #bbb;
@@ -241,12 +230,22 @@
     margin-bottom: 12px;
 }
 
-/* ── Horaires — Desktop ── */
+/* ============================================================
+   HORAIRES — structure par jour
+   ============================================================
+
+   Chaque jour = une ligne :
+   [ Nom du jour ] [ Matin (ouv + ferm empilés) ] [ Après-midi (ouv + ferm empilés) ]
+   ============================================================ */
+
+/* En-tête des colonnes */
 .horaire-header-row {
     display: grid;
-    grid-template-columns: 120px 1fr 1fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 6px;
+    grid-template-columns: 130px 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 4px;
+    padding: 0 0 6px 0;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .horaire-header-row span {
@@ -260,44 +259,66 @@
 
 .horaire-header-row span:first-child { text-align: left; }
 
+/* Ligne par jour */
 .horaire-row {
     display: grid;
-    grid-template-columns: 120px 1fr 1fr 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: 130px 1fr 1fr;
+    gap: 12px;
     align-items: center;
-    margin-bottom: 8px;
+    padding: 10px 0;
 }
 
 .horaire-jour-label {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
     color: #333;
 }
 
-.horaire-field-wrap { display: contents; }
+/* Chaque période (matin / après-midi) = 2 inputs empilés */
+.horaire-period {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 
-.horaire-row input[type="time"] {
-    padding: 7px 6px;
+.horaire-period-field {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.horaire-period-field label {
+    font-size: 10px;
+    font-weight: 700;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.horaire-period-field input[type="time"] {
+    padding: 8px 10px;
     border-radius: 6px;
     border: 2px solid #ddd;
     font-size: 14px;
     width: 100%;
     box-sizing: border-box;
-    text-align: center;
     font-family: inherit;
     transition: border-color 0.2s;
+    background: #fff;
+    text-align: center;
 }
 
-.horaire-row input[type="time"]:focus {
+.horaire-period-field input[type="time"]:focus {
     border-color: #ff8b38;
     outline: none;
     box-shadow: 0 0 0 2px rgba(255,139,56,0.12);
 }
 
+/* Séparateur entre jours */
 .horaire-separator {
     border: none;
     border-top: 1px solid #f0f0f0;
-    margin: 4px 0;
+    margin: 0;
 }
 
 /* ── Boutons ── */
@@ -360,13 +381,9 @@
         padding: 0 12px;
     }
 
-    .edit-store-title {
-        font-size: 1.3rem;
-    }
+    .edit-store-title { font-size: 1.3rem; }
 
-    .edit-section {
-        padding: 18px 14px;
-    }
+    .edit-section { padding: 18px 14px; }
 
     .form-row-2 {
         grid-template-columns: 1fr;
@@ -386,63 +403,39 @@
 }
 
 /* ============================================================
-   RESPONSIVE — Mobile (≤ 600px) : horaires en cartes
+   RESPONSIVE — Mobile (≤ 560px) : horaires en cartes
    ============================================================ */
-@media (max-width: 600px) {
-    .horaire-header-row {
-        display: none;
-    }
+@media (max-width: 560px) {
+    .horaire-header-row { display: none; }
 
-    /* Le séparateur entre jours devient invisible sur mobile
-       car chaque jour est déjà une carte séparée */
-    .horaire-separator {
-        display: none;
-    }
-
+    /* Chaque jour devient une carte */
     .horaire-row {
         display: block;
         background: #fafafa;
         border: 1px solid #ececec;
         border-radius: 10px;
-        padding: 12px 14px;
-        margin-bottom: 12px;
+        padding: 14px;
+        margin-bottom: 10px;
     }
+
+    /* Le séparateur <hr> est inutile entre les cartes */
+    .horaire-separator { display: none; }
 
     .horaire-jour-label {
         display: block;
         color: #ff8b38;
         font-size: 15px;
-        margin-bottom: 10px;
-        padding-bottom: 6px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
         border-bottom: 1px solid #ffe0c7;
     }
 
-    .horaire-field-wrap {
-        display: block;
-    }
-
-    .horaire-fields-grid {
+    /* Les 2 périodes côte à côte sur mobile aussi */
+    .horaire-periods-wrap {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 10px;
-    }
-
-    .horaire-field-wrap label {
-        display: block;
-        font-size: 10px;
-        font-weight: 700;
-        color: #bbb;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        margin-bottom: 3px;
-    }
-
-    .horaire-field-wrap input[type="time"] {
-        padding: 9px 8px;
-        font-size: 15px;
-        text-align: center;
-        width: 100%;
-        box-sizing: border-box;
     }
 }
 </style>
@@ -581,7 +574,7 @@
 
             <div class="image-preview-zone">
                 {% if store.photo %}
-                <div class="image-thumb-block" id="photo-current-block">
+                <div class="image-thumb-block">
                     <span>Actuelle</span>
                     <img src="{{ store.photo.url }}" alt="Photo actuelle">
                 </div>
@@ -683,40 +676,53 @@
 
             {{ opening_formset.management_form }}
 
+            {# En-têtes des 3 colonnes : Jour / Matin / Après-midi #}
             <div class="horaire-header-row">
                 <span>Jour</span>
-                <span>Matin ouverture</span>
-                <span>Matin fermeture</span>
-                <span>Après-midi ouverture</span>
-                <span>Après-midi fermeture</span>
+                <span>Matin</span>
+                <span>Après-midi</span>
             </div>
 
             {% for horaire_form in opening_formset %}
-            <div class="horaire-row">
-                <span class="horaire-jour-label">{{ horaire_form.instance.get_jour_display }}</span>
 
-                <div class="horaire-field-wrap">
-                    <label>Matin ouverture</label>
-                    {{ horaire_form.matin_ouverture }}
+            {# Grille 3 colonnes : nom du jour | matin (2 champs) | après-midi (2 champs) #}
+            <div class="horaire-row">
+
+                <span class="horaire-jour-label">
+                    {{ horaire_form.instance.get_jour_display }}
+                </span>
+
+                {# Colonne Matin : ouverture et fermeture empilées #}
+                <div class="horaire-period">
+                    <div class="horaire-period-field">
+                        <label>Ouverture</label>
+                        {{ horaire_form.matin_ouverture }}
+                    </div>
+                    <div class="horaire-period-field">
+                        <label>Fermeture</label>
+                        {{ horaire_form.matin_fermeture }}
+                    </div>
                 </div>
-                <div class="horaire-field-wrap">
-                    <label>Matin fermeture</label>
-                    {{ horaire_form.matin_fermeture }}
-                </div>
-                <div class="horaire-field-wrap">
-                    <label>Après-midi ouverture</label>
-                    {{ horaire_form.apresmidi_ouverture }}
-                </div>
-                <div class="horaire-field-wrap">
-                    <label>Après-midi fermeture</label>
-                    {{ horaire_form.apresmidi_fermeture }}
+
+                {# Colonne Après-midi : ouverture et fermeture empilées #}
+                <div class="horaire-period">
+                    <div class="horaire-period-field">
+                        <label>Ouverture</label>
+                        {{ horaire_form.apresmidi_ouverture }}
+                    </div>
+                    <div class="horaire-period-field">
+                        <label>Fermeture</label>
+                        {{ horaire_form.apresmidi_fermeture }}
+                    </div>
                 </div>
 
                 {{ horaire_form.id }}
             </div>
+
             {% if not forloop.last %}
             <hr class="horaire-separator">
             {% endif %}
+
             {% endfor %}
 
             {% if opening_formset.errors %}
@@ -829,36 +835,38 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ============================================================
-    // 5. RESTRUCTURATION DOM HORAIRES SUR MOBILE
+    // 5. MOBILE : wrapper les périodes dans .horaire-periods-wrap
+    //    pour avoir les 2 colonnes Matin / Après-midi côte à côte
+    //    à l'intérieur de la carte de chaque jour
     // ============================================================
     function restructureHoraires() {
-        const isMobile = window.innerWidth < 600;
+        const isMobile = window.innerWidth <= 560;
 
         document.querySelectorAll(".horaire-row").forEach(row => {
-            const alreadyMobile = !!row.querySelector(".horaire-fields-grid");
+            const alreadyWrapped = !!row.querySelector(".horaire-periods-wrap");
 
-            if (isMobile && !alreadyMobile) {
-                const jour   = row.querySelector(".horaire-jour-label");
-                const wraps  = Array.from(row.querySelectorAll(".horaire-field-wrap"));
-                const hidden = row.querySelector("input[type='hidden']");
+            if (isMobile && !alreadyWrapped) {
+                const jour    = row.querySelector(".horaire-jour-label");
+                const periods = Array.from(row.querySelectorAll(".horaire-period"));
+                const hidden  = row.querySelector("input[type='hidden']");
 
                 row.innerHTML = "";
                 if (jour) row.appendChild(jour);
 
-                const grid = document.createElement("div");
-                grid.className = "horaire-fields-grid";
-                wraps.forEach(w => grid.appendChild(w));
-                row.appendChild(grid);
+                const wrap = document.createElement("div");
+                wrap.className = "horaire-periods-wrap";
+                periods.forEach(p => wrap.appendChild(p));
+                row.appendChild(wrap);
                 if (hidden) row.appendChild(hidden);
 
-            } else if (!isMobile && alreadyMobile) {
-                const jour   = row.querySelector(".horaire-jour-label");
-                const wraps  = Array.from(row.querySelectorAll(".horaire-field-wrap"));
-                const hidden = row.querySelector("input[type='hidden']");
+            } else if (!isMobile && alreadyWrapped) {
+                const jour    = row.querySelector(".horaire-jour-label");
+                const periods = Array.from(row.querySelectorAll(".horaire-period"));
+                const hidden  = row.querySelector("input[type='hidden']");
 
                 row.innerHTML = "";
                 if (jour) row.appendChild(jour);
-                wraps.forEach(w => row.appendChild(w));
+                periods.forEach(p => row.appendChild(p));
                 if (hidden) row.appendChild(hidden);
             }
         });
