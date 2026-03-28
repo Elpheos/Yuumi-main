@@ -1198,9 +1198,13 @@
         wrap.appendChild(input);
 
         // Bouton d'affichage
+        // Django renvoie HH:MM:SS — on tronque à HH:MM
+        const rawVal = input.value ? input.value.substring(0, 5) : '';
+        if (rawVal) input.value = rawVal;
+
         const display = document.createElement('div');
-        display.className = 'time-picker-display' + (input.value ? '' : ' is-empty');
-        display.textContent = input.value || '--:--';
+        display.className = 'time-picker-display' + (rawVal ? '' : ' is-empty');
+        display.textContent = rawVal || '--:--';
         wrap.appendChild(display);
 
         // Dropdown (appendé au body pour éviter overflow)
@@ -1209,8 +1213,8 @@
         document.body.appendChild(dropdown);
 
         let hVal = '', mVal = '00';
-        if (input.value) {
-            const p = input.value.split(':');
+        if (rawVal) {
+            const p = rawVal.split(':');
             hVal = p[0] || ''; mVal = p[1] || '00';
         }
 

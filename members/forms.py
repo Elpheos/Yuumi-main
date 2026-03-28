@@ -94,10 +94,10 @@ class OpeningHourForm(forms.ModelForm):
             'apresmidi_fermeture',
         ]
         widgets = {
-            'matin_ouverture':     forms.TimeInput(attrs={'type': 'time'}),
-            'matin_fermeture':     forms.TimeInput(attrs={'type': 'time'}),
-            'apresmidi_ouverture': forms.TimeInput(attrs={'type': 'time'}),
-            'apresmidi_fermeture': forms.TimeInput(attrs={'type': 'time'}),
+            'matin_ouverture':     forms.TimeInput(attrs={'type': 'time'}, format='%H:%M'),
+            'matin_fermeture':     forms.TimeInput(attrs={'type': 'time'}, format='%H:%M'),
+            'apresmidi_ouverture': forms.TimeInput(attrs={'type': 'time'}, format='%H:%M'),
+            'apresmidi_fermeture': forms.TimeInput(attrs={'type': 'time'}, format='%H:%M'),
         }
 
     def __init__(self, *args, **kwargs):
