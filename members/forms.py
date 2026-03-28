@@ -72,25 +72,15 @@ class StoreForm(forms.ModelForm):
             'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
         }
 
-# ============================================================
-# À intégrer dans members/forms.py
-# Remplace le bloc OpeningHourFormSet existant
-# ============================================================
 
-from django import forms
-from django.forms import inlineformset_factory
-from .models import Store, OpeningHour
-
-
+# -------------------------------
+# Formulaire horaires avec validation
 class OpeningHourForm(forms.ModelForm):
     """
     Formulaire pour un jour d'ouverture.
-    - Les 4 champs TimeField restent nullable (null/blank=True côté modèle).
-    - Le clean() vérifie la cohérence de chaque période :
-        · Si ouverture renseignée → fermeture obligatoire (et vice-versa)
-        · La fermeture doit être APRÈS l'ouverture
-    - Le template gère l'affichage "Fermé" via des checkboxes JS côté client
-      qui vident les inputs avant soumission → les champs arrivent à "" → None.
+    Les checkboxes "Fermé" côté JS vident les inputs avant soumission,
+    donc les champs arrivent à "" → None (null=True, blank=True sur le modèle).
+    Le clean() vérifie la cohérence de chaque période.
     """
 
     class Meta:
@@ -140,8 +130,6 @@ class OpeningHourForm(forms.ModelForm):
                            "La fermeture doit être après l'ouverture.")
 
         # ── Cohérence inter-périodes ────────────────────────────
-        # Si les deux périodes sont renseignées, l'après-midi doit commencer
-        # après la fin du matin (évite les chevauchements absurdes).
         if mf and ao and ao <= mf:
             self.add_error('apresmidi_ouverture',
                            "L'après-midi doit commencer après la fin du matin.")
@@ -149,7 +137,6 @@ class OpeningHourForm(forms.ModelForm):
         return cleaned
 
 
-# Remplace l'ancien OpeningHourFormSet = inlineformset_factory(...)
 OpeningHourFormSet = inlineformset_factory(
     Store,
     OpeningHour,
@@ -157,4 +144,3 @@ OpeningHourFormSet = inlineformset_factory(
     extra=0,
     can_delete=False,
 )
-
