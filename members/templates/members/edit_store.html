@@ -241,11 +241,18 @@
 
 .horaire-header-row {
     display: grid;
-    grid-template-columns: 130px 1fr 1fr;
+    grid-template-columns: 130px 1fr;
     gap: 12px;
     margin-bottom: 4px;
     padding-bottom: 6px;
     border-bottom: 1px solid #f0f0f0;
+}
+
+/* Les 2 spans Matin/Après-midi dans un sous-grid */
+.horaire-header-periods {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
 }
 
 .horaire-header-row span {
@@ -261,11 +268,21 @@
 
 .horaire-row {
     display: grid;
-    grid-template-columns: 130px 1fr 1fr;
+    grid-template-columns: 130px 1fr;
     gap: 12px;
     align-items: start;
     padding: 14px 0 10px;
 }
+
+/* Desktop : le wrapper occupe les 2 colonnes Matin+Après-midi
+   et affiche les périodes côte à côte */
+.horaire-periods-row {
+    grid-column: 2 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
 
 .horaire-jour-label {
     font-weight: 700;
@@ -714,9 +731,9 @@
     .horaire-header-row { display: none; }
     .horaire-separator  { display: none; }
 
-    /* Chaque jour = carte */
+    /* Chaque jour = carte en colonne */
     .horaire-row {
-        display: flex;
+        display: flex !important;
         flex-direction: column;
         background: #fafafa;
         border: 1px solid #ececec;
@@ -734,29 +751,17 @@
         padding-bottom: 8px;
         border-bottom: 1px solid #ffe0c7;
         width: 100%;
+        padding-top: 0;
     }
 
-    /* Les deux périodes côte à côte */
-    .horaire-row .horaire-period:not(.btn-copier-horaire) {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-    }
-
-    /* Wrap les deux .horaire-period en ligne */
-    .horaire-row {
-        grid-template-columns: unset !important;
-    }
-
-    /* On force les deux périodes à être côte à côte via flex row */
+    /* Les deux périodes côte à côte dans leur wrapper */
     .horaire-periods-row {
-        display: grid;
+        display: grid !important;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
         width: 100%;
     }
 
-    /* Chaque période occupe toute la largeur disponible */
     .horaire-period {
         min-width: 0;
         width: 100%;
@@ -767,23 +772,17 @@
         width: 100%;
     }
 
-    /* Toggle Fermé sur toute la largeur de la période */
-    .horaire-toggle {
-        width: 100%;
-    }
-
-    /* Bouton copier pleine largeur */
     .btn-copier-horaire {
         width: 100%;
         justify-content: center;
-        margin-top: 4px;
+        margin-top: 0;
         grid-column: unset;
     }
 
     .btn-coller-horaire {
         width: 100%;
         justify-content: center;
-        margin-top: 4px;
+        margin-top: 0;
     }
 }
 </style>
@@ -1027,8 +1026,10 @@
             {# En-têtes colonnes #}
             <div class="horaire-header-row">
                 <span>Jour</span>
-                <span>Matin</span>
-                <span>Après-midi</span>
+                <div class="horaire-header-periods">
+                    <span>Matin</span>
+                    <span>Après-midi</span>
+                </div>
             </div>
 
             {% for horaire_form in opening_formset %}
