@@ -312,14 +312,14 @@
 .horaire-toggle input[type="checkbox"]:checked::after {
     content: '';
     position: absolute;
-    left: 3px;
-    top: 0px;
-    width: 5px;
-    height: 9px;
+    left: 50%;
+    top: 50%;
+    width: 4px;
+    height: 8px;
     border: 2px solid #fff;
     border-top: none;
     border-left: none;
-    transform: rotate(45deg);
+    transform: translate(-50%, -60%) rotate(45deg);
 }
 
 .toggle-label {
@@ -365,27 +365,143 @@
 }
 
 .horaire-period-field input[type="time"] {
+    display: none;
+}
+
+/* ── Time Picker Custom ── */
+.time-picker-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.time-picker-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
     padding: 8px 10px;
     border-radius: 6px;
     border: 2px solid #ddd;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    user-select: none;
+    color: #333;
+    letter-spacing: 0.03em;
+}
+
+.time-picker-display:hover { border-color: #ff8b38; }
+.time-picker-display.is-open { border-color: #ff8b38; box-shadow: 0 0 0 2px rgba(255,139,56,0.12); }
+.time-picker-display.is-empty { color: #bbb; font-weight: 400; }
+
+.time-picker-dropdown {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    border: 2px solid #ff8b38;
+    border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    z-index: 999;
+    overflow: hidden;
+    min-width: 160px;
+}
+
+.time-picker-dropdown.is-open { display: flex; }
+
+.time-col {
+    display: flex;
+    flex-direction: column;
+    width: 72px;
+}
+
+.time-col-label {
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #bbb;
+    text-align: center;
+    padding: 8px 0 4px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.time-col-scroll {
+    height: 160px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #ff8b38 #f5f5f5;
+}
+
+.time-col-scroll::-webkit-scrollbar { width: 4px; }
+.time-col-scroll::-webkit-scrollbar-track { background: #f5f5f5; }
+.time-col-scroll::-webkit-scrollbar-thumb { background: #ff8b38; border-radius: 2px; }
+
+.time-option {
+    padding: 7px 0;
+    text-align: center;
     font-size: 14px;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    transition: background 0.1s, color 0.1s;
+}
+
+.time-option:hover { background: #fff5ee; color: #ff8b38; }
+.time-option.selected { background: #ff8b38; color: #fff; border-radius: 4px; margin: 0 4px; }
+
+.time-col-sep {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #ccc;
+    padding: 0 2px;
+    padding-top: 24px;
+}
+
+.time-picker-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 6px 8px;
+    display: flex;
+    justify-content: space-between;
+    gap: 6px;
     width: 100%;
     box-sizing: border-box;
+}
+
+.tp-btn-clear {
+    font-size: 11px;
+    color: #bbb;
+    background: none;
+    border: none;
+    cursor: pointer;
     font-family: inherit;
-    transition: border-color 0.2s;
-    background: #fff;
-    text-align: center;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: color 0.15s;
 }
+.tp-btn-clear:hover { color: #e74c3c; }
 
-.horaire-period-field input[type="time"]:focus {
-    border-color: #ff8b38;
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(255,139,56,0.12);
+.tp-btn-ok {
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    background: #ff8b38;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 3px 10px;
+    transition: background 0.15s;
 }
-
-.horaire-period-field input[type="time"].input-error {
-    border-color: #e74c3c;
-}
+.tp-btn-ok:hover { background: #e67626; }
 
 /* Erreur inline sous un champ horaire */
 .field-error-inline {
@@ -397,9 +513,9 @@
     margin-top: 2px;
 }
 
-/* Bouton "Copier vers le bas" */
+/* Bouton "Copier ce jour" */
 .btn-copier-horaire {
-    grid-column: 2 / -1;
+    grid-column: 1 / -1;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -410,7 +526,7 @@
     font-size: 12px;
     color: #bbb;
     cursor: pointer;
-    transition: color 0.15s, border-color 0.15s;
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
     width: fit-content;
     font-family: inherit;
 }
@@ -418,6 +534,39 @@
 .btn-copier-horaire:hover {
     color: #ff8b38;
     border-color: #ff8b38;
+}
+
+/* État "copié en mémoire" */
+.btn-copier-horaire.is-source {
+    color: #ff8b38;
+    border-color: #ff8b38;
+    border-style: solid;
+    background: #fff5ee;
+}
+
+/* Ligne en mode "prête à coller" */
+.horaire-row.paste-target .horaire-jour-label {
+    color: #ff8b38;
+}
+
+.btn-coller-horaire {
+    grid-column: 1 / -1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #ff8b38;
+    border: none;
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    color: #fff;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.btn-coller-horaire:hover {
+    background: #e67626;
 }
 
 /* Séparateur */
@@ -545,6 +694,14 @@
 @media (max-width: 560px) {
     .horaire-header-row { display: none; }
     .horaire-separator  { display: none; }
+
+    .time-picker-dropdown {
+        position: fixed;
+        left: 50% !important;
+        top: 50% !important;
+        transform: translate(-50%, -50%) !important;
+        z-index: 9999;
+    }
 
     .horaire-row {
         display: block;
@@ -930,15 +1087,13 @@
                 {# Champ id caché du formset #}
                 {{ horaire_form.id }}
 
-                {# Bouton copier vers le bas (sauf dimanche) #}
-                {% if not forloop.last %}
+                {# Bouton copier ce jour #}
                 <button type="button"
                         class="btn-copier-horaire"
                         data-idx="{{ idx }}"
-                        title="Copier ces horaires sur tous les jours suivants">
-                    <i class="fa-solid fa-copy"></i> Copier vers le bas
+                        title="Copier les horaires de ce jour">
+                    <i class="fa-solid fa-copy"></i> Copier ce jour
                 </button>
-                {% endif %}
 
             </div>
 
@@ -978,6 +1133,187 @@
 
 {% block extra_js %}
 <script>
+
+<script>
+// ============================================================
+// TIME PICKER CUSTOM — remplace input[type="time"] natif
+// ============================================================
+(function() {
+    // Génère les options heures (0-23) ou minutes (0, 5, 10, ..., 55)
+    function buildOptions(col, values, currentVal, onSelect) {
+        values.forEach(v => {
+            const str = String(v).padStart(2, '0');
+            const el = document.createElement('div');
+            el.className = 'time-option' + (str === currentVal ? ' selected' : '');
+            el.textContent = str;
+            el.dataset.val = str;
+            el.addEventListener('click', () => {
+                col.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
+                el.classList.add('selected');
+                onSelect(str);
+            });
+            col.appendChild(el);
+        });
+    }
+
+    function createPicker(input) {
+        const wrap = document.createElement('div');
+        wrap.className = 'time-picker-wrap';
+        input.parentNode.insertBefore(wrap, input);
+        wrap.appendChild(input);
+
+        // Display button
+        const display = document.createElement('div');
+        display.className = 'time-picker-display is-empty';
+        display.textContent = '--:--';
+        wrap.appendChild(display);
+
+        // Dropdown
+        const dropdown = document.createElement('div');
+        dropdown.className = 'time-picker-dropdown';
+
+        let hVal = '';
+        let mVal = '00';
+
+        // Init from existing value
+        if (input.value) {
+            const parts = input.value.split(':');
+            hVal = parts[0] || '';
+            mVal = parts[1] || '00';
+            display.textContent = `${hVal}:${mVal}`;
+            display.classList.remove('is-empty');
+        }
+
+        // Hour column
+        const hColWrap = document.createElement('div');
+        hColWrap.className = 'time-col';
+        const hLabel = document.createElement('div');
+        hLabel.className = 'time-col-label';
+        hLabel.textContent = 'Heure';
+        const hScroll = document.createElement('div');
+        hScroll.className = 'time-col-scroll';
+        hColWrap.appendChild(hLabel);
+        hColWrap.appendChild(hScroll);
+
+        // Separator
+        const sep = document.createElement('div');
+        sep.className = 'time-col-sep';
+        sep.textContent = ':';
+
+        // Minute column
+        const mColWrap = document.createElement('div');
+        mColWrap.className = 'time-col';
+        const mLabel = document.createElement('div');
+        mLabel.className = 'time-col-label';
+        mLabel.textContent = 'Min';
+        const mScroll = document.createElement('div');
+        mScroll.className = 'time-col-scroll';
+        mColWrap.appendChild(mLabel);
+        mColWrap.appendChild(mScroll);
+
+        function updateDisplay() {
+            if (hVal) {
+                display.textContent = `${hVal}:${mVal}`;
+                display.classList.remove('is-empty');
+                input.value = `${hVal}:${mVal}`;
+            }
+        }
+
+        const hours = Array.from({length: 24}, (_, i) => i);
+        const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+
+        buildOptions(hScroll, hours, hVal, v => { hVal = v; updateDisplay(); });
+        buildOptions(mScroll, minutes.map(m => String(m).padStart(2,'0')), mVal, v => { mVal = v; updateDisplay(); });
+
+        // Footer
+        const footer = document.createElement('div');
+        footer.className = 'time-picker-footer';
+
+        const btnClear = document.createElement('button');
+        btnClear.type = 'button';
+        btnClear.className = 'tp-btn-clear';
+        btnClear.textContent = 'Effacer';
+        btnClear.addEventListener('click', e => {
+            e.stopPropagation();
+            hVal = ''; mVal = '00';
+            input.value = '';
+            display.textContent = '--:--';
+            display.classList.add('is-empty');
+            hScroll.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
+            mScroll.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
+            closeDropdown();
+        });
+
+        const btnOk = document.createElement('button');
+        btnOk.type = 'button';
+        btnOk.className = 'tp-btn-ok';
+        btnOk.textContent = 'OK';
+        btnOk.addEventListener('click', e => { e.stopPropagation(); closeDropdown(); });
+
+        footer.appendChild(btnClear);
+        footer.appendChild(btnOk);
+
+        dropdown.appendChild(hColWrap);
+        dropdown.appendChild(sep);
+        dropdown.appendChild(mColWrap);
+        wrap.appendChild(dropdown);
+        wrap.appendChild(footer);
+        // Move footer inside dropdown
+        dropdown.appendChild(footer);
+
+        function openDropdown() {
+            dropdown.classList.add('is-open');
+            display.classList.add('is-open');
+            // Scroll to selected items
+            setTimeout(() => {
+                const selH = hScroll.querySelector('.selected');
+                const selM = mScroll.querySelector('.selected');
+                if (selH) selH.scrollIntoView({block: 'center'});
+                if (selM) selM.scrollIntoView({block: 'center'});
+            }, 10);
+        }
+
+        function closeDropdown() {
+            dropdown.classList.remove('is-open');
+            display.classList.remove('is-open');
+        }
+
+        display.addEventListener('click', e => {
+            e.stopPropagation();
+            // Close all other dropdowns first
+            document.querySelectorAll('.time-picker-dropdown.is-open').forEach(d => {
+                if (d !== dropdown) {
+                    d.classList.remove('is-open');
+                    d.parentNode.querySelector('.time-picker-display')?.classList.remove('is-open');
+                }
+            });
+            if (dropdown.classList.contains('is-open')) {
+                closeDropdown();
+            } else {
+                openDropdown();
+            }
+        });
+
+        // Close on outside click
+        document.addEventListener('click', e => {
+            if (!wrap.contains(e.target)) closeDropdown();
+        });
+    }
+
+    // Init all time inputs in horaires section
+    function initAllPickers() {
+        document.querySelectorAll('.horaire-period-field input[type="time"]').forEach(input => {
+            if (!input.dataset.pickerInit) {
+                input.dataset.pickerInit = '1';
+                createPicker(input);
+            }
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', initAllPickers);
+})();
+</script>
+
 document.addEventListener("DOMContentLoaded", () => {
 
     // ============================================================
@@ -1112,65 +1448,114 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // ============================================================
-    // 6. HORAIRES — Copier vers le bas
+    // 6. HORAIRES — Copier / Coller un jour
     // ============================================================
+    let copiedIdx = null; // index du jour copié en mémoire
+
+    function readDayState(idx) {
+        return {
+            maOuv:  document.querySelector(`#id_horaires-${idx}-matin_ouverture`)?.value  || "",
+            maFerm: document.querySelector(`#id_horaires-${idx}-matin_fermeture`)?.value  || "",
+            apOuv:  document.querySelector(`#id_horaires-${idx}-apresmidi_ouverture`)?.value || "",
+            apFerm: document.querySelector(`#id_horaires-${idx}-apresmidi_fermeture`)?.value || "",
+            maClosed: document.querySelector(`.toggle-ferme[data-period="matin"][data-idx="${idx}"]`)?.checked ?? true,
+            apClosed: document.querySelector(`.toggle-ferme[data-period="apresmidi"][data-idx="${idx}"]`)?.checked ?? true,
+        };
+    }
+
+    function refreshPickerDisplay(input) {
+        // Met à jour l'affichage du picker custom après un changement programmatique
+        const display = input.parentNode && input.parentNode.querySelector('.time-picker-display');
+        if (!display) return;
+        if (input.value) {
+            display.textContent = input.value;
+            display.classList.remove('is-empty');
+        } else {
+            display.textContent = '--:--';
+            display.classList.add('is-empty');
+        }
+    }
+
+    function pasteDayState(idx, state) {
+        // Matin
+        const cbMatin = document.querySelector(`.toggle-ferme[data-period="matin"][data-idx="${idx}"]`);
+        if (cbMatin) {
+            cbMatin.checked = state.maClosed;
+            applyToggleDisplay(cbMatin);
+            if (!state.maClosed) {
+                const ouv  = document.querySelector(`#id_horaires-${idx}-matin_ouverture`);
+                const ferm = document.querySelector(`#id_horaires-${idx}-matin_fermeture`);
+                if (ouv)  { ouv.value  = state.maOuv;  refreshPickerDisplay(ouv); }
+                if (ferm) { ferm.value = state.maFerm; refreshPickerDisplay(ferm); }
+            }
+        }
+        // Après-midi
+        const cbApm = document.querySelector(`.toggle-ferme[data-period="apresmidi"][data-idx="${idx}"]`);
+        if (cbApm) {
+            cbApm.checked = state.apClosed;
+            applyToggleDisplay(cbApm);
+            if (!state.apClosed) {
+                const ouv  = document.querySelector(`#id_horaires-${idx}-apresmidi_ouverture`);
+                const ferm = document.querySelector(`#id_horaires-${idx}-apresmidi_fermeture`);
+                if (ouv)  { ouv.value  = state.apOuv;  refreshPickerDisplay(ouv); }
+                if (ferm) { ferm.value = state.apFerm; refreshPickerDisplay(ferm); }
+            }
+        }
+    }
+
+    function clearCopyMode() {
+        // Réinitialise tous les boutons et retire les boutons coller
+        document.querySelectorAll(".btn-copier-horaire").forEach(b => b.classList.remove("is-source"));
+        document.querySelectorAll(".btn-coller-horaire").forEach(b => b.remove());
+        copiedIdx = null;
+    }
+
     document.querySelectorAll(".btn-copier-horaire").forEach(btn => {
         btn.addEventListener("click", () => {
-            const srcIdx   = parseInt(btn.dataset.idx, 10);
-            const totalRows = document.querySelectorAll(".horaire-row").length;
+            const idx = parseInt(btn.dataset.idx, 10);
 
-            // Lire l'état source
-            const srcMatinClosed = document.querySelector(
-                `.toggle-ferme[data-period="matin"][data-idx="${srcIdx}"]`
-            )?.checked ?? true;
-            const srcApmClosed = document.querySelector(
-                `.toggle-ferme[data-period="apresmidi"][data-idx="${srcIdx}"]`
-            )?.checked ?? true;
-
-            const srcMatinOuv  = document.querySelector(`#id_horaires-${srcIdx}-matin_ouverture`)?.value  || "";
-            const srcMatinFerm = document.querySelector(`#id_horaires-${srcIdx}-matin_fermeture`)?.value  || "";
-            const srcApmOuv    = document.querySelector(`#id_horaires-${srcIdx}-apresmidi_ouverture`)?.value || "";
-            const srcApmFerm   = document.querySelector(`#id_horaires-${srcIdx}-apresmidi_fermeture`)?.value || "";
-
-            // Appliquer sur les jours suivants
-            for (let i = srcIdx + 1; i < totalRows; i++) {
-                // Matin
-                const cbMatin = document.querySelector(`.toggle-ferme[data-period="matin"][data-idx="${i}"]`);
-                if (cbMatin) {
-                    cbMatin.checked = srcMatinClosed;
-                    applyToggle(cbMatin);
-                    if (!srcMatinClosed) {
-                        const ouv  = document.querySelector(`#id_horaires-${i}-matin_ouverture`);
-                        const ferm = document.querySelector(`#id_horaires-${i}-matin_fermeture`);
-                        if (ouv)  ouv.value  = srcMatinOuv;
-                        if (ferm) ferm.value = srcMatinFerm;
-                    }
-                }
-
-                // Après-midi
-                const cbApm = document.querySelector(`.toggle-ferme[data-period="apresmidi"][data-idx="${i}"]`);
-                if (cbApm) {
-                    cbApm.checked = srcApmClosed;
-                    applyToggle(cbApm);
-                    if (!srcApmClosed) {
-                        const ouv  = document.querySelector(`#id_horaires-${i}-apresmidi_ouverture`);
-                        const ferm = document.querySelector(`#id_horaires-${i}-apresmidi_fermeture`);
-                        if (ouv)  ouv.value  = srcApmOuv;
-                        if (ferm) ferm.value = srcApmFerm;
-                    }
-                }
+            // Si on reclique sur le même jour → annuler la copie
+            if (copiedIdx === idx) {
+                clearCopyMode();
+                return;
             }
 
-            // Feedback visuel temporaire
-            const originalHtml = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Copié !';
-            btn.style.color       = '#27ae60';
-            btn.style.borderColor = '#27ae60';
-            setTimeout(() => {
-                btn.innerHTML         = originalHtml;
-                btn.style.color       = '';
-                btn.style.borderColor = '';
-            }, 1500);
+            // Activer le mode copie
+            clearCopyMode();
+            copiedIdx = idx;
+            btn.classList.add("is-source");
+            btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copié — cliquez sur un jour pour coller';
+
+            const state = readDayState(idx);
+
+            // Ajouter un bouton "Coller" sur tous les autres jours
+            document.querySelectorAll(".horaire-row").forEach(row => {
+                const rowIdx = parseInt(row.dataset.idx, 10);
+                if (rowIdx === idx) return;
+
+                const collerBtn = document.createElement("button");
+                collerBtn.type = "button";
+                collerBtn.className = "btn-coller-horaire";
+                collerBtn.dataset.idx = rowIdx;
+                collerBtn.innerHTML = '<i class="fa-solid fa-paste"></i> Coller ici';
+
+                collerBtn.addEventListener("click", () => {
+                    pasteDayState(rowIdx, state);
+                    formDirty = true;
+
+                    // Feedback
+                    collerBtn.innerHTML = '<i class="fa-solid fa-check"></i> Collé !';
+                    setTimeout(() => clearCopyMode(), 800);
+                });
+
+                // Insérer après le champ id caché
+                const hiddenInput = row.querySelector("input[type='hidden']");
+                if (hiddenInput) {
+                    hiddenInput.insertAdjacentElement("afterend", collerBtn);
+                } else {
+                    row.appendChild(collerBtn);
+                }
+            });
 
             formDirty = true;
         });
