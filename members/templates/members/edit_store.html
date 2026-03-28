@@ -714,63 +714,76 @@
     .horaire-header-row { display: none; }
     .horaire-separator  { display: none; }
 
-    .time-picker-dropdown {
-        position: fixed;
-        left: 50% !important;
-        top: 50% !important;
-        transform: translate(-50%, -50%) !important;
-        z-index: 9999;
-    }
-
+    /* Chaque jour = carte */
     .horaire-row {
-        display: block;
+        display: flex;
+        flex-direction: column;
         background: #fafafa;
         border: 1px solid #ececec;
         border-radius: 10px;
         padding: 14px;
         margin-bottom: 10px;
+        gap: 10px;
     }
 
+    /* Nom du jour en header orange */
     .horaire-jour-label {
-        display: block;
         color: #ff8b38;
         font-size: 15px;
         font-weight: 700;
-        margin-bottom: 12px;
         padding-bottom: 8px;
         border-bottom: 1px solid #ffe0c7;
+        width: 100%;
     }
 
-    .horaire-periods-wrap {
+    /* Les deux périodes côte à côte */
+    .horaire-row .horaire-period:not(.btn-copier-horaire) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    /* Wrap les deux .horaire-period en ligne */
+    .horaire-row {
+        grid-template-columns: unset !important;
+    }
+
+    /* On force les deux périodes à être côte à côte via flex row */
+    .horaire-periods-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 8px;
         width: 100%;
     }
 
+    /* Chaque période occupe toute la largeur disponible */
     .horaire-period {
-        width: 100%;
         min-width: 0;
+        width: 100%;
     }
 
     .horaire-period-field {
-        width: 100%;
         min-width: 0;
+        width: 100%;
     }
 
-    .horaire-period-field input[type="time"] {
-        width: 100% !important;
-        min-width: 0 !important;
-        box-sizing: border-box !important;
-        font-size: 12px;
-        padding: 6px 4px;
+    /* Toggle Fermé sur toute la largeur de la période */
+    .horaire-toggle {
+        width: 100%;
     }
 
+    /* Bouton copier pleine largeur */
     .btn-copier-horaire {
         width: 100%;
         justify-content: center;
-        margin-top: 10px;
+        margin-top: 4px;
         grid-column: unset;
+    }
+
+    .btn-coller-horaire {
+        width: 100%;
+        justify-content: center;
+        margin-top: 4px;
     }
 }
 </style>
@@ -1028,6 +1041,9 @@
                     {{ horaire_form.instance.get_jour_display }}
                 </span>
 
+                {# ── Matin + Après-midi wrappés pour le layout mobile ── #}
+                <div class="horaire-periods-row">
+
                 {# ── Matin ── #}
                 {# On lit la valeur du champ (fonctionne en GET et en POST raté) #}
                 {% with mo_val=horaire_form.matin_ouverture.value mf_val=horaire_form.matin_fermeture.value %}
@@ -1102,6 +1118,8 @@
                     </div>
                 </div>
                 {% endwith %}{# fin with ao_val/af_val #}
+
+                </div>{# fin horaire-periods-row #}
 
                 {# Champ id caché du formset #}
                 {{ horaire_form.id }}
@@ -1483,43 +1501,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 7. MOBILE — wrapper horaires
-    function restructureHoraires() {
-        const isMobile = window.innerWidth <= 560;
-        document.querySelectorAll(".horaire-row").forEach(row => {
-            const alreadyWrapped = !!row.querySelector(".horaire-periods-wrap");
-            if (isMobile && !alreadyWrapped) {
-                const jour    = row.querySelector(".horaire-jour-label");
-                const periods = Array.from(row.querySelectorAll(".horaire-period"));
-                const hidden  = row.querySelector("input[type='hidden']");
-                const copyBtn = row.querySelector(".btn-copier-horaire");
-                row.innerHTML = "";
-                if (jour) row.appendChild(jour);
-                const wrap = document.createElement("div");
-                wrap.className = "horaire-periods-wrap";
-                periods.forEach(p => wrap.appendChild(p));
-                row.appendChild(wrap);
-                if (hidden) row.appendChild(hidden);
-                if (copyBtn) row.appendChild(copyBtn);
-                window.initAllPickers && window.initAllPickers();
-            } else if (!isMobile && alreadyWrapped) {
-                const jour    = row.querySelector(".horaire-jour-label");
-                const periods = Array.from(row.querySelectorAll(".horaire-period"));
-                const hidden  = row.querySelector("input[type='hidden']");
-                const copyBtn = row.querySelector(".btn-copier-horaire");
-                row.innerHTML = "";
-                if (jour) row.appendChild(jour);
-                periods.forEach(p => row.appendChild(p));
-                if (hidden) row.appendChild(hidden);
-                if (copyBtn) row.appendChild(copyBtn);
-                window.initAllPickers && window.initAllPickers();
-            }
-        });
-    }
-
-    restructureHoraires();
-    let resizeTimer;
-    window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(restructureHoraires, 150); });
+    // 7. MOBILE — géré entièrement en CSS, pas de JS nécessaire
 });
 </script>
 {% endblock %}
