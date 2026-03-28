@@ -853,13 +853,15 @@
                 </span>
 
                 {# ── Matin ── #}
+                {# On lit la valeur du champ (fonctionne en GET et en POST raté) #}
+                {% with mo_val=horaire_form.matin_ouverture.value mf_val=horaire_form.matin_fermeture.value %}
                 <div class="horaire-period">
                     <label class="horaire-toggle">
                         <input type="checkbox"
                                class="toggle-ferme"
                                data-period="matin"
                                data-idx="{{ idx }}"
-                               {% if not horaire_form.instance.matin_ouverture and not horaire_form.instance.matin_fermeture %}checked{% endif %}>
+                               {% if not mo_val and not mf_val %}checked{% endif %}>
                         <span class="toggle-label">Fermé</span>
                     </label>
 
@@ -886,15 +888,17 @@
                         </div>
                     </div>
                 </div>
+                {% endwith %}{# fin with mo_val/mf_val #}
 
                 {# ── Après-midi ── #}
+                {% with ao_val=horaire_form.apresmidi_ouverture.value af_val=horaire_form.apresmidi_fermeture.value %}
                 <div class="horaire-period">
                     <label class="horaire-toggle">
                         <input type="checkbox"
                                class="toggle-ferme"
                                data-period="apresmidi"
                                data-idx="{{ idx }}"
-                               {% if not horaire_form.instance.apresmidi_ouverture and not horaire_form.instance.apresmidi_fermeture %}checked{% endif %}>
+                               {% if not ao_val and not af_val %}checked{% endif %}>
                         <span class="toggle-label">Fermé</span>
                     </label>
 
@@ -921,6 +925,7 @@
                         </div>
                     </div>
                 </div>
+                {% endwith %}{# fin with ao_val/af_val #}
 
                 {# Champ id caché du formset #}
                 {{ horaire_form.id }}

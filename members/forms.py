@@ -99,6 +99,14 @@ class OpeningHourForm(forms.ModelForm):
             'apresmidi_fermeture': forms.TimeInput(attrs={'type': 'time'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # S'assurer que les champs horaires ne sont jamais required,
+        # quelle que soit la config du modèle.
+        for field_name in ['matin_ouverture', 'matin_fermeture',
+                           'apresmidi_ouverture', 'apresmidi_fermeture']:
+            self.fields[field_name].required = False
+
     def clean(self):
         cleaned = super().clean()
 
