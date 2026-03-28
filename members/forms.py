@@ -85,8 +85,9 @@ class OpeningHourForm(forms.ModelForm):
 
     class Meta:
         model = OpeningHour
+        # 'jour' est exclu : il est déjà en base et ne change jamais.
+        # L'inclure dans le POST le rend obligatoire et tout plante.
         fields = [
-            'jour',
             'matin_ouverture',
             'matin_fermeture',
             'apresmidi_ouverture',
@@ -101,8 +102,6 @@ class OpeningHourForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # S'assurer que les champs horaires ne sont jamais required,
-        # quelle que soit la config du modèle.
         for field_name in ['matin_ouverture', 'matin_fermeture',
                            'apresmidi_ouverture', 'apresmidi_fermeture']:
             self.fields[field_name].required = False
@@ -153,4 +152,5 @@ OpeningHourFormSet = inlineformset_factory(
     form=OpeningHourForm,
     extra=0,
     can_delete=False,
+    # 'jour' n'est pas dans les fields du form, Django le laisse intact en base
 )
