@@ -1133,143 +1133,109 @@
 
 {% block extra_js %}
 <script>
-
-<script>
 // ============================================================
-// TIME PICKER CUSTOM — remplace input[type="time"] natif
+// TIME PICKER CUSTOM
 // ============================================================
 (function() {
-    // Génère les options heures (0-23) ou minutes (0, 5, 10, ..., 55)
-    function buildOptions(col, values, currentVal, onSelect) {
+    function buildOptions(scroll, values, currentVal, onSelect) {
         values.forEach(v => {
             const str = String(v).padStart(2, '0');
             const el = document.createElement('div');
             el.className = 'time-option' + (str === currentVal ? ' selected' : '');
             el.textContent = str;
-            el.dataset.val = str;
             el.addEventListener('click', () => {
-                col.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
+                scroll.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
                 el.classList.add('selected');
                 onSelect(str);
             });
-            col.appendChild(el);
+            scroll.appendChild(el);
         });
     }
 
     function createPicker(input) {
+        if (input.dataset.pickerInit) return;
+        input.dataset.pickerInit = '1';
+
         const wrap = document.createElement('div');
         wrap.className = 'time-picker-wrap';
         input.parentNode.insertBefore(wrap, input);
         wrap.appendChild(input);
 
-        // Display button
         const display = document.createElement('div');
         display.className = 'time-picker-display is-empty';
         display.textContent = '--:--';
         wrap.appendChild(display);
 
-        // Dropdown
         const dropdown = document.createElement('div');
         dropdown.className = 'time-picker-dropdown';
 
-        let hVal = '';
-        let mVal = '00';
+        let hVal = '', mVal = '00';
 
-        // Init from existing value
         if (input.value) {
             const parts = input.value.split(':');
             hVal = parts[0] || '';
             mVal = parts[1] || '00';
-            display.textContent = `${hVal}:${mVal}`;
+            display.textContent = hVal + ':' + mVal;
             display.classList.remove('is-empty');
         }
 
-        // Hour column
-        const hColWrap = document.createElement('div');
-        hColWrap.className = 'time-col';
-        const hLabel = document.createElement('div');
-        hLabel.className = 'time-col-label';
-        hLabel.textContent = 'Heure';
-        const hScroll = document.createElement('div');
-        hScroll.className = 'time-col-scroll';
-        hColWrap.appendChild(hLabel);
-        hColWrap.appendChild(hScroll);
+        // Colonnes
+        const hColWrap = document.createElement('div'); hColWrap.className = 'time-col';
+        const hLabel = document.createElement('div'); hLabel.className = 'time-col-label'; hLabel.textContent = 'Heure';
+        const hScroll = document.createElement('div'); hScroll.className = 'time-col-scroll';
+        hColWrap.appendChild(hLabel); hColWrap.appendChild(hScroll);
 
-        // Separator
-        const sep = document.createElement('div');
-        sep.className = 'time-col-sep';
-        sep.textContent = ':';
+        const sep = document.createElement('div'); sep.className = 'time-col-sep'; sep.textContent = ':';
 
-        // Minute column
-        const mColWrap = document.createElement('div');
-        mColWrap.className = 'time-col';
-        const mLabel = document.createElement('div');
-        mLabel.className = 'time-col-label';
-        mLabel.textContent = 'Min';
-        const mScroll = document.createElement('div');
-        mScroll.className = 'time-col-scroll';
-        mColWrap.appendChild(mLabel);
-        mColWrap.appendChild(mScroll);
+        const mColWrap = document.createElement('div'); mColWrap.className = 'time-col';
+        const mLabel = document.createElement('div'); mLabel.className = 'time-col-label'; mLabel.textContent = 'Min';
+        const mScroll = document.createElement('div'); mScroll.className = 'time-col-scroll';
+        mColWrap.appendChild(mLabel); mColWrap.appendChild(mScroll);
 
         function updateDisplay() {
             if (hVal) {
-                display.textContent = `${hVal}:${mVal}`;
+                display.textContent = hVal + ':' + mVal;
                 display.classList.remove('is-empty');
-                input.value = `${hVal}:${mVal}`;
+                input.value = hVal + ':' + mVal;
             }
         }
 
-        const hours = Array.from({length: 24}, (_, i) => i);
-        const minutes = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
-
-        buildOptions(hScroll, hours, hVal, v => { hVal = v; updateDisplay(); });
-        buildOptions(mScroll, minutes.map(m => String(m).padStart(2,'0')), mVal, v => { mVal = v; updateDisplay(); });
+        buildOptions(hScroll, Array.from({length:24},(_,i)=>i), hVal, v => { hVal=v; updateDisplay(); });
+        buildOptions(mScroll, [0,5,10,15,20,25,30,35,40,45,50,55].map(m=>String(m).padStart(2,'0')), mVal, v => { mVal=v; updateDisplay(); });
 
         // Footer
-        const footer = document.createElement('div');
-        footer.className = 'time-picker-footer';
-
-        const btnClear = document.createElement('button');
-        btnClear.type = 'button';
-        btnClear.className = 'tp-btn-clear';
-        btnClear.textContent = 'Effacer';
+        const footer = document.createElement('div'); footer.className = 'time-picker-footer';
+        const btnClear = document.createElement('button'); btnClear.type='button'; btnClear.className='tp-btn-clear'; btnClear.textContent='Effacer';
         btnClear.addEventListener('click', e => {
             e.stopPropagation();
-            hVal = ''; mVal = '00';
-            input.value = '';
-            display.textContent = '--:--';
-            display.classList.add('is-empty');
-            hScroll.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
-            mScroll.querySelectorAll('.time-option').forEach(o => o.classList.remove('selected'));
+            hVal=''; mVal='00'; input.value='';
+            display.textContent='--:--'; display.classList.add('is-empty');
+            hScroll.querySelectorAll('.time-option').forEach(o=>o.classList.remove('selected'));
+            mScroll.querySelectorAll('.time-option').forEach(o=>o.classList.remove('selected'));
             closeDropdown();
         });
-
-        const btnOk = document.createElement('button');
-        btnOk.type = 'button';
-        btnOk.className = 'tp-btn-ok';
-        btnOk.textContent = 'OK';
+        const btnOk = document.createElement('button'); btnOk.type='button'; btnOk.className='tp-btn-ok'; btnOk.textContent='OK';
         btnOk.addEventListener('click', e => { e.stopPropagation(); closeDropdown(); });
-
-        footer.appendChild(btnClear);
-        footer.appendChild(btnOk);
+        footer.appendChild(btnClear); footer.appendChild(btnOk);
 
         dropdown.appendChild(hColWrap);
         dropdown.appendChild(sep);
         dropdown.appendChild(mColWrap);
-        wrap.appendChild(dropdown);
-        wrap.appendChild(footer);
-        // Move footer inside dropdown
         dropdown.appendChild(footer);
+        wrap.appendChild(dropdown);
 
         function openDropdown() {
+            document.querySelectorAll('.time-picker-dropdown.is-open').forEach(d => {
+                d.classList.remove('is-open');
+                d.closest('.time-picker-wrap').querySelector('.time-picker-display').classList.remove('is-open');
+            });
             dropdown.classList.add('is-open');
             display.classList.add('is-open');
-            // Scroll to selected items
             setTimeout(() => {
                 const selH = hScroll.querySelector('.selected');
                 const selM = mScroll.querySelector('.selected');
-                if (selH) selH.scrollIntoView({block: 'center'});
-                if (selM) selM.scrollIntoView({block: 'center'});
+                if (selH) selH.scrollIntoView({block:'center'});
+                if (selM) selM.scrollIntoView({block:'center'});
             }, 10);
         }
 
@@ -1278,87 +1244,53 @@
             display.classList.remove('is-open');
         }
 
-        display.addEventListener('click', e => {
-            e.stopPropagation();
-            // Close all other dropdowns first
-            document.querySelectorAll('.time-picker-dropdown.is-open').forEach(d => {
-                if (d !== dropdown) {
-                    d.classList.remove('is-open');
-                    d.parentNode.querySelector('.time-picker-display')?.classList.remove('is-open');
-                }
-            });
-            if (dropdown.classList.contains('is-open')) {
-                closeDropdown();
-            } else {
-                openDropdown();
-            }
-        });
-
-        // Close on outside click
-        document.addEventListener('click', e => {
-            if (!wrap.contains(e.target)) closeDropdown();
-        });
+        display.addEventListener('click', e => { e.stopPropagation(); dropdown.classList.contains('is-open') ? closeDropdown() : openDropdown(); });
+        document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeDropdown(); });
     }
 
-    // Init all time inputs in horaires section
-    function initAllPickers() {
-        document.querySelectorAll('.horaire-period-field input[type="time"]').forEach(input => {
-            if (!input.dataset.pickerInit) {
-                input.dataset.pickerInit = '1';
-                createPicker(input);
-            }
-        });
-    }
+    window.initAllPickers = function() {
+        document.querySelectorAll('.horaire-period-field input[type="time"]').forEach(createPicker);
+    };
 
-    document.addEventListener('DOMContentLoaded', initAllPickers);
+    document.addEventListener('DOMContentLoaded', window.initAllPickers);
 })();
-</script>
 
+// ============================================================
+// MAIN — DOMContentLoaded
+// ============================================================
 document.addEventListener("DOMContentLoaded", () => {
 
-    // ============================================================
     // 1. APERÇU IMAGE AVANT UPLOAD
-    // ============================================================
     function bindImagePreview(inputId, previewBlockId, previewImgId) {
         const input = document.getElementById(inputId);
         const block = document.getElementById(previewBlockId);
         const img   = document.getElementById(previewImgId);
         if (!input || !block || !img) return;
-
         input.addEventListener("change", () => {
             const file = input.files[0];
             if (!file) { block.classList.add("hidden"); return; }
             const reader = new FileReader();
-            reader.onload = e => {
-                img.src = e.target.result;
-                block.classList.remove("hidden");
-            };
+            reader.onload = e => { img.src = e.target.result; block.classList.remove("hidden"); };
             reader.readAsDataURL(file);
         });
     }
-
     bindImagePreview("id_photo",         "photo-preview-block",   "photo-preview-img");
     bindImagePreview("id_galerie_image", "galerie-preview-block", "galerie-preview-img");
 
-    // ============================================================
-    // 2. MARQUER UNE PHOTO SUPPLÉMENTAIRE À SUPPRIMER
-    // ============================================================
+    // 2. MARQUER UNE PHOTO À SUPPRIMER
     window.markImageDelete = function(imgId, btn) {
         const item     = document.getElementById("img-item-" + imgId);
         const checkbox = document.getElementById("del-img-" + imgId);
         if (!item || !checkbox) return;
-
         const isMarked = item.classList.toggle("marked-delete");
         checkbox.checked = isMarked;
         btn.title = isMarked ? "Annuler la suppression" : "Supprimer cette photo";
         formDirty = true;
     };
 
-    // ============================================================
-    // 3. GARDE-FOU "MODIFICATIONS NON SAUVEGARDÉES"
-    // ============================================================
-    let formDirty   = false;
-    let formSaving  = false;
+    // 3. GARDE-FOU MODIFICATIONS NON SAUVEGARDÉES
+    let formDirty  = false;
+    let formSaving = false;
     const form      = document.getElementById("edit-store-form");
     const btnRetour = document.getElementById("btn-retour");
 
@@ -1366,14 +1298,9 @@ document.addEventListener("DOMContentLoaded", () => {
         form.addEventListener("input",  () => formDirty = true);
         form.addEventListener("change", () => formDirty = true);
         form.addEventListener("submit", () => formSaving = true);
-
         window.addEventListener("beforeunload", e => {
-            if (formDirty && !formSaving) {
-                e.preventDefault();
-                e.returnValue = "";
-            }
+            if (formDirty && !formSaving) { e.preventDefault(); e.returnValue = ""; }
         });
-
         if (btnRetour) {
             btnRetour.addEventListener("click", e => {
                 if (formDirty && !formSaving) {
@@ -1384,30 +1311,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // ============================================================
     // 4. DÉSACTIVER LE BOUTON PENDANT LA SOUMISSION
-    // ============================================================
     const btnSave = document.getElementById("btn-save");
-
     if (form && btnSave) {
-        // Ce listener est en phase bubble (défaut), donc s'exécute APRÈS
-        // le listener capture qui vide les champs fermés.
         form.addEventListener("submit", () => {
             btnSave.disabled = true;
             btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enregistrement…';
         });
     }
 
-    // ============================================================
-    // 5. HORAIRES — Toggle Fermé
-    // ============================================================
-
-    // Gère uniquement l'affichage (masquer/afficher)
-    // Le vidage des valeurs se fait au moment du submit (plus fiable)
+    // 5. HORAIRES — Toggle Fermé (affichage uniquement)
     function applyToggleDisplay(checkbox) {
         const idx    = checkbox.dataset.idx;
         const period = checkbox.dataset.period;
-        const times  = document.getElementById(`times-${period}-${idx}`);
+        const times  = document.getElementById("times-" + period + "-" + idx);
         if (!times) return;
         if (checkbox.checked) {
             times.classList.add("is-closed");
@@ -1416,87 +1333,69 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Fonction partagée avec le copier-vers-le-bas
-    function applyToggle(checkbox) {
-        applyToggleDisplay(checkbox);
-    }
+    function applyToggle(checkbox) { applyToggleDisplay(checkbox); }
 
-    // Initialiser l'affichage au chargement
     document.querySelectorAll(".toggle-ferme").forEach(cb => {
         applyToggleDisplay(cb);
-        cb.addEventListener("change", () => {
-            applyToggleDisplay(cb);
-            formDirty = true;
-        });
+        cb.addEventListener("change", () => { applyToggleDisplay(cb); formDirty = true; });
     });
 
-    // Au submit : vider les inputs masqués JUSTE AVANT l'envoi (phase capture)
-    // C'est le seul endroit garanti pour que Django reçoive "" sur les champs fermés
+    // Vider les inputs fermés au submit (phase capture)
     if (form) {
         form.addEventListener("submit", function clearClosedFields() {
             document.querySelectorAll(".toggle-ferme").forEach(cb => {
                 if (cb.checked) {
                     const idx    = cb.dataset.idx;
                     const period = cb.dataset.period;
-                    const times  = document.getElementById(`times-${period}-${idx}`);
+                    const times  = document.getElementById("times-" + period + "-" + idx);
                     if (times) {
-                        times.querySelectorAll("input[type='time']").forEach(i => { i.value = ""; i.removeAttribute("disabled"); });
+                        times.querySelectorAll("input[type='time']").forEach(i => { i.value = ""; });
                     }
                 }
             });
-        }, true); // true = capture, s'exécute avant les autres listeners
+        }, true);
     }
 
-    // ============================================================
-    // 6. HORAIRES — Copier / Coller un jour
-    // ============================================================
-    let copiedIdx = null; // index du jour copié en mémoire
+    // 6. HORAIRES — Copier / Coller
+    let copiedIdx = null;
 
     function readDayState(idx) {
         return {
-            maOuv:  document.querySelector(`#id_horaires-${idx}-matin_ouverture`)?.value  || "",
-            maFerm: document.querySelector(`#id_horaires-${idx}-matin_fermeture`)?.value  || "",
-            apOuv:  document.querySelector(`#id_horaires-${idx}-apresmidi_ouverture`)?.value || "",
-            apFerm: document.querySelector(`#id_horaires-${idx}-apresmidi_fermeture`)?.value || "",
-            maClosed: document.querySelector(`.toggle-ferme[data-period="matin"][data-idx="${idx}"]`)?.checked ?? true,
-            apClosed: document.querySelector(`.toggle-ferme[data-period="apresmidi"][data-idx="${idx}"]`)?.checked ?? true,
+            maOuv:  document.querySelector("#id_horaires-" + idx + "-matin_ouverture")?.value  || "",
+            maFerm: document.querySelector("#id_horaires-" + idx + "-matin_fermeture")?.value  || "",
+            apOuv:  document.querySelector("#id_horaires-" + idx + "-apresmidi_ouverture")?.value || "",
+            apFerm: document.querySelector("#id_horaires-" + idx + "-apresmidi_fermeture")?.value || "",
+            maClosed: document.querySelector(".toggle-ferme[data-period='matin'][data-idx='" + idx + "']")?.checked ?? true,
+            apClosed: document.querySelector(".toggle-ferme[data-period='apresmidi'][data-idx='" + idx + "']")?.checked ?? true,
         };
     }
 
     function refreshPickerDisplay(input) {
-        // Met à jour l'affichage du picker custom après un changement programmatique
-        const display = input.parentNode && input.parentNode.querySelector('.time-picker-display');
+        const display = input.closest('.time-picker-wrap') && input.closest('.time-picker-wrap').querySelector('.time-picker-display');
         if (!display) return;
-        if (input.value) {
-            display.textContent = input.value;
-            display.classList.remove('is-empty');
-        } else {
-            display.textContent = '--:--';
-            display.classList.add('is-empty');
-        }
+        if (input.value) { display.textContent = input.value; display.classList.remove('is-empty'); }
+        else { display.textContent = '--:--'; display.classList.add('is-empty'); }
     }
 
     function pasteDayState(idx, state) {
-        // Matin
-        const cbMatin = document.querySelector(`.toggle-ferme[data-period="matin"][data-idx="${idx}"]`);
+        const cbMatin = document.querySelector(".toggle-ferme[data-period='matin'][data-idx='" + idx + "']");
         if (cbMatin) {
             cbMatin.checked = state.maClosed;
             applyToggleDisplay(cbMatin);
             if (!state.maClosed) {
-                const ouv  = document.querySelector(`#id_horaires-${idx}-matin_ouverture`);
-                const ferm = document.querySelector(`#id_horaires-${idx}-matin_fermeture`);
+                const ouv  = document.querySelector("#id_horaires-" + idx + "-matin_ouverture");
+                const ferm = document.querySelector("#id_horaires-" + idx + "-matin_fermeture");
                 if (ouv)  { ouv.value  = state.maOuv;  refreshPickerDisplay(ouv); }
                 if (ferm) { ferm.value = state.maFerm; refreshPickerDisplay(ferm); }
             }
         }
-        // Après-midi
-        const cbApm = document.querySelector(`.toggle-ferme[data-period="apresmidi"][data-idx="${idx}"]`);
+        const cbApm = document.querySelector(".toggle-ferme[data-period='apresmidi'][data-idx='" + idx + "']");
         if (cbApm) {
             cbApm.checked = state.apClosed;
             applyToggleDisplay(cbApm);
             if (!state.apClosed) {
-                const ouv  = document.querySelector(`#id_horaires-${idx}-apresmidi_ouverture`);
-                const ferm = document.querySelector(`#id_horaires-${idx}-apresmidi_fermeture`);
+                const ouv  = document.querySelector("#id_horaires-" + idx + "-apresmidi_ouverture");
+                const ferm = document.querySelector("#id_horaires-" + idx + "-apresmidi_fermeture");
                 if (ouv)  { ouv.value  = state.apOuv;  refreshPickerDisplay(ouv); }
                 if (ferm) { ferm.value = state.apFerm; refreshPickerDisplay(ferm); }
             }
@@ -1504,8 +1403,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function clearCopyMode() {
-        // Réinitialise tous les boutons et retire les boutons coller
-        document.querySelectorAll(".btn-copier-horaire").forEach(b => b.classList.remove("is-source"));
+        document.querySelectorAll(".btn-copier-horaire").forEach(b => {
+            b.classList.remove("is-source");
+            b.innerHTML = '<i class="fa-solid fa-copy"></i> Copier ce jour';
+        });
         document.querySelectorAll(".btn-coller-horaire").forEach(b => b.remove());
         copiedIdx = null;
     }
@@ -1513,103 +1414,71 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".btn-copier-horaire").forEach(btn => {
         btn.addEventListener("click", () => {
             const idx = parseInt(btn.dataset.idx, 10);
-
-            // Si on reclique sur le même jour → annuler la copie
-            if (copiedIdx === idx) {
-                clearCopyMode();
-                return;
-            }
-
-            // Activer le mode copie
+            if (copiedIdx === idx) { clearCopyMode(); return; }
             clearCopyMode();
             copiedIdx = idx;
             btn.classList.add("is-source");
-            btn.innerHTML = '<i class="fa-solid fa-copy"></i> Copié — cliquez sur un jour pour coller';
-
+            btn.innerHTML = '<i class="fa-solid fa-copy"></i> Cliquez sur un jour pour coller';
             const state = readDayState(idx);
 
-            // Ajouter un bouton "Coller" sur tous les autres jours
             document.querySelectorAll(".horaire-row").forEach(row => {
                 const rowIdx = parseInt(row.dataset.idx, 10);
                 if (rowIdx === idx) return;
-
                 const collerBtn = document.createElement("button");
                 collerBtn.type = "button";
                 collerBtn.className = "btn-coller-horaire";
-                collerBtn.dataset.idx = rowIdx;
                 collerBtn.innerHTML = '<i class="fa-solid fa-paste"></i> Coller ici';
-
                 collerBtn.addEventListener("click", () => {
                     pasteDayState(rowIdx, state);
                     formDirty = true;
-
-                    // Feedback
                     collerBtn.innerHTML = '<i class="fa-solid fa-check"></i> Collé !';
                     setTimeout(() => clearCopyMode(), 800);
                 });
-
-                // Insérer après le champ id caché
                 const hiddenInput = row.querySelector("input[type='hidden']");
-                if (hiddenInput) {
-                    hiddenInput.insertAdjacentElement("afterend", collerBtn);
-                } else {
-                    row.appendChild(collerBtn);
-                }
+                if (hiddenInput) hiddenInput.insertAdjacentElement("afterend", collerBtn);
+                else row.appendChild(collerBtn);
             });
-
             formDirty = true;
         });
     });
 
-    // ============================================================
-    // 7. MOBILE : wrapper les périodes dans .horaire-periods-wrap
-    // ============================================================
+    // 7. MOBILE — wrapper horaires
     function restructureHoraires() {
         const isMobile = window.innerWidth <= 560;
-
         document.querySelectorAll(".horaire-row").forEach(row => {
             const alreadyWrapped = !!row.querySelector(".horaire-periods-wrap");
-
             if (isMobile && !alreadyWrapped) {
                 const jour    = row.querySelector(".horaire-jour-label");
                 const periods = Array.from(row.querySelectorAll(".horaire-period"));
                 const hidden  = row.querySelector("input[type='hidden']");
                 const copyBtn = row.querySelector(".btn-copier-horaire");
-
                 row.innerHTML = "";
                 if (jour) row.appendChild(jour);
-
                 const wrap = document.createElement("div");
                 wrap.className = "horaire-periods-wrap";
                 periods.forEach(p => wrap.appendChild(p));
                 row.appendChild(wrap);
-
                 if (hidden) row.appendChild(hidden);
                 if (copyBtn) row.appendChild(copyBtn);
-
+                window.initAllPickers && window.initAllPickers();
             } else if (!isMobile && alreadyWrapped) {
                 const jour    = row.querySelector(".horaire-jour-label");
                 const periods = Array.from(row.querySelectorAll(".horaire-period"));
                 const hidden  = row.querySelector("input[type='hidden']");
                 const copyBtn = row.querySelector(".btn-copier-horaire");
-
                 row.innerHTML = "";
                 if (jour) row.appendChild(jour);
                 periods.forEach(p => row.appendChild(p));
                 if (hidden) row.appendChild(hidden);
                 if (copyBtn) row.appendChild(copyBtn);
+                window.initAllPickers && window.initAllPickers();
             }
         });
     }
 
     restructureHoraires();
-
     let resizeTimer;
-    window.addEventListener("resize", () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(restructureHoraires, 150);
-    });
-
+    window.addEventListener("resize", () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(restructureHoraires, 150); });
 });
 </script>
 {% endblock %}
