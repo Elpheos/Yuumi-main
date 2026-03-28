@@ -1054,6 +1054,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const btnSave = document.getElementById("btn-save");
 
     if (form && btnSave) {
+        // Ce listener est en phase bubble (défaut), donc s'exécute APRÈS
+        // le listener capture qui vide les champs fermés.
         form.addEventListener("submit", () => {
             btnSave.disabled = true;
             btnSave.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enregistrement…';
@@ -1063,29 +1065,51 @@ document.addEventListener("DOMContentLoaded", () => {
     // ============================================================
     // 5. HORAIRES — Toggle Fermé
     // ============================================================
-    function applyToggle(checkbox) {
+
+    // Gère uniquement l'affichage (masquer/afficher)
+    // Le vidage des valeurs se fait au moment du submit (plus fiable)
+    function applyToggleDisplay(checkbox) {
         const idx    = checkbox.dataset.idx;
         const period = checkbox.dataset.period;
         const times  = document.getElementById(`times-${period}-${idx}`);
         if (!times) return;
-
         if (checkbox.checked) {
-            // Fermé : masquer et vider les inputs pour envoyer null à Django
             times.classList.add("is-closed");
-            times.querySelectorAll("input[type='time']").forEach(i => i.value = "");
         } else {
             times.classList.remove("is-closed");
         }
     }
 
-    // Initialiser l'état au chargement
+    // Fonction partagée avec le copier-vers-le-bas
+    function applyToggle(checkbox) {
+        applyToggleDisplay(checkbox);
+    }
+
+    // Initialiser l'affichage au chargement
     document.querySelectorAll(".toggle-ferme").forEach(cb => {
-        applyToggle(cb);
+        applyToggleDisplay(cb);
         cb.addEventListener("change", () => {
-            applyToggle(cb);
+            applyToggleDisplay(cb);
             formDirty = true;
         });
     });
+
+    // Au submit : vider les inputs masqués JUSTE AVANT l'envoi (phase capture)
+    // C'est le seul endroit garanti pour que Django reçoive "" sur les champs fermés
+    if (form) {
+        form.addEventListener("submit", function clearClosedFields() {
+            document.querySelectorAll(".toggle-ferme").forEach(cb => {
+                if (cb.checked) {
+                    const idx    = cb.dataset.idx;
+                    const period = cb.dataset.period;
+                    const times  = document.getElementById(`times-${period}-${idx}`);
+                    if (times) {
+                        times.querySelectorAll("input[type='time']").forEach(i => { i.value = ""; i.removeAttribute("disabled"); });
+                    }
+                }
+            });
+        }, true); // true = capture, s'exécute avant les autres listeners
+    }
 
     // ============================================================
     // 6. HORAIRES — Copier vers le bas
