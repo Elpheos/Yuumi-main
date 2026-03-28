@@ -378,7 +378,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 2px;
+    gap: 4px;
     padding: 8px 10px;
     border-radius: 6px;
     border: 2px solid #ddd;
@@ -390,34 +390,53 @@
     transition: border-color 0.2s;
     user-select: none;
     color: #333;
-    letter-spacing: 0.03em;
+    letter-spacing: 0.05em;
+    box-sizing: border-box;
+    width: 100%;
 }
 
 .time-picker-display:hover { border-color: #ff8b38; }
 .time-picker-display.is-open { border-color: #ff8b38; box-shadow: 0 0 0 2px rgba(255,139,56,0.12); }
-.time-picker-display.is-empty { color: #bbb; font-weight: 400; }
+.time-picker-display.is-empty { color: #bbb; font-weight: 400; font-size: 13px; }
 
+/* Dropdown fixé en overlay au centre de l'écran */
 .time-picker-dropdown {
     display: none;
-    position: absolute;
-    top: calc(100% + 6px);
+    position: fixed;
+    top: 50%;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translate(-50%, -50%);
     background: #fff;
     border: 2px solid #ff8b38;
-    border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
-    z-index: 999;
+    border-radius: 12px;
+    box-shadow: 0 16px 40px rgba(0,0,0,0.18);
+    z-index: 9999;
     overflow: hidden;
-    min-width: 160px;
+    width: 200px;
+    flex-direction: column;
 }
 
 .time-picker-dropdown.is-open { display: flex; }
 
+/* Overlay sombre derrière le dropdown */
+.time-picker-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+    z-index: 9998;
+}
+.time-picker-overlay.is-open { display: block; }
+
+.time-cols-row {
+    display: flex;
+    flex-direction: row;
+}
+
 .time-col {
     display: flex;
     flex-direction: column;
-    width: 72px;
+    flex: 1;
 }
 
 .time-col-label {
@@ -427,12 +446,12 @@
     letter-spacing: 0.06em;
     color: #bbb;
     text-align: center;
-    padding: 8px 0 4px;
+    padding: 10px 0 6px;
     border-bottom: 1px solid #f0f0f0;
 }
 
 .time-col-scroll {
-    height: 160px;
+    height: 180px;
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: #ff8b38 #f5f5f5;
@@ -442,10 +461,22 @@
 .time-col-scroll::-webkit-scrollbar-track { background: #f5f5f5; }
 .time-col-scroll::-webkit-scrollbar-thumb { background: #ff8b38; border-radius: 2px; }
 
+.time-col-sep {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    color: #ddd;
+    width: 20px;
+    flex-shrink: 0;
+    padding-top: 32px;
+}
+
 .time-option {
-    padding: 7px 0;
+    padding: 8px 0;
     text-align: center;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 500;
     color: #555;
     cursor: pointer;
@@ -453,52 +484,40 @@
 }
 
 .time-option:hover { background: #fff5ee; color: #ff8b38; }
-.time-option.selected { background: #ff8b38; color: #fff; border-radius: 4px; margin: 0 4px; }
-
-.time-col-sep {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: 700;
-    color: #ccc;
-    padding: 0 2px;
-    padding-top: 24px;
-}
+.time-option.selected { background: #ff8b38; color: #fff; }
 
 .time-picker-footer {
     border-top: 1px solid #f0f0f0;
-    padding: 6px 8px;
+    padding: 8px 12px;
     display: flex;
     justify-content: space-between;
-    gap: 6px;
-    width: 100%;
-    box-sizing: border-box;
+    align-items: center;
+    gap: 8px;
 }
 
 .tp-btn-clear {
-    font-size: 11px;
+    font-size: 12px;
     color: #bbb;
     background: none;
     border: none;
     cursor: pointer;
     font-family: inherit;
-    padding: 3px 6px;
+    padding: 4px 8px;
     border-radius: 4px;
     transition: color 0.15s;
 }
 .tp-btn-clear:hover { color: #e74c3c; }
 
 .tp-btn-ok {
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     color: #fff;
     background: #ff8b38;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-family: inherit;
-    padding: 3px 10px;
+    padding: 5px 16px;
     transition: background 0.15s;
 }
 .tp-btn-ok:hover { background: #e67626; }
@@ -1137,6 +1156,22 @@
 // TIME PICKER CUSTOM
 // ============================================================
 (function() {
+    // Overlay unique partagé entre tous les pickers
+    const overlay = document.createElement('div');
+    overlay.className = 'time-picker-overlay';
+    document.body.appendChild(overlay);
+
+    let activeDropdown = null;
+    let activeDisplay  = null;
+
+    function closeAll() {
+        if (activeDropdown) { activeDropdown.classList.remove('is-open'); activeDropdown = null; }
+        if (activeDisplay)  { activeDisplay.classList.remove('is-open');  activeDisplay  = null; }
+        overlay.classList.remove('is-open');
+    }
+
+    overlay.addEventListener('click', closeAll);
+
     function buildOptions(scroll, values, currentVal, onSelect) {
         values.forEach(v => {
             const str = String(v).padStart(2, '0');
@@ -1156,30 +1191,33 @@
         if (input.dataset.pickerInit) return;
         input.dataset.pickerInit = '1';
 
+        // Wrapper
         const wrap = document.createElement('div');
         wrap.className = 'time-picker-wrap';
         input.parentNode.insertBefore(wrap, input);
         wrap.appendChild(input);
 
+        // Bouton d'affichage
         const display = document.createElement('div');
-        display.className = 'time-picker-display is-empty';
-        display.textContent = '--:--';
+        display.className = 'time-picker-display' + (input.value ? '' : ' is-empty');
+        display.textContent = input.value || '--:--';
         wrap.appendChild(display);
 
+        // Dropdown (appendé au body pour éviter overflow)
         const dropdown = document.createElement('div');
         dropdown.className = 'time-picker-dropdown';
+        document.body.appendChild(dropdown);
 
         let hVal = '', mVal = '00';
-
         if (input.value) {
-            const parts = input.value.split(':');
-            hVal = parts[0] || '';
-            mVal = parts[1] || '00';
-            display.textContent = hVal + ':' + mVal;
-            display.classList.remove('is-empty');
+            const p = input.value.split(':');
+            hVal = p[0] || ''; mVal = p[1] || '00';
         }
 
-        // Colonnes
+        // Rangée colonnes
+        const colsRow = document.createElement('div');
+        colsRow.className = 'time-cols-row';
+
         const hColWrap = document.createElement('div'); hColWrap.className = 'time-col';
         const hLabel = document.createElement('div'); hLabel.className = 'time-col-label'; hLabel.textContent = 'Heure';
         const hScroll = document.createElement('div'); hScroll.className = 'time-col-scroll';
@@ -1192,16 +1230,24 @@
         const mScroll = document.createElement('div'); mScroll.className = 'time-col-scroll';
         mColWrap.appendChild(mLabel); mColWrap.appendChild(mScroll);
 
+        colsRow.appendChild(hColWrap);
+        colsRow.appendChild(sep);
+        colsRow.appendChild(mColWrap);
+
         function updateDisplay() {
             if (hVal) {
-                display.textContent = hVal + ':' + mVal;
+                const val = hVal + ':' + mVal;
+                display.textContent = val;
                 display.classList.remove('is-empty');
-                input.value = hVal + ':' + mVal;
+                input.value = val;
             }
         }
 
-        buildOptions(hScroll, Array.from({length:24},(_,i)=>i), hVal, v => { hVal=v; updateDisplay(); });
-        buildOptions(mScroll, [0,5,10,15,20,25,30,35,40,45,50,55].map(m=>String(m).padStart(2,'0')), mVal, v => { mVal=v; updateDisplay(); });
+        const hours = Array.from({length:24}, (_, i) => i);
+        const mins  = ['00','05','10','15','20','25','30','35','40','45','50','55'];
+
+        buildOptions(hScroll, hours, hVal, v => { hVal = v; updateDisplay(); });
+        buildOptions(mScroll, mins, mVal, v => { mVal = v; updateDisplay(); });
 
         // Footer
         const footer = document.createElement('div'); footer.className = 'time-picker-footer';
@@ -1212,40 +1258,31 @@
             display.textContent='--:--'; display.classList.add('is-empty');
             hScroll.querySelectorAll('.time-option').forEach(o=>o.classList.remove('selected'));
             mScroll.querySelectorAll('.time-option').forEach(o=>o.classList.remove('selected'));
-            closeDropdown();
+            closeAll();
         });
         const btnOk = document.createElement('button'); btnOk.type='button'; btnOk.className='tp-btn-ok'; btnOk.textContent='OK';
-        btnOk.addEventListener('click', e => { e.stopPropagation(); closeDropdown(); });
+        btnOk.addEventListener('click', e => { e.stopPropagation(); closeAll(); });
         footer.appendChild(btnClear); footer.appendChild(btnOk);
 
-        dropdown.appendChild(hColWrap);
-        dropdown.appendChild(sep);
-        dropdown.appendChild(mColWrap);
+        dropdown.appendChild(colsRow);
         dropdown.appendChild(footer);
-        wrap.appendChild(dropdown);
 
-        function openDropdown() {
-            document.querySelectorAll('.time-picker-dropdown.is-open').forEach(d => {
-                d.classList.remove('is-open');
-                d.closest('.time-picker-wrap').querySelector('.time-picker-display').classList.remove('is-open');
-            });
+        display.addEventListener('click', e => {
+            e.stopPropagation();
+            if (dropdown.classList.contains('is-open')) { closeAll(); return; }
+            closeAll();
+            activeDropdown = dropdown;
+            activeDisplay  = display;
             dropdown.classList.add('is-open');
             display.classList.add('is-open');
+            overlay.classList.add('is-open');
             setTimeout(() => {
                 const selH = hScroll.querySelector('.selected');
                 const selM = mScroll.querySelector('.selected');
-                if (selH) selH.scrollIntoView({block:'center'});
-                if (selM) selM.scrollIntoView({block:'center'});
-            }, 10);
-        }
-
-        function closeDropdown() {
-            dropdown.classList.remove('is-open');
-            display.classList.remove('is-open');
-        }
-
-        display.addEventListener('click', e => { e.stopPropagation(); dropdown.classList.contains('is-open') ? closeDropdown() : openDropdown(); });
-        document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeDropdown(); });
+                if (selH) selH.scrollIntoView({block:'center', behavior:'smooth'});
+                if (selM) selM.scrollIntoView({block:'center', behavior:'smooth'});
+            }, 30);
+        });
     }
 
     window.initAllPickers = function() {
