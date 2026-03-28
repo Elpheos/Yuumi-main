@@ -72,17 +72,75 @@ class StoreForm(forms.ModelForm):
             'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
         }
 
+
+# -------------------------------
+# Formulaire horaires avec validation
+class OpeningHourForm(forms.ModelForm):
+    """
+    Formulaire pour un jour d'ouverture.
+    Les checkboxes "Fermé" côté JS vident les inputs avant soumission,
+    donc les champs arrivent à "" → None (null=True, blank=True sur le modèle).
+    Le clean() vérifie la cohérence de chaque période.
+    """
+
+    class Meta:
+        model = OpeningHour
+        fields = [
+            'jour',
+            'matin_ouverture',
+            'matin_fermeture',
+            'apresmidi_ouverture',
+            'apresmidi_fermeture',
+        ]
+        widgets = {
+            'matin_ouverture':     forms.TimeInput(attrs={'type': 'time'}),
+            'matin_fermeture':     forms.TimeInput(attrs={'type': 'time'}),
+            'apresmidi_ouverture': forms.TimeInput(attrs={'type': 'time'}),
+            'apresmidi_fermeture': forms.TimeInput(attrs={'type': 'time'}),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+
+        mo = cleaned.get('matin_ouverture')
+        mf = cleaned.get('matin_fermeture')
+        ao = cleaned.get('apresmidi_ouverture')
+        af = cleaned.get('apresmidi_fermeture')
+
+        # ── Matin ──────────────────────────────────────────────
+        if mo and not mf:
+            self.add_error('matin_fermeture',
+                           "Indiquez l'heure de fermeture du matin.")
+        if mf and not mo:
+            self.add_error('matin_ouverture',
+                           "Indiquez l'heure d'ouverture du matin.")
+        if mo and mf and mo >= mf:
+            self.add_error('matin_fermeture',
+                           "La fermeture doit être après l'ouverture.")
+
+        # ── Après-midi ─────────────────────────────────────────
+        if ao and not af:
+            self.add_error('apresmidi_fermeture',
+                           "Indiquez l'heure de fermeture de l'après-midi.")
+        if af and not ao:
+            self.add_error('apresmidi_ouverture',
+                           "Indiquez l'heure d'ouverture de l'après-midi.")
+        if ao and af and ao >= af:
+            self.add_error('apresmidi_fermeture',
+                           "La fermeture doit être après l'ouverture.")
+
+        # ── Cohérence inter-périodes ────────────────────────────
+        if mf and ao and ao <= mf:
+            self.add_error('apresmidi_ouverture',
+                           "L'après-midi doit commencer après la fin du matin.")
+
+        return cleaned
+
+
 OpeningHourFormSet = inlineformset_factory(
     Store,
     OpeningHour,
-    fields=[
-        'jour',
-        'matin_ouverture',
-        'matin_fermeture',
-        'apresmidi_ouverture',
-        'apresmidi_fermeture',
-    ],
+    form=OpeningHourForm,
     extra=0,
     can_delete=False,
 )
-
