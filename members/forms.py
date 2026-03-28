@@ -110,10 +110,12 @@ class OpeningHourForm(forms.ModelForm):
     def clean(self):
         cleaned = super().clean()
 
-        mo = cleaned.get('matin_ouverture')
-        mf = cleaned.get('matin_fermeture')
-        ao = cleaned.get('apresmidi_ouverture')
-        af = cleaned.get('apresmidi_fermeture')
+        # .get() retourne None si le champ est absent de cleaned_data
+        # (ce qui arrive quand le champ est vide et required=False)
+        mo = cleaned.get('matin_ouverture') or None
+        mf = cleaned.get('matin_fermeture') or None
+        ao = cleaned.get('apresmidi_ouverture') or None
+        af = cleaned.get('apresmidi_fermeture') or None
 
         # ── Matin ──────────────────────────────────────────────
         if mo and not mf:
