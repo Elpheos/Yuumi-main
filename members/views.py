@@ -24,9 +24,6 @@ from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, Openi
 # ---------------------------
 
 def main(request):
-    """
-    Page d’accueil : affiche tous les départements et les villes où des commerces existent.
-    """
     stores = Store.objects.all().values('departement', 'ville').distinct()
 
     departements_villes = {}
@@ -54,12 +51,10 @@ def stores(request, departement, ville):
 
     derniers_arrivants = stores_qs.order_by('-id')[:10]
 
-    # 🔹 Commerces aléatoires pour le carousel de mise en avant (5 max)
     import random
     stores_list = list(stores_qs)
     commerces_carousel = random.sample(stores_list, min(5, len(stores_list)))
 
-    # 🔹 Récupération configuration catégories ville
     city_config = CityCategoryHighlight.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville
@@ -84,10 +79,9 @@ def by_category(request, departement, ville, category):
     )
 
     commerces = [
-    c for c in commerces_qs
-    if c.categorie and c.categorie.slug == category
-]
-
+        c for c in commerces_qs
+        if c.categorie and c.categorie.slug == category
+    ]
 
     message = None
     if not commerces:
@@ -105,10 +99,8 @@ def by_category(request, departement, ville, category):
 
 
 # ---------------------------
-# Détails d’un commerce
+# Détails d'un commerce
 # ---------------------------
-
-# Remplacer la fonction store_details dans views.py par celle-ci :
 
 def store_details(request, departement, ville, slug):
     store = get_object_or_404(Store, slug=slug, departement=departement, ville=ville)
@@ -160,7 +152,6 @@ def store_details(request, departement, ville, slug):
         key=lambda h: jours_ordre.index(h.jour)
     )
 
-    # FIX : détecter si au moins un horaire a été renseigné
     horaires_renseignes = any(
         h.matin_ouverture or h.matin_fermeture or h.apresmidi_ouverture or h.apresmidi_fermeture
         for h in opening_hours
@@ -255,8 +246,6 @@ def map_view(request, departement):
     })
 
 
-
-
 # ---------------------------
 # Inscription utilisateur
 # ---------------------------
@@ -319,6 +308,21 @@ def edit_store(request, departement, ville, slug):
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
             return redirect(store.get_absolute_url())
+        else:
+            # ── DEBUG : à supprimer une fois le bug résolu ──
+            print("\n=== FORM ERRORS ===")
+            print(form.errors)
+            print("\n=== FORMSET ERRORS ===")
+            for i, form_errors in enumerate(opening_formset.errors):
+                if form_errors:
+                    print(f"  Jour {i} : {form_errors}")
+            print("\n=== FORMSET NON-FORM ERRORS ===")
+            print(opening_formset.non_form_errors())
+            print("\n=== POST DATA (horaires) ===")
+            for key, val in request.POST.items():
+                if 'horaires' in key:
+                    print(f"  {key} = '{val}'")
+            print("===================\n")
     else:
         form = StoreForm(instance=store)
         opening_formset = OpeningHourFormSet(instance=store, prefix="horaires")
@@ -328,7 +332,6 @@ def edit_store(request, departement, ville, slug):
         "opening_formset": opening_formset,
         "store": store,
     })
-
 
 
 # ---------------------------
@@ -362,14 +365,12 @@ def claim_store(request, store_id):
     user = request.user
     now = timezone.now()
 
-    # ❌ Si le commerce a déjà un propriétaire
     if store.owner:
         return JsonResponse(
             {"error": "Ce commerce a déjà un propriétaire."},
             status=400
         )
 
-    # ⏳ Cooldown : 1 heure par commerce
     if store.last_claim_request:
         delta = now - store.last_claim_request
         if delta < timedelta(hours=1):
@@ -382,7 +383,6 @@ def claim_store(request, store_id):
                 status=429
             )
 
-    # 📧 Envoi du mail
     subject = f"Demande de revendication – {store.nom}"
 
     message = (
@@ -392,8 +392,8 @@ def claim_store(request, store_id):
         f"Département : {store.departement}\n\n"
         f"Compte utilisateur : {user.username}\n"
         f"Email utilisateur : {user.email}\n\n"
-        f"Aucune attribution n’a encore été faite.\n"
-        f"Vous pouvez contacter l’utilisateur pour vérification."
+        f"Aucune attribution n'a encore été faite.\n"
+        f"Vous pouvez contacter l'utilisateur pour vérification."
     )
 
     send_mail(
@@ -404,7 +404,6 @@ def claim_store(request, store_id):
         fail_silently=False
     )
 
-    # ✅ On enregistre l'heure APRÈS succès
     store.last_claim_request = now
     store.save(update_fields=["last_claim_request"])
 
@@ -414,11 +413,11 @@ def claim_store(request, store_id):
             "Nous vous contacterons après vérification."
         )
     })
+
+
 # ---------------------------
 # Autres pages
 # ---------------------------
-
-
 
 def categories_ville(request, departement, ville):
     stores_qs = Store.objects.filter(
@@ -437,7 +436,6 @@ def categories_ville(request, departement, ville):
 
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
-
         commerces_with_photo = commerces_cat.filter(photo__isnull=False)
 
         if commerces_with_photo.exists():
@@ -465,7 +463,6 @@ def categories_ville(request, departement, ville):
         'departement': departement,
         'ville': ville,
     })
-
 
 
 def notre_projet(request):
@@ -509,13 +506,11 @@ def by_super_category(request, departement, ville, super_slug):
         ville__iexact=ville
     ).select_related("categorie__super_categorie")
 
-    # Récupération de la super catégorie
     super_cat = get_object_or_404(
         SuperCategory,
         slug=super_slug
     )
 
-    # Catégories de cette super catégorie présentes dans la ville
     categories_qs = (
         Category.objects
         .filter(
@@ -552,19 +547,19 @@ def by_super_category(request, departement, ville, super_slug):
 
 def changer_ville(request):
     stores = Store.objects.all().values('departement', 'ville').distinct()
- 
+
     departements_villes = {}
     for s in stores:
         dep = s['departement'].strip().title() if s['departement'] else ""
         ville = s['ville'].strip().title() if s['ville'] else ""
         if dep and ville:
             departements_villes.setdefault(dep, set()).add(ville)
- 
+
     sorted_data = {
         dep: sorted(villes, key=str.casefold)
         for dep, villes in sorted(departements_villes.items(), key=lambda x: x[0].casefold())
     }
- 
+
     return render(request, 'members/changer_ville.html', {
         'departements_villes': sorted_data,
     })
