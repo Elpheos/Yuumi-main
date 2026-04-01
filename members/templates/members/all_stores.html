@@ -198,7 +198,7 @@
                 <h3>Ils viennent de nous rejoindre ! Pensez à y jeter un œil.</h3>
             </div>
 
-            <div class="derniers-arrivants-grid-container">
+            <div class="derniers-arrivants-grid-container" id="arrivants-scroll">
                 {% for store in derniers_arrivants %}
                     <div class="derniers-arrivants-grid-commerces">
                         <a href="{% url 'store_details' departement=store.departement ville=store.ville slug=store.slug %}"
@@ -220,8 +220,63 @@
                 {% endfor %}
             </div>
 
+            <!-- Barre de progression scroll -->
+            <div class="arrivants-scrollbar-track">
+                <div class="arrivants-scrollbar-thumb" id="arrivants-thumb"></div>
+            </div>
+
         </div>
     </section>
+
+<style>
+.arrivants-scrollbar-track {
+    display: none; /* masqué sur desktop */
+}
+
+@media (max-width: 767px) {
+    .arrivants-scrollbar-track {
+        display: block;
+        width: 90%;
+        margin: 10px auto 0;
+        height: 4px;
+        background: #e0e0e0;
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .arrivants-scrollbar-thumb {
+        height: 100%;
+        background: #ff8b38;
+        border-radius: 2px;
+        width: 30%; /* valeur initiale, mise à jour par JS */
+        transition: width 0.1s, transform 0.1s;
+    }
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const container = document.getElementById("arrivants-scroll");
+    const thumb = document.getElementById("arrivants-thumb");
+    if (!container || !thumb) return;
+
+    function updateThumb() {
+        const scrollLeft = container.scrollLeft;
+        const maxScroll = container.scrollWidth - container.clientWidth;
+        if (maxScroll <= 0) return;
+
+        const ratio = scrollLeft / maxScroll;
+        const thumbWidth = (container.clientWidth / container.scrollWidth) * 100;
+        const thumbOffset = ratio * (100 - thumbWidth);
+
+        thumb.style.width = thumbWidth + "%";
+        thumb.style.transform = "translateX(" + (thumbOffset / thumbWidth * 100) + "%)";
+    }
+
+    container.addEventListener("scroll", updateThumb, { passive: true });
+    updateThumb();
+});
+</script>
 
 </main>
 
