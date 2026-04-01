@@ -18,6 +18,8 @@
     <!-- Global CSS -->
     <link rel="stylesheet" href="{% static 'css/myglobal.css' %}">
 
+    <!-- Bloc pour les scripts/styles spécifiques à une page (ex: Leaflet) -->
+    {% block extra_head %}{% endblock %}
 
 <style>
 #supercats-dropdown {
