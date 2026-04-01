@@ -131,7 +131,8 @@
                     <div class="commerce-wishlist">
                         <button class="favori-btn"
                                 data-store-id="{{ store.id }}"
-                                data-is-favorite="{{ is_favorite|yesno:'true,false' }}">
+                                data-is-favorite="{{ is_favorite|yesno:'true,false' }}"
+                                data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
                             <i class="fa-regular fa-heart"></i>
                             <span>Ajouter aux favoris</span>
                         </button>
@@ -295,6 +296,27 @@
 
 </main>
 
+<!-- Modal : connexion requise pour les favoris -->
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px; border: 2px solid #ff8b38;">
+            <div class="modal-body" style="text-align:center; padding: 32px 24px;">
+                <i class="fa-solid fa-heart" style="font-size:48px; color:#ff8b38; margin-bottom:16px;"></i>
+                <h5 style="font-weight:700; margin-bottom:10px;">Créez un compte pour sauvegarder vos favoris</h5>
+                <p style="color:#666; margin-bottom:24px;">Rejoignez Yuumi gratuitement et retrouvez tous vos commerces préférés en un clic.</p>
+                <a href="{% url 'register' %}"
+                   class="btn"
+                   style="background:#ff8b38; color:white; border-radius:10px; padding:10px 28px; font-weight:600; font-size:1rem; text-decoration:none;">
+                    Créer un compte
+                </a>
+                <div style="margin-top:14px;">
+                    <a href="{% url 'login' %}" style="color:#ff8b38; font-size:0.9rem;">J'ai déjà un compte</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Modal de confirmation pour revendication -->
 <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -366,6 +388,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const storeId = btn.dataset.storeId;
         if (!storeId) return;
 
+        const isAuthenticated = btn.dataset.isAuthenticated === "true";
         const isFavorite = btn.dataset.isFavorite === "true";
         const icon = btn.querySelector("i");
         const span = btn.querySelector("span");
@@ -380,6 +403,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         btn.addEventListener("click", () => {
+
+            // Utilisateur non connecté → popup
+            if (!isAuthenticated) {
+                const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+                modal.show();
+                return;
+            }
+
             fetch(`/store/${storeId}/favoris/`, {
                 method: "POST",
                 headers: {
