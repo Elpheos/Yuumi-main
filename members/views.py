@@ -215,7 +215,7 @@ def map_view(request, departement):
 
     store_data = []
     for store in stores_qs:
-        if store.latitude and store.longitude and store.categorie:
+        if store.latitude is not None and store.longitude is not None and store.categorie:
             store_data.append({
                 "nom": store.nom,
                 "categorie": store.categorie.slug,
@@ -251,16 +251,17 @@ def map_view(request, departement):
 # ---------------------------
 
 def register(request):
+    next_url = request.GET.get('next') or request.POST.get('next') or ''
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Bienvenue sur Yuumi ! Votre compte a été créé avec succès.")
-            return redirect('main')
+            return redirect(next_url if next_url else 'main')
     else:
         form = RegisterForm()
-    return render(request, "members/register.html", {"form": form})
+    return render(request, "members/register.html", {"form": form, "next": next_url})
 
 
 # ---------------------------
@@ -562,4 +563,8 @@ def changer_ville(request):
 
     return render(request, 'members/changer_ville.html', {
         'departements_villes': sorted_data,
+        'next': request.GET.get('next', request.META.get('HTTP_REFERER', '')),
     })
+
+
+
