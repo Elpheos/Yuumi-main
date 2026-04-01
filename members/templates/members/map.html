@@ -5,6 +5,11 @@
 Carte des commerces - {{ departement }} | Yuumi
 {% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+{% endblock %}
+
 {% block content %}
 <main>
 
@@ -66,10 +71,6 @@ Carte des commerces - {{ departement }} | Yuumi
 {% endblock %}
 
 {% block extra_js %}
-
-<link rel="stylesheet"
-      href="https://unpkg.com/leaflet/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
 #map {
@@ -183,7 +184,7 @@ Carte des commerces - {{ departement }} | Yuumi
 
     /* Popup compacte */
     .yuumi-popup-img {
-        min-width: unset;   /* supprime le min-width: 220px */
+        min-width: unset;
         width: 100%;
         max-height: 120px;
         object-fit: cover;
@@ -216,9 +217,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     L.tileLayer(
-    'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-    { maxZoom: 19, attribution: '© OpenStreetMap © CARTO' }
-).addTo(map);
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        { maxZoom: 19, attribution: '© OpenStreetMap © CARTO' }
+    ).addTo(map);
 
     /* ========= Mapping catégories ========= */
     const categories = JSON.parse(
@@ -256,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
-        if (!store.lat || !store.lng || !store.categorie) return null;
+        if (store.lat == null || store.lng == null || !store.categorie) return null;
 
         const label = categoryLabels[store.categorie] || store.categorie;
 
