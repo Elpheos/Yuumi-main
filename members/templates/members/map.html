@@ -212,14 +212,14 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('stores-data').textContent
     );
 
-    const map = L.map('map').setView(
+    const leafletMap = L.map('map').setView(
         [stores[0]?.lat || 46, stores[0]?.lng || 2], 10
     );
 
     L.tileLayer(
         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
         { maxZoom: 19, attribution: '© OpenStreetMap © CARTO' }
-    ).addTo(map);
+    ).addTo(leafletMap);
 
     /* ========= Mapping catégories ========= */
     const categories = JSON.parse(
@@ -236,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const h = 50;
 
         return L.divIcon({
-            className: "",
+            className: "custom-pin",
             html: `
                 <div style="position:relative;width:${w}px;height:${h}px;">
                     <svg viewBox="0 0 24 40" width="${w}" height="${h}">
@@ -284,7 +284,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         marker.category = store.categorie;
-        marker.addTo(map);
+        marker.addTo(leafletMap);
         return marker;
     }).filter(Boolean);
 
@@ -299,8 +299,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const active = getActiveChildren();
         markers.forEach(marker => {
             const visible = active.includes(marker.category);
-            if (visible && !map.hasLayer(marker)) map.addLayer(marker);
-            if (!visible && map.hasLayer(marker)) map.removeLayer(marker);
+            if (visible && !leafletMap.hasLayer(marker)) leafletMap.addLayer(marker);
+            if (!visible && leafletMap.hasLayer(marker)) leafletMap.removeLayer(marker);
         });
     }
 
