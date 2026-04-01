@@ -3,6 +3,11 @@
 
 {% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
 
+{% block meta_description %}{{ store.descriptionpetite }} — {{ store.nom }}, {{ store.ville }}.{% endblock %}
+{% block og_title %}{{ store.nom }} | Yuumi{% endblock %}
+{% block og_description %}{{ store.descriptionpetite }}{% endblock %}
+{% if store.photo %}{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% endblock %}{% endif %}
+
 {% block content %}
 
 <div class="store-action-bar">
@@ -304,13 +309,13 @@
                 <i class="fa-solid fa-heart" style="font-size:48px; color:#ff8b38; margin-bottom:16px;"></i>
                 <h5 style="font-weight:700; margin-bottom:10px;">Créez un compte pour sauvegarder vos favoris</h5>
                 <p style="color:#666; margin-bottom:24px;">Rejoignez Yuumi gratuitement et retrouvez tous vos commerces préférés en un clic.</p>
-                <a href="{% url 'register' %}"
+                <a href="{% url 'register' %}?next={{ request.path }}"
                    class="btn"
                    style="background:#ff8b38; color:white; border-radius:10px; padding:10px 28px; font-weight:600; font-size:1rem; text-decoration:none;">
                     Créer un compte
                 </a>
                 <div style="margin-top:14px;">
-                    <a href="{% url 'login' %}" style="color:#ff8b38; font-size:0.9rem;">J'ai déjà un compte</a>
+                    <a href="{% url 'login' %}?next={{ request.path }}" style="color:#ff8b38; font-size:0.9rem;">J'ai déjà un compte</a>
                 </div>
             </div>
         </div>
@@ -678,3 +683,5 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 </style>
 {% endblock %}
+
+
