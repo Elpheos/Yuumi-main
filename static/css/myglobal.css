@@ -1930,3 +1930,9 @@ body.menu-open {
         max-width: 100%;
     }
 }
+
+/* ── Leaflet : annuler les resets globaux ── */
+.leaflet-container * {
+    max-width: none;
+    box-sizing: content-box;
+}
