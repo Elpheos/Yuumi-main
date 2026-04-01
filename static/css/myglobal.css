@@ -1175,11 +1175,13 @@ body.menu-open {
     display: flex;
     width: 90%;
     margin: auto;
+    gap: 32px;
+    align-items: flex-start;
 }
 
 .photo-commerce-container {
-    max-height: 600px;
-    width: 60%;
+    flex: 0 0 70%;
+    max-width: 70%;
 }
 
 .photo-commerce-container img {
@@ -1189,10 +1191,10 @@ body.menu-open {
 .commerce-right-part-container {
     display: flex;
     flex-direction: column;
-    width: 30%;
-    margin: auto;
-    height: 600px;
-    justify-content: space-between;
+    flex: 1;
+    height: auto;
+    justify-content: flex-start;
+    gap: 16px;
 }
 
 .url-path-description {
