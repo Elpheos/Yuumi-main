@@ -91,6 +91,26 @@ Carte des commerces - {{ departement }} | Yuumi
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
 }
 
+.leaflet-popup-content {
+    margin: 8px !important;
+    width: auto !important;
+}
+
+/* Croix de fermeture personnalisée */
+.yuumi-popup .leaflet-popup-close-button {
+    width: 24px !important;
+    height: 24px !important;
+    background: #ff8b38 !important;
+    color: white !important;
+    border-radius: 50% !important;
+    font-size: 16px !important;
+    line-height: 24px !important;
+    text-align: center !important;
+    top: 6px !important;
+    right: 6px !important;
+    padding: 0 !important;
+}
+
 .popup-content a {
     text-decoration: none;
     color: #ff8b38;
@@ -99,16 +119,17 @@ Carte des commerces - {{ departement }} | Yuumi
 
 .yuumi-popup-h3 {
     color: #ff8b38;
-    font-size: 20px;
+    font-size: 16px;
     text-align: center;
     margin: 0 0 6px;
 }
 
 .yuumi-popup-img {
-    border: 6px solid #ff8b38;
+    border: 3px solid #ff8b38;
     border-radius: 10px;
-    min-width: 220px;
-    max-width: 100%;
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
     display: block;
     margin: 8px auto 0;
 }
@@ -183,23 +204,18 @@ Carte des commerces - {{ departement }} | Yuumi
     }
 
     /* Popup compacte */
+    .leaflet-popup-content-wrapper {
+        max-width: 220px !important;
+    }
+
     .yuumi-popup-img {
-        min-width: unset;
         width: 100%;
-        max-height: 120px;
+        height: 110px;
         object-fit: cover;
     }
 
     .yuumi-popup-h3 {
-        font-size: 14px;
-    }
-
-    .leaflet-popup-content-wrapper {
-        max-width: 180px !important;
-    }
-
-    .leaflet-popup-content {
-        margin: 8px !important;
+        font-size: 13px;
     }
 }
 </style>
