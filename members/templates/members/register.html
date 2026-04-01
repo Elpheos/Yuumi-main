@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}Mes favoris{% endblock %}
+{% block title %}Créer un compte | Yuumi{% endblock %}
 
 {% block content %}
 <style>
@@ -46,6 +46,7 @@
 <h2>Créer un compte</h2>
 <form method="post">
     {% csrf_token %}
+    {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
     {{ form.username.label_tag }}<br>
     {{ form.username }}<br><br>
 
