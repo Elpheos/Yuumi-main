@@ -1,13 +1,15 @@
 """
-Django settings for TestYuumi project.
+Django settings for Yuumi project.
 """
 
 from pathlib import Path
 import os
 
-# Chargement du fichier .env si présent (sans dépendance externe)
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# -------------------------------------------------------------------
+# Chargement du fichier .env (sans dépendance externe)
+# -------------------------------------------------------------------
 _env_path = BASE_DIR / ".env"
 if _env_path.exists():
     with open(_env_path) as f:
@@ -19,7 +21,7 @@ if _env_path.exists():
 
 
 # -------------------------------------------------------------------
-# SECURITY
+# SÉCURITÉ
 # -------------------------------------------------------------------
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
@@ -29,12 +31,12 @@ if not SECRET_KEY:
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "yes")
 
 ALLOWED_HOSTS = [
-    "37.187.200.200",
-    "yuumi-shop.com",
-    "www.yuumi-shop.com",
-    "127.0.0.1",
-    "localhost",
-    "37.66.56.14",
+    h.strip()
+    for h in os.environ.get(
+        "ALLOWED_HOSTS",
+        "127.0.0.1,localhost"
+    ).split(",")
+    if h.strip()
 ]
 
 
@@ -43,104 +45,121 @@ ALLOWED_HOSTS = [
 # -------------------------------------------------------------------
 
 INSTALLED_APPS = [
-    # Django Autocomplete Light
-    'dal',
-    'dal_select2',
+    # Django Autocomplete Light — doit être avant contrib.admin
+    "dal",
+    "dal_select2",
 
-    # Django core apps
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    # Django core
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
 
-    # Your apps
-    'members',
+    # Projet
+    "members",
 
     # Third-party
-    'nested_admin',
-    'django_extensions',
+    "nested_admin",
+    "django_extensions",
 ]
 
+
+# -------------------------------------------------------------------
+# Middleware
+# -------------------------------------------------------------------
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-
-    # WhiteNoise for static files in production
-    'whitenoise.middleware.WhiteNoiseMiddleware',
-
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
-        # Force no-cache sur les pages HTML (évite le cache mobile)
-    'members.cache_middleware.NoCacheHTMLMiddleware',
+    "django.middleware.security.SecurityMiddleware",
+    # WhiteNoise doit être juste après SecurityMiddleware
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # No-cache sur les pages HTML (évite le cache navigateur mobile)
+    "members.cache_middleware.NoCacheHTMLMiddleware",
 ]
 
 
-ROOT_URLCONF = 'TestYuumi.urls'
+# -------------------------------------------------------------------
+# URLs & Templates
+# -------------------------------------------------------------------
 
+ROOT_URLCONF = "TestYuumi.urls"
 
 TEMPLATES = [
     {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-                'members.context_processors.menu_context',
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+                "members.context_processors.menu_context",
             ],
         },
     },
 ]
 
-
-WSGI_APPLICATION = 'TestYuumi.wsgi.application'
+WSGI_APPLICATION = "TestYuumi.wsgi.application"
 
 
 # -------------------------------------------------------------------
-# Database
+# Base de données
 # -------------------------------------------------------------------
 
-DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+_db_engine = os.environ.get("DB_ENGINE", "sqlite3")
+
+if _db_engine == "postgresql":
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": os.environ.get("DB_NAME", "yuumi"),
+            "USER": os.environ.get("DB_USER", "yuumi"),
+            "PASSWORD": os.environ.get("DB_PASSWORD", ""),
+            "HOST": os.environ.get("DB_HOST", "localhost"),
+            "PORT": os.environ.get("DB_PORT", "5432"),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
 
 # -------------------------------------------------------------------
-# Password validation
+# Validation des mots de passe
 # -------------------------------------------------------------------
 
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
+    {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
+    {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
 
 # -------------------------------------------------------------------
-# Internationalization
+# Internationalisation
 # -------------------------------------------------------------------
 
-LANGUAGE_CODE = 'fr-fr'
-TIME_ZONE = 'Europe/Paris'
+LANGUAGE_CODE = "fr-fr"
+TIME_ZONE = "Europe/Paris"
 USE_I18N = True
 USE_TZ = True
 
 
 # -------------------------------------------------------------------
-# Static & Media
+# Fichiers statiques & médias
 # -------------------------------------------------------------------
 
 STATIC_URL = "/static/"
@@ -164,7 +183,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
 # -------------------------------------------------------------------
@@ -172,36 +191,45 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # -------------------------------------------------------------------
 
 if DEBUG:
-    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'mail.infomaniak.com'
-    EMAIL_PORT = 587
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ.get("EMAIL_HOST", "mail.infomaniak.com")
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "587"))
     EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'contact@yuumi-shop.com'
-    EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-    DEFAULT_FROM_EMAIL = 'noreply@yuumi-shop.com'
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "contact@yuumi-shop.com")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
+    DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "noreply@yuumi-shop.com")
 
 
 # -------------------------------------------------------------------
-# Security (CSRF / CORS)
+# Sécurité CSRF / cookies
 # -------------------------------------------------------------------
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://yuumi-shop.com",
-    "https://www.yuumi-shop.com",
-    "http://127.0.0.1:8000",
-    "http://localhost:8000",
+    origin.strip()
+    for origin in os.environ.get(
+        "CSRF_TRUSTED_ORIGINS",
+        "http://127.0.0.1:8000,http://localhost:8000"
+    ).split(",")
+    if origin.strip()
 ]
 
 CSRF_COOKIE_SECURE = not DEBUG
-CORS_ALLOW_ALL_ORIGINS = DEBUG  # False en production automatiquement
+SESSION_COOKIE_SECURE = not DEBUG
+
+# En production : HSTS
+if not DEBUG:
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
+    SECURE_SSL_REDIRECT = True
 
 
 # -------------------------------------------------------------------
-# Authentication redirects
+# Authentification
 # -------------------------------------------------------------------
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGIN_URL = "/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/"
