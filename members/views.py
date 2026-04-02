@@ -1,3 +1,5 @@
+import random
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
@@ -7,15 +9,13 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from random import choice
 from django.templatetags.static import static
-from django.utils.text import slugify
 from django.utils import timezone
 from datetime import timedelta
-from .models import CityCategoryHighlight
-from .models import SuperCategory
 
-
-
-from .models import Store, ProductFamily, Product, Category, OpeningHour, StoreImage
+from .models import (
+    Store, ProductFamily, Product, Category,
+    OpeningHour, StoreImage, CityCategoryHighlight, SuperCategory,
+)
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, OpeningHourFormSet
 
 
@@ -24,12 +24,12 @@ from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, Openi
 # ---------------------------
 
 def main(request):
-    stores = Store.objects.all().values('departement', 'ville').distinct()
+    stores = Store.objects.all().values("departement", "ville").distinct()
 
     departements_villes = {}
     for s in stores:
-        dep = s['departement'].strip().title() if s['departement'] else ""
-        ville = s['ville'].strip().title() if s['ville'] else ""
+        dep = s["departement"].strip().title() if s["departement"] else ""
+        ville = s["ville"].strip().title() if s["ville"] else ""
         if dep and ville:
             departements_villes.setdefault(dep, set()).add(ville)
 
@@ -46,48 +46,44 @@ def main(request):
 def stores(request, departement, ville):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
-        ville__iexact=ville
+        ville__iexact=ville,
     )
 
-    derniers_arrivants = stores_qs.order_by('-id')[:10]
+    derniers_arrivants = stores_qs.order_by("-id")[:10]
 
-    import random
     stores_list = list(stores_qs)
     commerces_carousel = random.sample(stores_list, min(5, len(stores_list)))
 
     city_config = CityCategoryHighlight.objects.filter(
         departement__iexact=departement,
-        ville__iexact=ville
+        ville__iexact=ville,
     ).first()
 
     city_category_items = city_config.items.all() if city_config else []
 
-    return render(request, 'members/all_stores.html', {
-        'stores': stores_qs,
-        'departement': departement,
-        'ville': ville,
-        'derniers_arrivants': derniers_arrivants,
-        'city_category_items': city_category_items,
-        'commerces_carousel': commerces_carousel,
+    return render(request, "members/all_stores.html", {
+        "stores": stores_qs,
+        "departement": departement,
+        "ville": ville,
+        "derniers_arrivants": derniers_arrivants,
+        "city_category_items": city_category_items,
+        "commerces_carousel": commerces_carousel,
     })
 
 
 def by_category(request, departement, ville, category):
-    commerces_qs = Store.objects.filter(
+    # FIX : filtrage en base de données plutôt qu'en Python (évite N requêtes)
+    commerces = Store.objects.filter(
         departement__iexact=departement,
-        ville__iexact=ville
-    )
-
-    commerces = [
-        c for c in commerces_qs
-        if c.categorie and c.categorie.slug == category
-    ]
+        ville__iexact=ville,
+        categorie__slug=category,
+    ).select_related("categorie")
 
     message = None
-    if not commerces:
+    if not commerces.exists():
         message = "Aucun commerce trouvé pour cette catégorie."
 
-    readable_category = category.replace('-', ' ').capitalize()
+    readable_category = category.replace("-", " ").capitalize()
 
     return render(request, "members/by_category.html", {
         "ville": ville,
@@ -122,12 +118,12 @@ def store_details(request, departement, ville, slug):
                 product_formsets[family.id] = ProductFormSet(
                     request.POST,
                     instance=family,
-                    prefix=formset_key
+                    prefix=formset_key,
                 )
                 if product_formsets[family.id].is_valid():
                     product_formsets[family.id].save()
             messages.success(request, "Les informations ont bien été enregistrées.")
-            return redirect('store_details', departement=departement, ville=ville, slug=slug)
+            return redirect("store_details", departement=departement, ville=ville, slug=slug)
     else:
         for family in store.families.all():
             formset_key = f"products_{family.id}"
@@ -139,7 +135,7 @@ def store_details(request, departement, ville, slug):
             "nom": store.nom,
             "lat": store.latitude,
             "lng": store.longitude,
-            "url": store.get_absolute_url()
+            "url": store.get_absolute_url(),
         })
 
     is_favorite = False
@@ -149,7 +145,7 @@ def store_details(request, departement, ville, slug):
     jours_ordre = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
     opening_hours = sorted(
         store.opening_hours.all(),
-        key=lambda h: jours_ordre.index(h.jour)
+        key=lambda h: jours_ordre.index(h.jour),
     )
 
     horaires_renseignes = any(
@@ -178,28 +174,24 @@ def search_product(request):
     results = []
 
     if q:
-        try:
-            qs = Product.objects.filter(
-                nom__istartswith=q
-            ).select_related('family', 'family__store')
-            if ville:
-                qs = qs.filter(family__store__ville__iexact=ville)
-            products = qs
+        qs = Product.objects.filter(
+            nom__istartswith=q,
+        ).select_related("family", "family__store")
 
-            for p in products:
-                store = p.family.store
-                results.append({
-                    "product": p.nom,
-                    "store": store.nom,
-                    "url": store.get_absolute_url(),
-                    "photo": store.photo.url if store.photo else None,
-                })
-        except Exception as e:
-            import traceback
-            print("Erreur dans search_product :", e)
-            traceback.print_exc()
+        if ville:
+            qs = qs.filter(family__store__ville__iexact=ville)
 
-    return JsonResponse(results, safe=False)
+        for p in qs:
+            store = p.family.store
+            results.append({
+                "product": p.nom,
+                "store": store.nom,
+                "url": store.get_absolute_url(),
+                "photo": store.photo.url if store.photo else None,
+            })
+
+    # FIX : retourne {"results": [...]} pour cohérence avec les tests et le JS frontend
+    return JsonResponse({"results": results})
 
 
 # ---------------------------
@@ -251,14 +243,14 @@ def map_view(request, departement):
 # ---------------------------
 
 def register(request):
-    next_url = request.GET.get('next') or request.POST.get('next') or ''
+    next_url = request.GET.get("next") or request.POST.get("next") or ""
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
             messages.success(request, "Bienvenue sur Yuumi ! Votre compte a été créé avec succès.")
-            return redirect(next_url if next_url else 'main')
+            return redirect(next_url if next_url else "main")
     else:
         form = RegisterForm()
     return render(request, "members/register.html", {"form": form, "next": next_url})
@@ -268,23 +260,21 @@ def register(request):
 # Édition du commerce
 # ---------------------------
 
-from django.core.exceptions import PermissionDenied
-
 @login_required
 def edit_store(request, departement, ville, slug):
     store = get_object_or_404(
         Store,
         departement__iexact=departement,
         ville__iexact=ville,
-        slug=slug
+        slug=slug,
     )
 
     if request.user != store.owner and not request.user.is_superuser:
         raise PermissionDenied("Accès interdit à ce commerce.")
 
     # Pré-remplir les 7 jours si pas encore créés
-    jours_semaine = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
-    jours_existants = set(store.opening_hours.values_list('jour', flat=True))
+    jours_semaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
+    jours_existants = set(store.opening_hours.values_list("jour", flat=True))
     for jour in jours_semaine:
         if jour not in jours_existants:
             OpeningHour.objects.create(store=store, jour=jour)
@@ -298,32 +288,19 @@ def edit_store(request, departement, ville, slug):
 
             # Supprimer les images marquées via les checkboxes du template
             for key in request.POST:
-                if key.startswith('delete_image_'):
-                    img_id = key.split('_')[-1]
+                if key.startswith("delete_image_"):
+                    img_id = key.split("_")[-1]
                     StoreImage.objects.filter(id=img_id, store=store).delete()
 
             # Ajouter les nouvelles images supplémentaires
-            for image in request.FILES.getlist('extra_images'):
+            for image in request.FILES.getlist("extra_images"):
                 StoreImage.objects.create(store=store, image=image)
 
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
             return redirect(store.get_absolute_url())
-        else:
-            # ── DEBUG : à supprimer une fois le bug résolu ──
-            print("\n=== FORM ERRORS ===")
-            print(form.errors)
-            print("\n=== FORMSET ERRORS ===")
-            for i, form_errors in enumerate(opening_formset.errors):
-                if form_errors:
-                    print(f"  Jour {i} : {form_errors}")
-            print("\n=== FORMSET NON-FORM ERRORS ===")
-            print(opening_formset.non_form_errors())
-            print("\n=== POST DATA (horaires) ===")
-            for key, val in request.POST.items():
-                if 'horaires' in key:
-                    print(f"  {key} = '{val}'")
-            print("===================\n")
+        # FIX : suppression des print() / traceback de debug
+        # Les erreurs sont visibles dans le template via {{ form.errors }}
     else:
         form = StoreForm(instance=store)
         opening_formset = OpeningHourFormSet(instance=store, prefix="horaires")
@@ -346,18 +323,19 @@ def toggle_favoris(request, store_id):
 
     if store in user.favoris.all():
         user.favoris.remove(store)
-        action = "removed"
+        is_favorite = False
     else:
         user.favoris.add(store)
-        action = "added"
+        is_favorite = True
 
-    return JsonResponse({"action": action})
+    # FIX : retourne is_favorite (booléen) pour cohérence avec le JS frontend et les tests
+    return JsonResponse({"is_favorite": is_favorite})
 
 
 @login_required
 def my_favorites(request):
     favoris = request.user.favoris.all()
-    return render(request, 'members/my_favorites.html', {'favoris': favoris})
+    return render(request, "members/my_favorites.html", {"favoris": favoris})
 
 
 @login_required
@@ -369,7 +347,7 @@ def claim_store(request, store_id):
     if store.owner:
         return JsonResponse(
             {"error": "Ce commerce a déjà un propriétaire."},
-            status=400
+            status=400,
         )
 
     if store.last_claim_request:
@@ -377,15 +355,11 @@ def claim_store(request, store_id):
         if delta < timedelta(hours=1):
             remaining = int(3600 - delta.total_seconds())
             return JsonResponse(
-                {
-                    "error": "cooldown",
-                    "remaining": remaining
-                },
-                status=429
+                {"error": "cooldown", "remaining": remaining},
+                status=429,
             )
 
     subject = f"Demande de revendication – {store.nom}"
-
     message = (
         f"Une demande de revendication a été effectuée.\n\n"
         f"Commerce : {store.nom}\n"
@@ -400,9 +374,9 @@ def claim_store(request, store_id):
     send_mail(
         subject,
         message,
-        'noreply@yuumi-shop.com',
-        ['contact@yuumi-shop.com'],
-        fail_silently=False
+        "noreply@yuumi-shop.com",
+        ["contact@yuumi-shop.com"],
+        fail_silently=False,
     )
 
     store.last_claim_request = now
@@ -423,7 +397,7 @@ def claim_store(request, store_id):
 def categories_ville(request, departement, ville):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
-        ville__iexact=ville
+        ville__iexact=ville,
     ).select_related("categorie__super_categorie")
 
     categories_qs = (
@@ -446,7 +420,6 @@ def categories_ville(request, departement, ville):
             image_url = static("placeholder.png")
 
         super_cat = cat.super_categorie
-
         if not super_cat:
             continue
 
@@ -459,70 +432,56 @@ def categories_ville(request, departement, ville):
             "image": image_url,
         })
 
-    return render(request, 'members/categories_villes.html', {
-        'categories_by_super': categories_by_super,
-        'departement': departement,
-        'ville': ville,
+    return render(request, "members/categories_villes.html", {
+        "categories_by_super": categories_by_super,
+        "departement": departement,
+        "ville": ville,
     })
 
 
 def notre_projet(request):
-    return render(request, 'members/notre_projet.html')
+    return render(request, "members/notre_projet.html")
 
 
 def contact(request):
-    return render(request, 'members/contact.html')
+    return render(request, "members/contact.html")
 
 
 def cgu(request):
-    return render(request, 'members/cgu.html')
+    return render(request, "members/cgu.html")
 
 
 def cookies_policy(request):
-    return render(request, 'members/cookies.html')
+    return render(request, "members/cookies.html")
 
 
 def mentions_legales(request):
-    return render(request, 'members/mentions_legales.html')
+    return render(request, "members/mentions_legales.html")
 
 
 @login_required
 def account(request):
     store = None
-
     if hasattr(request.user, "store"):
         store = request.user.store
+    return render(request, "members/account.html", {"store": store})
 
-    return render(
-        request,
-        "members/account.html",
-        {
-            "store": store
-        }
-    )
 
 def by_super_category(request, departement, ville, super_slug):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
-        ville__iexact=ville
+        ville__iexact=ville,
     ).select_related("categorie__super_categorie")
 
-    super_cat = get_object_or_404(
-        SuperCategory,
-        slug=super_slug
-    )
+    super_cat = get_object_or_404(SuperCategory, slug=super_slug)
 
     categories_qs = (
         Category.objects
-        .filter(
-            super_categorie=super_cat,
-            stores__in=stores_qs
-        )
+        .filter(super_categorie=super_cat, stores__in=stores_qs)
         .distinct()
     )
 
     categories = []
-
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
         commerces_with_photo = commerces_cat.filter(photo__isnull=False)
@@ -546,13 +505,14 @@ def by_super_category(request, departement, ville, super_slug):
         "ville": ville,
     })
 
+
 def changer_ville(request):
-    stores = Store.objects.all().values('departement', 'ville').distinct()
+    stores = Store.objects.all().values("departement", "ville").distinct()
 
     departements_villes = {}
     for s in stores:
-        dep = s['departement'].strip().title() if s['departement'] else ""
-        ville = s['ville'].strip().title() if s['ville'] else ""
+        dep = s["departement"].strip().title() if s["departement"] else ""
+        ville = s["ville"].strip().title() if s["ville"] else ""
         if dep and ville:
             departements_villes.setdefault(dep, set()).add(ville)
 
@@ -561,10 +521,7 @@ def changer_ville(request):
         for dep, villes in sorted(departements_villes.items(), key=lambda x: x[0].casefold())
     }
 
-    return render(request, 'members/changer_ville.html', {
-        'departements_villes': sorted_data,
-        'next': request.GET.get('next', request.META.get('HTTP_REFERER', '')),
+    return render(request, "members/changer_ville.html", {
+        "departements_villes": sorted_data,
+        "next": request.GET.get("next", request.META.get("HTTP_REFERER", "")),
     })
-
-
-
