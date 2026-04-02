@@ -1,12 +1,37 @@
+# ========================
+# Core Django
+# ========================
 Django==5.2.5
-django-autocomplete-light
-django-extensions
-django-nested-admin
-django-cors-headers
-geopy
-Pillow
 
+# ========================
+# Admin & formulaires
+# ========================
+django-autocomplete-light==3.11.0
+django-nested-admin==4.1.0
+
+# ========================
+# Géocodage
+# ========================
+geopy==2.4.1
+
+# ========================
+# Images
+# ========================
+Pillow==11.0.0
+
+# ========================
+# Extensions dev
+# ========================
+django-extensions==3.2.3
+
+# ========================
 # Production (VPS)
-psycopg2-binary
-whitenoise
-gunicorn
+# ========================
+psycopg2-binary==2.9.10
+whitenoise==6.8.2
+gunicorn==23.0.0
+
+# ========================
+# CORS (si API utilisée)
+# ========================
+# django-cors-headers==4.6.0
