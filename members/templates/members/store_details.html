@@ -606,10 +606,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
 @media (max-width: 767px) {
     .store-carousel-img {
-        height: 300px;
+        height: 300px !important;
+        max-height: 300px !important;
+        width: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+    .photo-commerce-container img {
+        max-height: 300px !important;
     }
     .carousel-item {
-        max-height: 300px;
+        max-height: 300px !important;
+        overflow: hidden;
     }
 }
 
