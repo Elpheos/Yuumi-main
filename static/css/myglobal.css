@@ -1557,6 +1557,8 @@ body.menu-open {
     }
 
     .photo-commerce-container {
+        flex: none;
+        max-width: 100%;
         width: 100%;
     }
 
@@ -1934,3 +1936,4 @@ body.menu-open {
     max-width: none;
     box-sizing: content-box;
 }
+
