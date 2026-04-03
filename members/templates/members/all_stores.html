@@ -42,12 +42,10 @@
 }
 
 @media (max-width: 767px) {
-    /* Marge haute pour ne pas passer sous le bouton ☰ */
     .mise-en-avant-annecy-container {
         margin-top: 60px;
     }
 
-    /* Cards derniers arrivants : hauteur image réduite sur mobile */
     .derniers-arrivants-grid-commerces .img-wrapper {
         height: 160px;
     }
@@ -63,7 +61,6 @@
             {% if commerces_carousel %}
             <div id="carouselMiseEnAvant" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
 
-                <!-- Images -->
                 <div class="carousel-inner">
                     {% for commerce in commerces_carousel %}
                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
@@ -93,7 +90,6 @@
                     {% endfor %}
                 </div>
 
-                <!-- Flèches -->
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselMiseEnAvant" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Précédent</span>
@@ -103,7 +99,6 @@
                     <span class="visually-hidden">Suivant</span>
                 </button>
 
-                <!-- Indicateurs -->
                 <div class="carousel-indicators">
                     {% for commerce in commerces_carousel %}
                     <button type="button"
@@ -135,40 +130,21 @@
             <div class="liste-des-categories-grid-container">
 
                 {% for item in city_category_items %}
-
+                    {% if item.category %}
                     <div class="grid-image-{{ forloop.counter }}-container">
-                        <a 
-                        {% if item.category %}
-                            href="{% url 'by_category' departement ville item.category.slug %}"
-                        {% elif item.super_category %}
-                            href="{% url 'by_super_category' departement ville item.super_category.slug %}"
-                        {% endif %}
-                        rel="noopener">
-
-                            {% if item.category %}
-                                {% if item.category.image %}
-                                    <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}">
-                                {% else %}
-                                    <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
-                                {% endif %}
-                                <h3 class="grid-nom-categories">
-                                    {{ item.category.name }}
-                                </h3>
-
-                            {% elif item.super_category %}
-                                {% if item.super_category.image %}
-                                    <img src="{{ item.super_category.image.url }}" alt="{{ item.super_category.name }}">
-                                {% else %}
-                                    <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
-                                {% endif %}
-                                <h3 class="grid-nom-categories">
-                                    {{ item.super_category.name }}
-                                </h3>
+                        <a href="{% url 'by_category' departement ville item.category.slug %}"
+                           rel="noopener">
+                            {% if item.category.image %}
+                                <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}">
+                            {% else %}
+                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
                             {% endif %}
-
+                            <h3 class="grid-nom-categories">
+                                {{ item.category.name }}
+                            </h3>
                         </a>
                     </div>
-
+                    {% endif %}
                 {% empty %}
                     <p>Aucune catégorie configurée pour cette ville.</p>
                 {% endfor %}
@@ -220,7 +196,6 @@
                 {% endfor %}
             </div>
 
-            <!-- Barre de progression scroll -->
             <div class="arrivants-scrollbar-track">
                 <div class="arrivants-scrollbar-thumb" id="arrivants-thumb"></div>
             </div>
@@ -230,7 +205,7 @@
 
 <style>
 .arrivants-scrollbar-track {
-    display: none; /* masqué sur desktop */
+    display: none;
 }
 
 @media (max-width: 767px) {
@@ -248,7 +223,7 @@
         height: 100%;
         background: #ff8b38;
         border-radius: 2px;
-        width: 30%; /* valeur initiale, mise à jour par JS */
+        width: 30%;
         transition: width 0.1s, transform 0.1s;
     }
 }
