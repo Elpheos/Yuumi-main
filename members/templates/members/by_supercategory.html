@@ -60,6 +60,10 @@
     font-size: 1rem;
     font-weight: 600;
     color: white;
+    white-space: nowrap;    /* ✅ empêche le retour à la ligne */
+    overflow: hidden;
+    text-overflow: ellipsis;/* ✅ "..." si vraiment trop long */
+    padding: 0 8px;         /* ✅ marge pour ne pas toucher les bords */
 }
 
 /* ------------------------------------------------------------ */
