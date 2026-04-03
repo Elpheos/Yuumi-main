@@ -428,12 +428,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 return res.json();
             })
             .then(data => {
-                if (data.action === "added") {
+                if (data.is_favorite === true) {
                     btn.classList.add("active");
                     icon.classList.remove("fa-regular");
                     icon.classList.add("fa-solid");
                     span.textContent = "Retirer des favoris";
-                } else if (data.action === "removed") {
+                } else if (data.is_favorite === false) {
                     btn.classList.remove("active");
                     icon.classList.remove("fa-solid");
                     icon.classList.add("fa-regular");
