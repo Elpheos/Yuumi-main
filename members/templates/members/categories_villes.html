@@ -71,13 +71,16 @@
     position: absolute;
     top: 12px;
     left: 12px;
-
     padding: 6px 12px;
     background: #ffffff;
     border: 2px solid #ff8b38;
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
+    white-space: nowrap;           /* ✅ empêche le retour à la ligne */
+    max-width: calc(100% - 24px);  /* ✅ ne déborde pas de la tuile */
+    overflow: hidden;
+    text-overflow: ellipsis;       /* ✅ "..." si vraiment trop long */
 }
 
 /* ------------------------------------------------------------ */
