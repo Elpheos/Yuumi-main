@@ -41,6 +41,8 @@
                 <div id="carouselStoreImages" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
 
                     <!-- Points indicateurs -->
+                    {% with total_images=store.images.count %}
+                    {% if store.photo and total_images >= 1 or not store.photo and total_images > 1 %}
                     <div class="carousel-indicators">
                         {% if store.photo %}
                             <button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="0" class="active" aria-current="true"></button>
@@ -52,6 +54,9 @@
                             </button>
                         {% endfor %}
                     </div>
+                    </div>
+                    {% endif %}
+                    {% endwith %}
 
                     <!-- Conteneur des images -->
                     <div class="carousel-inner">
@@ -69,6 +74,8 @@
                     </div>
 
                     <!-- Boutons de navigation -->
+                    {% with total_images=store.images.count %}
+                    {% if store.photo and total_images >= 1 or not store.photo and total_images > 1 %}
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="prev">
                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Précédent</span>
@@ -77,6 +84,8 @@
                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                         <span class="visually-hidden">Suivant</span>
                     </button>
+                    {% endif %}
+                    {% endwith %}
                 </div>
             </div>
 
@@ -428,12 +437,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 return res.json();
             })
             .then(data => {
-                if (data.is_favorite === true) {
+                if (data.action === "added") {
                     btn.classList.add("active");
                     icon.classList.remove("fa-regular");
                     icon.classList.add("fa-solid");
                     span.textContent = "Retirer des favoris";
-                } else if (data.is_favorite === false) {
+                } else if (data.action === "removed") {
                     btn.classList.remove("active");
                     icon.classList.remove("fa-solid");
                     icon.classList.add("fa-regular");
