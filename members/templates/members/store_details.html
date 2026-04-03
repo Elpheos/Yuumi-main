@@ -599,26 +599,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 .store-carousel-img {
     width: 100%;
-    height: 60vh;
+    height: 100%;
+    max-height: 75vh;
     object-fit: cover;
     display: block;
-}
-
-@media (max-width: 767px) {
-    .store-carousel-img {
-        height: 300px !important;
-        max-height: 300px !important;
-        width: 100% !important;
-        object-fit: cover !important;
-        display: block !important;
-    }
-    .photo-commerce-container img {
-        max-height: 300px !important;
-    }
-    .carousel-item {
-        max-height: 300px !important;
-        overflow: hidden;
-    }
 }
 
 .carousel-indicators [data-bs-target] {
@@ -642,16 +626,29 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 /* ============================================================
-   RESPONSIVE — tablette
+   RESPONSIVE — tablette & mobile
    ============================================================ */
 @media (max-width: 768px) {
     #carouselStoreImages {
         max-width: 100%;
         border-width: 3px;
+        border-radius: 0;
     }
 
     .store-carousel-img {
-        max-height: 50vh;
+        height: 300px !important;
+        max-height: 300px !important;
+        object-fit: cover !important;
+    }
+
+    .carousel-item {
+        max-height: 300px !important;
+        height: 300px !important;
+        overflow: hidden;
+    }
+
+    .photo-commerce-container img {
+        max-height: 300px !important;
     }
 
     .carousel-control-prev-icon,
@@ -659,13 +656,7 @@ document.addEventListener("DOMContentLoaded", () => {
         width: 40px;
         height: 40px;
     }
-}
 
-/* ============================================================
-   RESPONSIVE — mobile
-   ============================================================ */
-@media (max-width: 767px) {
-    /* Boutons d'action empilés pleine largeur */
     .store-action-bar {
         flex-direction: column;
         align-items: stretch;
@@ -678,17 +669,6 @@ document.addEventListener("DOMContentLoaded", () => {
         text-align: center;
     }
 
-    /* Carrousel */
-    #carouselStoreImages {
-        max-width: 100%;
-        border-radius: 0;
-    }
-
-    .carousel-item {
-        height: 260px;
-    }
-
-    /* Onglets secondaires */
     .informations-secondaires-commerce-buttons-container {
         flex-direction: column;
         gap: 8px;
