@@ -6,12 +6,9 @@
 {% block content %}
 
 <style>
-/* ------------------------------------------------------------ */
-/* PAGE LISTE DES CATÉGORIES PAR VILLE — VERSION MASONRY PRO   */
-/* ------------------------------------------------------------ */
 
 .categ-ville-section {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 60px auto;
     padding: 0 20px;
 }
@@ -23,35 +20,22 @@
     font-weight: 600;
 }
 
-/* ------------------------------------------------------------ */
-/* MASONRY — ZERO TROU — 4 COLONNES CENTRÉES                    */
-/* ------------------------------------------------------------ */
-
 .categ-ville-grid {
-    column-count: 4;          /* ⭐ 4 colonnes seulement (centrées et compactes) */
-    column-gap: 15px;         /* espace entre colonnes */
-    max-width: 900px;         /* ⭐ largeur idéale */
-    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
 }
 
-/* ------------------------------------------------------------ */
-/* TUYLES DE CATÉGORIES                                        */
-/* ------------------------------------------------------------ */
-
 .categ-tile {
-    display: inline-block;     /* ⭐ Masonry fonctionne avec inline-block */
-    width: 100%;
-    margin-bottom: 15px;
-    break-inside: avoid;       /* ⭐ empêche les trous */
-    
+    display: block;
     position: relative;
     border-radius: 12px;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
-
     box-shadow: 0 4px 14px rgba(0,0,0,0.18);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    aspect-ratio: 3 / 4;
 }
 
 .categ-tile:hover {
@@ -61,13 +45,11 @@
 
 .categ-tile img {
     width: 100%;
-    height: auto;
+    height: 100%;
     display: block;
     object-fit: cover;
 }
 
-/* Badge nom */
-/* Badge nom */
 .categ-tile span {
     position: absolute;
     top: 12px;
@@ -78,33 +60,30 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
-    max-width: calc(100% - 24px);
-}
-
-/* ------------------------------------------------------------ */
-/* Responsive                                                  */
-/* ------------------------------------------------------------ */
-
-@media (max-width: 767px) {
-    .page-title-container { margin-top: 60px; }
+    line-height: 1.3;
 }
 
 @media (max-width: 900px) {
     .categ-ville-grid {
-        column-count: 2;
-        max-width: 600px;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 767px) {
+    .categ-ville-section {
+        margin-top: 80px;
+    }
     .categ-ville-grid {
-        column-count: 1;
-        max-width: 380px;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+    .categ-tile span {
+        font-size: 0.85rem;
+        padding: 4px 8px;
     }
 }
+
 </style>
-
-
 
 <main>
 
@@ -117,7 +96,11 @@
                 <div class="categ-ville-grid">
                     {% for cat in categories %}
                         <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                            <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                            {% if cat.image %}
+                                <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                            {% else %}
+                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
+                            {% endif %}
                             <span>{{ cat.name }}</span>
                         </a>
                     {% endfor %}
