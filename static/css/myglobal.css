@@ -1905,10 +1905,6 @@ body.menu-open {
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
-    white-space: nowrap;           /* ✅ empêche le retour à la ligne */
-    max-width: calc(100% - 24px);  /* ✅ ne déborde pas de la tuile */
-    overflow: hidden;
-    text-overflow: ellipsis;       /* ✅ "..." si vraiment trop long */
 }
 
 /* ── FIX masonry : breakpoints sans trou ── */
