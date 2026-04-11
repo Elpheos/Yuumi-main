@@ -539,13 +539,14 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (!url) return;
 
                     const ville = toggles[0].dataset.ville || "";
-        const resp = await fetch(url + "?q=" + encodeURIComponent(q) + (ville ? "&ville=" + encodeURIComponent(ville) : ""), {
+                    const resp = await fetch(url + "?q=" + encodeURIComponent(q) + (ville ? "&ville=" + encodeURIComponent(ville) : ""), {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
 
                     const data = await resp.json();
 
-                    list.innerHTML = data.map(item => `
+                    /* FIX : l'API retourne {"results": [...]}, pas un tableau direct */
+                    list.innerHTML = (data.results || []).map(item => `
                         <li class="search-product-store-container">
                             <a href="${item.url}">
                                 ${item.photo
