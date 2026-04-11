@@ -2,6 +2,8 @@ from django import forms
 from django.forms import inlineformset_factory
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 from dal import autocomplete
 from .models import Store, ProductFamily, Product, OpeningHour
 
@@ -62,6 +64,7 @@ class StoreForm(forms.ModelForm):
             'phone',
             'instagram',
             'facebook',
+            'addresseitineraire',
             'photo',
             'galerie_title',
             'galerie_description',
@@ -71,6 +74,40 @@ class StoreForm(forms.ModelForm):
             'departement': forms.TextInput(attrs={'placeholder': 'Tapez un département...'}),
             'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
         }
+
+    # ------------------------------------------------------------------
+    # Validation d'URL mutualisée
+    # Seuls les schémas http:// et https:// sont acceptés.
+    # Cela bloque javascript:, data:, ftp:, etc.
+    # ------------------------------------------------------------------
+    _url_validator = URLValidator(schemes=['http', 'https'])
+
+    def _validate_url(self, field_name, label):
+        value = self.cleaned_data.get(field_name, '')
+        if not value:
+            # Champ facultatif vide → on laisse passer
+            return value
+        value = value.strip()
+        try:
+            self._url_validator(value)
+        except ValidationError:
+            raise ValidationError(
+                f"L'adresse « {label} » n'est pas une URL valide "
+                f"(elle doit commencer par https:// ou http://)."
+            )
+        return value
+
+    def clean_site(self):
+        return self._validate_url('site', 'Site web')
+
+    def clean_instagram(self):
+        return self._validate_url('instagram', 'Instagram')
+
+    def clean_facebook(self):
+        return self._validate_url('facebook', 'Facebook')
+
+    def clean_addresseitineraire(self):
+        return self._validate_url('addresseitineraire', 'Lien itinéraire')
 
 
 # -------------------------------

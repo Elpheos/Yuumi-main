@@ -5,6 +5,7 @@ from django.db.models import Case, When, IntegerField
 from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth.models import User
+from django.core.validators import URLValidator
 
 
 # ===========================================================
@@ -81,6 +82,14 @@ class Category(models.Model):
 
 
 # ===========================================================
+# 🔹 Validateur URL réutilisable (http/https uniquement)
+# Bloque javascript:, data:, ftp:, etc.
+# ===========================================================
+
+_url_validator = URLValidator(schemes=['http', 'https'])
+
+
+# ===========================================================
 # 🔹 Commerces
 # ===========================================================
 
@@ -107,12 +116,33 @@ class Store(models.Model):
     descriptiongrande = models.TextField(null=True, blank=True)
 
     # Contact & liens
+    # Les champs URL sont protégés par URLValidator : seuls http:// et https://
+    # sont acceptés, ce qui bloque les injections javascript:, data:, etc.
     addressemaps = models.CharField(max_length=255, null=True, blank=True)
-    addresseitineraire = models.CharField(max_length=255, null=True, blank=True)
-    site = models.CharField(max_length=255, blank=True)
+    addresseitineraire = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        validators=[_url_validator],
+    )
+    site = models.CharField(
+        max_length=255,
+        blank=True,
+        validators=[_url_validator],
+    )
     phone = models.CharField(max_length=20, null=True, blank=True)
-    instagram = models.CharField(max_length=255, null=True, blank=True)
-    facebook = models.CharField(max_length=255, null=True, blank=True)
+    instagram = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        validators=[_url_validator],
+    )
+    facebook = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        validators=[_url_validator],
+    )
 
     # Images
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
