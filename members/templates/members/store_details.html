@@ -92,6 +92,20 @@
             <div class="commerce-right-part-container">
                 <div class="description-container">
                     <h1>{{ store.nom }} | {{ store.ville }}</h1>
+
+                    <!-- Badge ouvert / fermé -->
+                    {% if est_ouvert is not None %}
+                        {% if est_ouvert %}
+                            <span class="badge-statut badge-ouvert">
+                                <span class="badge-dot"></span> Ouvert en ce moment
+                            </span>
+                        {% else %}
+                            <span class="badge-statut badge-ferme">
+                                <span class="badge-dot"></span> Fermé en ce moment
+                            </span>
+                        {% endif %}
+                    {% endif %}
+
                     <hr class="hr-page-commerce" />
 
                     <div class="description-principale">
@@ -104,7 +118,7 @@
 
                     <div class="itinéraire-commerce">
                         {% if store.addresseitineraire %}
-                            <a href="{{ store.addresseitineraire }}" rel="noopener" class="button-1-description">
+                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description">
                                 Je me rends sur place
                             </a>
                         {% endif %}
@@ -112,7 +126,7 @@
 
                     <div class="site-commerce">
                         {% if store.site %}
-                            <a href="{{ store.site }}" rel="noopener" class="button-1-description">
+                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-1-description">
                                 Site du commerce
                             </a>
                         {% endif %}
@@ -128,13 +142,13 @@
                         {% endif %}
 
                         {% if store.instagram %}
-                            <a href="{{ store.instagram }}" rel="noopener">
+                            <a href="{{ store.instagram }}" rel="noopener noreferrer" target="_blank">
                                 <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
                             </a>
                         {% endif %}
 
                         {% if store.facebook %}
-                            <a href="{{ store.facebook }}" rel="noopener">
+                            <a href="{{ store.facebook }}" rel="noopener noreferrer" target="_blank">
                                 <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
                             </a>
                         {% endif %}
@@ -158,41 +172,9 @@
         <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
             <div class="informations-secondaires-commerce-container">
                 <div class="informations-secondaires-commerce-buttons-container">
-                    <button id="bouton1" onclick='
-                        document.getElementById("bouton1").style.backgroundColor = "#ff8b38";
-                        document.getElementById("bouton1").style.color = "white";
-                        document.getElementById("bouton2").style.backgroundColor = "white";
-                        document.getElementById("bouton2").style.color = "#333";
-                        document.getElementById("bouton3").style.backgroundColor = "white";
-                        document.getElementById("bouton3").style.color = "#333";
-                        document.getElementById("infospratiques").style.display = "block";
-                        document.getElementById("galerie").style.display = "none";
-                        document.getElementById("produits").style.display = "none";
-                    '>Informations pratiques</button>
-
-                    <button id="bouton2" onclick='
-                        document.getElementById("bouton2").style.backgroundColor = "#ff8b38";
-                        document.getElementById("bouton2").style.color = "white";
-                        document.getElementById("bouton1").style.backgroundColor = "white";
-                        document.getElementById("bouton1").style.color = "#333";
-                        document.getElementById("bouton3").style.backgroundColor = "white";
-                        document.getElementById("bouton3").style.color = "#333";
-                        document.getElementById("galerie").style.display = "flex";
-                        document.getElementById("infospratiques").style.display = "none";
-                        document.getElementById("produits").style.display = "none";
-                    '>Galerie</button>
-
-                    <button id="bouton3" onclick='
-                        document.getElementById("bouton3").style.backgroundColor = "#ff8b38";
-                        document.getElementById("bouton3").style.color = "white";
-                        document.getElementById("bouton1").style.backgroundColor = "white";
-                        document.getElementById("bouton1").style.color = "#333";
-                        document.getElementById("bouton2").style.backgroundColor = "white";
-                        document.getElementById("bouton2").style.color = "#333";
-                        document.getElementById("produits").style.display = "block";
-                        document.getElementById("infospratiques").style.display = "none";
-                        document.getElementById("galerie").style.display = "none";
-                    '>Liste des produits</button>
+                    <button id="bouton1" class="onglet-btn onglet-actif" data-target="infospratiques">Informations pratiques</button>
+                    <button id="bouton2" class="onglet-btn" data-target="galerie">Galerie</button>
+                    <button id="bouton3" class="onglet-btn" data-target="produits">Liste des produits</button>
                 </div>
             </div>
         </section>
@@ -254,7 +236,7 @@
         </section>
 
         <!-- Galerie -->
-        <section aria-label="Galerie du commerce" class="galerie-container" id="galerie">
+        <section aria-label="Galerie du commerce" class="galerie-container" id="galerie" style="display:none;">
             {% if store.galerie_title %}
                 <h2 class="galerie-title">{{ store.galerie_title }}</h2>
             {% endif %}
@@ -287,7 +269,7 @@
     </section>
 
     <!-- Produits -->
-    <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits">
+    <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits" style="display:none;">
         {% for family in store.families.all %}
             <table>
                 <thead>
@@ -379,6 +361,38 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<!-- Onglets : version propre sans onclick inline -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const onglets = document.querySelectorAll(".onglet-btn");
+    const sections = {
+        infospratiques: document.getElementById("infospratiques"),
+        galerie: document.getElementById("galerie"),
+        produits: document.getElementById("produits"),
+    };
+
+    onglets.forEach(btn => {
+        btn.addEventListener("click", () => {
+            const target = btn.dataset.target;
+
+            // Mettre à jour les boutons
+            onglets.forEach(b => b.classList.remove("onglet-actif"));
+            btn.classList.add("onglet-actif");
+
+            // Afficher la bonne section
+            Object.entries(sections).forEach(([key, el]) => {
+                if (!el) return;
+                if (key === target) {
+                    el.style.display = key === "galerie" ? "flex" : "block";
+                } else {
+                    el.style.display = "none";
+                }
+            });
+        });
+    });
+});
+</script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const buttons = document.querySelectorAll(".favori-btn");
@@ -402,22 +416,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!storeId) return;
 
         const isAuthenticated = btn.dataset.isAuthenticated === "true";
-        const isFavorite = btn.dataset.isFavorite === "true";
+        let isFavorite = btn.dataset.isFavorite === "true";
         const icon = btn.querySelector("i");
         const span = btn.querySelector("span");
 
-        if (isFavorite) {
-            btn.classList.add("active");
-            if (icon) {
-                icon.classList.remove("fa-regular");
-                icon.classList.add("fa-solid");
+        function updateUI(favorited) {
+            if (favorited) {
+                btn.classList.add("active");
+                if (icon) { icon.classList.remove("fa-regular"); icon.classList.add("fa-solid"); }
+                if (span) span.textContent = "Retirer des favoris";
+            } else {
+                btn.classList.remove("active");
+                if (icon) { icon.classList.remove("fa-solid"); icon.classList.add("fa-regular"); }
+                if (span) span.textContent = "Ajouter aux favoris";
             }
-            if (span) span.textContent = "Retirer des favoris";
         }
 
-        btn.addEventListener("click", () => {
+        // État initial
+        updateUI(isFavorite);
 
-            // Utilisateur non connecté → popup
+        btn.addEventListener("click", () => {
             if (!isAuthenticated) {
                 const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
                 modal.show();
@@ -436,17 +454,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 return res.json();
             })
             .then(data => {
-                if (data.action === "added") {
-                    btn.classList.add("active");
-                    icon.classList.remove("fa-regular");
-                    icon.classList.add("fa-solid");
-                    span.textContent = "Retirer des favoris";
-                } else if (data.action === "removed") {
-                    btn.classList.remove("active");
-                    icon.classList.remove("fa-solid");
-                    icon.classList.add("fa-regular");
-                    span.textContent = "Ajouter aux favoris";
-                }
+                /* FIX : l'API retourne {"is_favorite": bool}, pas {"action": "added"} */
+                isFavorite = data.is_favorite;
+                updateUI(isFavorite);
             })
             .catch(err => console.error("Erreur favori :", err));
         });
@@ -575,6 +585,70 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <style>
 /* ============================================================
+   BADGE OUVERT / FERMÉ
+   ============================================================ */
+.badge-statut {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+}
+
+.badge-ouvert {
+    background: #e8f8ee;
+    color: #1a7a3c;
+    border: 1.5px solid #6fcf97;
+}
+
+.badge-ferme {
+    background: #fdf0f0;
+    color: #b52b2b;
+    border: 1.5px solid #e57373;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.badge-ouvert .badge-dot { background: #27ae60; }
+.badge-ferme .badge-dot  { background: #e53935; }
+
+/* ============================================================
+   ONGLETS — remplacement des onclick inline
+   ============================================================ */
+.onglet-btn {
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.onglet-btn.onglet-actif {
+    background: #ff8b38;
+    color: white;
+    border-color: #ff8b38;
+}
+
+.onglet-btn:hover:not(.onglet-actif) {
+    background: #fff5ee;
+    border-color: #ff8b38;
+    color: #ff8b38;
+}
+
+/* ============================================================
    BOUTONS D'ACTION (Modifier / Revendiquer)
    ============================================================ */
 .store-action-bar {
@@ -621,87 +695,7 @@ document.addEventListener("DOMContentLoaded", () => {
 .carousel-control-next-icon {
     background-color: #ff8b38;
     border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    background-size: 60%;
-    transition: all 0.2s ease;
-}
-
-.carousel-control-prev-icon:hover,
-.carousel-control-next-icon:hover {
-    background-color: #ff8b38;
-    transform: scale(1.1);
-}
-
-/* ============================================================
-   RESPONSIVE — tablette
-   ============================================================ */
-/* ============================================================
-   RESPONSIVE — tablette & mobile
-   ============================================================ */
-@media (max-width: 768px) {
-    #carouselStoreImages {
-        max-width: 100%;
-        border-width: 3px;
-        border-radius: 0;
-    }
-
-    .store-carousel-img {
-        height: 300px !important;
-        max-height: 300px !important;
-        width: 100% !important;
-        object-fit: cover !important;
-        object-position: center !important;
-        display: block !important;
-    }
-
-    .carousel-item {
-        max-height: 300px !important;
-        height: 300px !important;
-        overflow: hidden;
-    }
-
-    .photo-commerce-container img {
-        max-height: 300px !important;
-    }
-
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-        width: 40px;
-        height: 40px;
-    }
-
-    .store-action-bar {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        margin: 90px 12px 8px;
-        gap: 8px;
-    }
-
-    .store-action-bar .btn {
-        flex: 1 1 0;
-        font-size: 13px;
-        padding: 8px 10px;
-        text-align: center;
-        white-space: normal;
-        word-break: break-word;
-        line-height: 1.3;
-        align-self: stretch;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .informations-secondaires-commerce-buttons-container {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .informations-secondaires-commerce-buttons-container > button {
-        width: 100%;
-    }
 }
 </style>
+
 {% endblock %}
