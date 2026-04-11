@@ -72,7 +72,6 @@ def stores(request, departement, ville):
 
 
 def by_category(request, departement, ville, category):
-    # FIX : filtrage en base de données plutôt qu'en Python (évite N requêtes)
     commerces = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville,
@@ -174,8 +173,10 @@ def search_product(request):
     results = []
 
     if q:
+        # FIX : icontains au lieu de istartswith
+        # "pain" trouve maintenant "Le Pain Doré", "Maison du Pain", etc.
         qs = Product.objects.filter(
-            nom__istartswith=q,
+            nom__icontains=q,
         ).select_related("family", "family__store")
 
         if ville:
@@ -190,7 +191,6 @@ def search_product(request):
                 "photo": store.photo.url if store.photo else None,
             })
 
-    # FIX : retourne {"results": [...]} pour cohérence avec les tests et le JS frontend
     return JsonResponse({"results": results})
 
 
@@ -299,8 +299,6 @@ def edit_store(request, departement, ville, slug):
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
             return redirect(store.get_absolute_url())
-        # FIX : suppression des print() / traceback de debug
-        # Les erreurs sont visibles dans le template via {{ form.errors }}
     else:
         form = StoreForm(instance=store)
         opening_formset = OpeningHourFormSet(instance=store, prefix="horaires")
@@ -328,7 +326,6 @@ def toggle_favoris(request, store_id):
         user.favoris.add(store)
         is_favorite = True
 
-    # FIX : retourne is_favorite (booléen) pour cohérence avec le JS frontend et les tests
     return JsonResponse({"is_favorite": is_favorite})
 
 
@@ -520,6 +517,11 @@ def changer_ville(request):
         dep: sorted(villes, key=str.casefold)
         for dep, villes in sorted(departements_villes.items(), key=lambda x: x[0].casefold())
     }
+
+    # FIX open redirect : on n'utilise plus HTTP_REFERER (forgeable par un attaquant).
+    # On accepte uniquement un paramètre ?next= passé explicitement dans l'URL,
+    # et on valide qu'il est bien relatif (commence par /) pour bloquer les redirections
+    # vers des domaines externes (ex: ?next=https://evil.com).
     next_url = request.GET.get("next", "")
     if next_url and not next_url.startswith("/"):
         next_url = ""
