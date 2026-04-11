@@ -520,8 +520,11 @@ def changer_ville(request):
         dep: sorted(villes, key=str.casefold)
         for dep, villes in sorted(departements_villes.items(), key=lambda x: x[0].casefold())
     }
+    next_url = request.GET.get("next", "")
+    if next_url and not next_url.startswith("/"):
+        next_url = ""
 
     return render(request, "members/changer_ville.html", {
         "departements_villes": sorted_data,
-        "next": request.GET.get("next", request.META.get("HTTP_REFERER", "")),
+        "next": next_url,
     })
