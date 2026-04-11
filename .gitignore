@@ -21,3 +21,5 @@ members/static/
 members/templates/master.htmly
 .env
 Testbackup/
+fix_auth_dependency.py
+*.sqlite3
