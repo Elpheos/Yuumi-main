@@ -1,4 +1,6 @@
 import random
+from datetime import datetime
+from zoneinfo import ZoneInfo
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
@@ -17,6 +19,34 @@ from .models import (
     OpeningHour, StoreImage, CityCategoryHighlight, SuperCategory,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, OpeningHourFormSet
+
+
+# ---------------------------
+# Helper : commerce ouvert ?
+# ---------------------------
+
+def is_open_now(opening_hours):
+    """
+    Retourne True si le commerce est actuellement ouvert, False s'il est fermé,
+    None si impossible à déterminer (horaires non renseignés).
+    Utilise le fuseau Europe/Paris.
+    """
+    now = datetime.now(tz=ZoneInfo('Europe/Paris'))
+    jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+    today = jours[now.weekday()]
+    current_time = now.time().replace(second=0, microsecond=0)
+
+    for h in opening_hours:
+        if h.jour == today:
+            if h.matin_ouverture and h.matin_fermeture:
+                if h.matin_ouverture <= current_time <= h.matin_fermeture:
+                    return True
+            if h.apresmidi_ouverture and h.apresmidi_fermeture:
+                if h.apresmidi_ouverture <= current_time <= h.apresmidi_fermeture:
+                    return True
+            return False
+
+    return None
 
 
 # ---------------------------
@@ -152,6 +182,9 @@ def store_details(request, departement, ville, slug):
         for h in opening_hours
     )
 
+    # Indicateur ouvert/fermé — None si horaires non renseignés
+    est_ouvert = is_open_now(opening_hours) if horaires_renseignes else None
+
     return render(request, "members/store_details.html", {
         "store": store,
         "family_formset": family_formset,
@@ -160,6 +193,7 @@ def store_details(request, departement, ville, slug):
         "is_favorite": is_favorite,
         "opening_hours": opening_hours,
         "horaires_renseignes": horaires_renseignes,
+        "est_ouvert": est_ouvert,
     })
 
 
@@ -173,8 +207,6 @@ def search_product(request):
     results = []
 
     if q:
-        # FIX : icontains au lieu de istartswith
-        # "pain" trouve maintenant "Le Pain Doré", "Maison du Pain", etc.
         qs = Product.objects.filter(
             nom__icontains=q,
         ).select_related("family", "family__store")
@@ -272,7 +304,6 @@ def edit_store(request, departement, ville, slug):
     if request.user != store.owner and not request.user.is_superuser:
         raise PermissionDenied("Accès interdit à ce commerce.")
 
-    # Pré-remplir les 7 jours si pas encore créés
     jours_semaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
     jours_existants = set(store.opening_hours.values_list("jour", flat=True))
     for jour in jours_semaine:
@@ -286,13 +317,11 @@ def edit_store(request, departement, ville, slug):
             form.save()
             opening_formset.save()
 
-            # Supprimer les images marquées via les checkboxes du template
             for key in request.POST:
                 if key.startswith("delete_image_"):
                     img_id = key.split("_")[-1]
                     StoreImage.objects.filter(id=img_id, store=store).delete()
 
-            # Ajouter les nouvelles images supplémentaires
             for image in request.FILES.getlist("extra_images"):
                 StoreImage.objects.create(store=store, image=image)
 
@@ -518,10 +547,6 @@ def changer_ville(request):
         for dep, villes in sorted(departements_villes.items(), key=lambda x: x[0].casefold())
     }
 
-    # FIX open redirect : on n'utilise plus HTTP_REFERER (forgeable par un attaquant).
-    # On accepte uniquement un paramètre ?next= passé explicitement dans l'URL,
-    # et on valide qu'il est bien relatif (commence par /) pour bloquer les redirections
-    # vers des domaines externes (ex: ?next=https://evil.com).
     next_url = request.GET.get("next", "")
     if next_url and not next_url.startswith("/"):
         next_url = ""
