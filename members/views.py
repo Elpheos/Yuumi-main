@@ -281,6 +281,8 @@ def map_view(request, departement):
 
 def register(request):
     next_url = request.GET.get("next") or request.POST.get("next") or ""
+    if next_url and not next_url.startswith("/"):
+        next_url = ""
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
