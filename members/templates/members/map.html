@@ -195,10 +195,18 @@ Carte des commerces - {{ departement }} | Yuumi
     cursor: pointer;
 }
 
-.child-buttons button.active,
-.child-buttons button:hover {
+/* État actif (toujours) */
+.child-buttons button.active {
     background: #ff8b38;
     color: #fff;
+}
+
+/* Hover uniquement sur appareils compatibles (PC) */
+@media (hover: hover) {
+    .child-buttons button:hover {
+        background: #ff8b38;
+        color: #fff;
+    }
 }
 
 @media (max-width: 767px) {
