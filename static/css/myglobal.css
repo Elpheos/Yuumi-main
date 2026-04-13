@@ -1292,11 +1292,6 @@ body.menu-open {
     cursor: pointer;
 }
 
-.informations-secondaires-commerce-buttons-container #bouton1 {
-     background-color: #ff8b38;
-     color: white;
-}
-
 .infopratiques-container {
     padding: 15px; 
     background-color: #fff; 
