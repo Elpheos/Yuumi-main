@@ -1933,3 +1933,26 @@ body.menu-open {
 @media (max-width: 767px) {
     .page-title-container { margin-top: 60px; }
 }
+
+
+
+@media (max-width: 900px) {
+    .categ-ville-grid {
+        column-count: 2;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .categ-ville-grid {
+        column-count: 1;
+        max-width: 100%;
+    }
+}
+
+
+/* ── Leaflet : annuler les resets globaux ── */
+.leaflet-container * {
+    max-width: none;
+    box-sizing: content-box;
+}
