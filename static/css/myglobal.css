@@ -1292,6 +1292,8 @@ body.menu-open {
     cursor: pointer;
 }
 
+
+
 .infopratiques-container {
     padding: 15px; 
     background-color: #fff; 
@@ -1633,6 +1635,23 @@ body.menu-open {
     #claimTimer {
         text-align: center;
     }
+
+    /* Zone de tap favoris suffisante */
+    .commerce-wishlist button {
+        min-height: 44px;
+        min-width: 44px;
+        padding: 10px;
+    }
+
+    /* Icônes réseaux sociaux plus grandes */
+    .commerce-réseaux img {
+        width: 40px;
+    }
+
+    /* Titre commerce sans débordement */
+    .description-container h1 {
+        word-break: break-word;
+    }
 }
 
 
@@ -1759,11 +1778,17 @@ body.menu-open {
         transition: all 0.2s ease;
     }
 
-    .child-buttons button.active,
+    .child-buttons button.active {
+        background: #ff8b38;
+        color: #fff;
+    }
+
+@media (hover: hover) {
     .child-buttons button:hover {
         background: #ff8b38;
         color: #fff;
     }
+}
 
 /* ── FIX carte : filtres et boutons responsive ── */
 @media (max-width: 767px) {
@@ -1908,27 +1933,3 @@ body.menu-open {
 @media (max-width: 767px) {
     .page-title-container { margin-top: 60px; }
 }
-
-@media (max-width: 900px) {
-    .categ-ville-grid {
-        column-count: 2;
-        max-width: 100%; /* ← FIX : plus de max-width rigide qui laisse des blancs */
-    }
-}
-
-@media (max-width: 480px) {
-    .categ-ville-grid {
-        column-count: 1;
-        max-width: 100%;
-    }
-}
-
-
-
-
-/* ── Leaflet : annuler les resets globaux ── */
-.leaflet-container * {
-    max-width: none;
-    box-sizing: content-box;
-}
-
