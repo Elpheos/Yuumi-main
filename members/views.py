@@ -5,11 +5,11 @@ from zoneinfo import ZoneInfo
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.core.exceptions import PermissionDenied
+from django.core.paginator import Paginator
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.mail import send_mail
-from random import choice
 from django.templatetags.static import static
 from django.utils import timezone
 from datetime import timedelta
@@ -102,14 +102,19 @@ def stores(request, departement, ville):
 
 
 def by_category(request, departement, ville, category):
-    commerces = Store.objects.filter(
+    commerces_qs = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville,
         categorie__slug=category,
     ).select_related("categorie")
 
+    # Pagination : 20 commerces par page
+    paginator = Paginator(commerces_qs, 20)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
     message = None
-    if not commerces.exists():
+    if not commerces_qs.exists():
         message = "Aucun commerce trouvé pour cette catégorie."
 
     readable_category = category.replace("-", " ").capitalize()
@@ -118,7 +123,8 @@ def by_category(request, departement, ville, category):
         "ville": ville,
         "departement": departement,
         "category": readable_category,
-        "commerces": commerces,
+        "commerces": page_obj,
+        "page_obj": page_obj,
         "message": message,
     })
 
@@ -182,7 +188,6 @@ def store_details(request, departement, ville, slug):
         for h in opening_hours
     )
 
-    # Indicateur ouvert/fermé — None si horaires non renseignés
     est_ouvert = is_open_now(opening_hours) if horaires_renseignes else None
 
     return render(request, "members/store_details.html", {
@@ -437,13 +442,15 @@ def categories_ville(request, departement, ville):
 
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
-        commerces_with_photo = commerces_cat.filter(photo__isnull=False)
 
-        if commerces_with_photo.exists():
-            random_store = choice(list(commerces_with_photo))
-            image_url = random_store.photo.url
-        else:
-            image_url = static("placeholder.png")
+        # FIX perf : .order_by("?").first() au lieu de choice(list(...))
+        # Ne charge qu'un seul objet en base au lieu de tous
+        random_store = (
+            commerces_cat.filter(photo__isnull=False)
+            .order_by("?")
+            .first()
+        )
+        image_url = random_store.photo.url if random_store else static("placeholder.png")
 
         super_cat = cat.super_categorie
         if not super_cat:
@@ -510,13 +517,14 @@ def by_super_category(request, departement, ville, super_slug):
     categories = []
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
-        commerces_with_photo = commerces_cat.filter(photo__isnull=False)
 
-        if commerces_with_photo.exists():
-            random_store = choice(list(commerces_with_photo))
-            image_url = random_store.photo.url
-        else:
-            image_url = static("placeholder.png")
+        # FIX perf : .order_by("?").first() au lieu de choice(list(...))
+        random_store = (
+            commerces_cat.filter(photo__isnull=False)
+            .order_by("?")
+            .first()
+        )
+        image_url = random_store.photo.url if random_store else static("placeholder.png")
 
         categories.append({
             "name": cat.name,
