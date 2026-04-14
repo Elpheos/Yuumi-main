@@ -6,7 +6,7 @@
 {% block meta_description %}{{ store.descriptionpetite }} — {{ store.nom }}, {{ store.ville }}.{% endblock %}
 {% block og_title %}{{ store.nom }} | Yuumi{% endblock %}
 {% block og_description %}{{ store.descriptionpetite }}{% endblock %}
-{% if store.photo %}{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% endblock %}{% endif %}
+{% block og_image %}{% if store.photo %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% endif %}{% endblock %}
 
 {% block content %}
 
@@ -60,14 +60,14 @@
                     <!-- Conteneur des images -->
                     <div class="carousel-inner">
                         {% if store.photo %}
-<div class="carousel-item active">
-    <img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
-</div>
-{% else %}
-<div class="carousel-item active">
-    <img src="{% static 'placeholder.png' %}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
-</div>
-{% endif %}
+                            <div class="carousel-item active">
+                                <img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
+                            </div>
+                        {% else %}
+                            <div class="carousel-item active">
+                                <img src="{% static 'placeholder.png' %}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
+                            </div>
+                        {% endif %}
 
                         {% for img in store.images.all %}
                             <div class="carousel-item {% if not store.photo and forloop.first %}active{% endif %}">
