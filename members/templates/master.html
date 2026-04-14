@@ -31,6 +31,23 @@
     {% block extra_head %}{% endblock %}
 
 <style>
+
+/* ================================ */
+/*      FOOTER COLLANT EN BAS      */
+/* ================================ */
+
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex: 1;
+}
+
+/* ============================= */
+
 #supercats-dropdown {
     display: none ; 
 }
@@ -86,7 +103,7 @@
     background: #fafafa;
     padding: 30px 10px;
     border-top: 2px solid #ff8b38;
-    margin-top: 50px;
+    margin-top: 0;
 }
 
 .yuumi-footer-container {
