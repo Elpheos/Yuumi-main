@@ -65,15 +65,17 @@
     </style>
 </head>
 <body>
-    <div class="error-container">
-        <img src="{% static 'images/logo.webp' %}" alt="Logo Yuumi">
-        <h1 class="error-title">404</h1>
-        <h2 class="error-subtitle">Oups... page introuvable</h2>
-        <p class="error-message">
-            La page que vous cherchez n’existe pas ou a été déplacée.<br>
-            Pas de panique, vous pouvez revenir à l’accueil pour continuer votre visite.
-        </p>
-        <a href="{% url 'main' %}" class="home-button"><i class="fa-solid fa-house"></i> Retour à l’accueil</a>
-    </div>
+    <div class="page-container">
+            <div class="error-container">
+                <img src="{% static 'images/logo.webp' %}" alt="Logo Yuumi">
+                <h1 class="error-title">404</h1>
+                <h2 class="error-subtitle">Oups... page introuvable</h2>
+                <p class="error-message">
+                    La page que vous cherchez n’existe pas ou a été déplacée.<br>
+                    Pas de panique, vous pouvez revenir à l’accueil pour continuer votre visite.
+                </p>
+                <a href="{% url 'main' %}" class="home-button"><i class="fa-solid fa-house"></i> Retour à l’accueil</a>
+            </div>
+        </div>
 </body>
 </html>
