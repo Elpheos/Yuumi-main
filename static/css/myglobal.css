@@ -207,20 +207,6 @@ color: inherit;
 
 .menu-supercats { position: relative; }
 
-.supercats-container {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    min-width: 260px;
-    background: #fff;
-    border: 2px solid #ff8b38;
-    border-radius: 12px;
-    padding: 12px 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
-    z-index: 2000;
-}
-
 .supercat-header {
     color: #ff8b38;
     font-weight: bold !important;
