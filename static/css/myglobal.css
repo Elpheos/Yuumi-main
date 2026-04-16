@@ -35,6 +35,7 @@ main {
     flex-direction: column;
     overflow-x: hidden;
     box-sizing: border-box;
+	padding-bottom: 15vh;
 }
 
 .page-container * {
