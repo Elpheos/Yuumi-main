@@ -1588,6 +1588,7 @@ body.menu-open {
     .description-container {
         display: block;
         text-align: center;
+		padding: 0 20px;
     }
 
     .description-container h1 {
@@ -1606,6 +1607,7 @@ body.menu-open {
         display: flex;
         flex-direction: column;
         gap: 8px;
+		padding: 0 20px;
     }
 
     .informations-secondaires-commerce-buttons-container > button {
