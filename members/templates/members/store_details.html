@@ -1,6 +1,6 @@
 {% extends "master.html" %}
 {% load static %}
-
+<div class="page-container">
 {% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
 
 {% block meta_description %}{{ store.descriptionpetite }} — {{ store.nom }}, {{ store.ville }}.{% endblock %}
@@ -355,7 +355,7 @@
 {% endif %}
 
 {% endblock %}
-
+</div>
 {% block extra_js %}
 <script>
     window.stores = {{ stores|safe }};
