@@ -1,7 +1,7 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}Mes favoris{% endblock %}
+{% block title %}Connexion | Yuumi{% endblock %}
 
 {% block content %}
 <style>
@@ -111,7 +111,43 @@
     <div class="login-form-container">
         <form method="post">
             {% csrf_token %}
-            {{ form.as_p }}
+
+<div class="login-labelinput-container">
+    <label class="login-label" for="{{ form.username.id_for_label }}">
+        {{ form.username.label }} :
+    </label>
+    <input class="login-input"
+           type="text"
+           name="{{ form.username.html_name }}"
+           id="{{ form.username.id_for_label }}"
+           autofocus
+           autocapitalize="none"
+           autocomplete="username"
+           maxlength="150"
+           required>
+    {% if form.username.errors %}
+        <p style="color:red; font-size:12px;">{{ form.username.errors|join:", " }}</p>
+    {% endif %}
+</div>
+
+<div class="login-labelinput-container">
+    <label class="login-label" for="{{ form.password.id_for_label }}">
+        {{ form.password.label }} :
+    </label>
+    <input class="login-input"
+           type="password"
+           name="{{ form.password.html_name }}"
+           id="{{ form.password.id_for_label }}"
+           autocomplete="current-password"
+           required>
+    {% if form.password.errors %}
+        <p style="color:red; font-size:12px;">{{ form.password.errors|join:", " }}</p>
+    {% endif %}
+</div>
+
+{% if form.non_field_errors %}
+    <p style="color:red; font-size:12px;">{{ form.non_field_errors|join:", " }}</p>
+{% endif %}
             <div class="login-button-container">
                 <button class="login-button" type="submit">Se connecter</button>
             </div>
