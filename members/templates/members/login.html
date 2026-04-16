@@ -10,7 +10,7 @@
         margin: 0;
         padding: 0;
         padding-bottom: 15vh;
-        background-color: #ff8b38;
+        background-color: white;
     }
 
     .login-container {
@@ -21,6 +21,8 @@
         background-color: #ff8b38;
         display: flex;
         flex-direction: column;
+        border: solid #ff8b38 2px;
+        border-radius: 8px;
     }
 
     .login-img-container {
@@ -45,8 +47,7 @@
     }
 
     .login-label {
-        color: white;
-        font-weight: bold;
+        color: black;
         margin-bottom: 8px;
     }
 
@@ -55,7 +56,7 @@
         margin: auto;
         border-radius: 100px;
         height: 1.3rem;
-        border: none;
+        border: solid #ff8b38 2px;
         margin-bottom: 16px;
         padding-left: 8px;
     }
@@ -93,14 +94,27 @@
 
 
 @media (max-width: 767px) {
+     #page-container-login {
+        background-color: #ff8b38;
+         min-height: 100vh;
+    }
+    
     .login-container {
         margin-top: 80px !important;
         padding: 20px 16px !important;
         width: 95% !important;
+        background-color: #ff8b38;
+        border: none;
+    }
+
+    .login-label {
+        color: white;
+        font-weight: bold;
     }
 
     .login-input {
         width: 50%;
+        border: none;
     }
 }
 </style>
