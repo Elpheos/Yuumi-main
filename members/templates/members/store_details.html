@@ -9,7 +9,7 @@
 {% block og_image %}{% if store.photo %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% endif %}{% endblock %}
 
 {% block content %}
-
+<div class="page-container">
 <div class="store-action-bar">
     {% if request.user == store.owner or request.user.is_superuser %}
         <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
@@ -353,7 +353,7 @@
     </div>
 </div>
 {% endif %}
-
+</div>
 {% endblock %}
 
 {% block extra_js %}
