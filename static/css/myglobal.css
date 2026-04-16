@@ -151,6 +151,21 @@ color: inherit;
         text-decoration: none;
     }
 
+#changer-de-ville {
+    color: #ff8b38;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    font-weight: 400;
+    font-size: 0.85rem;
+    text-decoration: none;
+}
+
+#changer-de-ville:hover {
+    text-decoration: underline;
+}
+
     .disabled-link {
     border-color: #ddd !important;
     color: #aaa !important;
