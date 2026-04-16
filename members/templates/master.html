@@ -174,36 +174,37 @@ main {
     }
 }
 
-/* ── Ville courante sous le logo (desktop uniquement) ── */
-.header-ville-desktop {
-    font-size: 0.78rem;
-    text-align: center;
-    margin-top: 3px;
+/* ── Ville courante dans la nav desktop (après Contact) ── */
+.header-ville-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.85rem;
     color: #888;
+    list-style: none;
 }
 
-.header-ville-desktop span {
+.header-ville-nav span {
     font-weight: 600;
     color: #333;
 }
 
-.header-ville-desktop .separateur {
-    margin: 0 4px;
-    font-weight: 400;
+.header-ville-nav .separateur {
     color: #bbb;
+    font-weight: 400;
 }
 
-.header-ville-desktop a {
+.header-ville-nav a {
     color: #ff8b38;
     text-decoration: none;
 }
 
-.header-ville-desktop a:hover {
+.header-ville-nav a:hover {
     text-decoration: underline;
 }
 
 @media (max-width: 767px) {
-    .header-ville-desktop {
+    .header-ville-nav {
         display: none;
     }
 }
@@ -290,13 +291,6 @@ main {
                 <a href="{% url 'main' %}">
                     <img class="logo-header" src="{% static 'images/logo.webp' %}">
                 </a>
-                {% if menu_departement and menu_ville %}
-                <div class="header-ville-desktop">
-                    <span>{{ menu_ville }}</span>
-                    <span class="separateur">·</span>
-                    <a href="{% url 'changer_ville' %}">Changer de ville</a>
-                </div>
-                {% endif %}
             </div>
 
             <div>
@@ -384,6 +378,16 @@ main {
 </li>
 
                     <li><a href="{% url 'contact' %}">Contact</a></li>
+
+                    <!-- VILLE COURANTE — desktop uniquement, après Contact -->
+                    {% if menu_departement and menu_ville %}
+                    <li class="header-ville-nav">
+                        <span>{{ menu_ville }}</span>
+                        <span class="separateur">·</span>
+                        <a href="{% url 'changer_ville' %}">Changer de ville</a>
+                    </li>
+                    {% endif %}
+
                 </ul>
             </div>
 
