@@ -98,6 +98,7 @@ main {
     background: #fafafa;
     padding: 30px 10px;
     border-top: 2px solid #ff8b38;
+    margin-top: 15vh;
 }
 
 .yuumi-footer-container {
@@ -170,6 +171,40 @@ main {
 @media (max-width: 767px) {
     .menu-changer-ville-mobile {
         display: block;
+    }
+}
+
+/* ── Ville courante sous le logo (desktop uniquement) ── */
+.header-ville-desktop {
+    font-size: 0.78rem;
+    text-align: center;
+    margin-top: 3px;
+    color: #888;
+}
+
+.header-ville-desktop span {
+    font-weight: 600;
+    color: #333;
+}
+
+.header-ville-desktop .separateur {
+    margin: 0 4px;
+    font-weight: 400;
+    color: #bbb;
+}
+
+.header-ville-desktop a {
+    color: #ff8b38;
+    text-decoration: none;
+}
+
+.header-ville-desktop a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 767px) {
+    .header-ville-desktop {
+        display: none;
     }
 }
 
@@ -255,6 +290,13 @@ main {
                 <a href="{% url 'main' %}">
                     <img class="logo-header" src="{% static 'images/logo.webp' %}">
                 </a>
+                {% if menu_departement and menu_ville %}
+                <div class="header-ville-desktop">
+                    <span>{{ menu_ville }}</span>
+                    <span class="separateur">·</span>
+                    <a href="{% url 'changer_ville' %}">Changer de ville</a>
+                </div>
+                {% endif %}
             </div>
 
             <div>
