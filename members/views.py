@@ -54,6 +54,13 @@ def is_open_now(opening_hours):
 # ---------------------------
 
 def main(request):
+    # Si l'utilisateur a déjà une ville mémorisée, on l'y redirige directement
+    dep = request.COOKIES.get("yuumi_departement")
+    ville = request.COOKIES.get("yuumi_ville")
+    if dep and ville:
+        return redirect("stores", departement=dep, ville=ville)
+
+    # Sinon, page de choix de ville (premier passage)
     stores = Store.objects.all().values("departement", "ville").distinct()
 
     departements_villes = {}
@@ -565,14 +572,3 @@ def changer_ville(request):
         "departements_villes": sorted_data,
         "next": next_url,
     })
-
-def main(request):
-    # Si l'utilisateur a déjà une ville mémorisée, on l'y redirige directement
-    dep = request.COOKIES.get("yuumi_departement")
-    ville = request.COOKIES.get("yuumi_ville")
-    if dep and ville:
-        return redirect("stores", departement=dep, ville=ville)
-
-    # Sinon, page de choix de ville (premier passage)
-    stores = Store.objects.all().values("departement", "ville").distinct()
-    # ... reste du code actuel
