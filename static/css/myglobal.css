@@ -45,7 +45,7 @@ main {
 
 @media (max-width: 767px) {
     .page-container {
-        padding: 0 12px;
+        padding: 0 12px 15vh;
     }
 }
 
