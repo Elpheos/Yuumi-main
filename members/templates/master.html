@@ -179,14 +179,14 @@ main {
     display: flex;
     align-items: center;
     gap: 4px;
-    font-size: 0.85rem;
     color: #888;
     list-style: none;
 }
 
 .header-ville-nav span {
-    font-weight: 600;
+    font-weight: 500;
     color: #333;
+    font-size: 1.3rem;
 }
 
 .header-ville-nav .separateur {
@@ -383,7 +383,6 @@ main {
                     {% if menu_departement and menu_ville %}
                     <li class="header-ville-nav">
                         <span>{{ menu_ville }}</span>
-                        <span class="separateur">·</span>
                         <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
                     </li>
                     {% endif %}
