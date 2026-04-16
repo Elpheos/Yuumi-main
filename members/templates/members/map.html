@@ -11,6 +11,7 @@ Carte des commerces - {{ departement }} | Yuumi
 {% endblock %}
 
 {% block content %}
+<div class="page-containter">
 <main>
 
     <h1>Commerces dans le département {{ departement }}</h1>
@@ -68,6 +69,7 @@ Carte des commerces - {{ departement }} | Yuumi
     {{ categories|json_script:"categories-data" }}
 
 </main>
+</div>
 {% endblock %}
 
 {% block extra_js %}
