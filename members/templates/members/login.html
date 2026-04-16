@@ -5,14 +5,21 @@
 
 {% block content %}
 <style>
+    #page-container-login {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        background-color: #ff8b38;
+    }
+
     .login-container {
         width: 50%;
         height: auto;
         margin: 50px auto 10px;
         padding: 20px;
-        border: 5px solid #ff8b38;
+        border: 5px solid white;
         border-radius: 8px;
-        background-color: white;
+        background-color: #ff8b38;
         display: flex;
         flex-direction: column;
     }
@@ -23,7 +30,7 @@
 
     .login-h2 {
         text-align: center;
-        color:#ff8b38;
+        color:white;
         font-weight: bold;
     }
 
@@ -33,7 +40,28 @@
         gap: 15px;
         text-align: center;
         flex: 1;
-    }  
+    } 
+
+    .login-labelinput-container {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-label {
+        color: white;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .login-input {
+        width: 30%;
+        margin: auto;
+        border-radius: 100px;
+        height: 1.3rem;
+        border: none;
+        margin-bottom: 16px;
+        padding-left: 8px;
+    }
     
     .login-button-container {
         text-align: center;
@@ -75,6 +103,7 @@
     }
 }
 </style>
+<div class="page-container">
 <div class="login-container">
     <div class="login-h2-container">
         <h2 class="login-h2">Connexion</h2>
@@ -91,5 +120,6 @@
 </div>
 <div class="login-noaccount-container">
 <p class="login-noaccount-p">Vous n'avez pas de compte ? Inscrivez-vous <a class="login-noaccount-link" href="{% url 'register' %}">ici</a>.</p>
+</div>
 </div>
 {% endblock %}
