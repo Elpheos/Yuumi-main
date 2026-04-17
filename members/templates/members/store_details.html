@@ -244,13 +244,6 @@
 
         <!-- Galerie -->
         <section aria-label="Galerie du commerce" class="galerie-container" id="galerie" style="display:none;">
-            {% if store.galerie_title %}
-                <h2 class="galerie-title">{{ store.galerie_title }}</h2>
-            {% endif %}
-
-            {% if store.galerie_description %}
-                <p class="galerie-description">{{ store.galerie_description }}</p>
-            {% endif %}
 
             {% if store.galerie_image or store.images.exists %}
                 <div class="galerie-grid">
