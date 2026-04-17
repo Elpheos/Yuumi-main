@@ -1744,11 +1744,6 @@ body.menu-open {
         box-shadow: 0 6px 14px rgba(0,0,0,0.12);
     }
 
-    .parent-filter > div {
-        display: flex;
-        align-items: center;
-    }
-
     .parent-filter label {
         font-weight: 600;
         font-size: 16px;
