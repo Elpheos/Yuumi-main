@@ -396,12 +396,6 @@ document.addEventListener("DOMContentLoaded", function () {
             if (this.checked) {
                 document.querySelectorAll('.child-buttons button')
                     .forEach(btn => btn.classList.add('active'));
-
-                document.querySelectorAll('.child-buttons')
-                    .forEach(g => g.style.display = 'flex');
-
-                document.querySelectorAll('.toggle-children')
-                    .forEach(t => t.classList.add('open'));
             }
             syncUI();
         });
