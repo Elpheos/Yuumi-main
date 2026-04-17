@@ -541,7 +541,7 @@ body.menu-open {
 .mise-en-avant-annecy-image {
     width: 100%;
     height: 80vh;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 
@@ -795,10 +795,18 @@ body.menu-open {
 }
 
 @media (max-width: 767px) {
+#page-container-page-ville {
+	padding-left: 0;
+	padding-right: 0;
+}
+
+#carouselMiseEnAvant {
+    border-radius: 0;
+}
 
 .mise-en-avant-annecy-container {
     width: 100%;
-    margin-top: 60px;
+    margin-top: 0;
 }
 
 .mise-en-avant-annecy-image {
