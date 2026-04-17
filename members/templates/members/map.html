@@ -63,7 +63,7 @@ Carte des commerces - {{ departement }} | Yuumi
 
     <!-- ===================== Carte ===================== -->
     <div id="map">
-        <div class="map-mobile-menu-opener"><button class="map-mobile-menu-opener-b">Modifier la recherche</button></div>
+        <div class="map-mobile-menu-opener"><button class="map-mobile-menu-opener-b"><i class="fa-regular fa-pencil" id="map-editsearch-mobile-icon"></i>Modifier la recherche</button></div>
     </div>
     </div>
 
@@ -251,9 +251,15 @@ Carte des commerces - {{ departement }} | Yuumi
     }
 
     .map-mobile-menu-opener-b {
-        color: #ff8b38;
+        color: #fff;
         border: none;
-        background-color: transparent;
+        background-color: #ff8b38;
+        padding: 3px 5px;
+        border-radius: 100px;
+    }
+
+    #map-editsearch-mobile-icon {
+        
     }
 
     .category-filters {
@@ -264,6 +270,14 @@ Carte des commerces - {{ departement }} | Yuumi
     .parent-filter {
     border: none;
     padding: 3px 8px;
+}
+
+    .child-buttons {
+    left: 0;
+    top: 20px;
+    width: 100%;
+    height: auto;
+    min-height: 0;
 }
 
     /* Popup compacte */
