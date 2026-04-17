@@ -485,6 +485,16 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
+    /*APPARITION MENU SUR MOBILE*/
+    const mobileMenuButton = document.querySelector('.map-mobile-menu-opener-b');
+const categoryFilters = document.querySelector('.category-filters');
+
+if (mobileMenuButton && categoryFilters) {
+    mobileMenuButton.addEventListener('click', function () {
+        categoryFilters.style.display = 'flex';
+    });
+}
+
     /* ========= Init ========= */
     document.querySelectorAll('.child-buttons button')
         .forEach(btn => btn.classList.add('active'));
