@@ -808,59 +808,73 @@
         </div>
 
         {# ── SECTION 4 : Galerie ── #}
-        <div class="edit-section">
-            <h2 class="edit-section-title">
-                <i class="fa-solid fa-images"></i> Galerie
-            </h2>
+<div class="edit-section">
+    <h2 class="edit-section-title">
+        <i class="fa-solid fa-images"></i> Galerie
+    </h2>
 
-            <div class="image-preview-zone" style="margin-top:4px;">
-                {% if store.galerie_image %}
-                <div class="image-thumb-block">
-                    <span>Image galerie actuelle</span>
-                    <img src="{{ store.galerie_image.url }}" alt="Galerie actuelle">
-                </div>
-                {% endif %}
-                <div class="image-thumb-block is-new hidden" id="galerie-preview-block">
-                    <span>Nouvelle image galerie</span>
-                    <img src="" alt="Aperçu galerie" id="galerie-preview-img">
-                </div>
+    {# Photos carrousel (StoreImage) #}
+    <p style="font-size:0.8rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">
+        Photos du carrousel
+    </p>
+
+    {% if store.images.exists %}
+        <div class="galerie-grid-edit">
+            {% for img in store.images.all %}
+            <div class="galerie-img-item" id="img-item-{{ img.id }}">
+                <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}">
+                <button type="button"
+                        class="galerie-img-delete"
+                        title="Supprimer cette photo"
+                        onclick="markImageDelete({{ img.id }}, this, 'carousel')">
+                    &times;
+                </button>
+                <input type="checkbox" name="delete_image_{{ img.id }}" id="del-img-{{ img.id }}" style="display:none;">
             </div>
-
-            <div class="form-group">
-                <label for="id_galerie_image">Image principale de la galerie</label>
-                {{ form.galerie_image }}
-                {% if form.galerie_image.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.galerie_image.errors.0 }}</p>{% endif %}
-            </div>
-
-            <hr style="border:none;border-top:1px solid #f0f0f0;margin:20px 0 16px;">
-            <p style="font-size:0.8rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">
-                Photos supplémentaires du carrousel
-            </p>
-
-            {% if store.images.exists %}
-                <div class="galerie-grid-edit">
-                    {% for img in store.images.all %}
-                    <div class="galerie-img-item" id="img-item-{{ img.id }}">
-                        <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}">
-                        <button type="button" class="galerie-img-delete" title="Supprimer cette photo"
-                                onclick="markImageDelete({{ img.id }}, this)">&times;</button>
-                        <input type="checkbox" name="delete_image_{{ img.id }}" id="del-img-{{ img.id }}" style="display:none;">
-                    </div>
-                    {% endfor %}
-                </div>
-                <p class="field-note" style="margin-bottom:14px;">
-                    Cliquez <strong>×</strong> pour marquer une photo à supprimer, puis sauvegardez.
-                </p>
-            {% else %}
-                <p class="galerie-empty-note">Aucune photo supplémentaire pour l'instant.</p>
-            {% endif %}
-
-            <div class="form-group">
-                <label>Ajouter des photos supplémentaires</label>
-                <input type="file" name="extra_images" multiple accept="image/*">
-                <p class="field-note">Vous pouvez sélectionner plusieurs fichiers à la fois.</p>
-            </div>
+            {% endfor %}
         </div>
+    {% else %}
+        <p class="galerie-empty-note">Aucune photo de carrousel pour l'instant.</p>
+    {% endif %}
+
+    <div class="form-group">
+        <label>Ajouter des photos au carrousel</label>
+        <input type="file" name="extra_images" multiple accept="image/*">
+        <p class="field-note">Ces photos apparaîtront dans le carrousel principal.</p>
+    </div>
+
+    <hr style="border:none;border-top:1px solid #f0f0f0;margin:20px 0 16px;">
+
+    {# Photos galerie (StoreGalerieImage) #}
+    <p style="font-size:0.8rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:12px;">
+        Photos de la galerie
+    </p>
+
+    {% if store.galerie_images.exists %}
+        <div class="galerie-grid-edit">
+            {% for img in store.galerie_images.all %}
+            <div class="galerie-img-item" id="galerie-item-{{ img.id }}">
+                <img src="{{ img.image.url }}" alt="Photo galerie {{ forloop.counter }}">
+                <button type="button"
+                        class="galerie-img-delete"
+                        title="Supprimer cette photo"
+                        onclick="markImageDelete({{ img.id }}, this, 'galerie')">
+                    &times;
+                </button>
+                <input type="checkbox" name="delete_galerie_image_{{ img.id }}" id="del-galerie-img-{{ img.id }}" style="display:none;">
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="galerie-empty-note">Aucune photo de galerie pour l'instant.</p>
+    {% endif %}
+
+    <div class="form-group">
+        <label>Ajouter des photos à la galerie</label>
+        <input type="file" name="extra_galerie_images" multiple accept="image/*">
+        <p class="field-note">Ces photos apparaîtront uniquement dans l'onglet Galerie.</p>
+    </div>
+</div>
 
         {# ── SECTION 5 : Horaires ── #}
         <div class="edit-section">
@@ -1290,15 +1304,17 @@ document.addEventListener("DOMContentLoaded", () => {
     bindImagePreview("id_galerie_image", "galerie-preview-block", "galerie-preview-img");
 
     // 2. MARQUER PHOTO À SUPPRIMER
-    window.markImageDelete = function(imgId, btn) {
-        const item     = document.getElementById("img-item-" + imgId);
-        const checkbox = document.getElementById("del-img-" + imgId);
-        if (!item || !checkbox) return;
-        const isMarked = item.classList.toggle("marked-delete");
-        checkbox.checked = isMarked;
-        btn.title = isMarked ? "Annuler la suppression" : "Supprimer cette photo";
-        formDirty = true;
-    };
+    window.markImageDelete = function(imgId, btn, type) {
+    const prefix = type === 'galerie' ? 'galerie-item-' : 'img-item-';
+    const checkboxId = type === 'galerie' ? 'del-galerie-img-' : 'del-img-';
+    const item     = document.getElementById(prefix + imgId);
+    const checkbox = document.getElementById(checkboxId + imgId);
+    if (!item || !checkbox) return;
+    const isMarked = item.classList.toggle("marked-delete");
+    checkbox.checked = isMarked;
+    btn.title = isMarked ? "Annuler la suppression" : "Supprimer cette photo";
+    formDirty = true;
+};
 
     // 3. GARDE-FOU MODIFICATIONS NON SAUVEGARDÉES
     let formDirty  = false;
