@@ -42,7 +42,7 @@ Carte des commerces - {{ departement }} | Yuumi
 
                 <button class="toggle-children"
                         data-parent="{{ group.grouper }}">
-                    <span class="toggle-arrow"><i class="fa-solid fa-caret-right"></i></span>
+                    <span class="toggle-arrow"><i id="map-menu-arrow" class="fa-solid fa-caret-right"></i></span>
                 </button>
             </div>
 
@@ -173,6 +173,10 @@ Carte des commerces - {{ departement }} | Yuumi
     border-collapse: collapse;
     padding: 12px 16px;
     position: relative;
+}
+
+.map-menu-arrow {
+    color: var(--bleu);
 }
 
 .toggle-children {
