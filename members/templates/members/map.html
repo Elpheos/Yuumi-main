@@ -46,11 +46,11 @@ Carte des commerces - {{ departement }} | Yuumi
                 </button>
             </div>
 
-            <div class="child-buttons"
+            <div class="map-child-buttons-container"
                  data-parent="{{ group.grouper }}">
 
                 {% for cat in group.list %}
-                    <button data-category="{{ cat.slug }}">
+                    <button class="map-child-buttons" data-category="{{ cat.slug }}">
                         {{ cat.name }}
                     </button>
                 {% endfor %}
@@ -185,20 +185,30 @@ Carte des commerces - {{ departement }} | Yuumi
     transform: rotate(90deg);
 }
 
-.child-buttons {
-    margin-top: 10px;
+.map-child-buttons-container {
     display: none;
+    position: absolute;
+    top: 50px;
+    z-index: 1000;
+    background: rgb(255, 255, 255);
+    border: 2px solid rgb(255, 139, 56);
+    border-radius: 8px;
+    padding: 8px 5px;
+    min-width: 30dvw;
+    min-height: 15dvh;
+    margin-top: 10px;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-.child-buttons button {
+.map-child-buttons {
     padding: 6px 12px;
     border: 2px solid #ff8b38;
     border-radius: 8px;
     background: #fff;
     color: #ff8b38;
-    cursor: pointer;
+    cursor: pointer; 
+    height: fit-content;
 }
 
 /* État actif (toujours) */
