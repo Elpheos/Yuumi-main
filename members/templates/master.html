@@ -219,6 +219,10 @@ main {
     font-size: 1.3rem;
 }
 
+#header-bouton-changerville-faicon {
+    margin-right: 5px;
+}
+
 @media (max-width: 767px) {
     .header-ville-nav {
         display: none;
@@ -399,7 +403,7 @@ main {
                     {% if menu_departement and menu_ville %}
                     <li class="header-ville-nav">
                         <div class="header-bouton-changerville-desktop-container">
-                        <span class="header-bouton-changerville-span-nomville"><i class="fa-solid fa-location-dot"></i>{{ menu_ville }}</span>
+                        <span class="header-bouton-changerville-span-nomville"><i class="fa-solid fa-location-dot" id="header-bouton-changerville-faicon"></i>{{ menu_ville }}</span>
                         <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
                         </div>
                     </li>
