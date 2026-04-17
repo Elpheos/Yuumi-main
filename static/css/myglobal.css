@@ -5,7 +5,10 @@
 /*==========================================================GLOBAL
 Concerne les styles applicables à toutes les pages
 */
-
+:root {
+	--orange: #ff8b38;
+	--orange-c: ;
+}
 * {
     margin: 0;
     padding: 0;
@@ -88,17 +91,6 @@ color: inherit;
 	margin: auto;
 	margin-top: 32px;
 	width: 50%;
-}
-
-.grid-nom-categories {
-    color: black;
-    background-color: white;
-    position: absolute;
-    top: 5%;
-    left: 5%;
-    padding: 5px;
-    transition: transform ease 0.2s;
-    max-width: calc(90% - 10px);   /* ✅ ne déborde pas de la tuile */
 }
 
 /*=================================================================================MENU*/
@@ -721,10 +713,22 @@ body.menu-open {
     object-fit: cover;
 }
 
+.grid-nom-categories {
+    color: #fff;
+    background-color: #ff8b38;
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    padding: 5px;
+    transition: transform ease 0.2s;
+    max-width: calc(90% - 10px);
+	scrollbar-width: none;
+}
+
 
 .liste-des-categories-grid-container > div > a:hover > h3 {
     color: white;
-    background-color: black;
+    background-color: var(--orange-c);
     transform: scale(1.05);
 }
 
@@ -886,6 +890,7 @@ body.menu-open {
     padding-bottom: 8px;
     padding-left: 5%;
     padding-right: 5%;
+	scrollbar-width: none;
 }
 
 .derniers-arrivants-grid-commerces {
