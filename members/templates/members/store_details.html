@@ -318,21 +318,14 @@
         </div>
 
         <!-- Galerie -->
+        {# CHANGEMENT 1 : on utilise store.galerie_images (le nouveau related_name) #}
+        {# au lieu de store.galerie_image (l'ancien champ unique supprimé) #}
         <section aria-label="Galerie du commerce" class="galerie-container" id="galerie" style="display:none;">
-
-            {% if store.galerie_image or store.images.exists %}
+            {% if store.galerie_images.exists %}
                 <div class="galerie-grid">
-                    {% if store.galerie_image %}
+                    {% for img in store.galerie_images.all %}
                         <div class="galerie-item">
-                            <img src="{{ store.galerie_image.url }}"
-                                 alt="Image principale de la galerie {{ store.nom }}"
-                                 class="galerie-main-img">
-                        </div>
-                    {% endif %}
-
-                    {% for img in store.images.all %}
-                        <div class="galerie-item">
-                            <img src="{{ img.image.url }}" alt="Photo de {{ store.nom }}">
+                            <img src="{{ img.image.url }}" alt="Photo de la galerie {{ store.nom }}">
                         </div>
                     {% endfor %}
                 </div>
@@ -362,13 +355,12 @@
                 </tbody>
             </table>
         {% empty %}
-            {# ✅ Affiché uniquement si aucune famille de produits n'est enregistrée #}
         <div class="infopratiques-container">
             <p class="produits-empty">
                 <i class="fa-solid fa-box-open"></i>
                 Ce commerce n'a pas encore renseigné sa liste de produits.
             </p>
-    </div>
+        </div>
         {% endfor %}
     </section>
 
@@ -436,7 +428,9 @@
 </div>
 
 <!-- Lightbox Galerie -->
-{% if store.galerie_image or store.images.exists %}
+{# CHANGEMENT 2 : même logique, on vérifie galerie_images.exists #}
+{# au lieu de l'ancien galerie_image (champ unique) ou images.exists #}
+{% if store.galerie_images.exists %}
 <div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
     <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
         <img class="galerie-lightbox-img" id="galerieLightboxImg" alt="" style="max-width:85vw;max-height:85vh;object-fit:contain;border:4px solid #ff8b38;border-radius:14px;background:#fff;display:block;">
@@ -465,7 +459,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-<!-- Onglets : version propre sans onclick inline -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const onglets = document.querySelectorAll(".onglet-btn");
@@ -478,12 +471,8 @@ document.addEventListener("DOMContentLoaded", () => {
     onglets.forEach(btn => {
         btn.addEventListener("click", () => {
             const target = btn.dataset.target;
-
-            // Mettre à jour les boutons
             onglets.forEach(b => b.classList.remove("onglet-actif"));
             btn.classList.add("onglet-actif");
-
-            // Afficher la bonne section
             Object.entries(sections).forEach(([key, el]) => {
                 if (!el) return;
                 if (key === target) {
@@ -536,7 +525,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // État initial
         updateUI(isFavorite);
 
         btn.addEventListener("click", () => {
@@ -558,7 +546,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 return res.json();
             })
             .then(data => {
-                /* FIX : l'API retourne {"is_favorite": bool}, pas {"action": "added"} */
                 isFavorite = data.is_favorite;
                 updateUI(isFavorite);
             })
@@ -694,9 +681,6 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 <style>
-/* ============================================================
-   BADGE OUVERT / FERMÉ
-   ============================================================ */
 .badge-statut {
     display: inline-flex;
     align-items: center;
@@ -731,9 +715,6 @@ document.addEventListener("DOMContentLoaded", () => {
 .badge-ouvert .badge-dot { background: #27ae60; }
 .badge-ferme .badge-dot  { background: #e53935; }
 
-/* ============================================================
-   ONGLETS — remplacement des onclick inline
-   ============================================================ */
 .onglet-btn {
     background: white;
     color: #333;
@@ -758,9 +739,6 @@ document.addEventListener("DOMContentLoaded", () => {
     color: #ff8b38;
 }
 
-/* ============================================================
-   BOUTONS D'ACTION (Modifier / Revendiquer)
-   ============================================================ */
 .store-action-bar {
     display: flex;
     flex-wrap: wrap;
@@ -769,13 +747,8 @@ document.addEventListener("DOMContentLoaded", () => {
     margin: 16px 16px 10px;
 }
 
-.store-action-bar .btn {
-    white-space: nowrap;
-}
+.store-action-bar .btn { white-space: nowrap; }
 
-/* ============================================================
-   CARROUSEL
-   ============================================================ */
 #carouselStoreImages {
     max-width: 100%;
     margin: 0 auto 20px auto;
@@ -785,21 +758,16 @@ document.addEventListener("DOMContentLoaded", () => {
     background: #fff;
 }
 
-.carousel-item {
-    max-height: 75vh;
-}
+.carousel-item { max-height: 75vh; }
 
 .store-carousel-img {
     width: 100%;
-    height: 100%;
     height: 75vh;
     object-fit: contain;
     display: block;
 }
 
-.carousel-indicators [data-bs-target] {
-    background-color: #ff8b38;
-}
+.carousel-indicators [data-bs-target] { background-color: #ff8b38; }
 
 .carousel-control-prev-icon,
 .carousel-control-next-icon {
@@ -807,9 +775,6 @@ document.addEventListener("DOMContentLoaded", () => {
     border-radius: 50%;
 }
 
-/* ============================================================
-   MESSAGE LISTE DE PRODUITS VIDE  ← AJOUT
-   ============================================================ */
 .produits-empty {
     text-align: center;
     color: #aaa;
@@ -826,28 +791,10 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 @media (max-width: 767px) {
-    #page-container-store-details {
-        padding-left: 0;
-        padding-right: 0;
-    }
-    
-    .store-action-bar {
-        margin: 0;
-    }
-
-    #carouselStoreImages {
-        border: none;
-        border-radius: 0;
-        border-bottom: 2px solid #ff8b38;
-}
-
-    .store-carousel-img {
-        max-height: 75vh;
-        height: auto;
-        object-fit: cover;
-
-}
-    
+    #page-container-store-details { padding-left: 0; padding-right: 0; }
+    .store-action-bar { margin: 0; }
+    #carouselStoreImages { border: none; border-radius: 0; border-bottom: 2px solid #ff8b38; }
+    .store-carousel-img { max-height: 75vh; height: auto; object-fit: cover; }
 }
 </style>
 
