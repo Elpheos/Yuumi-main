@@ -10,7 +10,6 @@ from .models import (
     StoreImage,
     ProductFamily,
     Product,
-    OpeningHour,
     Category,
     SuperCategory,
 )
