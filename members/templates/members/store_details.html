@@ -102,14 +102,18 @@
                             </span>
                         {% endif %}
                     {% endif %}
+                    
                      {% if request.user != store.owner %}
+                    <div class="store-revendiquer-container">
+                        <p>Vous êtes le propriétaire ?</p>
     <button class="store-revendiquer-b"
             id="claimButton"
             data-store-id="{{ store.id }}"
             data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
             onclick="claimStore({{ store.id }})">
-        Revendiquer ce commerce
+        Prenez le contrôle de votre page
     </button>
+                    </div>
 {% endif %}
 
                     <hr class="hr-page-commerce" />
@@ -715,8 +719,14 @@ document.addEventListener("DOMContentLoaded", () => {
 .badge-ouvert .badge-dot { background: #27ae60; }
 .badge-ferme .badge-dot  { background: #e53935; }
 
+.store-revendiquer-container {
+    
+}
+
 .store-revendiquer-b {
     color: var(--orange);
+    border: none;
+    background-color: initial;
 }
 
 .onglet-btn {
