@@ -11,12 +11,6 @@
 {% block content %}
 <div class="page-container" id="page-container-store-details">
 <div class="store-action-bar">
-    {% if request.user == store.owner or request.user.is_superuser %}
-        <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
-           class="btn btn-primary">
-            Modifier ce commerce
-        </a>
-    {% endif %}
 
 </div>
 
@@ -115,6 +109,12 @@
     </button>
                     </div>
 {% endif %}
+                     {% if request.user == store.owner or request.user.is_superuser %}
+        <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
+           class="btn btn-primary">
+            Modifier ce commerce
+        </a>
+    {% endif %}
 
                     <hr class="hr-page-commerce" />
 
