@@ -196,32 +196,105 @@
                             <tr><th colspan="2"><b>Horaires</b></th></tr>
                         </thead>
                         <tbody>
-                            {% if horaires_renseignes %}
-                                {% for hour in opening_hours %}
-                                    <tr>
-                                        <td><b>{{ hour.get_jour_display }} :</b></td>
-                                        <td>
-                                            {% if hour.matin_ouverture and hour.matin_fermeture %}
-                                                {{ hour.matin_ouverture|time:"H:i" }} - {{ hour.matin_fermeture|time:"H:i" }}
-                                            {% endif %}
-                                            {% if hour.apresmidi_ouverture and hour.apresmidi_fermeture %}
-                                                {% if hour.matin_ouverture and hour.matin_fermeture %} / {% endif %}
-                                                {{ hour.apresmidi_ouverture|time:"H:i" }} - {{ hour.apresmidi_fermeture|time:"H:i" }}
-                                            {% endif %}
-                                            {% if not hour.matin_ouverture and not hour.apresmidi_ouverture %}
-                                                Fermé
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            {% else %}
-                                <tr>
-                                    <td colspan="2" style="text-align:center; color:#aaa; font-style:italic; padding: 12px 0;">
-                                        Horaires non renseignés
-                                    </td>
-                                </tr>
-                            {% endif %}
-                        </tbody>
+    {# LUNDI #}
+    <tr>
+        <td><b>Lundi :</b></td>
+        <td>
+            {% if store.lundi_matin_ouverture and store.lundi_matin_fermeture %}
+                {{ store.lundi_matin_ouverture|time:"H:i" }} - {{ store.lundi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.lundi_apresmidi_ouverture and store.lundi_apresmidi_fermeture %}
+                {% if store.lundi_matin_ouverture and store.lundi_matin_fermeture %} / {% endif %}
+                {{ store.lundi_apresmidi_ouverture|time:"H:i" }} - {{ store.lundi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.lundi_matin_ouverture and not store.lundi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# MARDI #}
+    <tr>
+        <td><b>Mardi :</b></td>
+        <td>
+            {% if store.mardi_matin_ouverture and store.mardi_matin_fermeture %}
+                {{ store.mardi_matin_ouverture|time:"H:i" }} - {{ store.mardi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.mardi_apresmidi_ouverture and store.mardi_apresmidi_fermeture %}
+                {% if store.mardi_matin_ouverture and store.mardi_matin_fermeture %} / {% endif %}
+                {{ store.mardi_apresmidi_ouverture|time:"H:i" }} - {{ store.mardi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.mardi_matin_ouverture and not store.mardi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# MERCREDI #}
+    <tr>
+        <td><b>Mercredi :</b></td>
+        <td>
+            {% if store.mercredi_matin_ouverture and store.mercredi_matin_fermeture %}
+                {{ store.mercredi_matin_ouverture|time:"H:i" }} - {{ store.mercredi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.mercredi_apresmidi_ouverture and store.mercredi_apresmidi_fermeture %}
+                {% if store.mercredi_matin_ouverture and store.mercredi_matin_fermeture %} / {% endif %}
+                {{ store.mercredi_apresmidi_ouverture|time:"H:i" }} - {{ store.mercredi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.mercredi_matin_ouverture and not store.mercredi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# JEUDI #}
+    <tr>
+        <td><b>Jeudi :</b></td>
+        <td>
+            {% if store.jeudi_matin_ouverture and store.jeudi_matin_fermeture %}
+                {{ store.jeudi_matin_ouverture|time:"H:i" }} - {{ store.jeudi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.jeudi_apresmidi_ouverture and store.jeudi_apresmidi_fermeture %}
+                {% if store.jeudi_matin_ouverture and store.jeudi_matin_fermeture %} / {% endif %}
+                {{ store.jeudi_apresmidi_ouverture|time:"H:i" }} - {{ store.jeudi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.jeudi_matin_ouverture and not store.jeudi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# VENDREDI #}
+    <tr>
+        <td><b>Vendredi :</b></td>
+        <td>
+            {% if store.vendredi_matin_ouverture and store.vendredi_matin_fermeture %}
+                {{ store.vendredi_matin_ouverture|time:"H:i" }} - {{ store.vendredi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.vendredi_apresmidi_ouverture and store.vendredi_apresmidi_fermeture %}
+                {% if store.vendredi_matin_ouverture and store.vendredi_matin_fermeture %} / {% endif %}
+                {{ store.vendredi_apresmidi_ouverture|time:"H:i" }} - {{ store.vendredi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.vendredi_matin_ouverture and not store.vendredi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# SAMEDI #}
+    <tr>
+        <td><b>Samedi :</b></td>
+        <td>
+            {% if store.samedi_matin_ouverture and store.samedi_matin_fermeture %}
+                {{ store.samedi_matin_ouverture|time:"H:i" }} - {{ store.samedi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.samedi_apresmidi_ouverture and store.samedi_apresmidi_fermeture %}
+                {% if store.samedi_matin_ouverture and store.samedi_matin_fermeture %} / {% endif %}
+                {{ store.samedi_apresmidi_ouverture|time:"H:i" }} - {{ store.samedi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.samedi_matin_ouverture and not store.samedi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# DIMANCHE #}
+    <tr>
+        <td><b>Dimanche :</b></td>
+        <td>
+            {% if store.dimanche_matin_ouverture and store.dimanche_matin_fermeture %}
+                {{ store.dimanche_matin_ouverture|time:"H:i" }} - {{ store.dimanche_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.dimanche_apresmidi_ouverture and store.dimanche_apresmidi_fermeture %}
+                {% if store.dimanche_matin_ouverture and store.dimanche_matin_fermeture %} / {% endif %}
+                {{ store.dimanche_apresmidi_ouverture|time:"H:i" }} - {{ store.dimanche_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.dimanche_matin_ouverture and not store.dimanche_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+</tbody>
                     </table>
 
                     <p class="infopratiques-miseajour">
