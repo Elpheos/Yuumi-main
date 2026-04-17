@@ -148,14 +148,6 @@ class Store(models.Model):
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
 
     # Galerie
-    galerie_title = models.CharField(
-        max_length=255, blank=True, null=True,
-        help_text="Titre facultatif pour la galerie du commerce",
-    )
-    galerie_description = models.TextField(
-        blank=True, null=True,
-        help_text="Description facultative pour la galerie",
-    )
     galerie_image = models.ImageField(
         upload_to="store_galerie/", blank=True, null=True,
         help_text="Image principale pour la galerie",
