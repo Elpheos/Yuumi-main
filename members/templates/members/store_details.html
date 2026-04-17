@@ -18,13 +18,15 @@
         </a>
     {% endif %}
 
-    {% if request.user.is_authenticated and request.user != store.owner %}
-        <button class="btn btn-secondary"
-                id="claimButton"
-                onclick="claimStore({{ store.id }})">
-            Revendiquer ce commerce
-        </button>
-    {% endif %}
+    {% if request.user != store.owner %}
+    <button class="btn btn-secondary"
+            id="claimButton"
+            data-store-id="{{ store.id }}"
+            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+            onclick="claimStore({{ store.id }})">
+        Revendiquer ce commerce
+    </button>
+{% endif %}
 </div>
 
 {% if request.user.is_authenticated and request.user != store.owner %}
@@ -549,6 +551,12 @@ document.addEventListener("DOMContentLoaded", () => {
 let currentStoreId = null;
 
 function claimStore(storeId) {
+    const btn = document.getElementById("claimButton");
+    if (btn && btn.dataset.isAuthenticated !== "true") {
+        const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+        modal.show();
+        return;
+    }
     currentStoreId = storeId;
     const modal = new bootstrap.Modal(document.getElementById('claimModal'));
     modal.show();
