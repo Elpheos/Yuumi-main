@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /mon-compte/
+Disallow: /mes-favoris/
+Disallow: /register/
+Disallow: /departement-autocomplete/
+Disallow: /ville-autocomplete/
+Disallow: /categorie-autocomplete/
+Disallow: /search-product/
+Disallow: /store/
+
+Sitemap: https://yuumi-shop.com/sitemap.xml
