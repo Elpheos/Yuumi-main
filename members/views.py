@@ -16,7 +16,7 @@ from datetime import timedelta
 
 from .models import (
     Store, ProductFamily, Product, Category,
-    StoreImage, CityCategoryHighlight, SuperCategory,
+    StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
 
@@ -304,13 +304,25 @@ def edit_store(request, departement, ville, slug):
         if form.is_valid():
             form.save()
 
+            # Suppression images carrousel
             for key in request.POST:
                 if key.startswith("delete_image_"):
                     img_id = key.split("_")[-1]
                     StoreImage.objects.filter(id=img_id, store=store).delete()
 
+            # Upload images carrousel
             for image in request.FILES.getlist("extra_images"):
                 StoreImage.objects.create(store=store, image=image)
+
+            # Suppression images galerie
+            for key in request.POST:
+                if key.startswith("delete_galerie_image_"):
+                    img_id = key.split("_")[-1]
+                    StoreGalerieImage.objects.filter(id=img_id, store=store).delete()
+
+            # Upload images galerie
+            for image in request.FILES.getlist("extra_galerie_images"):
+                StoreGalerieImage.objects.create(store=store, image=image)
 
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
