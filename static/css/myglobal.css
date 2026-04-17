@@ -1769,26 +1769,6 @@ body.menu-open {
         transform: rotate(90deg);
     }
 
-    .child-buttons {
-        margin-top: 10px;
-        display: none;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: flex-start;
-    }
-
-    .child-buttons button {
-        padding: 6px 12px;
-        border: 2px solid #ff8b38;
-        border-radius: 8px;
-        background: #fff;
-        color: #ff8b38;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-
     .child-buttons button.active {
         background: #ff8b38;
         color: #fff;
