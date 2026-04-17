@@ -54,13 +54,11 @@ def is_open_now(opening_hours):
 # ---------------------------
 
 def main(request):
-    # Si l'utilisateur a déjà une ville mémorisée, on l'y redirige directement
     dep = request.COOKIES.get("yuumi_departement")
     ville = request.COOKIES.get("yuumi_ville")
     if dep and ville:
         return redirect("stores", departement=dep, ville=ville)
 
-    # Sinon, page de choix de ville (premier passage)
     stores = Store.objects.all().values("departement", "ville").distinct()
 
     departements_villes = {}
@@ -115,7 +113,6 @@ def by_category(request, departement, ville, category):
         categorie__slug=category,
     ).select_related("categorie")
 
-    # Pagination : 20 commerces par page
     paginator = Paginator(commerces_qs, 20)
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
@@ -318,11 +315,12 @@ def edit_store(request, departement, ville, slug):
     if request.user != store.owner and not request.user.is_superuser:
         raise PermissionDenied("Accès interdit à ce commerce.")
 
+    # Les 7 jours sont normalement créés lors de la création du commerce (Store.save).
+    # Ce get_or_create sert de filet de sécurité pour les commerces créés avant
+    # cette mise à jour — ils sont backfillés automatiquement à la première visite.
     jours_semaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-    jours_existants = set(store.opening_hours.values_list("jour", flat=True))
     for jour in jours_semaine:
-        if jour not in jours_existants:
-            OpeningHour.objects.create(store=store, jour=jour)
+        OpeningHour.objects.get_or_create(store=store, jour=jour)
 
     if request.method == "POST":
         form = StoreForm(request.POST, request.FILES, instance=store)
@@ -452,8 +450,6 @@ def categories_ville(request, departement, ville):
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
 
-        # FIX perf : .order_by("?").first() au lieu de choice(list(...))
-        # Ne charge qu'un seul objet en base au lieu de tous
         random_store = (
             commerces_cat.filter(photo__isnull=False)
             .order_by("?")
@@ -527,7 +523,6 @@ def by_super_category(request, departement, ville, super_slug):
     for cat in categories_qs:
         commerces_cat = stores_qs.filter(categorie=cat)
 
-        # FIX perf : .order_by("?").first() au lieu de choice(list(...))
         random_store = (
             commerces_cat.filter(photo__isnull=False)
             .order_by("?")
