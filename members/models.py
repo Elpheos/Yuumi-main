@@ -146,11 +146,6 @@ class Store(models.Model):
     # Images
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
 
-    # Galerie
-    galerie_image = models.ImageField(
-        upload_to="store_galerie/", blank=True, null=True,
-        help_text="Image principale pour la galerie",
-    )
 
     # Horaires
     lundi_matin_ouverture       = models.TimeField(null=True, blank=True)
@@ -380,3 +375,18 @@ class CityCategoryItem(models.Model):
 
     def __str__(self):
         return f"{self.highlight} — {self.category}"
+
+# ===========================================================
+# 🔹 Images de galerie
+# ===========================================================
+
+class StoreGalerieImage(models.Model):
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="galerie_images",
+    )
+    image = models.ImageField(upload_to="store_galerie/")
+
+    def __str__(self):
+        return f"Galerie image de {self.store.nom}"
