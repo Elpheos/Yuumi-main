@@ -1747,16 +1747,6 @@ body.menu-open {
         margin: 8px auto 0;
     }
 
-    .category-filters {
-        margin: 20px auto;
-        max-width: 800px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-        font-family: inherit;
-        font-size: 15px;
-    }
-
     .parent-filter {
         background: #fff;
         border: 2px solid #ff8b38;
