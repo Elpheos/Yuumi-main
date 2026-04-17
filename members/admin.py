@@ -11,6 +11,7 @@ from .models import (
     Product,
     Category,
     SuperCategory,
+    StoreGalerieImage,
 )
 from .forms import StoreForm
 
@@ -46,6 +47,20 @@ class ProductFamilyInline(nested_admin.NestedStackedInline):
     extra = 1
     inlines = [ProductInline]
 
+class StoreGalerieImageInline(nested_admin.NestedTabularInline):
+    model = StoreGalerieImage
+    extra = 1
+    readonly_fields = ("image_preview",)
+    fields = ("image", "image_preview")
+
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" width="70" height="70" style="object-fit: cover; border-radius:5px;" />',
+                obj.image.url
+            )
+        return ""
+
 
 # ===========================================================
 # 🔹 StoreAdmin
@@ -72,7 +87,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
                 "descriptionpetite", "descriptiongrande",
                 "addressemaps", "addresseitineraire",
                 "site", "phone", "instagram", "facebook",
-                "photo", "galerie_image", "slug", "owner",
+                "photo", "slug", "owner",
             )
         }),
         ("Lundi", {"fields": (("lundi_matin_ouverture", "lundi_matin_fermeture", "lundi_apresmidi_ouverture", "lundi_apresmidi_fermeture"),)}),
@@ -86,6 +101,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
     inlines = [
         StoreImageInline,
         ProductFamilyInline,
+        StoreGalerieImageInline,
     ]
 
     def photo_preview(self, obj):
