@@ -1694,13 +1694,6 @@ body.menu-open {
 
 /*===========================================================CARTE INTERACTIVE*/
 
-#map {
-        height: 600px;
-        width: 85%;
-        margin-top: 20px;
-        align-items: center;
-    }
-
     .leaflet-popup.yuumi-popup {
         max-width: 380px !important;
     }
