@@ -63,7 +63,7 @@ Carte des commerces - {{ departement }} | Yuumi
 
     <!-- ===================== Carte ===================== -->
     <div id="map">
-        <div class="map-mobile-menu-opener"><button class="map-mobile-menu-opener-b"><i class="fa-regular fa-pencil" id="map-editsearch-mobile-icon"></i>Modifier la recherche</button></div>
+        <div class="map-mobile-menu-opener"><button class="map-mobile-menu-opener-b"><i class="fa-solid fa-pencil" id="map-editsearch-mobile-icon"></i>Afficher / Masquer le menu</button></div>
     </div>
     </div>
 
@@ -259,7 +259,7 @@ Carte des commerces - {{ departement }} | Yuumi
     }
 
     #map-editsearch-mobile-icon {
-        
+        margin-right: 3px;
     }
 
     .category-filters {
@@ -510,7 +510,8 @@ const categoryFilters = document.querySelector('.category-filters');
 
 if (mobileMenuButton && categoryFilters) {
     mobileMenuButton.addEventListener('click', function () {
-        categoryFilters.style.display = 'block';
+        const isOpen = categoryFilters.style.display === 'block';
+        categoryFilters.style.display = isOpen ? 'none' : 'block';
     });
 }
 
