@@ -8,6 +8,7 @@ Concerne les styles applicables à toutes les pages
 :root {
 	--orange: #ff8b38;
 	--orange-c: #d37531;
+	--bleu: #0a5bb4;
 }
 * {
     margin: 0;
@@ -144,13 +145,9 @@ color: inherit;
     }
 
 #changer-de-ville {
-    color: #ff8b38;
-    background-color: transparent;
-    border: none;
-    border-radius: 0;
+    color: var(--bleu);
     font-weight: 500;
-    font-size: 1.3rem;
-    text-decoration: none;
+    font-size: 0.8rem;
 }
 
 #changer-de-ville:hover {
