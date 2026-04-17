@@ -356,17 +356,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateParentsState() {
-    document.querySelectorAll('.parent-checkbox').forEach(parent => {
-        const group = document.querySelector(
-            `.child-buttons[data-parent="${parent.dataset.parent}"]`
-        );
-        const children = group.querySelectorAll('button');
-        const hasActive = Array.from(children)
-            .some(btn => btn.classList.contains('active'));
+        document.querySelectorAll('.parent-checkbox').forEach(parent => {
+            const group = document.querySelector(
+                `.child-buttons[data-parent="${parent.dataset.parent}"]`
+            );
+            const children = group.querySelectorAll('button');
+            const hasActive = Array.from(children)
+                .some(btn => btn.classList.contains('active'));
 
-        parent.checked = hasActive;
-    });
-}
+            parent.checked = hasActive;
+        });
+    }
 
     function updateAllState() {
         const allChildren = document.querySelectorAll('.child-buttons button');
@@ -393,40 +393,36 @@ document.addEventListener("DOMContentLoaded", function () {
             syncUI();
         });
 
-   document.querySelectorAll('.parent-checkbox')
-    .forEach(parent => {
-        parent.addEventListener('change', function () {
-            const currentParent = this.dataset.parent;
+    document.querySelectorAll('.parent-checkbox')
+        .forEach(parent => {
+            parent.addEventListener('change', function () {
+                const currentParent = this.dataset.parent;
 
-            const group = document.querySelector(
-                `.child-buttons[data-parent="${currentParent}"]`
-            );
-            const children = group.querySelectorAll('button');
+                const group = document.querySelector(
+                    `.child-buttons[data-parent="${currentParent}"]`
+                );
+                const children = group.querySelectorAll('button');
 
-            children.forEach(btn =>
-                btn.classList.toggle('active', this.checked)
-            );
+                children.forEach(btn =>
+                    btn.classList.toggle('active', this.checked)
+                );
 
-            // Fermer tous les autres groupes
-            document.querySelectorAll('.child-buttons').forEach(otherGroup => {
-                if (otherGroup.dataset.parent !== currentParent) {
-                    otherGroup.style.display = 'none';
-                }
+                document.querySelectorAll('.child-buttons').forEach(otherGroup => {
+                    if (otherGroup.dataset.parent !== currentParent) {
+                        otherGroup.style.display = 'none';
+                    }
+                });
+
+                document.querySelectorAll('.toggle-children').forEach(toggle => {
+                    const isCurrent = toggle.dataset.parent === currentParent;
+                    toggle.classList.toggle('open', isCurrent);
+                });
+
+                group.style.display = 'flex';
+
+                syncUI();
             });
-
-            // Mettre à jour toutes les flèches
-            document.querySelectorAll('.toggle-children').forEach(toggle => {
-                const isCurrent = toggle.dataset.parent === currentParent;
-                toggle.classList.toggle('open', isCurrent);
-            });
-
-            // Ouvrir seulement le groupe courant
-            group.style.display = 'flex';
-
-            syncUI();
         });
-    });
-    });
 
     document.querySelectorAll('.child-buttons button')
         .forEach(btn => {
@@ -439,12 +435,24 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll('.toggle-children')
         .forEach(btn => {
             btn.addEventListener('click', function () {
+                const currentParent = this.dataset.parent;
                 const group = document.querySelector(
-                    `.child-buttons[data-parent="${this.dataset.parent}"]`
+                    `.child-buttons[data-parent="${currentParent}"]`
                 );
                 const open = group.style.display === 'flex';
-                group.style.display = open ? 'none' : 'flex';
-                this.classList.toggle('open', !open);
+
+                document.querySelectorAll('.child-buttons').forEach(otherGroup => {
+                    otherGroup.style.display = 'none';
+                });
+
+                document.querySelectorAll('.toggle-children').forEach(toggle => {
+                    toggle.classList.remove('open');
+                });
+
+                if (!open) {
+                    group.style.display = 'flex';
+                    this.classList.add('open');
+                }
             });
         });
 
