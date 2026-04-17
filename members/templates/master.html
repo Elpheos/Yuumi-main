@@ -192,12 +192,6 @@ main {
     list-style: none;
 }
 
-.header-ville-nav span {
-    font-weight: 500;
-    color: #333;
-    font-size: 1.3rem;
-}
-
 .header-ville-nav .separateur {
     color: #bbb;
     font-weight: 400;
@@ -210,6 +204,18 @@ main {
 
 .header-ville-nav a:hover {
     text-decoration: underline;
+}
+
+.header-bouton-changerville-desktop-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.header-bouton-changerville-span-nomville {
+    font-weight: 500;
+    color: var(--orange);
+    font-size: 1.3rem;
 }
 
 @media (max-width: 767px) {
@@ -391,8 +397,10 @@ main {
                     <!-- VILLE COURANTE — desktop uniquement, après Contact -->
                     {% if menu_departement and menu_ville %}
                     <li class="header-ville-nav">
-                        <span>{{ menu_ville }}</span>
+                        <div class="header-bouton-changerville-desktop-container">
+                        <span class="header-bouton-changerville-span-nomville">{{ menu_ville }}</span>
                         <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
+                        </div>
                     </li>
                     {% endif %}
 
