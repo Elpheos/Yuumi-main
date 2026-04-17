@@ -16,36 +16,33 @@ from datetime import timedelta
 
 from .models import (
     Store, ProductFamily, Product, Category,
-    OpeningHour, StoreImage, CityCategoryHighlight, SuperCategory,
+    StoreImage, CityCategoryHighlight, SuperCategory,
 )
-from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, OpeningHourFormSet
+from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
 
 
 # ---------------------------
 # Helper : commerce ouvert ?
+# À réécrire à l'étape suivante avec les nouveaux champs plats.
 # ---------------------------
 
-def is_open_now(opening_hours):
-    """
-    Retourne True si le commerce est actuellement ouvert, False s'il est fermé,
-    None si impossible à déterminer (horaires non renseignés).
-    Utilise le fuseau Europe/Paris.
-    """
+def is_open_now(store):
     now = datetime.now(tz=ZoneInfo('Europe/Paris'))
     jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
     today = jours[now.weekday()]
     current_time = now.time().replace(second=0, microsecond=0)
 
-    for h in opening_hours:
-        if h.jour == today:
-            if h.matin_ouverture and h.matin_fermeture:
-                if h.matin_ouverture <= current_time <= h.matin_fermeture:
-                    return True
-            if h.apresmidi_ouverture and h.apresmidi_fermeture:
-                if h.apresmidi_ouverture <= current_time <= h.apresmidi_fermeture:
-                    return True
-            return False
+    mo = getattr(store, f'{today}_matin_ouverture', None)
+    mf = getattr(store, f'{today}_matin_fermeture', None)
+    ao = getattr(store, f'{today}_apresmidi_ouverture', None)
+    af = getattr(store, f'{today}_apresmidi_fermeture', None)
 
+    if mo and mf and mo <= current_time <= mf:
+        return True
+    if ao and af and ao <= current_time <= af:
+        return True
+    if mo or mf or ao or af:
+        return False
     return None
 
 
@@ -181,18 +178,7 @@ def store_details(request, departement, ville, slug):
     if request.user.is_authenticated:
         is_favorite = store in request.user.favoris.all()
 
-    jours_ordre = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-    opening_hours = sorted(
-        store.opening_hours.all(),
-        key=lambda h: jours_ordre.index(h.jour),
-    )
-
-    horaires_renseignes = any(
-        h.matin_ouverture or h.matin_fermeture or h.apresmidi_ouverture or h.apresmidi_fermeture
-        for h in opening_hours
-    )
-
-    est_ouvert = is_open_now(opening_hours) if horaires_renseignes else None
+    est_ouvert = is_open_now(store)
 
     return render(request, "members/store_details.html", {
         "store": store,
@@ -200,8 +186,6 @@ def store_details(request, departement, ville, slug):
         "product_formsets": product_formsets,
         "stores": store_data,
         "is_favorite": is_favorite,
-        "opening_hours": opening_hours,
-        "horaires_renseignes": horaires_renseignes,
         "est_ouvert": est_ouvert,
     })
 
@@ -315,19 +299,10 @@ def edit_store(request, departement, ville, slug):
     if request.user != store.owner and not request.user.is_superuser:
         raise PermissionDenied("Accès interdit à ce commerce.")
 
-    # Les 7 jours sont normalement créés lors de la création du commerce (Store.save).
-    # Ce get_or_create sert de filet de sécurité pour les commerces créés avant
-    # cette mise à jour — ils sont backfillés automatiquement à la première visite.
-    jours_semaine = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"]
-    for jour in jours_semaine:
-        OpeningHour.objects.get_or_create(store=store, jour=jour)
-
     if request.method == "POST":
         form = StoreForm(request.POST, request.FILES, instance=store)
-        opening_formset = OpeningHourFormSet(request.POST, instance=store, prefix="horaires")
-        if form.is_valid() and opening_formset.is_valid():
+        if form.is_valid():
             form.save()
-            opening_formset.save()
 
             for key in request.POST:
                 if key.startswith("delete_image_"):
@@ -342,11 +317,9 @@ def edit_store(request, departement, ville, slug):
             return redirect(store.get_absolute_url())
     else:
         form = StoreForm(instance=store)
-        opening_formset = OpeningHourFormSet(instance=store, prefix="horaires")
 
     return render(request, "members/edit_store.html", {
         "form": form,
-        "opening_formset": opening_formset,
         "store": store,
     })
 
