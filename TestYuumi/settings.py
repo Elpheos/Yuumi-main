@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     # Third-party
     "nested_admin",
     "django_extensions",
+    "django.contrib.sitemaps",
 ]
 
 
