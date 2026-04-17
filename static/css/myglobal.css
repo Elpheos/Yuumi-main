@@ -7,7 +7,7 @@ Concerne les styles applicables à toutes les pages
 */
 :root {
 	--orange: #ff8b38;
-	--orange-c: ;
+	--orange-c: #d37531;
 }
 * {
     margin: 0;
