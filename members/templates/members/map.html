@@ -11,7 +11,7 @@ Carte des commerces - {{ departement }} | Yuumi
 {% endblock %}
 
 {% block content %}
-<div class="page-container">
+<div class="page-container" id="page-container-map">
 <main>
     
     <!-- ===================== Filtres ===================== -->
@@ -75,9 +75,15 @@ Carte des commerces - {{ departement }} | Yuumi
 {% block extra_js %}
 
 <style>
+#page-container-map{
+    padding-left: 0;
+    padding-right: 0;
+}
+    
 .map-content-supercontainer {
     background-color: var(--orange);
 }
+    
 #map {
     height: 600px;
     width: 85%;
