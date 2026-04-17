@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
-from django.utils.safestring import mark_safe
 from .models import CityCategoryHighlight, CityCategoryItem
 
 import nested_admin
@@ -19,31 +18,8 @@ from .forms import StoreForm
 
 
 # ===========================================================
-# 🔹 Widget jour : affiche le nom du jour en gras + champ caché
-#    Lecture seule visuellement, mais soumet la valeur au POST.
+# 🔹 Formulaire inline horaires
 # ===========================================================
-
-class JourWidget(forms.Widget):
-    JOURS_DISPLAY = {
-        'lundi': 'Lundi',
-        'mardi': 'Mardi',
-        'mercredi': 'Mercredi',
-        'jeudi': 'Jeudi',
-        'vendredi': 'Vendredi',
-        'samedi': 'Samedi',
-        'dimanche': 'Dimanche',
-    }
-
-    def render(self, name, value, attrs=None, renderer=None):
-        display = self.JOURS_DISPLAY.get(value, value or '—')
-        return mark_safe(
-            f'<strong style="line-height:2.4; white-space:nowrap;">{display}</strong>'
-            f'<input type="hidden" name="{name}" value="{value or ""}">'
-        )
-
-    def value_from_datadict(self, data, files, name):
-        return data.get(name)
-
 
 class OpeningHourAdminForm(forms.ModelForm):
     class Meta:
@@ -56,8 +32,17 @@ class OpeningHourAdminForm(forms.ModelForm):
             'apresmidi_fermeture',
         ]
         widgets = {
-            'jour': JourWidget(),
+            'jour': forms.Select(attrs={
+                'disabled': 'disabled',
+                'style': 'pointer-events:none; opacity:1; font-weight:bold;',
+            }),
         }
+
+    def clean_jour(self):
+        # Les champs HTML "disabled" ne soumettent pas leur valeur dans le POST.
+        # On la récupère donc depuis self.initial (injecté via formset_class.initial)
+        # plutôt que depuis cleaned_data, qui serait vide.
+        return self.initial.get('jour') or self.cleaned_data.get('jour')
 
 
 # ===========================================================
@@ -103,15 +88,18 @@ class OpeningHourInline(nested_admin.NestedTabularInline):
     JOURS = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
 
     def get_extra(self, request, obj=None, **kwargs):
-        # Sur la page de création (obj=None) : 7 lignes pré-remplies.
-        # Sur la page d'édition : 0 extra, on affiche les lignes existantes.
+        # Page de création : 7 lignes pré-remplies.
+        # Page d'édition : 0 extra, on affiche uniquement les lignes existantes.
         return 7 if obj is None else 0
 
     def get_formset(self, request, obj=None, **kwargs):
         formset_class = super().get_formset(request, obj, **kwargs)
         if obj is None:
+            # Injecte les 7 jours comme données initiales des formulaires extra.
+            # Ces valeurs sont accessibles via form.initial dans clean_jour().
             formset_class.initial = [{'jour': jour} for jour in self.JOURS]
         return formset_class
+
 
 class ProductFamilyInline(nested_admin.NestedStackedInline):
     model = ProductFamily
