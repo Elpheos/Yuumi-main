@@ -39,11 +39,11 @@ class ProductInline(nested_admin.NestedTabularInline):
 
 class OpeningHourInline(nested_admin.NestedTabularInline):
     model = OpeningHour
-    extra = 0          # Pas de lignes vides — on pré-remplit via get_queryset
+    extra = 0
     max_num = 7
-    can_delete = False # On ne supprime pas un jour, on laisse les horaires vides
+    can_delete = False
     fields = ("jour_display", "matin_ouverture", "matin_fermeture", "apresmidi_ouverture", "apresmidi_fermeture")
-    readonly_fields = ("jour_display",)  # Le jour est affiché en lecture seule
+    readonly_fields = ("jour_display",)
     verbose_name = "Horaire d'ouverture"
     verbose_name_plural = "Horaires d'ouverture"
 
@@ -59,22 +59,12 @@ class ProductFamilyInline(nested_admin.NestedStackedInline):
 
 
 @admin.register(Store)
-
 class StoreAdmin(nested_admin.NestedModelAdmin):
     form = StoreForm
 
-    def get_object(self, request, object_id, from_field=None):
-        """Pré-remplit les 7 jours d'horaires si le commerce n'en a pas encore."""
-        obj = super().get_object(request, object_id, from_field)
-        if obj:
-            jours_existants = set(
-                OpeningHour.objects.filter(store=obj).values_list('jour', flat=True)
-            )
-            jours_semaine = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
-            for jour in jours_semaine:
-                if jour not in jours_existants:
-                    OpeningHour.objects.create(store=obj, jour=jour)
-        return obj
+    # Les 7 jours d'horaires sont créés automatiquement dans Store.save()
+    # lors de la première création du commerce — plus besoin de get_object ici.
+
     list_display = (
         "nom",
         "ville",
@@ -89,7 +79,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         "nom",
         "ville",
         "departement",
-        "categorie",    
+        "categorie",
         "descriptionpetite",
         "descriptiongrande",
         "addressemaps",
@@ -108,6 +98,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         ProductFamilyInline,
         OpeningHourInline,
     ]
+
     def photo_preview(self, obj):
         if obj.photo:
             return format_html(
@@ -130,6 +121,7 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ("nom",)
     list_filter = ("family",)
 
+
 # 🔹 Super catégories
 @admin.register(SuperCategory)
 class SuperCategoryAdmin(admin.ModelAdmin):
@@ -145,6 +137,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_filter = ("super_categorie",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
+
 
 class CityCategoryItemInline(admin.TabularInline):
     model = CityCategoryItem
