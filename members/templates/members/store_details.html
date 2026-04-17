@@ -110,10 +110,12 @@
                     </div>
 {% endif %}
                      {% if request.user == store.owner or request.user.is_superuser %}
+                    <div class="store-modifier-commerce-container">
         <i class="fa-solid fa-pencil" id="store-modifier-commerce-icon"></i><a href="{% url 'edit_store' store.departement store.ville store.slug %}"
            class="store-modifier-commerce-b">
             Modifier ce commerce
         </a>
+                    </div>
     {% endif %}
 
                     <hr class="hr-page-commerce" />
@@ -740,6 +742,10 @@ document.addEventListener("DOMContentLoaded", () => {
     font-size: 0.75rem;
 }
 
+.store-modifier-commerce-container {
+    display: flex;
+}
+
 #store-modifier-commerce-icon {
     margin-right: 3px;
 }
@@ -748,6 +754,7 @@ document.addEventListener("DOMContentLoaded", () => {
     background-color: var(--orange);
     border: none;
     border-radius: 100px;
+    color: white;
 }
 
 .onglet-btn {
