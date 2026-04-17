@@ -105,7 +105,7 @@
                     
                      {% if request.user != store.owner %}
                     <div class="store-revendiquer-container">
-                        <p>Vous êtes le propriétaire ?</p>
+                        <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
     <button class="store-revendiquer-b"
             id="claimButton"
             data-store-id="{{ store.id }}"
@@ -720,13 +720,21 @@ document.addEventListener("DOMContentLoaded", () => {
 .badge-ferme .badge-dot  { background: #e53935; }
 
 .store-revendiquer-container {
-    
+    display: flex;
+    gap: 5px;
+    align-items: center;
 }
 
 .store-revendiquer-b {
     color: var(--orange);
     border: none;
     background-color: initial;
+    font-size: 0.8rem;
+}
+
+.store-revendiquer-p {
+    margin-bottom: 0;
+    font-size: 0.75rem;
 }
 
 .onglet-btn {
