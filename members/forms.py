@@ -66,8 +66,6 @@ class StoreForm(forms.ModelForm):
             'facebook',
             'addresseitineraire',
             'photo',
-            'galerie_title',
-            'galerie_description',
             'galerie_image',
         ]
         widgets = {
