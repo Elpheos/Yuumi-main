@@ -246,8 +246,10 @@ class Store(models.Model):
 
         super().save(*args, **kwargs)
 
-        # Créer les 7 jours d'horaires à la première sauvegarde
-        if is_new:
+        # Créer les 7 jours d'horaires à la première sauvegarde.
+        # Le flag _skip_opening_hours est positionné par l'admin quand l'inline
+        # gère lui-même la création, pour éviter un doublon (IntegrityError).
+        if is_new and not getattr(self, '_skip_opening_hours', False):
             self._create_opening_hours()
 
         # Lancer le géocodage en arrière-plan si nécessaire
