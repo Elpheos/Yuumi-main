@@ -18,15 +18,6 @@
         </a>
     {% endif %}
 
-    {% if request.user != store.owner %}
-    <button class="btn btn-secondary"
-            id="claimButton"
-            data-store-id="{{ store.id }}"
-            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
-            onclick="claimStore({{ store.id }})">
-        Revendiquer ce commerce
-    </button>
-{% endif %}
 </div>
 
 {% if request.user.is_authenticated and request.user != store.owner %}
@@ -111,6 +102,15 @@
                             </span>
                         {% endif %}
                     {% endif %}
+                     {% if request.user != store.owner %}
+    <button class="btn btn-secondary"
+            id="claimButton"
+            data-store-id="{{ store.id }}"
+            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+            onclick="claimStore({{ store.id }})">
+        Revendiquer ce commerce
+    </button>
+{% endif %}
 
                     <hr class="hr-page-commerce" />
 
