@@ -385,13 +385,15 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ========= Events ========= */
 
     document.querySelector('input[data-category="all"]')
-        .addEventListener('change', function () {
-            if (this.checked) {
-                document.querySelectorAll('.child-buttons button')
-                    .forEach(btn => btn.classList.add('active'));
-            }
-            syncUI();
-        });
+    .addEventListener('change', function () {
+
+        document.querySelectorAll('.child-buttons button')
+            .forEach(btn => {
+                btn.classList.toggle('active', this.checked);
+            });
+
+        syncUI();
+    });
 
     document.querySelectorAll('.parent-checkbox')
         .forEach(parent => {
