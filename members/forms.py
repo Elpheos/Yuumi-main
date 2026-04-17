@@ -66,7 +66,6 @@ class StoreForm(forms.ModelForm):
             'facebook',
             'addresseitineraire',
             'photo',
-            'galerie_image',
             # Horaires
             'lundi_matin_ouverture', 'lundi_matin_fermeture', 'lundi_apresmidi_ouverture', 'lundi_apresmidi_fermeture',
             'mardi_matin_ouverture', 'mardi_matin_fermeture', 'mardi_apresmidi_ouverture', 'mardi_apresmidi_fermeture',
