@@ -1,7 +1,6 @@
 import threading
 
 from django.db import models
-from django.db.models import Case, When, IntegerField
 from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -153,6 +152,42 @@ class Store(models.Model):
         help_text="Image principale pour la galerie",
     )
 
+    # Horaires
+    lundi_matin_ouverture       = models.TimeField(null=True, blank=True)
+    lundi_matin_fermeture       = models.TimeField(null=True, blank=True)
+    lundi_apresmidi_ouverture   = models.TimeField(null=True, blank=True)
+    lundi_apresmidi_fermeture   = models.TimeField(null=True, blank=True)
+    
+    mardi_matin_ouverture       = models.TimeField(null=True, blank=True)
+    mardi_matin_fermeture       = models.TimeField(null=True, blank=True)
+    mardi_apresmidi_ouverture   = models.TimeField(null=True, blank=True)
+    mardi_apresmidi_fermeture   = models.TimeField(null=True, blank=True)
+    
+    mercredi_matin_ouverture    = models.TimeField(null=True, blank=True)
+    mercredi_matin_fermeture    = models.TimeField(null=True, blank=True)
+    mercredi_apresmidi_ouverture = models.TimeField(null=True, blank=True)
+    mercredi_apresmidi_fermeture = models.TimeField(null=True, blank=True)
+    
+    jeudi_matin_ouverture       = models.TimeField(null=True, blank=True)
+    jeudi_matin_fermeture       = models.TimeField(null=True, blank=True)
+    jeudi_apresmidi_ouverture   = models.TimeField(null=True, blank=True)
+    jeudi_apresmidi_fermeture   = models.TimeField(null=True, blank=True)
+    
+    vendredi_matin_ouverture    = models.TimeField(null=True, blank=True)
+    vendredi_matin_fermeture    = models.TimeField(null=True, blank=True)
+    vendredi_apresmidi_ouverture = models.TimeField(null=True, blank=True)
+    vendredi_apresmidi_fermeture = models.TimeField(null=True, blank=True)
+    
+    samedi_matin_ouverture      = models.TimeField(null=True, blank=True)
+    samedi_matin_fermeture      = models.TimeField(null=True, blank=True)
+    samedi_apresmidi_ouverture  = models.TimeField(null=True, blank=True)
+    samedi_apresmidi_fermeture  = models.TimeField(null=True, blank=True)
+    
+    dimanche_matin_ouverture    = models.TimeField(null=True, blank=True)
+    dimanche_matin_fermeture    = models.TimeField(null=True, blank=True)
+    dimanche_apresmidi_ouverture = models.TimeField(null=True, blank=True)
+    dimanche_apresmidi_fermeture = models.TimeField(null=True, blank=True)
+
     # Slug & géolocalisation
     slug = models.SlugField(max_length=255, unique=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
@@ -208,28 +243,10 @@ class Store(models.Model):
             pass  # Échec silencieux — le géocodage peut être relancé via geocode_stores.py
 
     # ----------------------------------------------------------
-    # Création des horaires par défaut
-    # ----------------------------------------------------------
-
-    def _create_opening_hours(self):
-        """
-        Crée les 7 lignes d'horaires (lundi → dimanche) pour un nouveau commerce.
-        Les champs horaires sont null : un jour sans horaire est considéré fermé.
-        Appelé uniquement à la première sauvegarde du commerce.
-        """
-        jours_semaine = [
-            'lundi', 'mardi', 'mercredi', 'jeudi',
-            'vendredi', 'samedi', 'dimanche',
-        ]
-        for jour in jours_semaine:
-            OpeningHour.objects.get_or_create(store=self, jour=jour)
-
-    # ----------------------------------------------------------
     # Save
     # ----------------------------------------------------------
 
     def save(self, *args, **kwargs):
-        is_new = self.pk is None  # True uniquement à la première création
 
         # Générer un slug unique si absent
         if not self.slug:
@@ -245,12 +262,6 @@ class Store(models.Model):
                 self.longitude = None
 
         super().save(*args, **kwargs)
-
-        # Créer les 7 jours d'horaires à la première sauvegarde.
-        # Le flag _skip_opening_hours est positionné par l'admin quand l'inline
-        # gère lui-même la création, pour éviter un doublon (IntegrityError).
-        if is_new and not getattr(self, '_skip_opening_hours', False):
-            self._create_opening_hours()
 
         # Lancer le géocodage en arrière-plan si nécessaire
         if self.addressemaps and (adresse_changee or self.latitude is None):
@@ -322,58 +333,6 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.nom} ({self.family.nom})"
-
-
-# ===========================================================
-# 🔹 Horaires d'ouverture
-# ===========================================================
-
-class OpeningHour(models.Model):
-    JOURS_SEMAINE = [
-        ("lundi",    "Lundi"),
-        ("mardi",    "Mardi"),
-        ("mercredi", "Mercredi"),
-        ("jeudi",    "Jeudi"),
-        ("vendredi", "Vendredi"),
-        ("samedi",   "Samedi"),
-        ("dimanche", "Dimanche"),
-    ]
-
-    store = models.ForeignKey(
-        Store,
-        on_delete=models.CASCADE,
-        related_name="opening_hours",
-    )
-    jour = models.CharField(max_length=10, choices=JOURS_SEMAINE)
-    matin_ouverture    = models.TimeField(null=True, blank=True)
-    matin_fermeture    = models.TimeField(null=True, blank=True)
-    apresmidi_ouverture = models.TimeField(null=True, blank=True)
-    apresmidi_fermeture = models.TimeField(null=True, blank=True)
-
-    class Meta:
-        unique_together = ("store", "jour")
-        ordering = [
-            "store",
-            Case(
-                When(jour="lundi",    then=0),
-                When(jour="mardi",    then=1),
-                When(jour="mercredi", then=2),
-                When(jour="jeudi",    then=3),
-                When(jour="vendredi", then=4),
-                When(jour="samedi",   then=5),
-                When(jour="dimanche", then=6),
-                output_field=IntegerField(),
-            ),
-        ]
-        verbose_name = "Horaire d'ouverture"
-        verbose_name_plural = "Horaires d'ouverture"
-
-    def __str__(self):
-        return (
-            f"{self.get_jour_display()} : "
-            f"{self.matin_ouverture or '—'} - {self.matin_fermeture or '—'}, "
-            f"{self.apresmidi_ouverture or '—'} - {self.apresmidi_fermeture or '—'}"
-        )
 
 
 # ===========================================================
