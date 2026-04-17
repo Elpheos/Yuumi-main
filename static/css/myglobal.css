@@ -1746,8 +1746,8 @@ body.menu-open {
 
     .parent-filter label {
         font-weight: 600;
-        font-size: 16px;
-        color: #333;
+        font-size: 1rem;
+        color: #fff;
         cursor: pointer;
     }
 
@@ -1782,11 +1782,6 @@ body.menu-open {
         margin-top: 70px;
         width: 100%;
         height: 400px;
-    }
-
-    .category-filters {
-        padding: 0 8px;
-        margin-top: 12px;
     }
 
     /* Boutons de catégorie : taille de texte réduite + padding compact */
