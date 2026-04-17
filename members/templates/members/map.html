@@ -367,7 +367,6 @@ document.addEventListener("DOMContentLoaded", function () {
             parent.checked = hasActive;
 
             if (hasActive) {
-                group.style.display = 'flex';
                 document.querySelector(
                     `.toggle-children[data-parent="${parent.dataset.parent}"]`
                 ).classList.add('open');
