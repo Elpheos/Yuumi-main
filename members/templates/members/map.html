@@ -421,11 +421,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             // Retirer l'état open des autres flèches
-            document.querySelectorAll('.toggle-children').forEach(toggle => {
-                if (toggle.dataset.parent !== currentParent) {
-                    toggle.classList.remove('open');
-                }
-            });
+           document.querySelectorAll('.toggle-children').forEach(toggle => {
+    const isCurrent = toggle.dataset.parent === currentParent;
+    toggle.classList.toggle('open', isCurrent);
+});
 
             // Ouvrir seulement le groupe courant
             group.style.display = 'flex';
