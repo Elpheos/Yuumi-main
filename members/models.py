@@ -208,10 +208,29 @@ class Store(models.Model):
             pass  # Échec silencieux — le géocodage peut être relancé via geocode_stores.py
 
     # ----------------------------------------------------------
+    # Création des horaires par défaut
+    # ----------------------------------------------------------
+
+    def _create_opening_hours(self):
+        """
+        Crée les 7 lignes d'horaires (lundi → dimanche) pour un nouveau commerce.
+        Les champs horaires sont null : un jour sans horaire est considéré fermé.
+        Appelé uniquement à la première sauvegarde du commerce.
+        """
+        jours_semaine = [
+            'lundi', 'mardi', 'mercredi', 'jeudi',
+            'vendredi', 'samedi', 'dimanche',
+        ]
+        for jour in jours_semaine:
+            OpeningHour.objects.get_or_create(store=self, jour=jour)
+
+    # ----------------------------------------------------------
     # Save
     # ----------------------------------------------------------
 
     def save(self, *args, **kwargs):
+        is_new = self.pk is None  # True uniquement à la première création
+
         # Générer un slug unique si absent
         if not self.slug:
             self.slug = self._generate_unique_slug()
@@ -226,6 +245,10 @@ class Store(models.Model):
                 self.longitude = None
 
         super().save(*args, **kwargs)
+
+        # Créer les 7 jours d'horaires à la première sauvegarde
+        if is_new:
+            self._create_opening_hours()
 
         # Lancer le géocodage en arrière-plan si nécessaire
         if self.addressemaps and (adresse_changee or self.latitude is None):
