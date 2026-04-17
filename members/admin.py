@@ -99,8 +99,6 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         "instagram",
         "facebook",
         "photo",
-        "galerie_title",
-        "galerie_description",
         "galerie_image",
         "slug",
         "owner",
