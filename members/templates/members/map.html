@@ -15,6 +15,7 @@ Carte des commerces - {{ departement }} | Yuumi
 <main>
     
     <!-- ===================== Filtres ===================== -->
+    <div class="map-content-supercontainer">
     <div class="category-filters">
 
         <!-- Tous -->
@@ -62,6 +63,7 @@ Carte des commerces - {{ departement }} | Yuumi
 
     <!-- ===================== Carte ===================== -->
     <div id="map"></div>
+    </div>
 
     {{ stores|json_script:"stores-data" }}
     {{ categories|json_script:"categories-data" }}
