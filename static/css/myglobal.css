@@ -723,6 +723,7 @@ body.menu-open {
     transition: transform ease 0.2s;
     max-width: calc(90% - 10px);
 	scrollbar-width: none;
+	font-size: 1.3rem;
 }
 
 
