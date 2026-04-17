@@ -210,6 +210,7 @@ main {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
 }
 
 .header-bouton-changerville-span-nomville {
@@ -398,7 +399,7 @@ main {
                     {% if menu_departement and menu_ville %}
                     <li class="header-ville-nav">
                         <div class="header-bouton-changerville-desktop-container">
-                        <span class="header-bouton-changerville-span-nomville">{{ menu_ville }}</span>
+                        <span class="header-bouton-changerville-span-nomville"><i class="fa-solid fa-location-dot"></i>{{ menu_ville }}</span>
                         <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
                         </div>
                     </li>
