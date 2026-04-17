@@ -110,8 +110,8 @@
                     </div>
 {% endif %}
                      {% if request.user == store.owner or request.user.is_superuser %}
-        <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
-           class="btn btn-primary">
+        <i class="fa-solid fa-pencil" id="store-modifier-commerce-icon"></i><a href="{% url 'edit_store' store.departement store.ville store.slug %}"
+           class="store-modifier-commerce-b">
             Modifier ce commerce
         </a>
     {% endif %}
@@ -738,6 +738,16 @@ document.addEventListener("DOMContentLoaded", () => {
 .store-revendiquer-p {
     margin-bottom: 0;
     font-size: 0.75rem;
+}
+
+#store-modifier-commerce-icon {
+    margin-right: 3px;
+}
+    
+.store-modifier-commerce-b {
+    background-color: var(--orange);
+    border: none;
+    border-radius: 100px;
 }
 
 .onglet-btn {
