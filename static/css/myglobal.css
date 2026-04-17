@@ -1769,13 +1769,6 @@ body.menu-open {
         color: #fff;
     }
 
-@media (hover: hover) {
-    .child-buttons button:hover {
-        background: #ff8b38;
-        color: #fff;
-    }
-}
-
 /* ── FIX carte : filtres et boutons responsive ── */
 @media (max-width: 767px) {
     #map {
