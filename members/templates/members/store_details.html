@@ -103,7 +103,7 @@
                         {% endif %}
                     {% endif %}
                      {% if request.user != store.owner %}
-    <button class="btn btn-secondary"
+    <button class="store-revendiquer-b"
             id="claimButton"
             data-store-id="{{ store.id }}"
             data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
@@ -714,6 +714,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
 .badge-ouvert .badge-dot { background: #27ae60; }
 .badge-ferme .badge-dot  { background: #e53935; }
+
+.store-revendiquer-b {
+    color: var(--orange);
+}
 
 .onglet-btn {
     background: white;
