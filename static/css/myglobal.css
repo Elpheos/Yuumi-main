@@ -1396,11 +1396,6 @@ body.menu-open {
 }
 
 .liste-produits-container {
-    max-width: 50%;
-    box-sizing: border-box;
-    margin-top: 16px;
-    margin-left: 5%;
-    display: none;
 }
 
 .liste-produits-container table {
