@@ -17,7 +17,6 @@
     overflow-x: hidden;
 }
 
-/* ── En-tête ── */
 .edit-store-title {
     font-size: 1.8rem;
     font-weight: 700;
@@ -33,7 +32,6 @@
     max-width: 100%;
 }
 
-/* ── Carte de section ── */
 .edit-section {
     background: #fff;
     border: 2px solid #e8e8e8;
@@ -55,10 +53,7 @@
     gap: 8px;
 }
 
-/* ── Champs ── */
-.form-group {
-    margin-bottom: 16px;
-}
+.form-group { margin-bottom: 16px; }
 
 .form-group label {
     display: block;
@@ -92,12 +87,8 @@
     box-shadow: 0 0 0 3px rgba(255,139,56,0.12);
 }
 
-.form-group textarea {
-    min-height: 110px;
-    resize: vertical;
-}
+.form-group textarea { min-height: 110px; resize: vertical; }
 
-/* Champs lecture seule */
 .form-group input[readonly] {
     background: #f7f7f7;
     color: #999;
@@ -105,19 +96,13 @@
     border-style: dashed;
 }
 
-/* Grille 2 colonnes */
 .form-row-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 16px;
 }
 
-/* ── Notes et erreurs ── */
-.field-note {
-    font-size: 0.78rem;
-    color: #aaa;
-    margin-top: 4px;
-}
+.field-note { font-size: 0.78rem; color: #aaa; margin-top: 4px; }
 
 .field-error {
     color: #d00;
@@ -142,7 +127,6 @@
     gap: 10px;
 }
 
-/* ── Aperçu images ── */
 .image-preview-zone {
     display: flex;
     align-items: flex-start;
@@ -179,7 +163,6 @@
 .image-thumb-block.is-new img { border-style: dashed; }
 .image-thumb-block.hidden     { display: none; }
 
-/* ── Photos supplémentaires ── */
 .galerie-grid-edit {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
@@ -221,11 +204,7 @@
 
 .galerie-img-delete:hover { background: #c00; }
 
-.galerie-img-item.marked-delete img {
-    opacity: 0.3;
-    filter: grayscale(1);
-}
-
+.galerie-img-item.marked-delete img { opacity: 0.3; filter: grayscale(1); }
 .galerie-img-item.marked-delete .galerie-img-delete { background: #888; }
 
 .galerie-empty-note {
@@ -248,7 +227,6 @@
     border-bottom: 1px solid #f0f0f0;
 }
 
-/* Les 2 spans Matin/Après-midi dans un sous-grid */
 .horaire-header-periods {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -274,15 +252,12 @@
     padding: 14px 0 10px;
 }
 
-/* Desktop : le wrapper occupe les 2 colonnes Matin+Après-midi
-   et affiche les périodes côte à côte */
 .horaire-periods-row {
     grid-column: 2 / -1;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 12px;
 }
-
 
 .horaire-jour-label {
     font-weight: 700;
@@ -291,14 +266,12 @@
     padding-top: 8px;
 }
 
-/* Période (matin / après-midi) */
 .horaire-period {
     display: flex;
     flex-direction: column;
     gap: 8px;
 }
 
-/* Toggle Fermé */
 .horaire-toggle {
     display: flex;
     align-items: center;
@@ -346,11 +319,8 @@
     transition: color 0.15s;
 }
 
-.horaire-toggle input[type="checkbox"]:checked + .toggle-label {
-    color: #ff8b38;
-}
+.horaire-toggle input[type="checkbox"]:checked + .toggle-label { color: #ff8b38; }
 
-/* Champs heures avec animation */
 .horaire-times {
     display: flex;
     flex-direction: column;
@@ -381,15 +351,10 @@
     letter-spacing: 0.04em;
 }
 
-.horaire-period-field input[type="time"] {
-    display: none;
-}
+.horaire-period-field input[type="time"] { display: none; }
 
 /* ── Time Picker Custom ── */
-.time-picker-wrap {
-    position: relative;
-    width: 100%;
-}
+.time-picker-wrap { position: relative; width: 100%; }
 
 .time-picker-display {
     display: flex;
@@ -416,7 +381,6 @@
 .time-picker-display.is-open { border-color: #ff8b38; box-shadow: 0 0 0 2px rgba(255,139,56,0.12); }
 .time-picker-display.is-empty { color: #bbb; font-weight: 400; font-size: 13px; }
 
-/* Dropdown fixé en overlay au centre de l'écran */
 .time-picker-dropdown {
     display: none;
     position: fixed;
@@ -435,7 +399,6 @@
 
 .time-picker-dropdown.is-open { display: flex; }
 
-/* Overlay sombre derrière le dropdown */
 .time-picker-overlay {
     display: none;
     position: fixed;
@@ -445,16 +408,9 @@
 }
 .time-picker-overlay.is-open { display: block; }
 
-.time-cols-row {
-    display: flex;
-    flex-direction: row;
-}
+.time-cols-row { display: flex; flex-direction: row; }
 
-.time-col {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
+.time-col { display: flex; flex-direction: column; flex: 1; }
 
 .time-col-label {
     font-size: 9px;
@@ -539,7 +495,6 @@
 }
 .tp-btn-ok:hover { background: #e67626; }
 
-/* Erreur inline sous un champ horaire */
 .field-error-inline {
     font-size: 11px;
     color: #e74c3c;
@@ -549,7 +504,6 @@
     margin-top: 2px;
 }
 
-/* Bouton "Copier ce jour" */
 .btn-copier-horaire {
     grid-column: 1 / -1;
     display: inline-flex;
@@ -567,12 +521,8 @@
     font-family: inherit;
 }
 
-.btn-copier-horaire:hover {
-    color: #ff8b38;
-    border-color: #ff8b38;
-}
+.btn-copier-horaire:hover { color: #ff8b38; border-color: #ff8b38; }
 
-/* État "copié en mémoire" */
 .btn-copier-horaire.is-source {
     color: #ff8b38;
     border-color: #ff8b38;
@@ -580,10 +530,7 @@
     background: #fff5ee;
 }
 
-/* Ligne en mode "prête à coller" */
-.horaire-row.paste-target .horaire-jour-label {
-    color: #ff8b38;
-}
+.horaire-row.paste-target .horaire-jour-label { color: #ff8b38; }
 
 .btn-coller-horaire {
     grid-column: 1 / -1;
@@ -601,11 +548,8 @@
     transition: background 0.15s;
 }
 
-.btn-coller-horaire:hover {
-    background: #e67626;
-}
+.btn-coller-horaire:hover { background: #e67626; }
 
-/* Séparateur */
 .horaire-separator {
     border: none;
     border-top: 1px solid #f0f0f0;
@@ -639,10 +583,7 @@
     transition: border-color 0.2s, color 0.2s;
 }
 
-.btn-retour:hover {
-    border-color: #ff8b38;
-    color: #ff8b38;
-}
+.btn-retour:hover { border-color: #ff8b38; color: #ff8b38; }
 
 .btn-save {
     display: inline-flex;
@@ -664,32 +605,15 @@
 .btn-save:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* ============================================================
-   RESPONSIVE — Tablette (≤ 768px)
+   RESPONSIVE
    ============================================================ */
 @media (max-width: 768px) {
-    .edit-store-page {
-        margin-top: 75px;
-        padding: 0 12px;
-    }
-
+    .edit-store-page { margin-top: 75px; padding: 0 12px; }
     .edit-store-title { font-size: 1.3rem; }
     .edit-section { padding: 18px 14px; }
-
-    .form-row-2 {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-    .edit-actions {
-        flex-direction: column-reverse;
-        align-items: stretch;
-    }
-
-    .btn-retour,
-    .btn-save {
-        width: 100%;
-        justify-content: center;
-    }
+    .form-row-2 { grid-template-columns: 1fr; gap: 0; }
+    .edit-actions { flex-direction: column-reverse; align-items: stretch; }
+    .btn-retour, .btn-save { width: 100%; justify-content: center; }
 }
 
 @media (max-width: 768px) {
@@ -701,37 +625,18 @@
         box-sizing: border-box !important;
         min-width: 0 !important;
     }
-
-    .edit-store-page input[type="file"] {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-
+    .edit-store-page input[type="file"] { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .edit-store-page p,
     .edit-store-page label,
     .field-note,
-    .edit-section {
-        overflow-wrap: break-word;
-        word-break: break-word;
-        max-width: 100%;
-        overflow: hidden;
-    }
-
-    .form-row-2 {
-        grid-template-columns: 1fr !important;
-        gap: 0;
-    }
+    .edit-section { overflow-wrap: break-word; word-break: break-word; max-width: 100%; overflow: hidden; }
+    .form-row-2 { grid-template-columns: 1fr !important; gap: 0; }
 }
 
-/* ============================================================
-   RESPONSIVE — Mobile (≤ 560px) : horaires en cartes
-   ============================================================ */
 @media (max-width: 560px) {
     .horaire-header-row { display: none; }
     .horaire-separator  { display: none; }
 
-    /* Chaque jour = carte en colonne */
     .horaire-row {
         display: flex !important;
         flex-direction: column;
@@ -743,7 +648,6 @@
         gap: 10px;
     }
 
-    /* Nom du jour en header orange */
     .horaire-jour-label {
         color: #ff8b38;
         font-size: 15px;
@@ -754,7 +658,6 @@
         padding-top: 0;
     }
 
-    /* Les deux périodes côte à côte dans leur wrapper */
     .horaire-periods-row {
         display: grid !important;
         grid-template-columns: 1fr 1fr;
@@ -762,27 +665,13 @@
         width: 100%;
     }
 
-    .horaire-period {
-        min-width: 0;
-        width: 100%;
-    }
+    .horaire-period, .horaire-period-field { min-width: 0; width: 100%; }
 
-    .horaire-period-field {
-        min-width: 0;
-        width: 100%;
-    }
-
-    .btn-copier-horaire {
+    .btn-copier-horaire, .btn-coller-horaire {
         width: 100%;
         justify-content: center;
         margin-top: 0;
         grid-column: unset;
-    }
-
-    .btn-coller-horaire {
-        width: 100%;
-        justify-content: center;
-        margin-top: 0;
     }
 }
 </style>
@@ -794,7 +683,7 @@
         Modifier — {{ store.nom }}
     </h1>
 
-    {% if form.errors or opening_formset.errors %}
+    {% if form.errors %}
     <div class="form-error-banner">
         <i class="fa-solid fa-circle-exclamation"></i>
         Des erreurs empêchent la sauvegarde. Vérifiez les champs surlignés ci-dessous.
@@ -813,9 +702,7 @@
             <div class="form-group">
                 <label for="id_nom">Nom du commerce</label>
                 {{ form.nom }}
-                {% if form.nom.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.nom.errors.0 }}</p>
-                {% endif %}
+                {% if form.nom.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.nom.errors.0 }}</p>{% endif %}
             </div>
 
             <div class="form-row-2">
@@ -833,25 +720,19 @@
             <div class="form-group">
                 <label for="id_categorie">Catégorie</label>
                 {{ form.categorie }}
-                {% if form.categorie.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.categorie.errors.0 }}</p>
-                {% endif %}
+                {% if form.categorie.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.categorie.errors.0 }}</p>{% endif %}
             </div>
 
             <div class="form-group">
                 <label for="id_descriptionpetite">Description courte</label>
                 {{ form.descriptionpetite }}
-                {% if form.descriptionpetite.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.descriptionpetite.errors.0 }}</p>
-                {% endif %}
+                {% if form.descriptionpetite.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.descriptionpetite.errors.0 }}</p>{% endif %}
             </div>
 
             <div class="form-group">
                 <label for="id_descriptiongrande">Description détaillée</label>
                 {{ form.descriptiongrande }}
-                {% if form.descriptiongrande.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.descriptiongrande.errors.0 }}</p>
-                {% endif %}
+                {% if form.descriptiongrande.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.descriptiongrande.errors.0 }}</p>{% endif %}
             </div>
         </div>
 
@@ -865,16 +746,12 @@
                 <div class="form-group">
                     <label for="id_phone">Téléphone</label>
                     {{ form.phone }}
-                    {% if form.phone.errors %}
-                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.phone.errors.0 }}</p>
-                    {% endif %}
+                    {% if form.phone.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.phone.errors.0 }}</p>{% endif %}
                 </div>
                 <div class="form-group">
                     <label for="id_site">Site web</label>
                     {{ form.site }}
-                    {% if form.site.errors %}
-                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.site.errors.0 }}</p>
-                    {% endif %}
+                    {% if form.site.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.site.errors.0 }}</p>{% endif %}
                 </div>
             </div>
 
@@ -882,16 +759,12 @@
                 <div class="form-group">
                     <label for="id_instagram">Instagram</label>
                     {{ form.instagram }}
-                    {% if form.instagram.errors %}
-                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.instagram.errors.0 }}</p>
-                    {% endif %}
+                    {% if form.instagram.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.instagram.errors.0 }}</p>{% endif %}
                 </div>
                 <div class="form-group">
                     <label for="id_facebook">Facebook</label>
                     {{ form.facebook }}
-                    {% if form.facebook.errors %}
-                        <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.facebook.errors.0 }}</p>
-                    {% endif %}
+                    {% if form.facebook.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.facebook.errors.0 }}</p>{% endif %}
                 </div>
             </div>
 
@@ -930,9 +803,7 @@
             <div class="form-group">
                 <label for="id_photo">Choisir une nouvelle photo</label>
                 {{ form.photo }}
-                {% if form.photo.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.photo.errors.0 }}</p>
-                {% endif %}
+                {% if form.photo.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.photo.errors.0 }}</p>{% endif %}
             </div>
         </div>
 
@@ -958,9 +829,7 @@
             <div class="form-group">
                 <label for="id_galerie_image">Image principale de la galerie</label>
                 {{ form.galerie_image }}
-                {% if form.galerie_image.errors %}
-                    <p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.galerie_image.errors.0 }}</p>
-                {% endif %}
+                {% if form.galerie_image.errors %}<p class="field-error"><i class="fa-solid fa-triangle-exclamation"></i> {{ form.galerie_image.errors.0 }}</p>{% endif %}
             </div>
 
             <hr style="border:none;border-top:1px solid #f0f0f0;margin:20px 0 16px;">
@@ -973,16 +842,9 @@
                     {% for img in store.images.all %}
                     <div class="galerie-img-item" id="img-item-{{ img.id }}">
                         <img src="{{ img.image.url }}" alt="Photo {{ forloop.counter }}">
-                        <button type="button"
-                                class="galerie-img-delete"
-                                title="Supprimer cette photo"
-                                onclick="markImageDelete({{ img.id }}, this)">
-                            &times;
-                        </button>
-                        <input type="checkbox"
-                               name="delete_image_{{ img.id }}"
-                               id="del-img-{{ img.id }}"
-                               style="display:none;">
+                        <button type="button" class="galerie-img-delete" title="Supprimer cette photo"
+                                onclick="markImageDelete({{ img.id }}, this)">&times;</button>
+                        <input type="checkbox" name="delete_image_{{ img.id }}" id="del-img-{{ img.id }}" style="display:none;">
                     </div>
                     {% endfor %}
                 </div>
@@ -1011,8 +873,6 @@
                 Si vous n'avez pas de coupure méridienne, cochez <strong style="color:#ff8b38;">Fermé</strong> sur l'après-midi et mettez vos horaires uniquement dans la colonne Matin.
             </p>
 
-            {{ opening_formset.management_form }}
-
             {# En-têtes colonnes #}
             <div class="horaire-header-row">
                 <span>Jour</span>
@@ -1022,122 +882,240 @@
                 </div>
             </div>
 
-            {% for horaire_form in opening_formset %}
-            {% with idx=forloop.counter0 %}
+            {# ── Macro jour ── #}
+            {% with jours_data=form %}
 
-            <div class="horaire-row" data-idx="{{ idx }}">
-
-                {# Nom du jour #}
-                <span class="horaire-jour-label">
-                    {{ horaire_form.instance.get_jour_display }}
-                </span>
-
-                {# ── Matin + Après-midi wrappés pour le layout mobile ── #}
+            {# LUNDI #}
+            {% with mo=form.lundi_matin_ouverture mf=form.lundi_matin_fermeture ao=form.lundi_apresmidi_ouverture af=form.lundi_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="lundi">
+                <span class="horaire-jour-label">Lundi</span>
                 <div class="horaire-periods-row">
-
-                {# ── Matin ── #}
-                {# On lit la valeur du champ (fonctionne en GET et en POST raté) #}
-                {% with mo_val=horaire_form.matin_ouverture.value mf_val=horaire_form.matin_fermeture.value %}
-                <div class="horaire-period">
-                    <label class="horaire-toggle">
-                        <input type="checkbox"
-                               class="toggle-ferme"
-                               data-period="matin"
-                               data-idx="{{ idx }}"
-                               {% if not mo_val and not mf_val %}checked{% endif %}>
-                        <span class="toggle-label">Fermé</span>
-                    </label>
-
-                    <div class="horaire-times" id="times-matin-{{ idx }}">
-                        <div class="horaire-period-field">
-                            <label>Ouverture</label>
-                            {{ horaire_form.matin_ouverture }}
-                            {% if horaire_form.matin_ouverture.errors %}
-                            <span class="field-error-inline">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                {{ horaire_form.matin_ouverture.errors.0 }}
-                            </span>
-                            {% endif %}
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="lundi" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-lundi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
                         </div>
-                        <div class="horaire-period-field">
-                            <label>Fermeture</label>
-                            {{ horaire_form.matin_fermeture }}
-                            {% if horaire_form.matin_fermeture.errors %}
-                            <span class="field-error-inline">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                {{ horaire_form.matin_fermeture.errors.0 }}
-                            </span>
-                            {% endif %}
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="lundi" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-lundi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
                         </div>
                     </div>
                 </div>
-                {% endwith %}{# fin with mo_val/mf_val #}
-
-                {# ── Après-midi ── #}
-                {% with ao_val=horaire_form.apresmidi_ouverture.value af_val=horaire_form.apresmidi_fermeture.value %}
-                <div class="horaire-period">
-                    <label class="horaire-toggle">
-                        <input type="checkbox"
-                               class="toggle-ferme"
-                               data-period="apresmidi"
-                               data-idx="{{ idx }}"
-                               {% if not ao_val and not af_val %}checked{% endif %}>
-                        <span class="toggle-label">Fermé</span>
-                    </label>
-
-                    <div class="horaire-times" id="times-apresmidi-{{ idx }}">
-                        <div class="horaire-period-field">
-                            <label>Ouverture</label>
-                            {{ horaire_form.apresmidi_ouverture }}
-                            {% if horaire_form.apresmidi_ouverture.errors %}
-                            <span class="field-error-inline">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                {{ horaire_form.apresmidi_ouverture.errors.0 }}
-                            </span>
-                            {% endif %}
-                        </div>
-                        <div class="horaire-period-field">
-                            <label>Fermeture</label>
-                            {{ horaire_form.apresmidi_fermeture }}
-                            {% if horaire_form.apresmidi_fermeture.errors %}
-                            <span class="field-error-inline">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                                {{ horaire_form.apresmidi_fermeture.errors.0 }}
-                            </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endwith %}{# fin with ao_val/af_val #}
-
-                </div>{# fin horaire-periods-row #}
-
-                {# Champ id caché du formset #}
-                {{ horaire_form.id }}
-
-                {# Bouton copier ce jour #}
-                <button type="button"
-                        class="btn-copier-horaire"
-                        data-idx="{{ idx }}"
-                        title="Copier les horaires de ce jour">
-                    <i class="fa-solid fa-copy"></i> Copier ce jour
-                </button>
-
+                <button type="button" class="btn-copier-horaire" data-jour="lundi"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
             </div>
-
-            {% if not forloop.last %}
+            {% endwith %}
             <hr class="horaire-separator">
-            {% endif %}
+
+            {# MARDI #}
+            {% with mo=form.mardi_matin_ouverture mf=form.mardi_matin_fermeture ao=form.mardi_apresmidi_ouverture af=form.mardi_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="mardi">
+                <span class="horaire-jour-label">Mardi</span>
+                <div class="horaire-periods-row">
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="mardi" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-mardi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
+                        </div>
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="mardi" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-mardi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-copier-horaire" data-jour="mardi"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
+            </div>
+            {% endwith %}
+            <hr class="horaire-separator">
+
+            {# MERCREDI #}
+            {% with mo=form.mercredi_matin_ouverture mf=form.mercredi_matin_fermeture ao=form.mercredi_apresmidi_ouverture af=form.mercredi_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="mercredi">
+                <span class="horaire-jour-label">Mercredi</span>
+                <div class="horaire-periods-row">
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="mercredi" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-mercredi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
+                        </div>
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="mercredi" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-mercredi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-copier-horaire" data-jour="mercredi"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
+            </div>
+            {% endwith %}
+            <hr class="horaire-separator">
+
+            {# JEUDI #}
+            {% with mo=form.jeudi_matin_ouverture mf=form.jeudi_matin_fermeture ao=form.jeudi_apresmidi_ouverture af=form.jeudi_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="jeudi">
+                <span class="horaire-jour-label">Jeudi</span>
+                <div class="horaire-periods-row">
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="jeudi" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-jeudi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
+                        </div>
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="jeudi" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-jeudi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-copier-horaire" data-jour="jeudi"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
+            </div>
+            {% endwith %}
+            <hr class="horaire-separator">
+
+            {# VENDREDI #}
+            {% with mo=form.vendredi_matin_ouverture mf=form.vendredi_matin_fermeture ao=form.vendredi_apresmidi_ouverture af=form.vendredi_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="vendredi">
+                <span class="horaire-jour-label">Vendredi</span>
+                <div class="horaire-periods-row">
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="vendredi" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-vendredi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
+                        </div>
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="vendredi" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-vendredi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-copier-horaire" data-jour="vendredi"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
+            </div>
+            {% endwith %}
+            <hr class="horaire-separator">
+
+            {# SAMEDI #}
+            {% with mo=form.samedi_matin_ouverture mf=form.samedi_matin_fermeture ao=form.samedi_apresmidi_ouverture af=form.samedi_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="samedi">
+                <span class="horaire-jour-label">Samedi</span>
+                <div class="horaire-periods-row">
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="samedi" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-samedi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
+                        </div>
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="samedi" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-samedi">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-copier-horaire" data-jour="samedi"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
+            </div>
+            {% endwith %}
+            <hr class="horaire-separator">
+
+            {# DIMANCHE #}
+            {% with mo=form.dimanche_matin_ouverture mf=form.dimanche_matin_fermeture ao=form.dimanche_apresmidi_ouverture af=form.dimanche_apresmidi_fermeture %}
+            <div class="horaire-row" data-jour="dimanche">
+                <span class="horaire-jour-label">Dimanche</span>
+                <div class="horaire-periods-row">
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="dimanche" data-period="matin"
+                                   {% if not mo.value and not mf.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-matin-dimanche">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ mo }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ mf }}</div>
+                        </div>
+                    </div>
+                    <div class="horaire-period">
+                        <label class="horaire-toggle">
+                            <input type="checkbox" class="toggle-ferme" data-jour="dimanche" data-period="apresmidi"
+                                   {% if not ao.value and not af.value %}checked{% endif %}>
+                            <span class="toggle-label">Fermé</span>
+                        </label>
+                        <div class="horaire-times" id="times-apresmidi-dimanche">
+                            <div class="horaire-period-field"><label>Ouverture</label>{{ ao }}</div>
+                            <div class="horaire-period-field"><label>Fermeture</label>{{ af }}</div>
+                        </div>
+                    </div>
+                </div>
+                <button type="button" class="btn-copier-horaire" data-jour="dimanche"><i class="fa-solid fa-copy"></i> Copier ce jour</button>
+            </div>
+            {% endwith %}
 
             {% endwith %}
-            {% endfor %}
-
-            {% if opening_formset.errors %}
-            <p class="field-error" style="margin-top:12px;">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-                Vérifiez les horaires surlignés ci-dessus.
-            </p>
-            {% endif %}
         </div>
 
         {# ── Boutons d'action ── #}
@@ -1165,7 +1143,6 @@
 // TIME PICKER CUSTOM
 // ============================================================
 (function() {
-    // Overlay unique partagé entre tous les pickers
     const overlay = document.createElement('div');
     overlay.className = 'time-picker-overlay';
     document.body.appendChild(overlay);
@@ -1200,14 +1177,11 @@
         if (input.dataset.pickerInit) return;
         input.dataset.pickerInit = '1';
 
-        // Wrapper
         const wrap = document.createElement('div');
         wrap.className = 'time-picker-wrap';
         input.parentNode.insertBefore(wrap, input);
         wrap.appendChild(input);
 
-        // Bouton d'affichage
-        // Django renvoie HH:MM:SS — on tronque à HH:MM
         const rawVal = input.value ? input.value.substring(0, 5) : '';
         if (rawVal) input.value = rawVal;
 
@@ -1216,18 +1190,13 @@
         display.textContent = rawVal || '--:--';
         wrap.appendChild(display);
 
-        // Dropdown (appendé au body pour éviter overflow)
         const dropdown = document.createElement('div');
         dropdown.className = 'time-picker-dropdown';
         document.body.appendChild(dropdown);
 
         let hVal = '', mVal = '00';
-        if (rawVal) {
-            const p = rawVal.split(':');
-            hVal = p[0] || ''; mVal = p[1] || '00';
-        }
+        if (rawVal) { const p = rawVal.split(':'); hVal = p[0] || ''; mVal = p[1] || '00'; }
 
-        // Rangée colonnes
         const colsRow = document.createElement('div');
         colsRow.className = 'time-cols-row';
 
@@ -1243,9 +1212,7 @@
         const mScroll = document.createElement('div'); mScroll.className = 'time-col-scroll';
         mColWrap.appendChild(mLabel); mColWrap.appendChild(mScroll);
 
-        colsRow.appendChild(hColWrap);
-        colsRow.appendChild(sep);
-        colsRow.appendChild(mColWrap);
+        colsRow.appendChild(hColWrap); colsRow.appendChild(sep); colsRow.appendChild(mColWrap);
 
         function updateDisplay() {
             if (hVal) {
@@ -1262,7 +1229,6 @@
         buildOptions(hScroll, hours, hVal, v => { hVal = v; updateDisplay(); });
         buildOptions(mScroll, mins, mVal, v => { mVal = v; updateDisplay(); });
 
-        // Footer
         const footer = document.createElement('div'); footer.className = 'time-picker-footer';
         const btnClear = document.createElement('button'); btnClear.type='button'; btnClear.className='tp-btn-clear'; btnClear.textContent='Effacer';
         btnClear.addEventListener('click', e => {
@@ -1277,18 +1243,14 @@
         btnOk.addEventListener('click', e => { e.stopPropagation(); closeAll(); });
         footer.appendChild(btnClear); footer.appendChild(btnOk);
 
-        dropdown.appendChild(colsRow);
-        dropdown.appendChild(footer);
+        dropdown.appendChild(colsRow); dropdown.appendChild(footer);
 
         display.addEventListener('click', e => {
             e.stopPropagation();
             if (dropdown.classList.contains('is-open')) { closeAll(); return; }
             closeAll();
-            activeDropdown = dropdown;
-            activeDisplay  = display;
-            dropdown.classList.add('is-open');
-            display.classList.add('is-open');
-            overlay.classList.add('is-open');
+            activeDropdown = dropdown; activeDisplay = display;
+            dropdown.classList.add('is-open'); display.classList.add('is-open'); overlay.classList.add('is-open');
             setTimeout(() => {
                 const selH = hScroll.querySelector('.selected');
                 const selM = mScroll.querySelector('.selected');
@@ -1306,11 +1268,11 @@
 })();
 
 // ============================================================
-// MAIN — DOMContentLoaded
+// MAIN
 // ============================================================
 document.addEventListener("DOMContentLoaded", () => {
 
-    // 1. APERÇU IMAGE AVANT UPLOAD
+    // 1. APERÇU IMAGE
     function bindImagePreview(inputId, previewBlockId, previewImgId) {
         const input = document.getElementById(inputId);
         const block = document.getElementById(previewBlockId);
@@ -1327,7 +1289,7 @@ document.addEventListener("DOMContentLoaded", () => {
     bindImagePreview("id_photo",         "photo-preview-block",   "photo-preview-img");
     bindImagePreview("id_galerie_image", "galerie-preview-block", "galerie-preview-img");
 
-    // 2. MARQUER UNE PHOTO À SUPPRIMER
+    // 2. MARQUER PHOTO À SUPPRIMER
     window.markImageDelete = function(imgId, btn) {
         const item     = document.getElementById("img-item-" + imgId);
         const checkbox = document.getElementById("del-img-" + imgId);
@@ -1361,7 +1323,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 4. DÉSACTIVER LE BOUTON PENDANT LA SOUMISSION
+    // 4. DÉSACTIVER BOUTON PENDANT SOUMISSION
     const btnSave = document.getElementById("btn-save");
     if (form && btnSave) {
         form.addEventListener("submit", () => {
@@ -1370,82 +1332,76 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // 5. HORAIRES — Toggle Fermé (affichage uniquement)
+    // 5. TOGGLE FERMÉ
     function applyToggleDisplay(checkbox) {
-        const idx    = checkbox.dataset.idx;
+        const jour   = checkbox.dataset.jour;
         const period = checkbox.dataset.period;
-        const times  = document.getElementById("times-" + period + "-" + idx);
+        const times  = document.getElementById("times-" + period + "-" + jour);
         if (!times) return;
-        if (checkbox.checked) {
-            times.classList.add("is-closed");
-        } else {
-            times.classList.remove("is-closed");
-        }
+        times.classList.toggle("is-closed", checkbox.checked);
     }
-
-    function applyToggle(checkbox) { applyToggleDisplay(checkbox); }
 
     document.querySelectorAll(".toggle-ferme").forEach(cb => {
         applyToggleDisplay(cb);
         cb.addEventListener("change", () => { applyToggleDisplay(cb); formDirty = true; });
     });
 
-    // Vider les inputs fermés au submit (phase capture)
+    // Vider les inputs fermés au submit
     if (form) {
         form.addEventListener("submit", function clearClosedFields() {
             document.querySelectorAll(".toggle-ferme").forEach(cb => {
                 if (cb.checked) {
-                    const idx    = cb.dataset.idx;
+                    const jour   = cb.dataset.jour;
                     const period = cb.dataset.period;
-                    const times  = document.getElementById("times-" + period + "-" + idx);
-                    if (times) {
-                        times.querySelectorAll("input[type='time']").forEach(i => { i.value = ""; });
-                    }
+                    const times  = document.getElementById("times-" + period + "-" + jour);
+                    if (times) times.querySelectorAll("input[type='time']").forEach(i => { i.value = ""; });
                 }
             });
         }, true);
     }
 
-    // 6. HORAIRES — Copier / Coller
-    let copiedIdx = null;
+    // 6. COPIER / COLLER HORAIRES
+    // Les IDs Django pour les champs plats sont du type : id_lundi_matin_ouverture
+    let copiedJour = null;
 
-    function readDayState(idx) {
+    function readDayState(jour) {
         return {
-            maOuv:  document.querySelector("#id_horaires-" + idx + "-matin_ouverture")?.value  || "",
-            maFerm: document.querySelector("#id_horaires-" + idx + "-matin_fermeture")?.value  || "",
-            apOuv:  document.querySelector("#id_horaires-" + idx + "-apresmidi_ouverture")?.value || "",
-            apFerm: document.querySelector("#id_horaires-" + idx + "-apresmidi_fermeture")?.value || "",
-            maClosed: document.querySelector(".toggle-ferme[data-period='matin'][data-idx='" + idx + "']")?.checked ?? true,
-            apClosed: document.querySelector(".toggle-ferme[data-period='apresmidi'][data-idx='" + idx + "']")?.checked ?? true,
+            maOuv:    document.getElementById("id_" + jour + "_matin_ouverture")?.value    || "",
+            maFerm:   document.getElementById("id_" + jour + "_matin_fermeture")?.value    || "",
+            apOuv:    document.getElementById("id_" + jour + "_apresmidi_ouverture")?.value || "",
+            apFerm:   document.getElementById("id_" + jour + "_apresmidi_fermeture")?.value || "",
+            maClosed: document.querySelector(".toggle-ferme[data-period='matin'][data-jour='" + jour + "']")?.checked ?? true,
+            apClosed: document.querySelector(".toggle-ferme[data-period='apresmidi'][data-jour='" + jour + "']")?.checked ?? true,
         };
     }
 
     function refreshPickerDisplay(input) {
-        const display = input.closest('.time-picker-wrap') && input.closest('.time-picker-wrap').querySelector('.time-picker-display');
+        const wrap    = input.closest('.time-picker-wrap');
+        const display = wrap && wrap.querySelector('.time-picker-display');
         if (!display) return;
         if (input.value) { display.textContent = input.value; display.classList.remove('is-empty'); }
         else { display.textContent = '--:--'; display.classList.add('is-empty'); }
     }
 
-    function pasteDayState(idx, state) {
-        const cbMatin = document.querySelector(".toggle-ferme[data-period='matin'][data-idx='" + idx + "']");
+    function pasteDayState(jour, state) {
+        const cbMatin = document.querySelector(".toggle-ferme[data-period='matin'][data-jour='" + jour + "']");
         if (cbMatin) {
             cbMatin.checked = state.maClosed;
             applyToggleDisplay(cbMatin);
             if (!state.maClosed) {
-                const ouv  = document.querySelector("#id_horaires-" + idx + "-matin_ouverture");
-                const ferm = document.querySelector("#id_horaires-" + idx + "-matin_fermeture");
+                const ouv  = document.getElementById("id_" + jour + "_matin_ouverture");
+                const ferm = document.getElementById("id_" + jour + "_matin_fermeture");
                 if (ouv)  { ouv.value  = state.maOuv;  refreshPickerDisplay(ouv); }
                 if (ferm) { ferm.value = state.maFerm; refreshPickerDisplay(ferm); }
             }
         }
-        const cbApm = document.querySelector(".toggle-ferme[data-period='apresmidi'][data-idx='" + idx + "']");
+        const cbApm = document.querySelector(".toggle-ferme[data-period='apresmidi'][data-jour='" + jour + "']");
         if (cbApm) {
             cbApm.checked = state.apClosed;
             applyToggleDisplay(cbApm);
             if (!state.apClosed) {
-                const ouv  = document.querySelector("#id_horaires-" + idx + "-apresmidi_ouverture");
-                const ferm = document.querySelector("#id_horaires-" + idx + "-apresmidi_fermeture");
+                const ouv  = document.getElementById("id_" + jour + "_apresmidi_ouverture");
+                const ferm = document.getElementById("id_" + jour + "_apresmidi_fermeture");
                 if (ouv)  { ouv.value  = state.apOuv;  refreshPickerDisplay(ouv); }
                 if (ferm) { ferm.value = state.apFerm; refreshPickerDisplay(ferm); }
             }
@@ -1458,41 +1414,37 @@ document.addEventListener("DOMContentLoaded", () => {
             b.innerHTML = '<i class="fa-solid fa-copy"></i> Copier ce jour';
         });
         document.querySelectorAll(".btn-coller-horaire").forEach(b => b.remove());
-        copiedIdx = null;
+        copiedJour = null;
     }
 
     document.querySelectorAll(".btn-copier-horaire").forEach(btn => {
         btn.addEventListener("click", () => {
-            const idx = parseInt(btn.dataset.idx, 10);
-            if (copiedIdx === idx) { clearCopyMode(); return; }
+            const jour = btn.dataset.jour;
+            if (copiedJour === jour) { clearCopyMode(); return; }
             clearCopyMode();
-            copiedIdx = idx;
+            copiedJour = jour;
             btn.classList.add("is-source");
             btn.innerHTML = '<i class="fa-solid fa-copy"></i> Cliquez sur un jour pour coller';
-            const state = readDayState(idx);
+            const state = readDayState(jour);
 
             document.querySelectorAll(".horaire-row").forEach(row => {
-                const rowIdx = parseInt(row.dataset.idx, 10);
-                if (rowIdx === idx) return;
+                const rowJour = row.dataset.jour;
+                if (rowJour === jour) return;
                 const collerBtn = document.createElement("button");
                 collerBtn.type = "button";
                 collerBtn.className = "btn-coller-horaire";
                 collerBtn.innerHTML = '<i class="fa-solid fa-paste"></i> Coller ici';
                 collerBtn.addEventListener("click", () => {
-                    pasteDayState(rowIdx, state);
+                    pasteDayState(rowJour, state);
                     formDirty = true;
                     collerBtn.innerHTML = '<i class="fa-solid fa-check"></i> Collé !';
                     setTimeout(() => clearCopyMode(), 800);
                 });
-                const hiddenInput = row.querySelector("input[type='hidden']");
-                if (hiddenInput) hiddenInput.insertAdjacentElement("afterend", collerBtn);
-                else row.appendChild(collerBtn);
+                row.appendChild(collerBtn);
             });
             formDirty = true;
         });
     });
-
-    // 7. MOBILE — géré entièrement en CSS, pas de JS nécessaire
 });
 </script>
 {% endblock %}
