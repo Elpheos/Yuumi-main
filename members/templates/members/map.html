@@ -356,23 +356,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateParentsState() {
-        document.querySelectorAll('.parent-checkbox').forEach(parent => {
-            const group = document.querySelector(
-                `.child-buttons[data-parent="${parent.dataset.parent}"]`
-            );
-            const children = group.querySelectorAll('button');
-            const hasActive = Array.from(children)
-                .some(btn => btn.classList.contains('active'));
+    document.querySelectorAll('.parent-checkbox').forEach(parent => {
+        const group = document.querySelector(
+            `.child-buttons[data-parent="${parent.dataset.parent}"]`
+        );
+        const children = group.querySelectorAll('button');
+        const hasActive = Array.from(children)
+            .some(btn => btn.classList.contains('active'));
 
-            parent.checked = hasActive;
-
-            if (hasActive) {
-                document.querySelector(
-                    `.toggle-children[data-parent="${parent.dataset.parent}"]`
-                ).classList.add('open');
-            }
-        });
-    }
+        parent.checked = hasActive;
+    });
+}
 
     function updateAllState() {
         const allChildren = document.querySelectorAll('.child-buttons button');
@@ -420,20 +414,18 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
             });
 
-            // Retirer l'état open des autres flèches
-           document.querySelectorAll('.toggle-children').forEach(toggle => {
-    const isCurrent = toggle.dataset.parent === currentParent;
-    toggle.classList.toggle('open', isCurrent);
-});
+            // Mettre à jour toutes les flèches
+            document.querySelectorAll('.toggle-children').forEach(toggle => {
+                const isCurrent = toggle.dataset.parent === currentParent;
+                toggle.classList.toggle('open', isCurrent);
+            });
 
             // Ouvrir seulement le groupe courant
             group.style.display = 'flex';
-            document.querySelector(
-                `.toggle-children[data-parent="${currentParent}"]`
-            ).classList.add('open');
 
             syncUI();
         });
+    });
     });
 
     document.querySelectorAll('.child-buttons button')
