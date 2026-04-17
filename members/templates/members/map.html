@@ -222,16 +222,20 @@ Carte des commerces - {{ departement }} | Yuumi
 }
 
 @media (max-width: 767px) {
-    /* Marge haute sous le bouton ☰ */
+    .map-content-supercontainer {
+        background-color: initial;
+        border: none;
+    }
+
     #map {
         margin-top: 70px;
         width: 100%;
         height: 400px;
     }
 
-    /* Filtres pleine largeur */
     .category-filters {
         padding: 0 8px;
+        display: none;
     }
 
     /* Popup compacte */
