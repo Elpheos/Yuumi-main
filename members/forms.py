@@ -67,6 +67,14 @@ class StoreForm(forms.ModelForm):
             'addresseitineraire',
             'photo',
             'galerie_image',
+            # Horaires
+            'lundi_matin_ouverture', 'lundi_matin_fermeture', 'lundi_apresmidi_ouverture', 'lundi_apresmidi_fermeture',
+            'mardi_matin_ouverture', 'mardi_matin_fermeture', 'mardi_apresmidi_ouverture', 'mardi_apresmidi_fermeture',
+            'mercredi_matin_ouverture', 'mercredi_matin_fermeture', 'mercredi_apresmidi_ouverture', 'mercredi_apresmidi_fermeture',
+            'jeudi_matin_ouverture', 'jeudi_matin_fermeture', 'jeudi_apresmidi_ouverture', 'jeudi_apresmidi_fermeture',
+            'vendredi_matin_ouverture', 'vendredi_matin_fermeture', 'vendredi_apresmidi_ouverture', 'vendredi_apresmidi_fermeture',
+            'samedi_matin_ouverture', 'samedi_matin_fermeture', 'samedi_apresmidi_ouverture', 'samedi_apresmidi_fermeture',
+            'dimanche_matin_ouverture', 'dimanche_matin_fermeture', 'dimanche_apresmidi_ouverture', 'dimanche_apresmidi_fermeture',
         ]
         widgets = {
             'departement': forms.TextInput(attrs={'placeholder': 'Tapez un département...'}),
