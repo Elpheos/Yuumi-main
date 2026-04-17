@@ -111,10 +111,12 @@
 {% endif %}
                      {% if request.user == store.owner or request.user.is_superuser %}
                     <div class="store-modifier-commerce-container">
+                        <div class="store-modifier-commerce-content-container">
         <i class="fa-solid fa-pencil" id="store-modifier-commerce-icon"></i><a href="{% url 'edit_store' store.departement store.ville store.slug %}"
            class="store-modifier-commerce-b">
             Modifier ce commerce
         </a>
+                        </div>
                     </div>
     {% endif %}
 
@@ -744,6 +746,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
 .store-modifier-commerce-container {
     display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.store-modifier-commerce-content-container {
+    background-color: var(--orange);
+    border-radius: 999px;
 }
 
 #store-modifier-commerce-icon {
@@ -751,9 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
     
 .store-modifier-commerce-b {
-    background-color: var(--orange);
     border: none;
-    border-radius: 100px;
     color: white;
 }
 
