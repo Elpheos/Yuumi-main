@@ -108,11 +108,10 @@ class OpeningHourInline(nested_admin.NestedTabularInline):
         return 7 if obj is None else 0
 
     def get_formset(self, request, obj=None, **kwargs):
+        formset_class = super().get_formset(request, obj, **kwargs)
         if obj is None:
-            # Pré-remplit les 7 lignes avec les noms de jours
-            kwargs['initial'] = [{'jour': jour} for jour in self.JOURS]
-        return super().get_formset(request, obj, **kwargs)
-
+            formset_class.initial = [{'jour': jour} for jour in self.JOURS]
+        return formset_class
 
 class ProductFamilyInline(nested_admin.NestedStackedInline):
     model = ProductFamily
