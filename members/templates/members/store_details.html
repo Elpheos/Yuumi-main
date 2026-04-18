@@ -1,11 +1,10 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}{{ store.nom }} | {{ store.ville }}{% endblock %}
-
-{% block meta_description %}{{ store.descriptionpetite }} — {{ store.nom }}, {{ store.ville }}.{% endblock %}
-{% block og_title %}{{ store.nom }} | Yuumi{% endblock %}
-{% block og_description %}{{ store.descriptionpetite }}{% endblock %}
+{% block title %}{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }} | Yuumi{% endblock %}
+{% block meta_description %}{{ store.descriptionpetite|truncatechars:155 }}{% endblock %}
+{% block og_title %}{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }} | Yuumi{% endblock %}
+{% block og_description %}{{ store.descriptionpetite|truncatechars:155 }}{% endblock %}
 {% block og_image %}{% if store.photo %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% endif %}{% endblock %}
 
 {% block content %}
