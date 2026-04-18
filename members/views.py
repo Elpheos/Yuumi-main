@@ -437,6 +437,7 @@ def categories_ville(request, departement, ville):
 
         random_store = (
             commerces_cat.filter(photo__isnull=False)
+            .exclude(photo="")
             .order_by("?")
             .first()
         )
@@ -510,6 +511,7 @@ def by_super_category(request, departement, ville, super_slug):
 
         random_store = (
             commerces_cat.filter(photo__isnull=False)
+            .exclude(photo="")
             .order_by("?")
             .first()
         )
