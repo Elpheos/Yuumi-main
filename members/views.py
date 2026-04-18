@@ -433,15 +433,7 @@ def categories_ville(request, departement, ville):
     categories_by_super = {}
 
     for cat in categories_qs:
-        commerces_cat = stores_qs.filter(categorie=cat)
-
-        random_store = (
-            commerces_cat.filter(photo__isnull=False)
-            .exclude(photo="")
-            .order_by("?")
-            .first()
-        )
-        image_url = random_store.photo.url if random_store else static("placeholder.png")
+        image_url = cat.image.url if cat.image else static("placeholder.png")
 
         super_cat = cat.super_categorie
         if not super_cat:
@@ -507,15 +499,7 @@ def by_super_category(request, departement, ville, super_slug):
 
     categories = []
     for cat in categories_qs:
-        commerces_cat = stores_qs.filter(categorie=cat)
-
-        random_store = (
-            commerces_cat.filter(photo__isnull=False)
-            .exclude(photo="")
-            .order_by("?")
-            .first()
-        )
-        image_url = random_store.photo.url if random_store else static("placeholder.png")
+        image_url = cat.image.url if cat.image else static("placeholder.png")
 
         categories.append({
             "name": cat.name,
