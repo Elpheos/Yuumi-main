@@ -1,9 +1,10 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}
-{{ super_cat.name }} à {{ ville }}
-{% endblock %}
+{% block title %}{{ super_cat.name }} à {{ ville }} ({{ departement }}) | Yuumi{% endblock %}
+{% block meta_description %}Découvrez tous les commerces {{ super_cat.name|lower }} à {{ ville }} ({{ departement }}) avec Yuumi.{% endblock %}
+{% block og_title %}{{ super_cat.name }} à {{ ville }} | Yuumi{% endblock %}
+{% block og_description %}Découvrez tous les commerces {{ super_cat.name|lower }} à {{ ville }} ({{ departement }}) avec Yuumi.{% endblock %}
 
 {% block content %}
 <div class="page-container">
