@@ -1,9 +1,10 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}
-   Yuumi | {{ ville }}
-{% endblock %}
+{% block title %}Commerces à {{ ville }} ({{ departement }}) | Yuumi{% endblock %}
+{% block meta_description %}Découvrez tous les commerces locaux à {{ ville }} : épiceries, fleuristes, cavistes et bien plus encore.{% endblock %}
+{% block og_title %}Commerces à {{ ville }} ({{ departement }}) | Yuumi{% endblock %}
+{% block og_description %}Découvrez tous les commerces locaux à {{ ville }} : épiceries, fleuristes, cavistes et bien plus encore.{% endblock %}
 
 {% block content %}
 <div class="page-container" id="page-container-page-ville">
