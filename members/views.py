@@ -17,10 +17,11 @@ from django.templatetags.static import static
 from django.utils import timezone
 from datetime import timedelta
 from .models import PageView
+import json
 
 from .models import (
     Store, ProductFamily, Product, Category,
-    StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,
+    StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,Click, PageView,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
 
