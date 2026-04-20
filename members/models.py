@@ -414,3 +414,8 @@ class StoreStats(Store):
         proxy = True
         verbose_name = "Statistique"
         verbose_name_plural = "Statistiques"
+
+class Click(models.Model):
+    store = models.ForeignKey("Store", on_delete=models.CASCADE, related_name="clicks")
+    created_at = models.DateTimeField(auto_now_add=True)
+    
