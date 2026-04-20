@@ -113,6 +113,9 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         return ""
     photo_preview.short_description = "Photo principale"
 
+    class Media:
+        js = ("copy_horaires.js",)
+
 
 # ===========================================================
 # 🔹 Autres admins
