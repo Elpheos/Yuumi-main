@@ -152,17 +152,17 @@ class StoreStatsAdmin(admin.ModelAdmin):
 
     # 🔥 Ajout stats SQL (tri possible)
     def get_queryset(self, request):
-        qs = super().get_queryset(request)
+    qs = super().get_queryset(request)
 
-        return qs.annotate(
-            total_views_count=Count("pageviews"),
-            views_24h_count=Count(
-                "pageviews",
-                filter=Q(
-                    pageviews__timestamp__gte=timezone.now() - timedelta(hours=24)
-                )
+    return qs.annotate(
+        total_views_count=Count("pageview"),
+        views_24h_count=Count(
+            "pageview",
+            filter=Q(
+                pageview__timestamp__gte=timezone.now() - timedelta(hours=24)
             )
         )
+    )
 
     def total_views(self, obj):
         return obj.total_views_count
