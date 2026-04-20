@@ -48,8 +48,6 @@ class Category(models.Model):
         SuperCategory,
         on_delete=models.CASCADE,
         related_name="categories",
-        null=True,
-        blank=True,
     )
 
     icon = models.CharField(
