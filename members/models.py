@@ -397,8 +397,8 @@ class StoreGalerieImage(models.Model):
 
 
 class PageView(models.Model):
-    store = models.ForeignKey("Store", on_delete=models.CASCADE)
-    session_id = models.CharField(max_length=255)
+    page = models.CharField(max_length=255)
+    store = models.ForeignKey("Store", on_delete=models.CASCADE, null=True, blank=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
