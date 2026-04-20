@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
+from django.db import models
 
 
 # ===========================================================
@@ -389,3 +390,12 @@ class StoreGalerieImage(models.Model):
 
     def __str__(self):
         return f"Galerie image de {self.store.nom}"
+
+# ===========================================================
+# 🔹 Trackers
+# ===========================================================
+
+
+class PageView(models.Model):
+    page = models.CharField(max_length=255)
+    timestamp = models.DateTimeField(auto_now_add=True)
