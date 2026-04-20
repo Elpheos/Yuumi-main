@@ -83,8 +83,14 @@ def stores(request, departement, ville):
 
     derniers_arrivants = stores_qs.order_by("-id")[:10]
 
-    stores_list = list(stores_qs)
-    commerces_carousel = random.sample(stores_list, min(5, len(stores_list)))
+    stores_with_photo = stores_qs.filter(
+        photo__isnull=False
+    ).exclude(photo='')
+
+    commerces_carousel = random.sample(
+        list(stores_with_photo),
+        min(5, stores_with_photo.count())
+    )
 
     city_config = CityCategoryHighlight.objects.filter(
         departement__iexact=departement,
