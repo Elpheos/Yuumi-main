@@ -416,6 +416,16 @@ class StoreStats(Store):
         verbose_name_plural = "Statistiques"
 
 class Click(models.Model):
+
+    TYPE_CHOICES = [
+        ("itineraire", "Itinéraire"),
+        ("site",       "Site web"),
+        ("instagram",  "Instagram"),
+        ("facebook",   "Facebook"),
+        ("telephone",  "Téléphone"),
+    ]
+
     store = models.ForeignKey("Store", on_delete=models.CASCADE, related_name="clicks")
+    type_click = models.CharField(max_length=20, choices=TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     
