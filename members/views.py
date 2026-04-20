@@ -14,6 +14,7 @@ from django.core.mail import send_mail
 from django.templatetags.static import static
 from django.utils import timezone
 from datetime import timedelta
+from .models import PageView
 
 from .models import (
     Store, ProductFamily, Product, Category,
@@ -152,7 +153,10 @@ def by_category(request, departement, ville, category):
 
 def store_details(request, departement, ville, slug):
     store = get_object_or_404(Store, slug=slug, departement=departement, ville=ville)
-
+    
+    PageView.objects.create(
+        page=request.path
+    )
     if request.method == "POST":
         if not request.user.is_authenticated:
             return redirect("login")
