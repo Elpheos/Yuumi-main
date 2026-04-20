@@ -356,7 +356,7 @@ function createIcon(categorySlug) {
     const markers = stores.map(store => {
         if (store.lat == null || store.lng == null || !store.categorie) return null;
 
-        const label = categoryLabels[store.categorie] || store.categorie;
+        const label = categoryLabels[store.categorie] || { name: store.categorie };
 
         const marker = L.marker(
             [store.lat, store.lng],
@@ -367,7 +367,7 @@ function createIcon(categorySlug) {
                 <a href="${store.url}">
                     <h3 class="yuumi-popup-h3">
                         ${store.nom}<br>
-                        <span>${label}</span>
+                        <span>${label.name}</span>
                     </h3>
                     ${store.photo
                         ? `<img class="yuumi-popup-img"
