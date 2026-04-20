@@ -163,10 +163,29 @@ def by_category(request, departement, ville, category):
 
 def store_details(request, departement, ville, slug):
     store = get_object_or_404(Store, slug=slug, departement=departement, ville=ville)
-    
-    PageView.objects.create(
-        page=request.path
-    )
+
+    # --- TRACKING VUE ---
+    session_id = request.session.session_key
+    if not session_id:
+        request.session.save()
+        session_id = request.session.session_key
+
+    ip = get_client_ip(request)
+
+    recent_view = PageView.objects.filter(
+        store=store,
+        session_id=session_id,
+        timestamp__gte=timezone.now() - timedelta(seconds=20)
+    ).exists()
+
+    if not recent_view:
+        PageView.objects.create(
+            store=store,
+            session_id=session_id,
+            ip_address=ip
+        )
+
+    # --- LOGIQUE EXISTANTE ---
     if request.method == "POST":
         if not request.user.is_authenticated:
             return redirect("login")
@@ -218,7 +237,6 @@ def store_details(request, departement, ville, slug):
         "is_favorite": is_favorite,
         "est_ouvert": est_ouvert,
     })
-
 
 # ---------------------------
 # Recherche produit
