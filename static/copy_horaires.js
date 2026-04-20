@@ -1,19 +1,4 @@
-/**
- * copy_horaires.js
- * UX copier/coller entre jours dans l'admin Django - StoreAdmin.
- *
- * Placer dans : static/admin/js/copy_horaires.js
- * Référencer dans StoreAdmin via class Media (voir admin.py ci-dessous).
- *
- * Comportement :
- *  - Chaque jour a un bouton "Copier" et un bouton "Effacer".
- *  - Cliquer "Copier" sur un jour :
- *      → ce bouton devient "✓ Copié" (vert, style actif)
- *      → tous les autres jours voient leur bouton "Copier" devenir "⬇ Coller"
- *  - Cliquer "⬇ Coller" applique les horaires copiés sur ce jour.
- *    (on peut coller sur autant de jours qu'on veut)
- *  - Cliquer à nouveau sur "✓ Copié" ou appuyer sur Échap annule le mode copie.
- */
+
 
 (function () {
   "use strict";
