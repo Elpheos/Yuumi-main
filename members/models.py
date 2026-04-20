@@ -109,7 +109,7 @@ class Store(models.Model):
     )
 
     # Descriptions
-    descriptionpetite = models.CharField(max_length=255)
+    descriptionpetite = models.TextField(null=True, blank=True)
     descriptiongrande = models.TextField(null=True, blank=True)
 
     # Contact & liens
