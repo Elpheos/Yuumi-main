@@ -594,3 +594,12 @@ def changer_ville(request):
         "departements_villes": sorted_data,
         "next": next_url,
     })
+
+
+def track_click(request, store_id):
+    store = get_object_or_404(Store, id=store_id)
+    data = json.loads(request.body)
+    type_click = data["type_click"]
+    Click.objects.create(store=store, type_click=type_click)
+    return JsonResponse({"ok": True})
+
