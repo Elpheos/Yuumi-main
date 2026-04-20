@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import CityCategoryHighlight, CityCategoryItem, PageView
+from django.utils import timezone
+from datetime import timedelta
 
 import nested_admin
 
@@ -12,9 +13,12 @@ from .models import (
     Category,
     SuperCategory,
     StoreGalerieImage,
+    CityCategoryHighlight,
+    CityCategoryItem,
+    PageView,
 )
-from .forms import StoreForm
 
+from .forms import StoreForm
 
 
 # ===========================================================
@@ -41,11 +45,11 @@ class ProductInline(nested_admin.NestedTabularInline):
     extra = 1
 
 
-
 class ProductFamilyInline(nested_admin.NestedStackedInline):
     model = ProductFamily
     extra = 1
     inlines = [ProductInline]
+
 
 class StoreGalerieImageInline(nested_admin.NestedTabularInline):
     model = StoreGalerieImage
@@ -63,7 +67,7 @@ class StoreGalerieImageInline(nested_admin.NestedTabularInline):
 
 
 # ===========================================================
-# 🔹 StoreAdmin
+# 🔹 StoreAdmin (AVEC STATS)
 # ===========================================================
 
 @admin.register(Store)
@@ -73,18 +77,26 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
     list_display = (
         "nom",
         "ville",
-        "ville_precise",
-        "departement",
-        "phone",
+        "categorie",
+        "total_views",
+        "views_last_24h",
         "photo_preview",
         "owner",
     )
+
     search_fields = ("nom", "ville", "departement")
-    list_filter = ("ville", "departement")
+
+    list_filter = (
+        "categorie",
+        "categorie__super_categorie",
+        "ville",
+        "departement",
+    )
+
     fieldsets = (
         ("Informations générales", {
             "fields": (
-                "nom", "ville","ville_precise", "departement", "categorie",
+                "nom", "ville", "ville_precise", "departement", "categorie",
                 "descriptionpetite", "descriptiongrande",
                 "addressemaps", "addresseitineraire",
                 "site", "phone", "instagram", "facebook",
@@ -99,6 +111,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         ("Samedi", {"fields": (("samedi_matin_ouverture", "samedi_matin_fermeture", "samedi_apresmidi_ouverture", "samedi_apresmidi_fermeture"),)}),
         ("Dimanche", {"fields": (("dimanche_matin_ouverture", "dimanche_matin_fermeture", "dimanche_apresmidi_ouverture", "dimanche_apresmidi_fermeture"),)}),
     )
+
     inlines = [
         StoreImageInline,
         ProductFamilyInline,
@@ -113,6 +126,21 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
             )
         return ""
     photo_preview.short_description = "Photo principale"
+
+    # =========================
+    # 📊 STATS
+    # =========================
+
+    def total_views(self, obj):
+        return PageView.objects.filter(store=obj).count()
+    total_views.short_description = "Vues"
+
+    def views_last_24h(self, obj):
+        return PageView.objects.filter(
+            store=obj,
+            timestamp__gte=timezone.now() - timedelta(hours=24)
+        ).count()
+    views_last_24h.short_description = "Vues (24h)"
 
     class Media:
         js = ("copy_horaires.js",)
@@ -160,8 +188,3 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
     list_display = ("ville", "departement")
     search_fields = ("ville", "departement")
     inlines = [CityCategoryItemInline]
-    
-@admin.register(PageView)
-class PageViewAdmin(admin.ModelAdmin):
-    list_display = ("page", "store", "ip_address", "timestamp")
-    list_filter = ("store",)
