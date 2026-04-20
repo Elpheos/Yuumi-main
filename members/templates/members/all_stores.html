@@ -179,6 +179,11 @@
                             </div>
 
                             <h4>{{ store.nom }}</h4>
+                          {% if store.ville_precise %}
+    <h3>{{ store.ville_precise }} ({{ store.ville }})</h3>
+{% else %}
+    <h3>{{ store.ville }}</h3>
+{% endif %}
                         </a>
                     </div>
                 {% empty %}
