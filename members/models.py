@@ -5,7 +5,7 @@ from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
-from django.db import models
+
 
 
 # ===========================================================
