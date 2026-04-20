@@ -1,5 +1,3 @@
-# members/context_processors.py
-
 from urllib.parse import unquote
 from .models import Store, Category, SuperCategory
 
@@ -88,6 +86,10 @@ def menu_context(request):
 
         if store.categorie not in menu_supercategories[super_cat.name]:
             menu_supercategories[super_cat.name].append(store.categorie)
+
+    # On trie chaque liste de catégories alphabétiquement
+    for super_cat_name in menu_supercategories:
+        menu_supercategories[super_cat_name].sort(key=lambda cat: cat.name)
 
     return {
         "menu_categories": categories,
