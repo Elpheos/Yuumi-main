@@ -18,6 +18,7 @@ from .models import (
     CityCategoryItem,
     PageView,
     StoreStats,
+    StoreClickStats,
     Click,
 )
 
@@ -126,7 +127,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
 
 
 # ===========================================================
-# 🔹 Statistiques (ONGLET DÉDIÉ)
+# 🔹 Statistiques vues (ONGLET DÉDIÉ)
 # ===========================================================
 
 @admin.register(StoreStats)
@@ -140,10 +141,8 @@ class StoreStatsAdmin(admin.ModelAdmin):
         "views_last_24h",
     )
 
-
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-
         return qs.annotate(
             total_views_count=Count("pageviews"),
             views_24h_count=Count(
@@ -161,6 +160,56 @@ class StoreStatsAdmin(admin.ModelAdmin):
     def views_last_24h(self, obj):
         return obj.views_24h_count
     views_last_24h.admin_order_field = "views_24h_count"
+
+
+# ===========================================================
+# 🔹 Statistiques clics (ONGLET DÉDIÉ)
+# ===========================================================
+
+@admin.register(StoreClickStats)
+class StoreClickStatsAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "nom",
+        "ville",
+        "categorie",
+        "clicks_itineraire",
+        "clicks_site",
+        "clicks_instagram",
+        "clicks_facebook",
+    )
+
+    search_fields = ("nom", "ville")
+    list_filter = ("categorie__super_categorie", "categorie")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.annotate(
+            c_itineraire=Count("clicks", filter=Q(clicks__type_click="itineraire")),
+            c_site=Count("clicks", filter=Q(clicks__type_click="site")),
+            c_instagram=Count("clicks", filter=Q(clicks__type_click="instagram")),
+            c_facebook=Count("clicks", filter=Q(clicks__type_click="facebook")),
+        )
+
+    def clicks_itineraire(self, obj):
+        return obj.c_itineraire
+    clicks_itineraire.short_description = "Itinéraire"
+    clicks_itineraire.admin_order_field = "c_itineraire"
+
+    def clicks_site(self, obj):
+        return obj.c_site
+    clicks_site.short_description = "Site web"
+    clicks_site.admin_order_field = "c_site"
+
+    def clicks_instagram(self, obj):
+        return obj.c_instagram
+    clicks_instagram.short_description = "Instagram"
+    clicks_instagram.admin_order_field = "c_instagram"
+
+    def clicks_facebook(self, obj):
+        return obj.c_facebook
+    clicks_facebook.short_description = "Facebook"
+    clicks_facebook.admin_order_field = "c_facebook"
 
 
 # ===========================================================
@@ -205,8 +254,3 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
     list_display = ("ville", "departement")
     search_fields = ("ville", "departement")
     inlines = [CityCategoryItemInline]
-
-@admin.register(Click)
-class ClickAdmin(admin.ModelAdmin):
-    list_display = ("store", "type_click", "created_at")
-    list_filter = ("type_click",)
