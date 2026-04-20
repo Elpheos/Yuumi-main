@@ -415,6 +415,12 @@ class StoreStats(Store):
         verbose_name = "Statistique"
         verbose_name_plural = "Statistiques"
 
+class StoreClickStats(Store):
+    class Meta:
+        proxy = True
+        verbose_name = "Statistique des clics"
+        verbose_name_plural = "Statistiques des clics"
+
 class Click(models.Model):
 
     TYPE_CHOICES = [
