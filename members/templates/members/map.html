@@ -28,6 +28,7 @@ Carte des commerces - {{ departement }} | Yuumi
 
     {% regroup categories by super_categorie__name as grouped_categories %}
 
+
         {% for group in grouped_categories %}
         <div class="parent-filter">
 
@@ -266,16 +267,16 @@ Carte des commerces - {{ departement }} | Yuumi
     }
 
     .parent-filter {
-        border: none;
-        padding: 3px 8px;
-    }
+    border: none;
+    padding: 3px 8px;
+}
 
     .child-buttons {
-        width: 100%;
-        height: auto;
-        min-height: 0;
-        position: static;
-    }
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    position: static;
+}
 
     /* Popup compacte */
     .leaflet-popup-content-wrapper {
@@ -320,50 +321,42 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("categories-data").textContent
     );
 
-    // Pour chaque catégorie, on stocke son nom ET son icône
     const categoryLabels = {};
-    categories.forEach(cat => {
-        categoryLabels[cat.slug] = {
-            name: cat.name,
-            icon: cat.icon || "fa-store"
-        };
+categories.forEach(cat => {
+    categoryLabels[cat.slug] = { name: cat.name, icon: cat.icon || "fa-store" };
+});
+
+function createIcon(categorySlug) {
+    const w = 30;
+    const h = 50;
+    const cat = categoryLabels[categorySlug] || {};
+    const iconClass = cat.icon || "fa-store";
+
+    return L.divIcon({
+        className: "custom-pin",
+        html: `
+            <div style="position:relative;width:${w}px;height:${h}px;">
+                <svg viewBox="0 0 24 40" width="${w}" height="${h}">
+                    <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                          fill="#ff8b38"/>
+                </svg>
+                <i class="fas ${iconClass}"
+                   style="position:absolute;top:${h*0.15}px;left:50%;
+                          transform:translateX(-50%);
+                          color:white;font-size:${w/2}px;"></i>
+            </div>
+        `,
+        iconSize: [w, h],
+        iconAnchor: [w / 2, h],
+        popupAnchor: [0, -h]
     });
-
-    /* ========= Création des marqueurs ========= */
-    function createIcon(categorySlug) {
-        const w = 30;
-        const h = 50;
-
-        // On récupère l'icône de la catégorie, ou fa-store par défaut
-        const cat = categoryLabels[categorySlug] || {};
-        const iconClass = cat.icon || "fa-solid fa-store";
-
-        return L.divIcon({
-            className: "custom-pin",
-            html: `
-                <div style="position:relative;width:${w}px;height:${h}px;">
-                    <svg viewBox="0 0 24 40" width="${w}" height="${h}">
-                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                              fill="#ff8b38"/>
-                    </svg>
-                   <i class="${iconClass}"
-                       style="position:absolute;top:${h*0.15}px;left:50%;
-                              transform:translateX(-50%);
-                              color:white;font-size:${w/2}px;"></i>
-                </div>
-            `,
-            iconSize: [w, h],
-            iconAnchor: [w / 2, h],
-            popupAnchor: [0, -h]
-        });
-    }
+}
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
         if (store.lat == null || store.lng == null || !store.categorie) return null;
 
-        // label est maintenant un objet {name, icon}, on utilise label.name
-        const label = categoryLabels[store.categorie] || { name: store.categorie };
+        const label = categoryLabels[store.categorie] || store.categorie;
 
         const marker = L.marker(
             [store.lat, store.lng],
@@ -374,7 +367,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <a href="${store.url}">
                     <h3 class="yuumi-popup-h3">
                         ${store.nom}<br>
-                        <span>${label.name}</span>
+                        <span>${label}</span>
                     </h3>
                     ${store.photo
                         ? `<img class="yuumi-popup-img"
@@ -439,10 +432,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector('input[data-category="all"]')
     .addEventListener('change', function () {
+
         document.querySelectorAll('.child-buttons button')
             .forEach(btn => {
                 btn.classList.toggle('active', this.checked);
             });
+
         syncUI();
     });
 
@@ -472,6 +467,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
 
                 group.style.display = 'flex';
+
                 syncUI();
             });
         });
@@ -508,16 +504,16 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-    /* APPARITION MENU SUR MOBILE */
+    /*APPARITION MENU SUR MOBILE*/
     const mobileMenuButton = document.querySelector('.map-mobile-menu-opener-b');
-    const categoryFilters = document.querySelector('.category-filters');
+const categoryFilters = document.querySelector('.category-filters');
 
-    if (mobileMenuButton && categoryFilters) {
-        mobileMenuButton.addEventListener('click', function () {
-            const isOpen = categoryFilters.style.display === 'block';
-            categoryFilters.style.display = isOpen ? 'none' : 'block';
-        });
-    }
+if (mobileMenuButton && categoryFilters) {
+    mobileMenuButton.addEventListener('click', function () {
+        const isOpen = categoryFilters.style.display === 'block';
+        categoryFilters.style.display = isOpen ? 'none' : 'block';
+    });
+}
 
     /* ========= Init ========= */
     document.querySelectorAll('.child-buttons button')
