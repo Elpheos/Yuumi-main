@@ -180,10 +180,10 @@
 
                             <h4>{{ store.nom }}</h4>
                           {% if store.ville_precise %}
-    <h4>{{ store.ville_precise }} ({{ store.ville }})</h4>
-{% else %}
-    <h4>{{ store.ville }}</h4>
-{% endif %}
+                            <h4>{{ store.ville_precise }}</h4>
+                        {% else %}
+                            <h4>{{ store.ville }}</h4>
+                        {% endif %}
                         </a>
                     </div>
                 {% empty %}
