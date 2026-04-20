@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Count, Q  # ✅ import au bon endroit
 
 import nested_admin
 
@@ -16,7 +17,7 @@ from .models import (
     CityCategoryHighlight,
     CityCategoryItem,
     PageView,
-    StoreStats,  # ✅ IMPORTANT
+    StoreStats,
 )
 
 from .forms import StoreForm
@@ -147,15 +148,30 @@ class StoreStatsAdmin(admin.ModelAdmin):
         "departement",
     )
 
+    ordering = ("-total_views",)
+
+    # 🔥 Ajout stats SQL (tri possible)
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+
+        return qs.annotate(
+            total_views_count=Count("pageviews"),
+            views_24h_count=Count(
+                "pageviews",
+                filter=Q(
+                    pageviews__timestamp__gte=timezone.now() - timedelta(hours=24)
+                )
+            )
+        )
+
     def total_views(self, obj):
-        return PageView.objects.filter(store=obj).count()
+        return obj.total_views_count
+    total_views.admin_order_field = "total_views_count"
     total_views.short_description = "Vues"
 
     def views_last_24h(self, obj):
-        return PageView.objects.filter(
-            store=obj,
-            timestamp__gte=timezone.now() - timedelta(hours=24)
-        ).count()
+        return obj.views_24h_count
+    views_last_24h.admin_order_field = "views_24h_count"
     views_last_24h.short_description = "Vues (24h)"
 
 
