@@ -155,11 +155,11 @@ class StoreStatsAdmin(admin.ModelAdmin):
         qs = super().get_queryset(request)
     
         return qs.annotate(
-            total_views_count=Count("pageview"),
+            total_views_count=Count("pageviews"),
             views_24h_count=Count(
-                "pageview",
+                "pageviews",
                 filter=Q(
-                    pageview__timestamp__gte=timezone.now() - timedelta(hours=24)
+                    pageviews__timestamp__gte=timezone.now() - timedelta(hours=24)
                 )
             )
         )
