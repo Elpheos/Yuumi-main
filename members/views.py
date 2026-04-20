@@ -2,6 +2,8 @@ import random
 import unicodedata
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from django.utils import timezone
+from datetime import timedelta
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
@@ -55,7 +57,15 @@ def is_open_now(store):
 def sort_key(text):
     return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()
 
-
+# ---------------------------
+# Helper : récupérer IP client
+# ---------------------------
+def get_client_ip(request):
+    x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
+    if x_forwarded_for:
+        return x_forwarded_for.split(",")[0]
+    return request.META.get("REMOTE_ADDR")
+    
 # ---------------------------
 # Pages principales
 # ---------------------------
