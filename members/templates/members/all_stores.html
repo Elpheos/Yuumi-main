@@ -53,16 +53,13 @@
 <main>
 
     <!-- ======================= MISE EN AVANT CAROUSEL ======================= -->
-    <section aria-label="commerces mis en avant">
+   <section aria-label="commerces mis en avant">
         <div class="mise-en-avant-annecy-container">
-
             {% if commerces_carousel %}
             <div id="carouselMiseEnAvant" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
-
                 <div class="carousel-inner">
                     {% for commerce in commerces_carousel %}
                     <div class="carousel-item {% if forloop.first %}active{% endif %}">
-
                         {% if commerce.photo %}
                             <img class="mise-en-avant-annecy-image"
                                  src="{{ commerce.photo.url }}" alt="{{ commerce.nom }}" />
@@ -72,21 +69,39 @@
                                  src="{% static image_path %}" alt="{{ commerce.nom }}" />
                             {% endwith %}
                         {% endif %}
-
                         <div class="mise-en-avant-annecy-text-container">
                             <h2>{{ commerce.nom }}</h2>
                             <h3>{{ commerce.categorie }}</h3>
                         </div>
-
                         <a class="mise-en-avant-bouton"
                            href="{% url 'store_details' commerce.departement commerce.ville commerce.slug %}"
                            rel="noopener">
                             découvrir
                         </a>
+                    </div>
+                    {% endfor %}'
 
+en "  <section aria-label="commerces mis en avant">
+        <div class="mise-en-avant-annecy-container">
+            {% if commerces_carousel %}
+            <div id="carouselMiseEnAvant" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-inner">
+                    {% for commerce in commerces_carousel %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        {% if commerce.photo %}
+                            <img class="mise-en-avant-annecy-image"
+                                 src="{{ commerce.photo.url }}" alt="{{ commerce.nom }}" />{% endif %}
+                        <div class="mise-en-avant-annecy-text-container">
+                            <h2>{{ commerce.nom }}</h2>
+                            <h3>{{ commerce.categorie }}</h3>
+                        </div>
+                        <a class="mise-en-avant-bouton"
+                           href="{% url 'store_details' commerce.departement commerce.ville commerce.slug %}"
+                           rel="noopener">
+                            découvrir
+                        </a>
                     </div>
                     {% endfor %}
-                </div>
 
                 {% if commerces_carousel|length > 1 %}
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselMiseEnAvant" data-bs-slide="prev">
