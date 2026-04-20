@@ -139,21 +139,11 @@ class StoreStatsAdmin(admin.ModelAdmin):
         "views_last_24h",
     )
 
-    search_fields = ("nom", "ville", "departement")
+    ordering = ("-total_views_count",)
 
-    list_filter = (
-        "categorie",
-        "categorie__super_categorie",
-        "ville",
-        "departement",
-    )
-
-    ordering = ("-total_views",)
-
-    # 🔥 Ajout stats SQL (tri possible)
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-    
+
         return qs.annotate(
             total_views_count=Count("pageviews"),
             views_24h_count=Count(
@@ -167,12 +157,10 @@ class StoreStatsAdmin(admin.ModelAdmin):
     def total_views(self, obj):
         return obj.total_views_count
     total_views.admin_order_field = "total_views_count"
-    total_views.short_description = "Vues"
 
     def views_last_24h(self, obj):
         return obj.views_24h_count
     views_last_24h.admin_order_field = "views_24h_count"
-    views_last_24h.short_description = "Vues (24h)"
 
 
 # ===========================================================
