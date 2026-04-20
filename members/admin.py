@@ -84,7 +84,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
     fieldsets = (
         ("Informations générales", {
             "fields": (
-                "nom", "ville", "departement", "categorie",
+                "nom", "ville","ville_precise", "departement", "categorie",
                 "descriptionpetite", "descriptiongrande",
                 "addressemaps", "addresseitineraire",
                 "site", "phone", "instagram", "facebook",
