@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils import timezone
 from datetime import timedelta
-from django.db.models import Count, Q  # ✅ import au bon endroit
+from django.db.models import Count, Q
 
 import nested_admin
 
@@ -152,17 +152,17 @@ class StoreStatsAdmin(admin.ModelAdmin):
 
     # 🔥 Ajout stats SQL (tri possible)
     def get_queryset(self, request):
-    qs = super().get_queryset(request)
-
-    return qs.annotate(
-        total_views_count=Count("pageview"),
-        views_24h_count=Count(
-            "pageview",
-            filter=Q(
-                pageview__timestamp__gte=timezone.now() - timedelta(hours=24)
+        qs = super().get_queryset(request)
+    
+        return qs.annotate(
+            total_views_count=Count("pageview"),
+            views_24h_count=Count(
+                "pageview",
+                filter=Q(
+                    pageview__timestamp__gte=timezone.now() - timedelta(hours=24)
+                )
             )
         )
-    )
 
     def total_views(self, obj):
         return obj.total_views_count
