@@ -15,6 +15,7 @@ urlpatterns = [
     # Favoris / actions
     path("store/<int:store_id>/favoris/", views.toggle_favoris, name="toggle-favoris"),
     path("store/<int:store_id>/claim/", views.claim_store, name="claim-store"),
+    path("store/<int:store_id>/click/", views.track_click, name="track-click"),
     path("mes-favoris/", views.my_favorites, name="my-favorites"),
     path("changer-de-ville/", views.changer_ville, name="changer_ville"),
 
