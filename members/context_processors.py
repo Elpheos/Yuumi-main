@@ -1,3 +1,4 @@
+import unicodedata
 from urllib.parse import unquote
 from .models import Store, Category, SuperCategory
 
@@ -89,7 +90,9 @@ def menu_context(request):
 
     # On trie chaque liste de catégories alphabétiquement
     for super_cat_name in menu_supercategories:
-        menu_supercategories[super_cat_name].sort(key=lambda cat: cat.name)
+        menu_supercategories[super_cat_name].sort(
+            key=lambda cat: unicodedata.normalize("NFD", cat.name.lower()).encode("ascii", "ignore").decode()
+        )
 
     return {
         "menu_categories": categories,
