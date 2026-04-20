@@ -426,6 +426,6 @@ class Click(models.Model):
     ]
 
     store = models.ForeignKey("Store", on_delete=models.CASCADE, related_name="clicks")
-    type_click = models.CharField(max_length=20, choices=TYPE_CHOICES)
+    type_click = models.CharField(max_length=20, choices=TYPE_CHOICES, default="site")
     created_at = models.DateTimeField(auto_now_add=True)
     
