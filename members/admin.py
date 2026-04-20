@@ -16,6 +16,7 @@ from .models import (
     CityCategoryHighlight,
     CityCategoryItem,
     PageView,
+    StoreStats,  # ✅ IMPORTANT
 )
 
 from .forms import StoreForm
@@ -67,7 +68,7 @@ class StoreGalerieImageInline(nested_admin.NestedTabularInline):
 
 
 # ===========================================================
-# 🔹 StoreAdmin (AVEC STATS)
+# 🔹 StoreAdmin (édition classique)
 # ===========================================================
 
 @admin.register(Store)
@@ -78,8 +79,6 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         "nom",
         "ville",
         "categorie",
-        "total_views",
-        "views_last_24h",
         "photo_preview",
         "owner",
     )
@@ -103,13 +102,6 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
                 "photo", "slug", "owner",
             )
         }),
-        ("Lundi", {"fields": (("lundi_matin_ouverture", "lundi_matin_fermeture", "lundi_apresmidi_ouverture", "lundi_apresmidi_fermeture"),)}),
-        ("Mardi", {"fields": (("mardi_matin_ouverture", "mardi_matin_fermeture", "mardi_apresmidi_ouverture", "mardi_apresmidi_fermeture"),)}),
-        ("Mercredi", {"fields": (("mercredi_matin_ouverture", "mercredi_matin_fermeture", "mercredi_apresmidi_ouverture", "mercredi_apresmidi_fermeture"),)}),
-        ("Jeudi", {"fields": (("jeudi_matin_ouverture", "jeudi_matin_fermeture", "jeudi_apresmidi_ouverture", "jeudi_apresmidi_fermeture"),)}),
-        ("Vendredi", {"fields": (("vendredi_matin_ouverture", "vendredi_matin_fermeture", "vendredi_apresmidi_ouverture", "vendredi_apresmidi_fermeture"),)}),
-        ("Samedi", {"fields": (("samedi_matin_ouverture", "samedi_matin_fermeture", "samedi_apresmidi_ouverture", "samedi_apresmidi_fermeture"),)}),
-        ("Dimanche", {"fields": (("dimanche_matin_ouverture", "dimanche_matin_fermeture", "dimanche_apresmidi_ouverture", "dimanche_apresmidi_fermeture"),)}),
     )
 
     inlines = [
@@ -127,9 +119,33 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
         return ""
     photo_preview.short_description = "Photo principale"
 
-    # =========================
-    # 📊 STATS
-    # =========================
+    class Media:
+        js = ("copy_horaires.js",)
+
+
+# ===========================================================
+# 🔹 Statistiques (ONGLET DÉDIÉ)
+# ===========================================================
+
+@admin.register(StoreStats)
+class StoreStatsAdmin(admin.ModelAdmin):
+
+    list_display = (
+        "nom",
+        "ville",
+        "categorie",
+        "total_views",
+        "views_last_24h",
+    )
+
+    search_fields = ("nom", "ville", "departement")
+
+    list_filter = (
+        "categorie",
+        "categorie__super_categorie",
+        "ville",
+        "departement",
+    )
 
     def total_views(self, obj):
         return PageView.objects.filter(store=obj).count()
@@ -141,9 +157,6 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
             timestamp__gte=timezone.now() - timedelta(hours=24)
         ).count()
     views_last_24h.short_description = "Vues (24h)"
-
-    class Media:
-        js = ("copy_horaires.js",)
 
 
 # ===========================================================
