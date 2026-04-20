@@ -139,7 +139,6 @@ class StoreStatsAdmin(admin.ModelAdmin):
         "views_last_24h",
     )
 
-    ordering = ("-total_views_count",)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
