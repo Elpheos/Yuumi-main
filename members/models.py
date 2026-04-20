@@ -401,3 +401,9 @@ class PageView(models.Model):
     session_id = models.CharField(max_length=255)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+class StoreStats(Store):
+    class Meta:
+        proxy = True
+        verbose_name = "Statistique"
+        verbose_name_plural = "Statistiques"
