@@ -73,6 +73,7 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
     list_display = (
         "nom",
         "ville",
+        "ville_precise",
         "departement",
         "phone",
         "photo_preview",
