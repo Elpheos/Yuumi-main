@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import CityCategoryHighlight, CityCategoryItem
+from .models import CityCategoryHighlight, CityCategoryItem, PageView
 
 import nested_admin
 
@@ -160,3 +160,8 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
     list_display = ("ville", "departement")
     search_fields = ("ville", "departement")
     inlines = [CityCategoryItemInline]
+    
+@admin.register(PageView)
+class PageViewAdmin(admin.ModelAdmin):
+    list_display = ("page", "store", "ip_address", "timestamp")
+    list_filter = ("store",)
