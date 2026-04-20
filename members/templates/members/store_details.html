@@ -131,7 +131,7 @@
 
                     <div class="itinéraire-commerce">
                         {% if store.addresseitineraire %}
-                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description">
+                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description" data-store-id="{{ store.id }}">
                                 Je me rends sur place
                             </a>
                         {% endif %}
@@ -139,7 +139,7 @@
 
                     <div class="site-commerce">
                         {% if store.site %}
-                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description">
+                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description" data-store-id="{{ store.id }}">
                                 Site du commerce
                             </a>
                         {% endif %}
@@ -155,13 +155,13 @@
                         {% endif %}
 
                         {% if store.instagram %}
-                            <a href="{{ store.instagram }}" rel="noopener noreferrer" target="_blank">
+                            <a href="{{ store.instagram }}" class="btn-instagram" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
                                 <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
                             </a>
                         {% endif %}
 
                         {% if store.facebook %}
-                            <a href="{{ store.facebook }}" rel="noopener noreferrer" target="_blank">
+                            <a href="{{ store.facebook }}" class="btn-facebook" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
                                 <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
                             </a>
                         {% endif %}
@@ -325,8 +325,6 @@
        
 
         <!-- Galerie -->
-        {# CHANGEMENT 1 : on utilise store.galerie_images (le nouveau related_name) #}
-        {# au lieu de store.galerie_image (l'ancien champ unique supprimé) #}
         <section aria-label="Galerie du commerce" class="galerie-container" id="galerie" style="display:none;">
             {% if store.galerie_images.exists %}
                 <div class="galerie-grid">
@@ -436,8 +434,6 @@
 </div>
 
 <!-- Lightbox Galerie -->
-{# CHANGEMENT 2 : même logique, on vérifie galerie_images.exists #}
-{# au lieu de l'ancien galerie_image (champ unique) ou images.exists #}
 {% if store.galerie_images.exists %}
 <div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
     <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
@@ -452,6 +448,23 @@
 {% block extra_js %}
 <script>
     window.stores = {{ stores|safe }};
+</script>
+
+<!-- getCookie global — utilisé par tous les scripts -->
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";").map(c => c.trim());
+        for (let cookie of cookies) {
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 
 <script>
@@ -494,23 +507,38 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<!-- Tracking clics -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const trackables = [
+        { selector: ".button-1-description", type: "itineraire" },
+        { selector: ".button-2-description", type: "site" },
+        { selector: ".btn-instagram",        type: "instagram" },
+        { selector: ".btn-facebook",         type: "facebook" },
+    ];
+
+    trackables.forEach(({ selector, type }) => {
+        const btn = document.querySelector(selector);
+        if (!btn) return;
+
+        btn.addEventListener("click", () => {
+            const storeId = btn.dataset.storeId;
+            fetch(`/store/${storeId}/click/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ type_click: type })
+            });
+        });
+    });
+});
+</script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const buttons = document.querySelectorAll(".favori-btn");
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";").map(c => c.trim());
-            for (let cookie of cookies) {
-                if (cookie.startsWith(name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     buttons.forEach(btn => {
         const storeId = btn.dataset.storeId;
@@ -580,20 +608,6 @@ function claimStore(storeId) {
 
 document.getElementById('confirmClaim').addEventListener('click', function () {
     if (!currentStoreId) return;
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";").map(c => c.trim());
-            for (let cookie of cookies) {
-                if (cookie.startsWith(name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 
     fetch(`/store/${currentStoreId}/claim/`, {
         method: "POST",
