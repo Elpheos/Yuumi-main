@@ -1,4 +1,5 @@
 import random
+import unicodedata
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -47,6 +48,14 @@ def is_open_now(store):
 
 
 # ---------------------------
+# Helper : tri alphabétique sans accents
+# ---------------------------
+
+def sort_key(text):
+    return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()
+
+
+# ---------------------------
 # Pages principales
 # ---------------------------
 
@@ -87,9 +96,10 @@ def stores(request, departement, ville):
         photo__isnull=False
     ).exclude(photo='')
 
+    stores_with_photo_list = list(stores_with_photo)
     commerces_carousel = random.sample(
-        list(stores_with_photo),
-        min(5, stores_with_photo.count())
+        stores_with_photo_list,
+        min(5, len(stores_with_photo_list))
     )
 
     city_config = CityCategoryHighlight.objects.filter(
@@ -454,6 +464,10 @@ def categories_ville(request, departement, ville):
             "image": image_url,
         })
 
+    # Tri alphabétique sans accents dans chaque groupe
+    for super_cat in categories_by_super:
+        categories_by_super[super_cat].sort(key=lambda cat: sort_key(cat["name"]))
+
     return render(request, "members/categories_villes.html", {
         "categories_by_super": categories_by_super,
         "departement": departement,
@@ -512,6 +526,9 @@ def by_super_category(request, departement, ville, super_slug):
             "slug": cat.slug,
             "image": image_url,
         })
+
+    # Tri alphabétique sans accents
+    categories.sort(key=lambda cat: sort_key(cat["name"]))
 
     return render(request, "members/by_supercategory.html", {
         "super_cat": super_cat,
