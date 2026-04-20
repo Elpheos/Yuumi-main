@@ -179,12 +179,12 @@ def store_details(request, departement, ville, slug):
         timestamp__gte=timezone.now() - timedelta(seconds=20)
     ).exists()
 
-    if not recent_view:
-        PageView.objects.create(
-            store=store,
-            session_id=session_id,
-            ip_address=ip
-        )
+    if not recent_view and not request.user.is_superuser:
+    PageView.objects.create(
+        store=store,
+        session_id=session_id,
+        ip_address=ip
+    )
 
     # --- LOGIQUE EXISTANTE ---
     if request.method == "POST":
