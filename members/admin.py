@@ -18,6 +18,7 @@ from .models import (
     CityCategoryItem,
     PageView,
     StoreStats,
+    Click,
 )
 
 from .forms import StoreForm
@@ -204,3 +205,8 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
     list_display = ("ville", "departement")
     search_fields = ("ville", "departement")
     inlines = [CityCategoryItemInline]
+
+@admin.register(Click)
+class ClickAdmin(admin.ModelAdmin):
+    list_display = ("store", "type_click", "created_at")
+    list_filter = ("type_click",)
