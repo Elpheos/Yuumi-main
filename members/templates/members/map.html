@@ -336,7 +336,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // On récupère l'icône de la catégorie, ou fa-store par défaut
         const cat = categoryLabels[categorySlug] || {};
-        const iconClass = cat.icon || "fa-store";
+        const iconClass = cat.icon || "fa-solid fa-store";
 
         return L.divIcon({
             className: "custom-pin",
