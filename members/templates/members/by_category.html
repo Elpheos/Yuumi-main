@@ -1,12 +1,35 @@
 {% extends "master.html" %}
 {% load static %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "{{ category }} à {{ ville }}",
+  "itemListElement": [
+    {% for commerce in commerces %}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.counter }},
+      "name": "{{ commerce.nom }}",
+      "url": "{{ request.scheme }}://{{ request.get_host }}{{ commerce.get_absolute_url }}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+    
 {% block title %}{{ category }} à {{ ville }} ({{ departement }}) | Yuumi{% endblock %}
 {% block meta_description %}Trouvez les meilleurs {{ category|lower }} à {{ ville }} ({{ departement }}) sélectionnés par Yuumi.{% endblock %}
 {% block og_title %}{{ category }} à {{ ville }} | Yuumi{% endblock %}
 {% block og_description %}Trouvez les meilleurs {{ category|lower }} à {{ ville }} ({{ departement }}) sélectionnés par Yuumi.{% endblock %}
 
 {% block content %}
+
+
+
 
 <style>
 /* ------------------------------------------------------------ */
