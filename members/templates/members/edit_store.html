@@ -1275,7 +1275,7 @@
     }
 
     window.initAllPickers = function() {
-        document.querySelectorAll('.horaire-period-field input[type="time"]').forEach(createPicker);
+        document.querySelectorAll('.horaire-period-field input').forEach(createPicker);
     };
 
     document.addEventListener('DOMContentLoaded', window.initAllPickers);
