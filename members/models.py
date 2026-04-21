@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
+from django.core.exceptions import ValidationError
 
 
 
@@ -57,12 +58,24 @@ class Category(models.Model):
         help_text="Icône Font Awesome, ex : fa-store, fa-utensils",
     )
 
+    icon_perso = models.ImageField(
+        upload_to="categories/",
+        null=True,
+        blank=True,
+        help_text="alternative à l'icône FA",
+     )
+    def clean(self):
+        if self.icon and self.icon_perso:
+            raise ValidationError("Impossible d'enregistrer à la fois une icône FA et une icône personnalisée")
+   
+
     image = models.ImageField(
         upload_to="categories/",
         null=True,
         blank=True,
         help_text="Image affichée sur la page ville",
     )
+
 
     class Meta:
         unique_together = ("slug", "super_categorie")
