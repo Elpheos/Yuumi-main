@@ -267,3 +267,10 @@ AUTHENTICATION_BACKENDS = [
     "axes.backends.AxesStandaloneBackend",
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+# -------------------------------------------------------------------
+# django-axes (protection brute force)
+# -------------------------------------------------------------------
+AXES_FAILURE_LIMIT = 5        # Nombre de tentatives avant blocage
+AXES_COOLOFF_TIME = 1000         # Durée du blocage en heures
+AXES_LOCKOUT_CALLABLE = None  # Page d'erreur par défaut
