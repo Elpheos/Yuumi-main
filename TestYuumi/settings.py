@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "axes",
 
     # Projet
     "members",
@@ -83,6 +84,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     # No-cache sur les pages HTML (évite le cache navigateur mobile)
     "members.cache_middleware.NoCacheHTMLMiddleware",
+    "axes.middleware.AxesMiddleware",
 ]
 
 
@@ -260,3 +262,8 @@ LOGGING = {
 LOGIN_URL = "/login/"
 LOGIN_REDIRECT_URL = "/"
 LOGOUT_REDIRECT_URL = "/"
+
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
