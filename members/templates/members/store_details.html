@@ -164,7 +164,7 @@
     <small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances</small>
 {% endif %}
                     
-                     {% if request.user != store.owner %}
+                     {% if not store.owner or store.owner.is_superuser %}
                     <div class="store-revendiquer-container">
                         <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
     <button class="store-revendiquer-b"
