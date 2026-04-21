@@ -163,9 +163,9 @@
                        rel="noopener">
 
                         {% if commerce.photo %}
-                            <img src="{{ commerce.photo.url }}" alt="Photo de {{ commerce.nom }}">
+                            <img src="{{ commerce.photo.url }}" alt="Photo de {{ commerce.nom }} à {{ commerce.ville }} dans la catégorie {{ commerce.categorie }}">
                         {% else %}
-                            <img src="{% static 'placeholder.png' %}" alt="Pas de photo">
+                            <img src="{% static 'placeholder.png' %}" alt="">
                         {% endif %}
 
                         <h4>{{ commerce.nom }}</h4>
