@@ -272,12 +272,12 @@ def search_product(request):
 # Carte des commerces
 # ---------------------------
 
-def map_view(request, departement):
-    stores_qs = (
-        Store.objects
-        .filter(departement__iexact=departement)
-        .select_related("categorie__super_categorie")
-    )
+    def map_view(request, departement):
+        stores_qs = (
+            Store.objects
+            .filter(departement__iexact=departement)
+            .select_related("categorie__super_categorie")
+        )
 
     store_data = []
     for store in stores_qs:
@@ -302,6 +302,7 @@ def map_view(request, departement):
             "icon",
             "super_categorie__slug",
             "super_categorie__name",
+            "icon_perso",
         )
         .order_by("super_categorie__name", "name")
     )
