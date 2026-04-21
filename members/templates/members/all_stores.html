@@ -61,7 +61,7 @@
         {% for commerce in commerces_carousel %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}">
           {% if commerce.photo %}
-            <img class="mise-en-avant-annecy-image" src="{{ commerce.photo.url }}" alt="{{ commerce.nom }}" />
+            <img class="mise-en-avant-annecy-image" src="{{ commerce.photo.url }}" alt="{{ commerce.nom }} — {{ commerce.categorie.name }} à {{ commerce.ville }}" />
           {% else %}
             {% with image_path='images/'|add:ville|lower|add:'/base-annecy.jpg' %}
             <img class="mise-en-avant-annecy-image" src="{% static image_path %}" alt="{{ commerce.nom }}" />
@@ -172,7 +172,7 @@
 
                             <div class="img-wrapper">
                                 {% if store.photo %}
-                                    <img src="{{ store.photo.url }}" alt="Photo de {{ store.nom }}">
+                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
                                 {% else %}
                                     <img src="{% static 'placeholder.png' %}" alt="Pas de photo">
                                 {% endif %}
