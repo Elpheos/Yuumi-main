@@ -6,17 +6,17 @@
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
-  "name": "{{ store.nom }}",
+  "name": "{{ store.nom|escapejs }}",
   "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
-  "description": "{{ store.descriptionpetite }}",
-  "telephone": "{{ store.phone }}"
+  "description": "{{ store.descriptionpetite|escapejs }}",
+  "telephone": "{{ store.phone|escapejs }}"
   {% if store.photo %}
   ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}"
   {% endif %}
   ,"address": {
     "@type": "PostalAddress",
-    "streetAddress": "{{ store.addressemaps }}",
-    "addressLocality": "{{ store.ville }}",
+    "streetAddress": "{{ store.addressemaps|escapejs }}",
+    "addressLocality": "{{ store.ville|escapejs }}"
     "addressCountry": "FR"
   }
   ,"openingHours": [
