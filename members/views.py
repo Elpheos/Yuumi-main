@@ -229,7 +229,17 @@ def store_details(request, departement, ville, slug):
         is_favorite = store in request.user.favoris.all()
 
     est_ouvert = is_open_now(store)
-
+    
+    # Préparer les produits par lignes de 4
+    families_with_rows = []
+    for family in store.families.all():
+        products = list(family.products.all())
+        rows = [products[i:i+4] for i in range(0, len(products), 4)]
+        if rows:
+            while len(rows[-1]) < 4:
+                rows[-1].append(None)
+        families_with_rows.append({"family": family, "rows": rows})
+    
     return render(request, "members/store_details.html", {
         "store": store,
         "family_formset": family_formset,
@@ -237,6 +247,7 @@ def store_details(request, departement, ville, slug):
         "stores": store_data,
         "is_favorite": is_favorite,
         "est_ouvert": est_ouvert,
+        "families_with_rows": families_with_rows,
     })
 
 # ---------------------------
