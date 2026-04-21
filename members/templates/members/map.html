@@ -321,9 +321,13 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("categories-data").textContent
     );
 
-    const categoryLabels = {};
+const categoryLabels = {};
 categories.forEach(cat => {
-    categoryLabels[cat.slug] = { name: cat.name, icon: cat.icon || "fa-store" };
+    categoryLabels[cat.slug] = { 
+        name: cat.name, 
+        icon: cat.icon || "fa-store", 
+        icon_perso: cat.icon_perso 
+    };
 });
 
 function createIcon(categorySlug) {
@@ -331,6 +335,20 @@ function createIcon(categorySlug) {
     const h = 50;
     const cat = categoryLabels[categorySlug] || {};
     const iconClass = cat.icon || "fa-store";
+    
+    let iconHtml;
+    if (cat.icon_perso) {
+        iconHtml = `<img src="/media/${cat.icon_perso}" 
+    style="position:absolute;
+           top:${h*0.15}px;
+           left:50%;
+           transform:translateX(-50%);
+           width:${w/2}px;
+           height:${w/2}px;
+           object-fit:contain;">`;
+    } else {
+        iconHtml = `<i class="fas ${iconClass}" style="position:absolute;top:${h*0.15}px;left:50%;transform:translateX(-50%);color:white;font-size:${w/2}px;"></i>`;
+    }
 
     return L.divIcon({
         className: "custom-pin",
@@ -340,10 +358,7 @@ function createIcon(categorySlug) {
                     <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
                           fill="#ff8b38"/>
                 </svg>
-                <i class="fas ${iconClass}"
-                   style="position:absolute;top:${h*0.15}px;left:50%;
-                          transform:translateX(-50%);
-                          color:white;font-size:${w/2}px;"></i>
+                ${iconHtml}
             </div>
         `,
         iconSize: [w, h],
