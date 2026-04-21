@@ -152,16 +152,17 @@
 
                     <!-- Badge ouvert / fermé -->
                     {% if est_ouvert is not None %}
-                        {% if est_ouvert %}
-                            <span class="badge-statut badge-ouvert">
-                                <span class="badge-dot"></span> Ouvert en ce moment
-                            </span>
-                        {% else %}
-                            <span class="badge-statut badge-ferme">
-                                <span class="badge-dot"></span> Fermé en ce moment
-                            </span>
-                        {% endif %}
-                    {% endif %}
+    {% if est_ouvert %}
+        <span class="badge-statut badge-ouvert">
+            <span class="badge-dot"></span> Ouvert en ce moment
+        </span>
+    {% else %}
+        <span class="badge-statut badge-ferme">
+            <span class="badge-dot"></span> Fermé en ce moment
+        </span>
+    {% endif %}
+    <small style="color:#888; font-size:0.75rem;">Horaires indicatifs — peuvent varier les jours fériés et vacances</small>
+{% endif %}
                     
                      {% if request.user != store.owner %}
                     <div class="store-revendiquer-container">
