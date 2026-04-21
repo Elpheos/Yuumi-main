@@ -124,7 +124,7 @@
 
                         {% for img in store.images.all %}
                             <div class="carousel-item {% if not store.photo and forloop.first %}active{% endif %}">
-                                <img src="{{ img.image.url }}" class="d-block w-100 store-carousel-img" alt="Photo de {{ store.nom }}">
+                                <img src="{{ img.image.url }}" class="d-block w-100 store-carousel-img" alt="Photo de {{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
                             </div>
                         {% endfor %}
                     </div>
@@ -397,7 +397,7 @@
                 <div class="galerie-grid">
                     {% for img in store.galerie_images.all %}
                         <div class="galerie-item">
-                            <img src="{{ img.image.url }}" alt="Photo de la galerie {{ store.nom }}">
+                            <img src="{{ img.image.url }}" alt="Galerie {{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
                         </div>
                     {% endfor %}
                 </div>
