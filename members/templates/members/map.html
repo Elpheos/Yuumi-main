@@ -347,7 +347,7 @@ function createIcon(categorySlug) {
            height:${w/2}px;
            object-fit:contain;">`;
     } else {
-        iconHtml = `<i class="fas ${iconClass}" style="position:absolute;top:${h*0.15}px;left:50%;transform:translateX(-50%);color:white;font-size:${w/2}px;"></i>`;
+        iconHtml = `<i class="${iconClass}" style="position:absolute;top:${h*0.15}px;left:50%;transform:translateX(-50%);color:white;font-size:${w/2}px;"></i>`;
     }
 
     return L.divIcon({
