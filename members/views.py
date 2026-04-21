@@ -272,7 +272,7 @@ def search_product(request):
 # Carte des commerces
 # ---------------------------
 
-    def map_view(request, departement):
+def map_view(request, departement):
         stores_qs = (
             Store.objects
             .filter(departement__iexact=departement)
