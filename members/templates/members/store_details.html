@@ -161,7 +161,7 @@
             <span class="badge-dot"></span> Fermé en ce moment
         </span>
     {% endif %}
-    <small style="color:#888; font-size:0.75rem;">Horaires indicatifs — peuvent varier les jours fériés et vacances</small>
+    <small class="texte-badge-commerce">Horaires indicatifs — peuvent varier les jours fériés et vacances</small>
 {% endif %}
                     
                      {% if request.user != store.owner %}
@@ -802,6 +802,14 @@ document.addEventListener("DOMContentLoaded", () => {
     flex-shrink: 0;
 }
 
+  .texte-badge-commerce {
+  color:#888; 
+  font-size:0.75rem;
+  text-align: center;
+  margin-bottom:5px;
+    
+  }
+
 .badge-ouvert .badge-dot { background: #27ae60; }
 .badge-ferme .badge-dot  { background: #e53935; }
 
@@ -931,6 +939,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .store-action-bar { margin: 0; }
     #carouselStoreImages { border: none; border-radius: 0; border-bottom: 2px solid #ff8b38; }
     .store-carousel-img { max-height: 75vh; height: auto; object-fit: cover; }
+  .texte-badge-commerce {display:flex}
 }
 </style>
 
