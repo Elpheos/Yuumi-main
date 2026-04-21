@@ -14,6 +14,8 @@
     <meta property="og:image" content="{% block og_image %}{% static 'images/logo.webp' %}{% endblock %}">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="fr_FR">
+    <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
+    <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
 
     <link rel="icon" type="image/webp" href="{% static 'images/logo.webp' %}">
 
@@ -28,7 +30,8 @@
     <link rel="stylesheet" href="{% static 'css/myglobal.css' %}">
 
     <!-- Bloc pour les scripts/styles spécifiques à une page (ex: Leaflet) -->
-    {% block extra_head %}{% endblock %}
+    {% block extra_head %}
+    {% endblock %}
 
 <style>
 body {
