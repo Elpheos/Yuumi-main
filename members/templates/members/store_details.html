@@ -410,33 +410,32 @@
     </section>
 
     <!-- Produits -->
-    <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits" style="display:none;">
-        {% for family in store.families.all %}
-            <table>
-                <thead>
-                    <tr><th colspan="4">{{ family.nom }}</th></tr>
-                </thead>
-                <tbody>
-                    {% for product in family.products.all %}
-                        {% if forloop.first or forloop.counter0|divisibleby:4 %}<tr>{% endif %}
-                        <td>{{ product.nom }}</td>
-                        {% if forloop.counter|divisibleby:4 or forloop.last %}
-                            {% for _ in " "|slice:":{{ 4 - forloop.counter|add:'0'|divisibleby:4|yesno:'0,1' }}" %}<td></td>{% endfor %}
-                            </tr>
-                        {% endif %}
+    <!-- Produits -->
+<section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits" style="display:none;">
+    {% for item in families_with_rows %}
+        <table>
+            <thead>
+                <tr><th colspan="4">{{ item.family.nom }}</th></tr>
+            </thead>
+            <tbody>
+                {% for row in item.rows %}
+                <tr>
+                    {% for product in row %}
+                    <td>{% if product %}{{ product.nom }}{% endif %}</td>
                     {% endfor %}
-                </tbody>
-            </table>
-        {% empty %}
-        <div class="infopratiques-container">
-            <p class="produits-empty">
-                <i class="fa-solid fa-box-open"></i>
-                Ce commerce n'a pas encore renseigné sa liste de produits.
-            </p>
-        </div>
-        {% endfor %}
-    </section>
-         </div>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% empty %}
+    <div class="infopratiques-container">
+        <p class="produits-empty">
+            <i class="fa-solid fa-box-open"></i>
+            Ce commerce n'a pas encore renseigné sa liste de produits.
+        </p>
+    </div>
+    {% endfor %}
+</section>
 
 </main>
 
