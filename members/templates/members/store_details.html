@@ -1,6 +1,73 @@
 {% extends "master.html" %}
 {% load static %}
 
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "name": "{{ store.nom }}",
+  "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
+  "description": "{{ store.descriptionpetite }}",
+  "telephone": "{{ store.phone }}"
+  {% if store.photo %}
+  ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}"
+  {% endif %}
+  ,"address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ store.addressemaps }}",
+    "addressLocality": "{{ store.ville }}",
+    "addressCountry": "FR"
+  }
+  ,"openingHours": [
+    "Su 00:00-00:00"
+    {% if store.lundi_matin_ouverture %}
+    ,"Mo {{ store.lundi_matin_ouverture|time:'H:i' }}-{{ store.lundi_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.lundi_apresmidi_ouverture %}
+    ,"Mo {{ store.lundi_apresmidi_ouverture|time:'H:i' }}-{{ store.lundi_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.mardi_matin_ouverture %}
+    ,"Tu {{ store.mardi_matin_ouverture|time:'H:i' }}-{{ store.mardi_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.mardi_apresmidi_ouverture %}
+    ,"Tu {{ store.mardi_apresmidi_ouverture|time:'H:i' }}-{{ store.mardi_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.mercredi_matin_ouverture %}
+    ,"We {{ store.mercredi_matin_ouverture|time:'H:i' }}-{{ store.mercredi_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.mercredi_apresmidi_ouverture %}
+    ,"We {{ store.mercredi_apresmidi_ouverture|time:'H:i' }}-{{ store.mercredi_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.jeudi_matin_ouverture %}
+    ,"Th {{ store.jeudi_matin_ouverture|time:'H:i' }}-{{ store.jeudi_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.jeudi_apresmidi_ouverture %}
+    ,"Th {{ store.jeudi_apresmidi_ouverture|time:'H:i' }}-{{ store.jeudi_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.vendredi_matin_ouverture %}
+    ,"Fr {{ store.vendredi_matin_ouverture|time:'H:i' }}-{{ store.vendredi_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.vendredi_apresmidi_ouverture %}
+    ,"Fr {{ store.vendredi_apresmidi_ouverture|time:'H:i' }}-{{ store.vendredi_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.samedi_matin_ouverture %}
+    ,"Sa {{ store.samedi_matin_ouverture|time:'H:i' }}-{{ store.samedi_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.samedi_apresmidi_ouverture %}
+    ,"Sa {{ store.samedi_apresmidi_ouverture|time:'H:i' }}-{{ store.samedi_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.dimanche_matin_ouverture %}
+    ,"Su {{ store.dimanche_matin_ouverture|time:'H:i' }}-{{ store.dimanche_matin_fermeture|time:'H:i' }}"
+    {% endif %}
+    {% if store.dimanche_apresmidi_ouverture %}
+    ,"Su {{ store.dimanche_apresmidi_ouverture|time:'H:i' }}-{{ store.dimanche_apresmidi_fermeture|time:'H:i' }}"
+    {% endif %}
+  ]
+}
+</script>
+{% endblock %}
+
 {% block title %}{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }} | Yuumi{% endblock %}
 {% block meta_description %}{{ store.descriptionpetite|truncatechars:155 }}{% endblock %}
 {% block og_title %}{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }} | Yuumi{% endblock %}
