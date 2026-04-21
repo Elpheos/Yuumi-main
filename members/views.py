@@ -273,11 +273,11 @@ def search_product(request):
 # ---------------------------
 
 def map_view(request, departement):
-        stores_qs = (
-            Store.objects
-            .filter(departement__iexact=departement)
-            .select_related("categorie__super_categorie")
-        )
+    stores_qs = (              # ← 4 espaces ✅
+        Store.objects
+        .filter(departement__iexact=departement)
+        .select_related("categorie__super_categorie")
+    )
 
     store_data = []
     for store in stores_qs:
