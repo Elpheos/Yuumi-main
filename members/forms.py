@@ -114,4 +114,64 @@ class StoreForm(forms.ModelForm):
     def clean_addresseitineraire(self):
         return self._validate_url('addresseitineraire', 'Lien itinéraire')
 
+class NewStoreForm(forms.ModelForm):
+    class Meta:
+        model = StoreSuggestion
+        fields = [
+            'nom',
+            'ville',
+            'departement',
+            'ville_precise',
+            'descriptionpetite',
+            'descriptiongrande',
+            'site',
+            'phone',
+            'instagram',
+            'facebook',
+            'addressemaps',
+            'photo',
+            # Horaires
+            'lundi',
+            'mardi',
+            'mercredi',
+            'jeudi',
+            'vendredi',
+            'samedi',
+            'dimanche',
+        ]
+        widgets = {
+            'departement': forms.TextInput(attrs={'placeholder': 'Tapez un département...'}),
+            'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
+        }
+
+class ModifStoreForm(forms.ModelForm):
+    class Meta:
+        model = StoreSuggestion
+        fields = [
+            'message',
+            'descriptionpetite',
+            'descriptiongrande',
+            'site',
+            'phone',
+            'instagram',
+            'facebook',
+            'addressemaps',
+            'photo',
+            # Horaires
+            'lundi',
+            'mardi',
+            'mercredi',
+            'jeudi',
+            'vendredi',
+            'samedi',
+            'dimanche',
+        ]
+        widgets = {
+        'message': forms.Textarea(attrs={
+            'placeholder': 'Expliquez ce que vous souhaitez modifier...',
+            'rows': 4,
+        }),
+    }
+
+
 
