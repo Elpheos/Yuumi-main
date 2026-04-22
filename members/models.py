@@ -523,6 +523,8 @@ class StoreSuggestion(models.Model):
     samedi = models.TextField(null=True, blank=True)
     dimanche = models.TextField(null=True, blank=True)
 
+    produits_suggeres = models.TextField(null=True, blank=True)
+
     def __str__(self):
         return f"{self.get_type_suggestion_display()} — {self.nom or self.store}"
     
