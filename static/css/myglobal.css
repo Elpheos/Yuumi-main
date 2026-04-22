@@ -1337,6 +1337,7 @@ body.menu-open {
     box-sizing: border-box;
     margin-top: 16px;
     margin-left: 5%;
+	max-width: 50%;
 }
 
 .infopratiques-content-container {
@@ -1392,6 +1393,7 @@ body.menu-open {
     margin-top: 16px;
     margin-left: 5%;
     display: none;
+	max-width: 100%;
 }
 
 .liste-produits-container {
