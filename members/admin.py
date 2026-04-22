@@ -20,6 +20,7 @@ from .models import (
     StoreStats,
     StoreClickStats,
     Click,
+    StoreSuggestion,
 )
 
 from .forms import StoreForm
@@ -261,3 +262,10 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
     list_display = ("ville", "departement")
     search_fields = ("ville", "departement")
     inlines = [CityCategoryItemInline]
+
+
+@admin.register(StoreSuggestion)
+class StoreSuggestionAdmin(admin.ModelAdmin):
+    list_display = ("type_suggestion", "nom", "ville", "statut", "created_at", "store")
+    list_filter = ("statut", "type_suggestion")
+
