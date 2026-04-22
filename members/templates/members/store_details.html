@@ -143,121 +143,8 @@
                     {% endif %}
                     {% endwith %}
                 </div>
-            </div>
-
-            <!-- PARTIE DROITE : infos + liens -->
-            <div class="commerce-right-part-container">
-                <div class="description-container">
-                    <h1>{{ store.nom }} | {{ store.ville }}</h1>
-
-                    <!-- Badge ouvert / fermé -->
-                    {% if est_ouvert is not None %}
-    {% if est_ouvert %}
-        <span class="badge-statut badge-ouvert">
-            <span class="badge-dot"></span> Ouvert en ce moment
-        </span>
-    {% else %}
-        <span class="badge-statut badge-ferme">
-            <span class="badge-dot"></span> Fermé en ce moment
-        </span>
-    {% endif %}
-    <small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances</small>
-{% endif %}
-                    
-                     {% if not store.owner or store.owner.is_superuser %}
-                    <div class="store-revendiquer-container">
-                        <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
-    <button class="store-revendiquer-b"
-            id="claimButton"
-            data-store-id="{{ store.id }}"
-            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
-            onclick="claimStore({{ store.id }})">
-        Prenez le contrôle de votre page
-    </button>
-                    </div>
-{% endif %}
-
-                  
-                     {% if request.user == store.owner or request.user.is_superuser %}
-                    <div class="store-modifier-commerce-container">
-                        <div class="store-modifier-commerce-content-container">
-        <i class="fa-solid fa-pencil" id="store-modifier-commerce-icon"></i><a href="{% url 'edit_store' store.departement store.ville store.slug %}"
-           class="store-modifier-commerce-b">
-            Modifier ce commerce
-        </a>
-                        </div>
-                    </div>
-    {% endif %}
-
-                    <hr class="hr-page-commerce" />
-
-                    <div class="description-principale">
-                        <p>{{ store.descriptionpetite }}</p>
-                    </div>
-
-                    <div class="description-secondaire">
-                        <p>{{ store.descriptiongrande }}</p>
-                    </div>
-
-                    <div class="itinéraire-commerce">
-                        {% if store.addresseitineraire %}
-                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description" data-store-id="{{ store.id }}">
-                                Je me rends sur place
-                            </a>
-                        {% endif %}
-                    </div>
-
-                    <div class="site-commerce">
-                        {% if store.site %}
-                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description" data-store-id="{{ store.id }}">
-                                Site du commerce
-                            </a>
-                        {% endif %}
-                    </div>
-
-                    <div class="commerce-réseaux">
-                        {% if store.phone %}
-                            <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
-                                {% with image_path='images/'|add:store.ville|lower|add:'/telephone.webp' %}
-                                    <img src="{% static image_path %}" alt="Téléphone {{ store.nom }}">
-                                {% endwith %}
-                            </a>
-                        {% endif %}
-
-                        {% if store.instagram %}
-                            <a href="{{ store.instagram }}" class="btn-instagram" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
-                                <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
-                            </a>
-                        {% endif %}
-
-                        {% if store.facebook %}
-                            <a href="{{ store.facebook }}" class="btn-facebook" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
-                                <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
-                            </a>
-                        {% endif %}
-                    </div>
-
-                    <!-- FAVORIS -->
-                    <div class="commerce-wishlist">
-                        <button class="favori-btn"
-                                data-store-id="{{ store.id }}"
-                                data-is-favorite="{{ is_favorite|yesno:'true,false' }}"
-                                data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
-                            <i class="fa-regular fa-heart"></i>
-                            <span>Ajouter aux favoris</span>
-                        </button>
-                    </div>
-
-                  <button class="btn-suggest-modif" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
-        onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
-    Suggérer une modification
-</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-        <!-- Boutons onglets secondaires -->
+<!--Juste avant la fin du image container-->
+    <!-- Boutons onglets secondaires -->
     <div class="store-informations-secondaires-super-container">
         <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
             <div class="informations-secondaires-commerce-container">
@@ -443,6 +330,125 @@
     </div>
     {% endfor %}
 </section>
+    </div>
+
+
+              
+            </div>
+
+            <!-- PARTIE DROITE : infos + liens -->
+            <div class="commerce-right-part-container">
+                <div class="description-container">
+                    <h1>{{ store.nom }} | {{ store.ville }}</h1>
+
+                    <!-- Badge ouvert / fermé -->
+                    {% if est_ouvert is not None %}
+    {% if est_ouvert %}
+        <span class="badge-statut badge-ouvert">
+            <span class="badge-dot"></span> Ouvert en ce moment
+        </span>
+    {% else %}
+        <span class="badge-statut badge-ferme">
+            <span class="badge-dot"></span> Fermé en ce moment
+        </span>
+    {% endif %}
+    <small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances</small>
+{% endif %}
+                    
+                     {% if not store.owner or store.owner.is_superuser %}
+                    <div class="store-revendiquer-container">
+                        <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
+    <button class="store-revendiquer-b"
+            id="claimButton"
+            data-store-id="{{ store.id }}"
+            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+            onclick="claimStore({{ store.id }})">
+        Prenez le contrôle de votre page
+    </button>
+                    </div>
+{% endif %}
+
+                  
+                     {% if request.user == store.owner or request.user.is_superuser %}
+                    <div class="store-modifier-commerce-container">
+                        <div class="store-modifier-commerce-content-container">
+        <i class="fa-solid fa-pencil" id="store-modifier-commerce-icon"></i><a href="{% url 'edit_store' store.departement store.ville store.slug %}"
+           class="store-modifier-commerce-b">
+            Modifier ce commerce
+        </a>
+                        </div>
+                    </div>
+    {% endif %}
+
+                    <hr class="hr-page-commerce" />
+
+                    <div class="description-principale">
+                        <p>{{ store.descriptionpetite }}</p>
+                    </div>
+
+                    <div class="description-secondaire">
+                        <p>{{ store.descriptiongrande }}</p>
+                    </div>
+
+                    <div class="itinéraire-commerce">
+                        {% if store.addresseitineraire %}
+                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description" data-store-id="{{ store.id }}">
+                                Je me rends sur place
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="site-commerce">
+                        {% if store.site %}
+                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description" data-store-id="{{ store.id }}">
+                                Site du commerce
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="commerce-réseaux">
+                        {% if store.phone %}
+                            <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
+                                {% with image_path='images/'|add:store.ville|lower|add:'/telephone.webp' %}
+                                    <img src="{% static image_path %}" alt="Téléphone {{ store.nom }}">
+                                {% endwith %}
+                            </a>
+                        {% endif %}
+
+                        {% if store.instagram %}
+                            <a href="{{ store.instagram }}" class="btn-instagram" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
+                                <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
+                            </a>
+                        {% endif %}
+
+                        {% if store.facebook %}
+                            <a href="{{ store.facebook }}" class="btn-facebook" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
+                                <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <!-- FAVORIS -->
+                    <div class="commerce-wishlist">
+                        <button class="favori-btn"
+                                data-store-id="{{ store.id }}"
+                                data-is-favorite="{{ is_favorite|yesno:'true,false' }}"
+                                data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+                            <i class="fa-regular fa-heart"></i>
+                            <span>Ajouter aux favoris</span>
+                        </button>
+                    </div>
+
+                  <button class="btn-suggest-modif" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
+        onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
+    Suggérer une modification
+</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
 
 </main>
 
