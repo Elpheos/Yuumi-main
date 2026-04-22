@@ -1205,9 +1205,12 @@ body.menu-open {
     align-items: flex-start;
 }
 
+.store-leftpart-container {
+    width: 65%;
+  }
+
 .photo-commerce-container {
     flex: 0 0 65%;
-    max-width: 65%;
 }
 
 .photo-commerce-container img {
@@ -1337,7 +1340,6 @@ body.menu-open {
     box-sizing: border-box;
     margin-top: 16px;
     margin-left: 5%;
-	max-width: 50%;
 }
 
 .infopratiques-content-container {
