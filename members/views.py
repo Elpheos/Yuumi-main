@@ -627,12 +627,12 @@ def suggest_new_store(request):
     ip = get_client_ip(request)
 
     # 2. Vérifier le cooldown par IP
-if not request.user.is_superuser:    # 4 espaces
-        recent = StoreSuggestion.objects.filter(
+    if not request.user.is_superuser:    # 4 espaces
+        recent = StoreSuggestion.objects.filter(  # 8 espaces ← pas 12
             ip_address=ip,
             created_at__gte=timezone.now() - timedelta(hours=1)
         ).exists()
-        if recent:                        # 8 espaces — même niveau que recent
+        if recent:                        # 8 espaces ← pas 12
             return JsonResponse(
                 {"error": "cooldown"},
                 status=429,
@@ -673,12 +673,12 @@ def suggest_modif_store(request, store_id):
 
 
     # 2. Vérifier le cooldown par IP
-if not request.user.is_superuser:    # 4 espaces
-        recent = StoreSuggestion.objects.filter(
+    if not request.user.is_superuser:    # 4 espaces
+        recent = StoreSuggestion.objects.filter(  # 8 espaces ← pas 12
             ip_address=ip,
             created_at__gte=timezone.now() - timedelta(hours=1)
         ).exists()
-        if recent:                        # 8 espaces — même niveau que recent
+        if recent:                        # 8 espaces ← pas 12
             return JsonResponse(
                 {"error": "cooldown"},
                 status=429,
