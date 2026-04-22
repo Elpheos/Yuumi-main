@@ -471,6 +471,7 @@ class StoreSuggestion(models.Model):
     # Descriptions
     descriptionpetite = models.TextField(null=True, blank=True)
     descriptiongrande = models.TextField(null=True, blank=True)
+    message = models.TextField(null=True, blank=True)
 
     # Contact & liens
     # Les champs URL sont protégés par URLValidator : seuls http:// et https://
