@@ -21,9 +21,9 @@ import json
 
 from .models import (
     Store, ProductFamily, Product, Category,
-    StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,Click, PageView,
+    StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,Click, PageView, StoreSuggestion,
 )
-from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm
+from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm,
 
 
 # ---------------------------
@@ -619,3 +619,89 @@ def track_click(request, store_id):
         Click.objects.create(store=store, type_click=type_click)
         return JsonResponse({"ok": True})
 
+def suggest_new_store(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    # 1. Récupérer l'IP
+    ip = get_client_ip(request)
+
+    # 2. Vérifier le cooldown par IP
+    recent = StoreSuggestion.objects.filter(
+        ip_address=ip,
+        created_at__gte=timezone.now() - timedelta(hours=1)
+    ).exists()
+
+    if recent:
+        return JsonResponse(
+            {"error": "cooldown"},
+            status=429,
+        )
+
+    # 3. Valider le formulaire
+    form = NewStoreForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return JsonResponse({"error": "Formulaire invalide"}, status=400)
+
+    # 4. Sauvegarder en BDD
+    suggestion = form.save(commit=False)
+    suggestion.type_suggestion = "new.store"
+    suggestion.ip_address = ip
+    suggestion.save()
+
+    # 5. Envoyer le mail
+    send_mail(
+        subject=f"Nouvelle suggestion de commerce — {suggestion.nom}",
+        message=f"Nom : {suggestion.nom}\nVille : {suggestion.ville}\nDépartement : {suggestion.departement}\nTél : {suggestion.phone}\nSite : {suggestion.site}",
+        from_email="noreply@yuumi-shop.com",
+        recipient_list=["contact@yuumi-shop.com"],
+        fail_silently=False,
+    )
+
+    # 6. Confirmer
+    return JsonResponse({"message": "Merci pour votre suggestion !"})
+
+
+def suggest_modif_store(request, store_id):
+    store = get_object_or_404(Store, id=store_id)
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    # 1. Récupérer l'IP
+    ip = get_client_ip(request)
+
+    # 2. Vérifier le cooldown par IP
+    recent = StoreSuggestion.objects.filter(
+        ip_address=ip,
+        created_at__gte=timezone.now() - timedelta(hours=1)
+    ).exists()
+
+    if recent:
+        return JsonResponse(
+            {"error": "cooldown"},
+            status=429,
+        )
+
+    # 3. Valider le formulaire
+    form = ModifStoreForm(request.POST, request.FILES)
+    if not form.is_valid():
+        return JsonResponse({"error": "Formulaire invalide"}, status=400)
+
+    # 4. Sauvegarder en BDD
+    suggestion = form.save(commit=False)
+    suggestion.type_suggestion = "modif.store"
+    suggestion.ip_address = ip
+    suggestion.store = store
+    suggestion.save()
+
+    # 5. Envoyer le mail
+    send_mail(
+        subject=f"Suggestion de modification — {store.nom}",
+        message=f"Commerce : {store.nom}\nVille : {store.ville}\nMessage : {suggestion.message}\nTél : {suggestion.phone}\nSite : {suggestion.site}",
+        from_email="noreply@yuumi-shop.com",
+        recipient_list=["contact@yuumi-shop.com"],
+        fail_silently=False,
+    )
+
+    # 6. Confirmer
+    return JsonResponse({"message": "Merci pour votre suggestion !"})
