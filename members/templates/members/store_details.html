@@ -177,10 +177,7 @@
                     </div>
 {% endif %}
 
-                  <button data-bs-toggle="modal" data-bs-target="#suggestModifModal"
-        onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
-    Suggérer une modification
-</button>
+                  
                      {% if request.user == store.owner or request.user.is_superuser %}
                     <div class="store-modifier-commerce-container">
                         <div class="store-modifier-commerce-content-container">
@@ -250,6 +247,11 @@
                             <span>Ajouter aux favoris</span>
                         </button>
                     </div>
+
+                  <button data-bs-toggle="modal" data-bs-target="#suggestModifModal"
+        onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
+    Suggérer une modification
+</button>
                 </div>
             </div>
         </div>
