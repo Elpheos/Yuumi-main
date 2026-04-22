@@ -72,7 +72,6 @@ class Category(models.Model):
     image = models.ImageField(
         upload_to="categories/",
         null=True,
-        blank=True,
         help_text="Image affichée sur la page ville",
     )
 
