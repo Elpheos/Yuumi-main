@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from dal import autocomplete
-from .models import Store, ProductFamily, Product
+from .models import Store, ProductFamily, Product, StoreSuggestion
 
 # -------------------------------
 # Formulaire famille
