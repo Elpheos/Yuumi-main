@@ -447,4 +447,89 @@ class Click(models.Model):
     store = models.ForeignKey("Store", on_delete=models.CASCADE, related_name="clicks")
     type_click = models.CharField(max_length=20, choices=TYPE_CHOICES, default="site")
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+
+class StoreSuggestion(models.Model):
+
+    TYPE_CHOICES = [
+        ("new.store", "Suggestion de nouveau commerce"),
+        ("modif.store","Suggestion de modification"),
+    ]
+
+    STATUT_CHOICES = [
+        ("en_attente", "En attente"),
+        ("acceptee","Acceptée"),
+        ("refusee","Refusée"),
+    ]
+
+    nom = models.CharField(max_length=255, null=True, blank=True)
+    ville = models.CharField(max_length=255, null=True, blank=True)
+    departement = models.CharField(max_length=255, null=True, blank=True)
+    ville_precise = models.CharField(max_length=255, null=True, blank=True)
+
+    # Descriptions
+    descriptionpetite = models.TextField(null=True, blank=True)
+    descriptiongrande = models.TextField(null=True, blank=True)
+
+    # Contact & liens
+    # Les champs URL sont protégés par URLValidator : seuls http:// et https://
+    # sont acceptés, ce qui bloque les injections javascript:, data:, etc.
+    addressemaps = models.CharField(max_length=255, null=True, blank=True)
+    site = models.CharField(
+        max_length=255,
+        blank=True,
+        validators=[_url_validator],
+    )
+    phone = models.CharField(max_length=20, null=True, blank=True)
+    instagram = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        validators=[_url_validator],
+    )
+    facebook = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        validators=[_url_validator],
+    )
+
+    # Images
+    photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
+
+    # ✅ Le champ "type" qui utilise TYPE_CHOICES comme options
+    type_suggestion = models.CharField(max_length=20, choices=TYPE_CHOICES)
+
+    # ✅ Le champ "statut" qui utilise STATUT_CHOICES, avec "en_attente" par défaut
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default="en_attente")
+
+    # Le commerce concerné (seulement pour les modifications)
+    store = models.ForeignKey("Store", on_delete=models.SET_NULL, null=True, blank=True)
+    
+    # Pour le cooldown anti-spam
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    
+    # Date automatique à la création
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # Horaires
+    lundi = models.TextField(null=True, blank=True)
+    mardi = models.TextField(null=True, blank=True)
+    mercredi = models.TextField(null=True, blank=True)
+    jeudi = models.TextField(null=True, blank=True)
+    vendredi = models.TextField(null=True, blank=True)
+    samedi = models.TextField(null=True, blank=True)
+    dimanche = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.get_type_suggestion_display()} — {self.nom or self.store}"
+    
+    class Meta:
+        verbose_name = "Suggestion"
+        verbose_name_plural = "Suggestions"
+        ordering = ["-created_at"]
+
+    
+
     
