@@ -23,7 +23,7 @@ from .models import (
     Store, ProductFamily, Product, Category,
     StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,Click, PageView, StoreSuggestion,
 )
-from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm,
+from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
 
 # ---------------------------
