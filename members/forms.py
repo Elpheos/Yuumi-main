@@ -138,6 +138,7 @@ class NewStoreForm(forms.ModelForm):
             'vendredi',
             'samedi',
             'dimanche',
+            'produits_suggeres',
         ]
         widgets = {
             'departement': forms.TextInput(attrs={'placeholder': 'Tapez un département...'}),
@@ -165,13 +166,14 @@ class ModifStoreForm(forms.ModelForm):
             'vendredi',
             'samedi',
             'dimanche',
+            'produits_suggeres',
         ]
         widgets = {
-        'message': forms.Textarea(attrs={
-            'placeholder': 'Expliquez ce que vous souhaitez modifier...',
-            'rows': 4,
-        }),
-    }
+            'message': forms.Textarea(attrs={
+                'placeholder': 'Expliquez ce que vous souhaitez modifier...',
+                'rows': 4,
+            }),
+        }
 
 
 
