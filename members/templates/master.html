@@ -496,7 +496,7 @@ main {
                     Tous les champs sont optionnels, remplissez ce que vous savez !
                 </p>
 
-                <form id="suggest-new-form">
+                <form id="suggest-new-form" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="mb-3">
@@ -524,6 +524,12 @@ main {
                         <label class="form-label">Description courte</label>
                         <input type="text" name="descriptionpetite" class="form-control" placeholder="Ex : Boulangerie artisanale">
                     </div>
+
+                                    <div class="mb-3">
+                    <label class="form-label">Description longue</label>
+                    <textarea name="descriptiongrande" class="form-control" rows="4"
+                        placeholder="Décrivez le commerce plus en détail..."></textarea>
+                </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -584,6 +590,15 @@ main {
     <div class="col-3"><label class="form-label mb-0">Dimanche</label></div>
     <div class="col-9"><input type="text" name="dimanche" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
 </div>
+                    <div class="mb-3">
+    <label class="form-label">Photo</label>
+    <input type="file" name="photo" class="form-control">
+</div>
+                    <div class="mb-3">
+                        <label class="form-label">Produits Suggérés</label>
+                        <textarea name="produits_suggeres" class="form-control" rows="3" 
+    placeholder="Ex : Foie gras, Chips, Pain de campagne..."></textarea>
+                    </div>
 
 
                 </form>
@@ -625,7 +640,7 @@ main {
                     Tous les champs sont optionnels, remplissez uniquement ce que vous souhaitez modifier !
                 </p>
 
-                <form id="suggest-modif-form">
+                <form id="suggest-modif-form" enctype="multipart/form-data">
                     {% csrf_token %}
 
                     <div class="mb-3">
@@ -638,6 +653,12 @@ main {
                         <label class="form-label">Description courte</label>
                         <input type="text" name="descriptionpetite" class="form-control" placeholder="Ex : Boulangerie artisanale">
                     </div>
+
+                                    <div class="mb-3">
+                    <label class="form-label">Description longue</label>
+                    <textarea name="descriptiongrande" class="form-control" rows="4"
+                        placeholder="Décrivez le commerce plus en détail..."></textarea>
+                </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -698,6 +719,16 @@ main {
     <div class="col-9"><input type="text" name="dimanche" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
 </div>
 
+
+                    <div class="mb-3">
+    <label class="form-label">Photo</label>
+    <input type="file" name="photo" class="form-control">
+</div>
+                    <div class="mb-3">
+                        <label class="form-label">Produits Suggérés</label>
+                        <textarea name="produits_suggeres" class="form-control" rows="3" 
+    placeholder="Ex : Foie gras, Chips, Pain de campagne..."></textarea>
+                    </div>
 
 
                 </form>
