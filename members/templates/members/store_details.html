@@ -248,7 +248,7 @@
                         </button>
                     </div>
 
-                  <button data-bs-toggle="modal" data-bs-target="#suggestModifModal"
+                  <button class="btn-suggest-modif" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
         onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
     Suggérer une modification
 </button>
@@ -867,13 +867,15 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 
-.btn-suggest-modif{   border: solid 1px #0a5bb4;
+.btn-suggest-modif{   
+    border: solid 1px #0a5bb4;
     margin-top: 2vh;
     padding: 10px;
     font-weight: bold;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     border-radius: 5px;
-    background-color: #c5d8f5;}
+    background-color: #c5d8f5;
+}
 
 .onglet-btn {
     background: white;
