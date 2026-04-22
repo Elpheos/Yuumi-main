@@ -1201,7 +1201,7 @@ body.menu-open {
     display: grid;
     width: 90%;
     margin: auto;
-    gap: 32px;
+    gap: 0 32px;
     align-items: flex-start;
 	grid-template-columns: 65% 35%;
 }
@@ -1313,13 +1313,6 @@ body.menu-open {
     cursor: pointer;
 }
 
-.informations-secondaires-commerce-container {
-    width: 90%;
-    margin: auto;
-    margin-top: 32px;
-
-}
-
 .informations-secondaires-commerce-buttons-container button {
     background-color: white;
     color: black;
@@ -1342,7 +1335,6 @@ body.menu-open {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
     box-sizing: border-box;
     margin-top: 16px;
-    margin-left: 5%;
 }
 
 .infopratiques-content-container {
@@ -1396,7 +1388,6 @@ body.menu-open {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
     box-sizing: border-box;
     margin-top: 16px;
-    margin-left: 5%;
     display: none;
 	max-width: 100%;
 }
@@ -1618,10 +1609,6 @@ body.menu-open {
 	.store-informations-secondaires-super-container {
 		padding: 0 20px;
 	}
-
-    .informations-secondaires-commerce-container {
-        width: 100%;
-    }
 
     .informations-secondaires-commerce-buttons-container {
         display: flex;
