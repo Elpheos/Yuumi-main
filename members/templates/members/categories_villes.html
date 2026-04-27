@@ -99,9 +99,9 @@
                     {% for cat in categories %}
                         <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
                             {% if cat.image %}
-                                <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                                <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
                             {% else %}
-                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
+                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image" loading="lazy">
                             {% endif %}
                             <span>{{ cat.name }}</span>
                         </a>
