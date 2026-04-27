@@ -108,9 +108,9 @@
                    class="supercat-card">
 
                     {% if cat.image %}
-                        <img src="{{ cat.image }}" alt="{{ cat.name }}">
+                        <img loading="lazy" src="{{ cat.image }}" alt="{{ cat.name }}">
                     {% else %}
-                        <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
+                        <img loading="lazy" src="{% static 'placeholder.png' %}" alt="Pas d'image">
                     {% endif %}
 
                     <span class="supercat-card-name">
