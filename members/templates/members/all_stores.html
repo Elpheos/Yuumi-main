@@ -61,10 +61,10 @@
         {% for commerce in commerces_carousel %}
         <div class="carousel-item {% if forloop.first %}active{% endif %}">
           {% if commerce.photo %}
-            <img class="mise-en-avant-annecy-image" src="{{ commerce.photo.url }}" alt="{{ commerce.nom }} — {{ commerce.categorie.name }} à {{ commerce.ville }}" />
+            <img class="mise-en-avant-annecy-image" src="{{ commerce.photo.url }}" alt="{{ commerce.nom }} — {{ commerce.categorie.name }} à {{ commerce.ville }}" loading="lazy"/>
           {% else %}
             {% with image_path='images/'|add:ville|lower|add:'/base-annecy.jpg' %}
-            <img class="mise-en-avant-annecy-image" src="{% static image_path %}" alt="{{ commerce.nom }}" />
+            <img class="mise-en-avant-annecy-image" src="{% static image_path %}" alt="{{ commerce.nom }}" loading="lazy"/>
             {% endwith %}
           {% endif %}
           <div class="mise-en-avant-annecy-text-container">
@@ -125,7 +125,7 @@
                         <a href="{% url 'by_category' departement ville item.category.slug %}"
                            rel="noopener">
                             {% if item.category.image %}
-                                <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}">
+                                <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}" loading="lazy">
                             {% else %}
                                 <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
                             {% endif %}
