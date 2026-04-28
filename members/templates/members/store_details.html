@@ -252,10 +252,8 @@
         onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
     Suggérer une modification
 </button>
-</div>
+                </div>
             </div>
-        </div>
-    </section> 
  <!-- Boutons onglets secondaires -->
     <div class="store-informations-secondaires-super-container">
         <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
@@ -413,7 +411,7 @@
             {% endif %}
         </section>
 
-
+      <!-- Produits -->
     <!-- Produits -->
 <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits" style="display:none;">
     {% for item in families_with_rows %}
@@ -440,8 +438,11 @@
     </div>
     {% endfor %}
 </section>
-        </div>
 
+    </section>
+          
+        </div>
+    </section>
 </main>
 
 <!-- Modal : connexion requise pour les favoris -->
