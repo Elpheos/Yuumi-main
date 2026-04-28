@@ -90,7 +90,6 @@ class StoreForm(forms.ModelForm):
     def _validate_url(self, field_name, label):
         value = self.cleaned_data.get(field_name, '')
         if not value:
-            # Champ facultatif vide → on laisse passer
             return value
         value = value.strip()
         try:
@@ -113,6 +112,18 @@ class StoreForm(forms.ModelForm):
 
     def clean_addresseitineraire(self):
         return self._validate_url('addresseitineraire', 'Lien itinéraire')
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        
+        if photo and photo.size > 2 * 1024 * 1024:
+            raise ValidationError(
+                "Votre photo dépasse 2 Mo. Compressez-la sur "
+                "https://squoosh.app puis réessayez."
+            )
+        
+        return photo  
+            
 
 class NewStoreForm(forms.ModelForm):
     class Meta:
@@ -145,6 +156,17 @@ class NewStoreForm(forms.ModelForm):
             'ville': forms.TextInput(attrs={'placeholder': 'Tapez une ville...'}),
         }
 
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        
+        if photo and photo.size > 2 * 1024 * 1024:
+            raise ValidationError(
+                "Votre photo dépasse 2 Mo. Compressez-la sur "
+                "https://squoosh.app puis réessayez."
+            )
+        
+        return photo  
+
 class ModifStoreForm(forms.ModelForm):
     class Meta:
         model = StoreSuggestion
@@ -174,6 +196,15 @@ class ModifStoreForm(forms.ModelForm):
                 'rows': 4,
             }),
         }
-
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        
+        if photo and photo.size > 2 * 1024 * 1024:
+            raise ValidationError(
+                "Votre photo dépasse 2 Mo. Compressez-la sur "
+                "https://squoosh.app puis réessayez."
+            )
+        
+        return photo  
 
 
