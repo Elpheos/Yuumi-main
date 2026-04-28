@@ -4,6 +4,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 from django.utils import timezone
 from datetime import timedelta
+from django.utils.safestring import mark_safe
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
@@ -375,7 +376,10 @@ def edit_store(request, departement, ville, slug):
             # Upload images carrousel
             for image in request.FILES.getlist("extra_images"):
                 if image.size > 2 * 1024 * 1024:
-                    messages.warning(request, "Une image carrousel dépasse 2 Mo. Compressez-la sur https://squoosh.app puis réessayez.")
+                    messages.warning(request, mark_safe(
+                        'Une image dépasse 2 Mo. Compressez-la sur '
+                        '<a href="https://squoosh.app" target="_blank">squoosh.app</a> puis réessayez.'
+                    ))
                 else:
                     StoreImage.objects.create(store=store, image=image)
 
@@ -388,7 +392,10 @@ def edit_store(request, departement, ville, slug):
             # Upload images galerie
             for image in request.FILES.getlist("extra_galerie_images"):
                 if image.size > 2 * 1024 * 1024:
-                    messages.warning(request, "Une image galerie dépasse 2 Mo. Compressez-la sur https://squoosh.app puis réessayez.")
+                    messages.warning(request, mark_safe(
+                        'Une image dépasse 2 Mo. Compressez-la sur '
+                        '<a href="https://squoosh.app" target="_blank">squoosh.app</a> puis réessayez.'
+                    ))
                 else:
                     StoreGalerieImage.objects.create(store=store, image=image)
 
@@ -402,7 +409,6 @@ def edit_store(request, departement, ville, slug):
         "form": form,
         "store": store,
     })
-
 # ---------------------------
 # Gestion des favoris
 # ---------------------------
