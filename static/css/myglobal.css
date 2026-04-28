@@ -1608,6 +1608,7 @@ body.menu-open {
 
 	.store-informations-secondaires-super-container {
 		padding: 0 20px;
+		max-width:60%;
 	}
 
     .informations-secondaires-commerce-buttons-container {
