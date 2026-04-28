@@ -374,7 +374,10 @@ def edit_store(request, departement, ville, slug):
 
             # Upload images carrousel
             for image in request.FILES.getlist("extra_images"):
-                StoreImage.objects.create(store=store, image=image)
+                if image.size > 2 * 1024 * 1024:
+                    messages.warning(request, "Une image carrousel dépasse 2 Mo. Compressez-la sur https://squoosh.app puis réessayez.")
+                else:
+                    StoreImage.objects.create(store=store, image=image)
 
             # Suppression images galerie
             for key in request.POST:
@@ -384,7 +387,10 @@ def edit_store(request, departement, ville, slug):
 
             # Upload images galerie
             for image in request.FILES.getlist("extra_galerie_images"):
-                StoreGalerieImage.objects.create(store=store, image=image)
+                if image.size > 2 * 1024 * 1024:
+                    messages.warning(request, "Une image galerie dépasse 2 Mo. Compressez-la sur https://squoosh.app puis réessayez.")
+                else:
+                    StoreGalerieImage.objects.create(store=store, image=image)
 
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
@@ -396,7 +402,6 @@ def edit_store(request, departement, ville, slug):
         "form": form,
         "store": store,
     })
-
 
 # ---------------------------
 # Gestion des favoris
