@@ -20,7 +20,6 @@
     "addressCountry": "FR"
   }
   ,"openingHours": [
-    "Su 00:00-00:00"
     {% if store.lundi_matin_ouverture %}
     ,"Mo {{ store.lundi_matin_ouverture|time:'H:i' }}-{{ store.lundi_matin_fermeture|time:'H:i' }}"
     {% endif %}
