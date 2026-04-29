@@ -167,6 +167,7 @@ color: inherit;
         display: flex;
         gap: 8px;
         list-style: none;
+		margin-right: 16px;
     }
 
     .li-icones-header li a {
