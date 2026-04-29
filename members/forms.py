@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from dal import autocomplete
 from .models import Store, ProductFamily, Product, StoreSuggestion
 from django.utils.safestring import mark_safe
+from .utils import convert_to_webp
 
 # -------------------------------
 # Formulaire famille
@@ -119,6 +120,15 @@ class StoreForm(forms.ModelForm):
         return photo
 
 
+    def save(self, commit=True):
+        store = super().save(commit=False)
+        if 'photo' in self.changed_data and self.cleaned_data.get('photo'):
+            store.photo = convert_to_webp(self.cleaned_data['photo'])
+        if commit:
+            store.save()
+        return store
+
+
 class NewStoreForm(forms.ModelForm):
     class Meta:
         model = StoreSuggestion
@@ -158,6 +168,14 @@ class NewStoreForm(forms.ModelForm):
             ))
         return photo
 
+    def save(self, commit=True):
+        suggestion = super().save(commit=False)
+        if 'photo' in self.changed_data and self.cleaned_data.get('photo'):
+            suggestion.photo = convert_to_webp(self.cleaned_data['photo'])
+        if commit:
+            suggestion.save()
+        return suggestion
+
 
 class ModifStoreForm(forms.ModelForm):
     class Meta:
@@ -196,3 +214,11 @@ class ModifStoreForm(forms.ModelForm):
                 '<a href="https://squoosh.app" target="_blank">squoosh.app</a> puis réessayez.'
             ))
         return photo
+
+    def save(self, commit=True):
+        suggestion = super().save(commit=False)
+        if 'photo' in self.changed_data and self.cleaned_data.get('photo'):
+            suggestion.photo = convert_to_webp(self.cleaned_data['photo'])
+        if commit:
+            suggestion.save()
+        return suggestion
