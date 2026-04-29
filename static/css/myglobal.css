@@ -157,6 +157,14 @@ color: inherit;
 
     .disabled-link {
     border-color: #ddd !important;
+    color: #aaa !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    opacity: 0.6;
+}
+
+ .disabled-link-svg {
+    border-color: #ddd !important;
     fill: #aaa !important;
     cursor: not-allowed !important;
     pointer-events: none !important;
