@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from django.utils import timezone
 from datetime import timedelta
 from django.utils.safestring import mark_safe
+from .utils import convert_to_webp
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
@@ -381,7 +382,8 @@ def edit_store(request, departement, ville, slug):
                         '<a href="https://squoosh.app" target="_blank">squoosh.app</a> puis réessayez.'
                     ))
                 else:
-                    StoreImage.objects.create(store=store, image=image)
+                    webp_image = convert_to_webp(image)
+                    StoreImage.objects.create(store=store, image=webp_image)
 
             # Suppression images galerie
             for key in request.POST:
@@ -397,7 +399,8 @@ def edit_store(request, departement, ville, slug):
                         '<a href="https://squoosh.app" target="_blank">squoosh.app</a> puis réessayez.'
                     ))
                 else:
-                    StoreGalerieImage.objects.create(store=store, image=image)
+                    webp_image = convert_to_webp(image)
+                    StoreGalerieImage.objects.create(store=store, image=webp_image)
 
             Store.objects.filter(pk=store.pk).update(horaires_updated_at=timezone.now())
             messages.success(request, "Le commerce a été mis à jour avec succès.")
