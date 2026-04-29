@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
+from .utils import convert_to_webp
 
 
 
@@ -32,6 +33,12 @@ class SuperCategory(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if self.pk:
+            ancien = SuperCategory.objects.filter(pk=self.pk).values("image").first()
+            if ancien and self.image and ancien["image"] != self.image.name:
+                self.image = convert_to_webp(self.image)
+        elif self.image:
+            self.image = convert_to_webp(self.image)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -64,17 +71,16 @@ class Category(models.Model):
         blank=True,
         help_text="alternative à l'icône FA",
      )
+
     def clean(self):
         if self.icon and self.icon_perso:
             raise ValidationError("Impossible d'enregistrer à la fois une icône FA et une icône personnalisée")
-   
 
     image = models.ImageField(
         upload_to="categories/",
         null=True,
         help_text="Image affichée sur la page ville",
     )
-
 
     class Meta:
         unique_together = ("slug", "super_categorie")
@@ -85,6 +91,15 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+        if self.pk:
+            ancien = Category.objects.filter(pk=self.pk).values("image", "icon_perso").first()
+            if ancien:
+                if self.image and ancien["image"] != self.image.name:
+                    self.image = convert_to_webp(self.image)
+                if self.icon_perso and ancien["icon_perso"] != self.icon_perso.name:
+                    self.icon_perso = convert_to_webp(self.icon_perso)
+        elif self.image:
+            self.image = convert_to_webp(self.image)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -158,38 +173,37 @@ class Store(models.Model):
     # Images
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
 
-
     # Horaires
     lundi_matin_ouverture       = models.TimeField(null=True, blank=True)
     lundi_matin_fermeture       = models.TimeField(null=True, blank=True)
     lundi_apresmidi_ouverture   = models.TimeField(null=True, blank=True)
     lundi_apresmidi_fermeture   = models.TimeField(null=True, blank=True)
-    
+
     mardi_matin_ouverture       = models.TimeField(null=True, blank=True)
     mardi_matin_fermeture       = models.TimeField(null=True, blank=True)
     mardi_apresmidi_ouverture   = models.TimeField(null=True, blank=True)
     mardi_apresmidi_fermeture   = models.TimeField(null=True, blank=True)
-    
+
     mercredi_matin_ouverture    = models.TimeField(null=True, blank=True)
     mercredi_matin_fermeture    = models.TimeField(null=True, blank=True)
     mercredi_apresmidi_ouverture = models.TimeField(null=True, blank=True)
     mercredi_apresmidi_fermeture = models.TimeField(null=True, blank=True)
-    
+
     jeudi_matin_ouverture       = models.TimeField(null=True, blank=True)
     jeudi_matin_fermeture       = models.TimeField(null=True, blank=True)
     jeudi_apresmidi_ouverture   = models.TimeField(null=True, blank=True)
     jeudi_apresmidi_fermeture   = models.TimeField(null=True, blank=True)
-    
+
     vendredi_matin_ouverture    = models.TimeField(null=True, blank=True)
     vendredi_matin_fermeture    = models.TimeField(null=True, blank=True)
     vendredi_apresmidi_ouverture = models.TimeField(null=True, blank=True)
     vendredi_apresmidi_fermeture = models.TimeField(null=True, blank=True)
-    
+
     samedi_matin_ouverture      = models.TimeField(null=True, blank=True)
     samedi_matin_fermeture      = models.TimeField(null=True, blank=True)
     samedi_apresmidi_ouverture  = models.TimeField(null=True, blank=True)
     samedi_apresmidi_fermeture  = models.TimeField(null=True, blank=True)
-    
+
     dimanche_matin_ouverture    = models.TimeField(null=True, blank=True)
     dimanche_matin_fermeture    = models.TimeField(null=True, blank=True)
     dimanche_apresmidi_ouverture = models.TimeField(null=True, blank=True)
@@ -301,6 +315,11 @@ class StoreImage(models.Model):
     def __str__(self):
         return f"Image de {self.store.nom}"
 
+    def save(self, *args, **kwargs):
+        if self.image and not self.image.name.endswith('.webp'):
+            self.image = convert_to_webp(self.image)
+        super().save(*args, **kwargs)
+
 
 # ===========================================================
 # 🔹 Familles de produits
@@ -388,6 +407,7 @@ class CityCategoryItem(models.Model):
     def __str__(self):
         return f"{self.highlight} — {self.category}"
 
+
 # ===========================================================
 # 🔹 Images de galerie
 # ===========================================================
@@ -403,23 +423,28 @@ class StoreGalerieImage(models.Model):
     def __str__(self):
         return f"Galerie image de {self.store.nom}"
 
+    def save(self, *args, **kwargs):
+        if self.image and not self.image.name.endswith('.webp'):
+            self.image = convert_to_webp(self.image)
+        super().save(*args, **kwargs)
+
+
 # ===========================================================
 # 🔹 Trackers
 # ===========================================================
-
 
 class PageView(models.Model):
     store = models.ForeignKey(
         "Store",
         on_delete=models.CASCADE,
-        related_name="pageviews",  # ← IMPORTANT
+        related_name="pageviews",
         null=True,
         blank=True,
     )
-
-    session_id = models.CharField(max_length=100)  # ← tu l’utilises déjà
+    session_id = models.CharField(max_length=100)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+
 
 class StoreStats(Store):
     class Meta:
@@ -427,11 +452,13 @@ class StoreStats(Store):
         verbose_name = "Statistique"
         verbose_name_plural = "Statistiques"
 
+
 class StoreClickStats(Store):
     class Meta:
         proxy = True
         verbose_name = "Statistique des clics"
         verbose_name_plural = "Statistiques des clics"
+
 
 class Click(models.Model):
 
@@ -446,7 +473,6 @@ class Click(models.Model):
     store = models.ForeignKey("Store", on_delete=models.CASCADE, related_name="clicks")
     type_click = models.CharField(max_length=20, choices=TYPE_CHOICES, default="site")
     created_at = models.DateTimeField(auto_now_add=True)
-
 
 
 class StoreSuggestion(models.Model):
@@ -498,18 +524,15 @@ class StoreSuggestion(models.Model):
     # Images
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
 
-    # ✅ Le champ "type" qui utilise TYPE_CHOICES comme options
     type_suggestion = models.CharField(max_length=20, choices=TYPE_CHOICES)
-
-    # ✅ Le champ "statut" qui utilise STATUT_CHOICES, avec "en_attente" par défaut
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default="en_attente")
 
     # Le commerce concerné (seulement pour les modifications)
     store = models.ForeignKey("Store", on_delete=models.SET_NULL, null=True, blank=True)
-    
+
     # Pour le cooldown anti-spam
     ip_address = models.GenericIPAddressField(null=True, blank=True)
-    
+
     # Date automatique à la création
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -526,12 +549,8 @@ class StoreSuggestion(models.Model):
 
     def __str__(self):
         return f"{self.get_type_suggestion_display()} — {self.nom or self.store}"
-    
+
     class Meta:
         verbose_name = "Suggestion"
         verbose_name_plural = "Suggestions"
         ordering = ["-created_at"]
-
-    
-
-    
