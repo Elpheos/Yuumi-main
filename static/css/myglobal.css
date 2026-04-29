@@ -170,13 +170,17 @@ color: inherit;
     }
 
     .li-icones-header li a {
-        color: #ff8b38;
+        fill: #ff8b38;
         background-color: white;
         padding: 5px;
         text-decoration: none;
         font-weight: bold;
         font-size: 18px;
     }
+
+ 	.li-icones-header li a svg {
+		width: 16px; 	
+ 	}
 
 /* ── Breakpoint tablette intermédiaire (768px–1024px) ───────── */
 @media (min-width: 768px) and (max-width: 1024px) {
