@@ -157,7 +157,7 @@ color: inherit;
 
     .disabled-link {
     border-color: #ddd !important;
-    color: #aaa !important;
+    fill: #aaa !important;
     cursor: not-allowed !important;
     pointer-events: none !important;
     opacity: 0.6;
