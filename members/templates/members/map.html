@@ -6,6 +6,8 @@ Carte des commerces - {{ departement }} | Yuumi
 {% endblock %}
 
 {% block extra_head %}
+<meta name="geo.placename" content="{{ departement }}, France">
+<meta name="geo.region" content="FR">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 {% endblock %}
