@@ -122,3 +122,20 @@ class StoreSitemap(Sitemap):
     def location(self, obj):
         # Utilise get_absolute_url() défini sur le modèle Store
         return obj.get_absolute_url()
+
+
+class CategoriesVilleSitemap(Sitemap):
+    changefreq = "weekly"
+    priority = 0.5
+
+    def items(self):
+        return list(
+            Store.objects
+            .values_list("departement", "ville")
+            .distinct()
+            .order_by("departement", "ville")
+        )
+
+    def location(self, item):
+        departement, ville = item
+        return reverse("categories_ville", args=[departement, ville])
