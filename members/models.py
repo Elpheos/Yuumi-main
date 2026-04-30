@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 from .utils import convert_to_webp
+from simple_history.models import HistoricalRecords
 
 
 
@@ -24,6 +25,8 @@ class SuperCategory(models.Model):
         blank=True,
         help_text="Image affichée pour la super catégorie",
     )
+
+    history = HistoricalRecords()
 
     class Meta:
         verbose_name = "Super catégorie"
@@ -81,6 +84,8 @@ class Category(models.Model):
         null=True,
         help_text="Image affichée sur la page ville",
     )
+
+    history = HistoricalRecords()
 
     class Meta:
         unique_together = ("slug", "super_categorie")
@@ -142,8 +147,6 @@ class Store(models.Model):
     descriptiongrande = models.TextField(null=True, blank=True)
 
     # Contact & liens
-    # Les champs URL sont protégés par URLValidator : seuls http:// et https://
-    # sont acceptés, ce qui bloque les injections javascript:, data:, etc.
     addressemaps = models.CharField(max_length=255, null=True, blank=True)
     addresseitineraire = models.CharField(
         max_length=255,
@@ -217,24 +220,21 @@ class Store(models.Model):
     # Propriétaire
     owner = models.OneToOneField(
         User,
-        on_delete=models.SET_NULL,  # FIX : CASCADE supprimait le commerce si l'user est supprimé
+        on_delete=models.SET_NULL,
         related_name="store",
         null=True,
         blank=True,
         default=None,
     )
 
+    history = HistoricalRecords()
+
     class Meta:
         verbose_name = "Commerce"
         verbose_name_plural = "Commerces"
         ordering = ["nom"]
 
-    # ----------------------------------------------------------
-    # Slug : génération unique
-    # ----------------------------------------------------------
-
     def _generate_unique_slug(self):
-        """Génère un slug unique, en ajoutant un suffixe numérique si nécessaire."""
         base = slugify(self.nom) or "commerce"
         slug = base
         counter = 1
@@ -244,12 +244,7 @@ class Store(models.Model):
             counter += 1
         return slug
 
-    # ----------------------------------------------------------
-    # Géocodage asynchrone
-    # ----------------------------------------------------------
-
     def _geocode(self):
-        """Géocodage en arrière-plan — appelé depuis un thread séparé."""
         from geopy.geocoders import Nominatim
 
         geolocator = Nominatim(user_agent="yuumi_geocoder")
@@ -261,19 +256,13 @@ class Store(models.Model):
                     longitude=location.longitude,
                 )
         except Exception:
-            pass  # Échec silencieux — le géocodage peut être relancé via geocode_stores.py
-
-    # ----------------------------------------------------------
-    # Save
-    # ----------------------------------------------------------
+            pass
 
     def save(self, *args, **kwargs):
 
-        # Générer un slug unique si absent
         if not self.slug:
             self.slug = self._generate_unique_slug()
 
-        # Détecter si l'adresse a changé sur un commerce existant
         adresse_changee = False
         if self.pk:
             ancien = Store.objects.filter(pk=self.pk).values("addressemaps").first()
@@ -284,7 +273,6 @@ class Store(models.Model):
 
         super().save(*args, **kwargs)
 
-        # Lancer le géocodage en arrière-plan si nécessaire
         if self.addressemaps and (adresse_changee or self.latitude is None):
             t = threading.Thread(target=self._geocode)
             t.daemon = True
@@ -312,6 +300,8 @@ class StoreImage(models.Model):
     )
     image = models.ImageField(upload_to="store_photos/")
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return f"Image de {self.store.nom}"
 
@@ -333,6 +323,8 @@ class ProductFamily(models.Model):
     )
     nom = models.CharField(max_length=255)
 
+    history = HistoricalRecords()
+
     class Meta:
         verbose_name = "Famille de produits"
         verbose_name_plural = "Familles de produits"
@@ -353,6 +345,8 @@ class Product(models.Model):
     )
     nom = models.CharField(max_length=255)
 
+    history = HistoricalRecords()
+
     @property
     def store(self):
         return self.family.store
@@ -363,8 +357,6 @@ class Product(models.Model):
 
 # ===========================================================
 # 🔹 Favoris utilisateurs
-# Note : add_to_class est fonctionnel mais peu conventionnel.
-# Une migration sera nécessaire si vous migrez vers un CustomUser.
 # ===========================================================
 
 User.add_to_class(
@@ -419,6 +411,8 @@ class StoreGalerieImage(models.Model):
         related_name="galerie_images",
     )
     image = models.ImageField(upload_to="store_galerie/")
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Galerie image de {self.store.nom}"
@@ -493,14 +487,10 @@ class StoreSuggestion(models.Model):
     departement = models.CharField(max_length=255, null=True, blank=True)
     ville_precise = models.CharField(max_length=255, null=True, blank=True)
 
-    # Descriptions
     descriptionpetite = models.TextField(null=True, blank=True)
     descriptiongrande = models.TextField(null=True, blank=True)
     message = models.TextField(null=True, blank=True)
 
-    # Contact & liens
-    # Les champs URL sont protégés par URLValidator : seuls http:// et https://
-    # sont acceptés, ce qui bloque les injections javascript:, data:, etc.
     addressemaps = models.CharField(max_length=255, null=True, blank=True)
     site = models.CharField(
         max_length=255,
@@ -521,22 +511,17 @@ class StoreSuggestion(models.Model):
         validators=[_url_validator],
     )
 
-    # Images
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
 
     type_suggestion = models.CharField(max_length=20, choices=TYPE_CHOICES)
     statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default="en_attente")
 
-    # Le commerce concerné (seulement pour les modifications)
     store = models.ForeignKey("Store", on_delete=models.SET_NULL, null=True, blank=True)
 
-    # Pour le cooldown anti-spam
     ip_address = models.GenericIPAddressField(null=True, blank=True)
 
-    # Date automatique à la création
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # Horaires
     lundi = models.TextField(null=True, blank=True)
     mardi = models.TextField(null=True, blank=True)
     mercredi = models.TextField(null=True, blank=True)
@@ -546,6 +531,8 @@ class StoreSuggestion(models.Model):
     dimanche = models.TextField(null=True, blank=True)
 
     produits_suggeres = models.TextField(null=True, blank=True)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.get_type_suggestion_display()} — {self.nom or self.store}"
