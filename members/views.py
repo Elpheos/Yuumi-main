@@ -722,3 +722,7 @@ def suggest_modif_store(request, store_id):
 
     # 6. Confirmer
     return JsonResponse({"message": "Merci pour votre suggestion !"})
+
+
+def confidentialite(request):
+    return render(request, "members/confidentialite.html")
