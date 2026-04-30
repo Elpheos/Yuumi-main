@@ -2,7 +2,10 @@
 {% load static %}
 
 {% block extra_head %}
+<meta name="geo.placename" content="{{ store.ville }}, {{ store.departement }}, France">
+<meta name="geo.region" content="FR">
 <script type="application/ld+json">
+...
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
