@@ -2,7 +2,10 @@
 {% load static %}
 
 {% block title %}Catégories à {{ ville }}{% endblock %}
-
+{% block extra_head %}
+<meta name="geo.placename" content="{{ ville }}, {{ departement }}, France">
+<meta name="geo.region" content="FR">
+{% endblock %}
 {% block content %}
 <div class="page-container">
 <style>
