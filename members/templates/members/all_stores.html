@@ -181,7 +181,7 @@
                                 {% if store.photo %}
                                     <img src="{{ store.photo.url }}" alt="{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
                                 {% else %}
-                                    <img src="{% static 'placeholder.png' %}" alt="Pas de photo">
+                                    <img src="{% static 'placeholder.png' %}" alt="{{ store.nom }} à {{ store.ville }}">
                                 {% endif %}
                             </div>
 
