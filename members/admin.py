@@ -6,6 +6,8 @@ from django.db.models import Count, Q
 
 import nested_admin
 
+from simple_history.admin import SimpleHistoryAdmin
+
 from .models import (
     Store,
     StoreImage,
@@ -76,7 +78,7 @@ class StoreGalerieImageInline(nested_admin.NestedTabularInline):
 # ===========================================================
 
 @admin.register(Store)
-class StoreAdmin(nested_admin.NestedModelAdmin):
+class StoreAdmin(SimpleHistoryAdmin, nested_admin.NestedModelAdmin):
     form = StoreForm
 
     list_display = (
@@ -129,23 +131,23 @@ class StoreAdmin(nested_admin.NestedModelAdmin):
             )
         return ""
     photo_preview.short_description = "Photo principale"
-    
+
     def save_model(self, request, obj, form, change):
-            if any(
-                field in form.changed_data
-                for field in [
-                    'lundi_matin_ouverture', 'lundi_matin_fermeture', 'lundi_apresmidi_ouverture', 'lundi_apresmidi_fermeture',
-                    'mardi_matin_ouverture', 'mardi_matin_fermeture', 'mardi_apresmidi_ouverture', 'mardi_apresmidi_fermeture',
-                    'mercredi_matin_ouverture', 'mercredi_matin_fermeture', 'mercredi_apresmidi_ouverture', 'mercredi_apresmidi_fermeture',
-                    'jeudi_matin_ouverture', 'jeudi_matin_fermeture', 'jeudi_apresmidi_ouverture', 'jeudi_apresmidi_fermeture',
-                    'vendredi_matin_ouverture', 'vendredi_matin_fermeture', 'vendredi_apresmidi_ouverture', 'vendredi_apresmidi_fermeture',
-                    'samedi_matin_ouverture', 'samedi_matin_fermeture', 'samedi_apresmidi_ouverture', 'samedi_apresmidi_fermeture',
-                    'dimanche_matin_ouverture', 'dimanche_matin_fermeture', 'dimanche_apresmidi_ouverture', 'dimanche_apresmidi_fermeture',
-                ]
-            ):
-                obj.horaires_updated_at = timezone.now()
-            super().save_model(request, obj, form, change)
-    
+        if any(
+            field in form.changed_data
+            for field in [
+                'lundi_matin_ouverture', 'lundi_matin_fermeture', 'lundi_apresmidi_ouverture', 'lundi_apresmidi_fermeture',
+                'mardi_matin_ouverture', 'mardi_matin_fermeture', 'mardi_apresmidi_ouverture', 'mardi_apresmidi_fermeture',
+                'mercredi_matin_ouverture', 'mercredi_matin_fermeture', 'mercredi_apresmidi_ouverture', 'mercredi_apresmidi_fermeture',
+                'jeudi_matin_ouverture', 'jeudi_matin_fermeture', 'jeudi_apresmidi_ouverture', 'jeudi_apresmidi_fermeture',
+                'vendredi_matin_ouverture', 'vendredi_matin_fermeture', 'vendredi_apresmidi_ouverture', 'vendredi_apresmidi_fermeture',
+                'samedi_matin_ouverture', 'samedi_matin_fermeture', 'samedi_apresmidi_ouverture', 'samedi_apresmidi_fermeture',
+                'dimanche_matin_ouverture', 'dimanche_matin_fermeture', 'dimanche_apresmidi_ouverture', 'dimanche_apresmidi_fermeture',
+            ]
+        ):
+            obj.horaires_updated_at = timezone.now()
+        super().save_model(request, obj, form, change)
+
     class Media:
         js = ("copy_horaires.js",)
 
@@ -241,27 +243,27 @@ class StoreClickStatsAdmin(admin.ModelAdmin):
 # ===========================================================
 
 @admin.register(ProductFamily)
-class ProductFamilyAdmin(admin.ModelAdmin):
+class ProductFamilyAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("nom", "store")
     search_fields = ("nom", "store__nom")
 
 
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("nom", "family")
     search_fields = ("nom",)
     list_filter = ("family",)
 
 
 @admin.register(SuperCategory)
-class SuperCategoryAdmin(admin.ModelAdmin):
+class SuperCategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("name", "slug")
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("name", "super_categorie")
     list_filter = ("super_categorie",)
     search_fields = ("name",)
@@ -281,7 +283,6 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
 
 
 @admin.register(StoreSuggestion)
-class StoreSuggestionAdmin(admin.ModelAdmin):
+class StoreSuggestionAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("type_suggestion", "nom", "ville", "statut", "created_at", "store")
     list_filter = ("statut", "type_suggestion")
-
