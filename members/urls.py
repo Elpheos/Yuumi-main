@@ -12,6 +12,11 @@ urlpatterns = [
         content_type="text/plain"
     ), name="robots"),
 
+    path("ads.txt", TemplateView.as_view(
+        template_name="ads.txt",
+        content_type="text/plain"
+    ), name="ads"),
+
     # Suggestions de modification et de nouveaux commerces
     path("suggestion/nouveau/", views.suggest_new_store, name="suggest-new-store"),
     path("store/<int:store_id>/suggestion/", views.suggest_modif_store, name="suggest-modif-store"),
