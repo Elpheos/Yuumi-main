@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "nested_admin",
     "django_extensions",
     "django.contrib.sitemaps",
+    'simple_history',
 ]
 
 
@@ -85,6 +86,7 @@ MIDDLEWARE = [
     # No-cache sur les pages HTML (évite le cache navigateur mobile)
     "members.cache_middleware.NoCacheHTMLMiddleware",
     "axes.middleware.AxesMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
 ]
 
 
