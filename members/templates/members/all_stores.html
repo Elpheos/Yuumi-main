@@ -6,6 +6,11 @@
 {% block og_title %}Commerces à {{ ville }} ({{ departement }}) | Yuumi{% endblock %}
 {% block og_description %}Découvrez tous les commerces locaux à {{ ville }} : épiceries, fleuristes, cavistes et bien plus encore.{% endblock %}
 
+{% block extra_head %}
+<meta name="geo.placename" content="{{ ville }}, {{ departement }}, France">
+<meta name="geo.region" content="FR">
+{% endblock %}
+
 {% block content %}
 <div class="page-container" id="page-container-page-ville">
 <style>
