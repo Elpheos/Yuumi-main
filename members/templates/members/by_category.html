@@ -190,7 +190,7 @@
                         {% if commerce.photo %}
                             <img loading="lazy" src="{{ commerce.photo.url }}" alt="Photo de {{ commerce.nom }} à {{ commerce.ville }} dans la catégorie {{ commerce.categorie }}">
                         {% else %}
-                            <img loading="lazy" src="{% static 'placeholder.png' %}" alt="">
+                            <img loading="lazy" src="{% static 'placeholder.png' %}" alt="{{ commerce.nom }} — {{ commerce.categorie }} à {{ commerce.ville }}">
                         {% endif %}
 
                         <h4>{{ commerce.nom }}</h4>
