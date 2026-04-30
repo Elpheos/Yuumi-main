@@ -120,8 +120,10 @@ class StoreSitemap(Sitemap):
         return Store.objects.all().order_by("departement", "ville", "slug")
 
     def location(self, obj):
-        # Utilise get_absolute_url() défini sur le modèle Store
         return obj.get_absolute_url()
+
+    def lastmod(self, obj):
+        return obj.horaires_updated_at
 
 
 class CategoriesVilleSitemap(Sitemap):
