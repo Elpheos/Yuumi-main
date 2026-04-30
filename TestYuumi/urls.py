@@ -14,14 +14,16 @@ from members.sitemaps import (
     CategorySitemap,
     SuperCategorySitemap,
     StoreSitemap,
+    CategoriesVilleSitemap,
 )
 
 sitemaps = {
-    "static":         StaticSitemap(),
-    "villes":         CitySitemap(),
-    "categories":     CategorySitemap(),
-    "supercategories": SuperCategorySitemap(),
-    "commerces":      StoreSitemap(),
+    "static":            StaticSitemap(),
+    "villes":            CitySitemap(),
+    "categories":        CategorySitemap(),
+    "supercategories":   SuperCategorySitemap(),
+    "commerces":         StoreSitemap(),
+    "categories_ville":  CategoriesVilleSitemap(),
 }
 # ───────────────────────────────────────────────────────────
 
