@@ -59,6 +59,7 @@ urlpatterns = [
 
     # store_details en dernier — pattern le plus générique
     path("<str:departement>/<str:ville>/<slug:slug>/", views.store_details, name="store_details"),
+    path("confidentialite/", views.confidentialite, name="confidentialite"),
 
 
     
