@@ -1,6 +1,9 @@
 {% extends "master.html" %}
 {% load static %}
-
+{% block extra_head %}
+<meta name="geo.placename" content="{{ ville }}, {{ departement }}, France">
+<meta name="geo.region" content="FR">
+{% endblock %}
 {% block title %}{{ super_cat.name }} à {{ ville }} ({{ departement }}) | Yuumi{% endblock %}
 {% block meta_description %}Découvrez tous les commerces {{ super_cat.name|lower }} à {{ ville }} ({{ departement }}) avec Yuumi.{% endblock %}
 {% block og_title %}{{ super_cat.name }} à {{ ville }} | Yuumi{% endblock %}
