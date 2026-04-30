@@ -1763,6 +1763,16 @@ body.menu-open {
         color: #fff;
     }
 
+	.carte-icones-img {
+		position: absolute;
+    	top: 7.5px;
+    	left: 50%;
+    	transform: translate(-50%, -25%);
+    	width: 21px;
+    	height: 21px;
+    	object-fit: contain;
+	}
+
 /* ── FIX carte : filtres et boutons responsive ── */
 @media (max-width: 767px) {
     #map {
