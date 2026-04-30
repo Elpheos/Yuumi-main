@@ -367,6 +367,7 @@ body.menu-open {
 
     .logo-header {
         width: 100px;
+		height: 100px;
     }
 
     .li-onglets-header {
