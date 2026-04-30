@@ -22,6 +22,7 @@ class StaticSitemap(Sitemap):
             "cgu",
             "cookies_policy",
             "mentions_legales",
+            "confidentialite",
             "changer_ville",
         ]
 
