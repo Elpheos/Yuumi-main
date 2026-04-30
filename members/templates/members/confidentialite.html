@@ -1,0 +1,166 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Politique de confidentialité | Yuumi{% endblock %}
+
+{% block content %}
+<div class="page-container">
+<style>
+.confidentialite-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px auto;
+    padding: 0 5%;
+}
+.confidentialite-header {
+    background-color: #ff8b38;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.confidentialite-header h1 {
+    margin: 0;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.confidentialite-container {
+    background-color: #fff;
+    border: solid 5px #ff8b38;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+    max-width: 1000px;
+    width: 100%;
+    margin-top: 35px;
+    padding: 50px 60px;
+    color: #000;
+    line-height: 1.8;
+    font-size: 17px;
+}
+.confidentialite-container h2 {
+    color: #ff8b38;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    border-left: 6px solid #ff8b38;
+    padding-left: 10px;
+}
+.confidentialite-container p { margin-bottom: 18px; }
+.confidentialite-container ul {
+    list-style-type: disc;
+    margin: 15px 0 25px 45px;
+    line-height: 1.8;
+}
+.confidentialite-container li { margin-bottom: 8px; }
+.confidentialite-container a { color: #ff8b38; text-decoration: underline; }
+.confidentialite-footer { text-align: center; margin-top: 50px; }
+.confidentialite-footer a {
+    background-color: #ff8b38;
+    color: #fff;
+    border: solid 3px #ff8b38;
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 15px;
+    transition: all 0.25s ease;
+}
+.confidentialite-footer a:hover {
+    background-color: #fff;
+    color: #ff8b38;
+}
+@media (max-width: 768px) {
+    .confidentialite-container { padding: 25px 20px; font-size: 16px; }
+}
+</style>
+
+<div class="confidentialite-wrapper">
+    <div class="confidentialite-header">
+        <h1>Politique de confidentialité</h1>
+        <p><em>Dernière mise à jour : 30 avril 2026</em></p>
+    </div>
+
+    <div class="confidentialite-container">
+
+        <h2>1. Responsable du traitement</h2>
+        <p>
+            <strong>Yuumi S.A.S.</strong><br>
+            25 rue de Ponthieu, 75008 Paris, France<br>
+            E-mail : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a><br>
+            Numéro d'immatriculation : 940 025 844 00017
+        </p>
+
+        <h2>2. Données collectées</h2>
+        <p>Yuumi collecte les données suivantes :</p>
+        <ul>
+            <li><strong>Lors de l'inscription :</strong> nom d'utilisateur, adresse e-mail, mot de passe chiffré.</li>
+            <li><strong>Lors de la navigation :</strong> adresse IP, pages visitées, horodatage (via notre système de statistiques interne).</li>
+            <li><strong>Via Google AdSense :</strong> cookies publicitaires déposés par Google LLC pour afficher des annonces personnalisées.</li>
+            <li><strong>Via les réseaux sociaux :</strong> cookies déposés par Instagram et Facebook si vous interagissez avec leurs contenus intégrés.</li>
+        </ul>
+
+        <h2>3. Finalités du traitement</h2>
+        <p>Vos données sont utilisées pour :</p>
+        <ul>
+            <li>Gérer votre compte utilisateur et vos favoris.</li>
+            <li>Afficher des statistiques de fréquentation anonymisées.</li>
+            <li>Afficher des publicités via Google AdSense.</li>
+            <li>Améliorer le fonctionnement et la sécurité du site.</li>
+        </ul>
+
+        <h2>4. Base légale</h2>
+        <ul>
+            <li><strong>Exécution du contrat</strong> : gestion de votre compte.</li>
+            <li><strong>Consentement</strong> : cookies publicitaires Google AdSense.</li>
+            <li><strong>Intérêt légitime</strong> : statistiques de navigation anonymisées.</li>
+        </ul>
+
+        <h2>5. Partage des données</h2>
+        <p>Yuumi ne vend pas vos données personnelles. Elles peuvent être partagées avec :</p>
+        <ul>
+            <li><strong>Google LLC</strong> — via Google AdSense pour la diffusion de publicités. Politique de confidentialité : <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">policies.google.com/privacy</a></li>
+            <li><strong>Infomaniak Network SA</strong> — hébergeur du site, basé en Suisse.</li>
+        </ul>
+
+        <h2>6. Transferts hors UE</h2>
+        <p>Google LLC est basée aux États-Unis. Les transferts de données vers les États-Unis sont encadrés par les clauses contractuelles types approuvées par la Commission européenne.</p>
+
+        <h2>7. Durée de conservation</h2>
+        <ul>
+            <li>Données de compte : conservées tant que le compte est actif.</li>
+            <li>Données de navigation : 12 mois maximum.</li>
+            <li>Cookies publicitaires : selon la politique de Google (généralement 13 mois).</li>
+        </ul>
+
+        <h2>8. Vos droits</h2>
+        <p>Conformément au RGPD, vous disposez des droits suivants :</p>
+        <ul>
+            <li>Droit d'accès à vos données</li>
+            <li>Droit de rectification</li>
+            <li>Droit à l'effacement ("droit à l'oubli")</li>
+            <li>Droit à la portabilité</li>
+            <li>Droit d'opposition au traitement</li>
+            <li>Droit de retirer votre consentement à tout moment</li>
+        </ul>
+        <p>Pour exercer ces droits : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a></p>
+        <p>Vous pouvez également déposer une réclamation auprès de la <strong>CNIL</strong> : <a href="https://www.cnil.fr" target="_blank" rel="noopener">www.cnil.fr</a></p>
+
+        <h2>9. Cookies</h2>
+        <p>Pour plus d'informations sur les cookies utilisés, consultez notre <a href="{% url 'cookies_policy' %}">Politique de cookies</a>.</p>
+
+        <h2>10. Contact</h2>
+        <p>Pour toute question : <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a></p>
+
+        <div class="confidentialite-footer">
+            <a href="{% url 'main' %}">Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
+</div>
+{% endblock %}
