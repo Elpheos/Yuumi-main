@@ -241,7 +241,19 @@ def store_details(request, departement, ville, slug):
             while len(rows[-1]) < 4:
                 rows[-1].append(None)
         families_with_rows.append({"family": family, "rows": rows})
-    
+    # Horaires structurés pour JSON-LD
+    jours = [
+        ("lundi", "Mo"), ("mardi", "Tu"), ("mercredi", "We"),
+        ("jeudi", "Th"), ("vendredi", "Fr"), ("samedi", "Sa"), ("dimanche", "Su"),
+    ]
+    opening_hours = []
+    for jour_fr, jour_en in jours:
+        for periode in ["matin", "apresmidi"]:
+            ouverture = getattr(store, f"{jour_fr}_{periode}_ouverture", None)
+            fermeture = getattr(store, f"{jour_fr}_{periode}_fermeture", None)
+            if ouverture and fermeture:
+                opening_hours.append(f"{jour_en} {ouverture.strftime('%H:%M')}-{fermeture.strftime('%H:%M')}")
+                
     return render(request, "members/store_details.html", {
         "store": store,
         "family_formset": family_formset,
@@ -250,6 +262,7 @@ def store_details(request, departement, ville, slug):
         "is_favorite": is_favorite,
         "est_ouvert": est_ouvert,
         "families_with_rows": families_with_rows,
+        "opening_hours": opening_hours
     })
 
 # ---------------------------
