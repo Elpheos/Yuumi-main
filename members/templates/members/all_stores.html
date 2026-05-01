@@ -13,6 +13,7 @@
 
 {% block content %}
 <div class="page-container" id="page-container-page-ville">
+
 <style>
 .derniers-arrivants-grid-commerces {
     background-color: #ff8b38;
@@ -47,170 +48,15 @@
     font-size: 1.1rem;
 }
 
-@media (max-width: 767px) {
-
-    .derniers-arrivants-grid-commerces .img-wrapper {
-        height: 160px;
-    }
-}
-</style>
-
-<main>
-<h1 style="position:absolute; width:1px; height:1px; overflow:hidden;">
-    Commerces à {{ ville }} ({{ departement }})
-</h1>
-    <!-- ======================= MISE EN AVANT CAROUSEL ======================= -->
-<section aria-label="commerces mis en avant">
-  <div class="mise-en-avant-annecy-container">
-    {% if commerces_carousel %}
-    <div id="carouselMiseEnAvant" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
-      <div class="carousel-inner">
-        {% for commerce in commerces_carousel %}
-        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-          {% if commerce.photo %}
-            <img class="mise-en-avant-annecy-image" src="{{ commerce.photo.url }}" alt="{{ commerce.nom }} — {{ commerce.categorie.name }} à {{ commerce.ville }}" fetchpriority="high" width="1200" height="600"/>
-          {% else %}
-            {% with image_path='images/'|add:ville|lower|add:'/base-annecy.jpg' %}
-            <img class="mise-en-avant-annecy-image" src="{% static image_path %}" alt="{{ commerce.nom }}" loading="lazy" width="1200" height="600"/>
-            {% endwith %}
-          {% endif %}
-          <div class="mise-en-avant-annecy-text-container">
-            <h2>{{ commerce.nom }}</h2>
-            <h3>{{ commerce.categorie }}</h3>
-          </div>
-          <a class="mise-en-avant-bouton"
-             href="{% url 'store_details' commerce.departement commerce.ville commerce.slug %}"
-             rel="noopener">découvrir</a>
-        </div>
-        {% endfor %}
-
-        {% if commerces_carousel|length > 1 %}
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselMiseEnAvant" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Précédent</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselMiseEnAvant" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
-          <span class="visually-hidden">Suivant</span>
-        </button>
-        {% endif %}
-
-        {% if commerces_carousel|length > 1 %}
-        <div class="carousel-indicators">
-          {% for commerce in commerces_carousel %}
-          <button type="button"
-                  data-bs-target="#carouselMiseEnAvant"
-                  data-bs-slide-to="{{ forloop.counter0 }}"
-                  {% if forloop.first %}class="active" aria-current="true"{% endif %}>
-          </button>
-          {% endfor %}
-        </div>
-        {% endif %}
-      </div>
-    </div>
-    {% endif %}
-  </div>
-</section>
-
-
-    <!-- ======================= CATEGORIES ======================= -->
-    <section aria-label="Liste des catégories">
-        <div class="liste-des-catégories-container">
-
-            <div class="titre-page-annecy-container">
-                <h2>Que cherchez-vous ?</h2>
-                <h3>
-                    Un commerce avec des produits de qualité, un restaurant qui vous offrira un bon moment.
-                </h3>
-            </div>
-
-            <div class="liste-des-categories-grid-container">
-
-                {% for item in city_category_items %}
-                    {% if item.category %}
-                    <div class="grid-image-{{ forloop.counter }}-container">
-                        <a href="{% url 'by_category' departement ville item.category.slug %}"
-                           rel="noopener">
-                            {% if item.category.image %}
-                                <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}" loading="lazy">
-                            {% else %}
-                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
-                            {% endif %}
-                            <h3 class="grid-nom-categories">
-                                {{ item.category.name }}
-                            </h3>
-                        </a>
-                    </div>
-                    {% endif %}
-                {% empty %}
-                    <p>Aucune catégorie configurée pour cette ville.</p>
-                {% endfor %}
-
-            </div>
-
-            <div class="liste-des-categories-button-container">
-                <a class="liste-des-categories-button"
-                   href="{% url 'categories_ville' departement ville %}"
-                   rel="noopener">
-                    Toutes les catégories
-                </a>
-            </div>
-
-        </div>
-
-        <hr class="hr-separator"/>
-    </section>
-
-
-    <!-- ======================= DERNIERS ARRIVANTS ======================= -->
-    <section aria-label="les derniers arrivants">
-        <div class="derniers-arrivants-container">
-
-            <div class="titre-page-annecy-container">
-                <h2>Les derniers arrivants</h2>
-                <h3>Ils viennent de nous rejoindre ! Pensez à y jeter un œil.</h3>
-            </div>
-
-            <div class="derniers-arrivants-grid-container" id="arrivants-scroll">
-                {% for store in derniers_arrivants %}
-                    <div class="derniers-arrivants-grid-commerces">
-                        <a href="{% url 'store_details' departement=store.departement ville=store.ville slug=store.slug %}"
-                           rel="noopener">
-
-                            <div class="img-wrapper">
-                                {% if store.photo %}
-                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
-                                {% else %}
-                                    <img src="{% static 'placeholder.png' %}" alt="{{ store.nom }} à {{ store.ville }}">
-                                {% endif %}
-                            </div>
-
-                            <h4>{{ store.nom }}</h4>
-                          {% if store.ville_precise %}
-                            <h4>{{ store.ville_precise }}</h4>
-                        {% else %}
-                            <h4>{{ store.ville }}</h4>
-                        {% endif %}
-                        </a>
-                    </div>
-                {% empty %}
-                    <p>Aucun commerce récemment ajouté.</p>
-                {% endfor %}
-            </div>
-
-            <div class="arrivants-scrollbar-track">
-                <div class="arrivants-scrollbar-thumb" id="arrivants-thumb"></div>
-            </div>
-
-        </div>
-    </section>
-
-<style>
 .arrivants-scrollbar-track {
     display: none;
 }
 
 @media (max-width: 767px) {
+    .derniers-arrivants-grid-commerces .img-wrapper {
+        height: 160px;
+    }
+
     .arrivants-scrollbar-track {
         display: block;
         width: 90%;
@@ -230,6 +76,171 @@
     }
 }
 </style>
+
+<main>
+
+    <!-- ======================= CAROUSEL ======================= -->
+    <section aria-label="commerces mis en avant">
+        <div class="mise-en-avant-annecy-container">
+            {% if commerces_carousel %}
+            <div id="carouselMiseEnAvant" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+                <div class="carousel-inner">
+                    {% for commerce in commerces_carousel %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+
+                        {% if commerce.photo %}
+                            <img class="mise-en-avant-annecy-image"
+                                 src="{{ commerce.photo.url }}"
+                                 alt="{{ commerce.nom }} — {{ commerce.categorie.name }} à {{ commerce.ville }}"
+                                 {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
+                                 width="1200"
+                                 height="600"/>
+                        {% else %}
+                            {% with image_path='images/'|add:ville|lower|add:'/base-annecy.jpg' %}
+                            <img class="mise-en-avant-annecy-image"
+                                 src="{% static image_path %}"
+                                 alt="{{ commerce.nom }}"
+                                 loading="lazy"
+                                 width="1200"
+                                 height="600"/>
+                            {% endwith %}
+                        {% endif %}
+
+                        <div class="mise-en-avant-annecy-text-container">
+                            {% if forloop.first %}
+                                <h1 style="font-size: 0.85rem;
+                                           font-weight: 400;
+                                           letter-spacing: 0.12em;
+                                           text-transform: uppercase;
+                                           opacity: 0.75;
+                                           color: white;
+                                           margin-bottom: 6px;">
+                                    Commerces à {{ ville }} ({{ departement }})
+                                </h1>
+                            {% endif %}
+                            <h2>{{ commerce.nom }}</h2>
+                            <h3>{{ commerce.categorie }}</h3>
+                        </div>
+
+                        <a class="mise-en-avant-bouton"
+                           href="{% url 'store_details' commerce.departement commerce.ville commerce.slug %}"
+                           rel="noopener">découvrir</a>
+
+                    </div>
+                    {% endfor %}
+
+                    {% if commerces_carousel|length > 1 %}
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselMiseEnAvant" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Précédent</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselMiseEnAvant" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Suivant</span>
+                    </button>
+                    {% endif %}
+
+                    {% if commerces_carousel|length > 1 %}
+                    <div class="carousel-indicators">
+                        {% for commerce in commerces_carousel %}
+                        <button type="button"
+                                data-bs-target="#carouselMiseEnAvant"
+                                data-bs-slide-to="{{ forloop.counter0 }}"
+                                {% if forloop.first %}class="active" aria-current="true"{% endif %}>
+                        </button>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- ======================= CATEGORIES ======================= -->
+    <section aria-label="Liste des catégories">
+        <div class="liste-des-catégories-container">
+
+            <div class="titre-page-annecy-container">
+                <h2>Que cherchez-vous ?</h2>
+                <h3>Un commerce avec des produits de qualité, un restaurant qui vous offrira un bon moment.</h3>
+            </div>
+
+            <div class="liste-des-categories-grid-container">
+                {% for item in city_category_items %}
+                    {% if item.category %}
+                    <div class="grid-image-{{ forloop.counter }}-container">
+                        <a href="{% url 'by_category' departement ville item.category.slug %}" rel="noopener">
+                            {% if item.category.image %}
+                                <img src="{{ item.category.image.url }}" alt="{{ item.category.name }}" loading="lazy">
+                            {% else %}
+                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image">
+                            {% endif %}
+                            <h3 class="grid-nom-categories">{{ item.category.name }}</h3>
+                        </a>
+                    </div>
+                    {% endif %}
+                {% empty %}
+                    <p>Aucune catégorie configurée pour cette ville.</p>
+                {% endfor %}
+            </div>
+
+            <div class="liste-des-categories-button-container">
+                <a class="liste-des-categories-button"
+                   href="{% url 'categories_ville' departement ville %}"
+                   rel="noopener">
+                    Toutes les catégories
+                </a>
+            </div>
+
+        </div>
+        <hr class="hr-separator"/>
+    </section>
+
+    <!-- ======================= DERNIERS ARRIVANTS ======================= -->
+    <section aria-label="les derniers arrivants">
+        <div class="derniers-arrivants-container">
+
+            <div class="titre-page-annecy-container">
+                <h2>Les derniers arrivants</h2>
+                <h3>Ils viennent de nous rejoindre ! Pensez à y jeter un œil.</h3>
+            </div>
+
+            <div class="derniers-arrivants-grid-container" id="arrivants-scroll">
+                {% for store in derniers_arrivants %}
+                    <div class="derniers-arrivants-grid-commerces">
+                        <a href="{% url 'store_details' departement=store.departement ville=store.ville slug=store.slug %}"
+                           rel="noopener">
+                            <div class="img-wrapper">
+                                {% if store.photo %}
+                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
+                                {% else %}
+                                    <img src="{% static 'placeholder.png' %}" alt="{{ store.nom }} à {{ store.ville }}">
+                                {% endif %}
+                            </div>
+                            <h4>{{ store.nom }}</h4>
+                            {% if store.ville_precise %}
+                                <h4>{{ store.ville_precise }}</h4>
+                            {% else %}
+                                <h4>{{ store.ville }}</h4>
+                            {% endif %}
+                        </a>
+                    </div>
+                {% empty %}
+                    <p>Aucun commerce récemment ajouté.</p>
+                {% endfor %}
+            </div>
+
+            <div class="arrivants-scrollbar-track">
+                <div class="arrivants-scrollbar-thumb" id="arrivants-thumb"></div>
+            </div>
+
+        </div>
+    </section>
+
+</main>
+</div>
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
@@ -255,6 +266,4 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
-</main>
-</div>
 {% endblock %}
