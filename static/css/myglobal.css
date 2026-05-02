@@ -514,12 +514,23 @@ body.menu-open {
     padding-bottom: 10px;
 }
 .page-accueil-description {
-    max-width: 600px;
-    margin: 16px auto 24px;
-    font-size: 1rem;
-    color: #666;
+    max-width: 520px;
+    margin: 0 auto 1.5rem;
+    padding: 14px 20px;
+    background: #fff8f3;
+    border-left: 4px solid #ff8b38;
+    border-radius: 0 8px 8px 0;
+    text-align: left;
+    font-size: 0.95rem;
+    color: #555;
     line-height: 1.7;
-    text-align: center;
+}
+
+@media (max-width: 767px) {
+    .page-accueil-description {
+        width: 95%;
+        font-size: 0.9rem;
+    }
 }
 .image-ville {
     width: 250px;
