@@ -140,6 +140,15 @@
     color: white;
 }
 
+  .category-description {
+    max-width: 600px;
+    margin: 12px auto 24px;
+    font-size: 0.95rem;
+    color: #666;
+    line-height: 1.7;
+    text-align: center;
+}
+
 .pagination-btn.active {
     background: #ff8b38;
     color: white;
@@ -192,6 +201,10 @@
         <h1 class="page-category-title">
             Commerces à {{ ville }} — {{ category }}
         </h1>
+      <p class="category-description">
+    Découvrez les meilleurs {{ category|lower }} à {{ ville }} sélectionnés par Yuumi. 
+    Retrouvez leurs horaires, adresses et informations pratiques pour chacun de ces commerces locaux.
+      </p>
 
         {% if message %}
             <p style="text-align:center; margin-top:16px;">{{ message }}</p>
