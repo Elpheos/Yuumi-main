@@ -55,36 +55,23 @@ class SuperCategory(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True)
-
+    categorie_singulier = models.CharField(max_length=100, blank=True)
     super_categorie = models.ForeignKey(
         SuperCategory,
         on_delete=models.CASCADE,
         related_name="categories",
     )
-
-    icon = models.CharField(
-        max_length=50,
-        blank=True,
-        help_text="Icône Font Awesome, ex : fa-store, fa-utensils",
-    )
-
     icon_perso = models.ImageField(
         upload_to="categories/",
         null=True,
         blank=True,
         help_text="alternative à l'icône FA",
-     )
-
-    def clean(self):
-        if self.icon and self.icon_perso:
-            raise ValidationError("Impossible d'enregistrer à la fois une icône FA et une icône personnalisée")
-
+    )
     image = models.ImageField(
         upload_to="categories/",
         null=True,
         help_text="Image affichée sur la page ville",
     )
-
     history = HistoricalRecords()
 
     class Meta:
