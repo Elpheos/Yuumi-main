@@ -1261,6 +1261,40 @@ body.menu-open {
     flex-direction: column;
 }
 
+.breadcrumb-yuumi {
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #888;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.breadcrumb-yuumi a {
+    color: #ff8b38;
+    text-decoration: none;
+}
+
+.breadcrumb-yuumi a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb-yuumi span {
+    color: #bbb;
+}
+
+.breadcrumb-current {
+    color: #555;
+}
+
+@media (max-width: 767px) {
+    .breadcrumb-yuumi {
+        padding: 8px 12px;
+        font-size: 0.8rem;
+    }
+}
+
 .description-container h1 {
     font-size: 42px;
 }
