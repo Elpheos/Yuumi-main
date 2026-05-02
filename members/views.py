@@ -165,7 +165,7 @@ def by_category(request, departement, ville, category):
 # ---------------------------
 
 def store_details(request, departement, ville, slug):
-    store = get_object_or_404(Store, slug=slug, departement=departement, ville=ville)
+    store = get_object_or_404(Store, slug=slug, departement__iexact=departement, ville__iexact=ville)
 
     # --- TRACKING VUE ---
     session_id = request.session.session_key
