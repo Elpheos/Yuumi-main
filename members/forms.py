@@ -126,7 +126,7 @@ class StoreForm(forms.ModelForm):
         if 'photo' in self.changed_data and self.cleaned_data.get('photo'):
             nom = slugify(store.nom)
             ville = slugify(store.ville)
-            categorie = slugify(store.categorie.name) if store.categorie else "commerce"
+            categorie = slugify(store.categorie.categorie_singulier or store.categorie.name) if store.categorie else "commerce"
             store.photo = resize_and_convert(
                 self.cleaned_data['photo'],
                 name=f"{nom}-{categorie}-a-{ville}",
