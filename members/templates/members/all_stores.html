@@ -208,7 +208,7 @@
                            rel="noopener">
                             <div class="img-wrapper">
                                 {% if store.photo %}
-                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
+                                    <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
                                 {% else %}
                                     <img src="{% static 'placeholder.png' %}" alt="{{ store.nom }} à {{ store.ville }}">
                                 {% endif %}
