@@ -24,7 +24,7 @@
                         {% if store.photo %}
                             <div class="my-favorite-photo">
                                 <a href="{{ store.get_absolute_url }}">
-                                    <img src="{{ store.photo.url }}" alt="{{ store.nom }}">
+                                    <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }}">
                                 </a>
                             </div>
                         {% endif %}
