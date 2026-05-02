@@ -513,7 +513,14 @@ body.menu-open {
     padding-top: 10px;
     padding-bottom: 10px;
 }
-
+.page-accueil-description {
+    max-width: 600px;
+    margin: 16px auto 24px;
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.7;
+    text-align: center;
+}
 .image-ville {
     width: 250px;
     height: 250px;
