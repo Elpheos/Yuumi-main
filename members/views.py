@@ -314,7 +314,7 @@ def map_view(request, departement):
                 "lat": store.latitude,
                 "lng": store.longitude,
                 "url": store.get_absolute_url(),
-                "photo": store.photo.url if store.photo else "",
+                "photo": store.photo_small.url if store.photo_small else (store.photo.url if store.photo else ""),
             })
 
     categories = (
