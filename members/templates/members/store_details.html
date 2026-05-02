@@ -151,6 +151,15 @@
             <!-- PARTIE DROITE : infos + liens -->
             <div class="commerce-right-part-container">
                 <div class="description-container">
+                   <nav aria-label="fil d'ariane" class="breadcrumb-yuumi">
+        <a href="{% url 'stores' store.departement store.ville %}">{{ store.ville }}</a>
+        <span>›</span>
+        {% if store.categorie %}
+        <a href="{% url 'by_category' store.departement store.ville store.categorie.slug %}">{{ store.categorie.name }}</a>
+        <span>›</span>
+        {% endif %}
+        <span class="breadcrumb-current">{{ store.nom }}</span>
+    </nav>
                     <h1>{{ store.nom }} | {{ store.ville }}</h1>
 
                     <!-- Badge ouvert / fermé -->
