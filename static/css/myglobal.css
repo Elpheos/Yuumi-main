@@ -560,6 +560,14 @@ body.menu-open {
     width: 70%;
     border-radius: 8px;
 }
+.mise-en-avant-annecy-container h2 {
+	font-size: 0.85rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    color: #ff8b38;
+    margin-bottom: 6px;
+	
+}
 
 .mise-en-avant-annecy-container h2 {
     color: #ff8b38;
