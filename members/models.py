@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
-from .utils import convert_to_webp
+from .utils import convert_to_webp, resize_and_convert
 from simple_history.models import HistoricalRecords
 
 
@@ -100,7 +100,6 @@ class Category(models.Model):
 
 # ===========================================================
 # 🔹 Validateur URL réutilisable (http/https uniquement)
-# Bloque javascript:, data:, ftp:, etc.
 # ===========================================================
 
 _url_validator = URLValidator(schemes=['http', 'https'])
@@ -162,6 +161,8 @@ class Store(models.Model):
 
     # Images
     photo = models.ImageField(upload_to="store_photos/", null=True, blank=True)
+    photo_medium = models.ImageField(upload_to="store_photos/", null=True, blank=True, editable=False)
+    photo_small = models.ImageField(upload_to="store_photos/", null=True, blank=True, editable=False)
 
     # Horaires
     lundi_matin_ouverture       = models.TimeField(null=True, blank=True)
@@ -233,7 +234,6 @@ class Store(models.Model):
 
     def _geocode(self):
         from geopy.geocoders import Nominatim
-
         geolocator = Nominatim(user_agent="yuumi_geocoder")
         try:
             location = geolocator.geocode(self.addressemaps, timeout=10)
@@ -245,18 +245,38 @@ class Store(models.Model):
         except Exception:
             pass
 
-    def save(self, *args, **kwargs):
+    def _generate_photo_variants(self):
+        ville = slugify(self.ville)
+        nom = slugify(self.nom)
+        categorie = slugify(self.categorie.name) if self.categorie else "commerce"
 
+        self.photo_medium = resize_and_convert(
+            self.photo,
+            name=f"{categorie}-{nom}-a-{ville}",
+            max_width=600,
+        )
+        self.photo_small = resize_and_convert(
+            self.photo,
+            name=f"{nom}-{ville}",
+            max_width=300,
+        )
+
+    def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = self._generate_unique_slug()
 
         adresse_changee = False
         if self.pk:
-            ancien = Store.objects.filter(pk=self.pk).values("addressemaps").first()
+            ancien = Store.objects.filter(pk=self.pk).values("addressemaps", "photo").first()
             if ancien and ancien["addressemaps"] != self.addressemaps:
                 adresse_changee = True
                 self.latitude = None
                 self.longitude = None
+
+            if self.photo and ancien and ancien["photo"] != self.photo.name:
+                self._generate_photo_variants()
+        elif self.photo:
+            self._generate_photo_variants()
 
         super().save(*args, **kwargs)
 
