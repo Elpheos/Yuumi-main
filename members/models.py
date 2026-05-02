@@ -249,14 +249,21 @@ class Store(models.Model):
         ville = slugify(self.ville)
         nom = slugify(self.nom)
         categorie = slugify(self.categorie.name) if self.categorie else "commerce"
-
+    
+        original = self.photo  # ← garder la référence originale
+    
+        self.photo = resize_and_convert(
+            original,
+            name=f"{nom}-{categorie}-a-{ville}",
+            max_width=1200,
+        )
         self.photo_medium = resize_and_convert(
-            self.photo,
+            original,
             name=f"{categorie}-{nom}-a-{ville}",
             max_width=600,
         )
         self.photo_small = resize_and_convert(
-            self.photo,
+            original,
             name=f"{nom}-{ville}",
             max_width=300,
         )
