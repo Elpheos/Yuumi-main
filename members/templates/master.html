@@ -677,39 +677,42 @@ document.addEventListener("DOMContentLoaded", () => {
         if (e.key === "Escape") closeMenu();
     });
 
-    /* ============================= */
-    /*   SUPER-CATEGORIES DROPDOWN   */
-    /* ============================= */
+  /* ============================= */
+/*   SUPER-CATEGORIES DROPDOWN   */
+/* ============================= */
 
-    const btn = document.querySelector(".supercats-toggle");
-    const dropdown = document.getElementById("supercats-dropdown");
+const btn = document.querySelector(".supercats-toggle");
+const dropdown = document.getElementById("supercats-dropdown");
+const btnChevron = btn?.querySelector(".chevron");
 
-    if (btn && dropdown) {
-        btn.addEventListener("click", e => {
-            e.preventDefault();
-            dropdown.style.display =
-                dropdown.style.display === "block" ? "none" : "block";
-        });
-
-        document.addEventListener("click", e => {
-           if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
-        dropdown.style.display = "none";
-    }
-        });
-    }
-
-    document.querySelectorAll(".supercat-header").forEach(header => {
-        const list = header.nextElementSibling;
-        const chevron = header.querySelector(".chevron");
-
-        if (!list || !chevron) return;
-
-        header.addEventListener("click", () => {
-            const open = list.style.display === "block";
-            list.style.display = open ? "none" : "block";
-            chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
-        });
+if (btn && dropdown) {
+    btn.addEventListener("click", e => {
+        e.preventDefault();
+        const isOpen = dropdown.style.display === "block";
+        dropdown.style.display = isOpen ? "none" : "block";
+        if (btnChevron) btnChevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
     });
+
+    document.addEventListener("click", e => {
+        if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+            dropdown.style.display = "none";
+            if (btnChevron) btnChevron.style.transform = "rotate(0deg)";
+        }
+    });
+}
+
+document.querySelectorAll(".supercat-header").forEach(header => {
+    const list = header.nextElementSibling;
+    const chevron = header.querySelector(".chevron");
+
+    if (!list || !chevron) return;
+
+    header.addEventListener("click", () => {
+        const open = list.style.display === "block";
+        list.style.display = open ? "none" : "block";
+        chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
+    });
+});
 
     /* ============================= */
     /*       RECHERCHE PRODUIT       */
