@@ -584,8 +584,11 @@ body.menu-open {
     font-weight: 400;
     letter-spacing: 0.12em;
     color: #ff8b38;
-    margin-bottom: 6px;
-	
+    margin-bottom: 6px;	
+}
+
+.mise-en-avant-span-h1 {
+	text-transform: capitalize;
 }
 
 .mise-en-avant-annecy-container h2 {
