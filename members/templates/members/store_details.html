@@ -46,7 +46,9 @@
   {% if store.phone %}
   ,"telephone": "{{ store.phone|escapejs }}"
   {% endif %}
-  {% if store.photo %}
+  {% if store.photo_medium %}
+  ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo_medium.url }}"
+  {% elif store.photo %}
   ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}"
   {% endif %}
   ,"address": {
@@ -75,8 +77,7 @@
 {% block meta_description %}{{ store.descriptionpetite|truncatechars:155 }}{% endblock %}
 {% block og_title %}{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }} | Yuumi{% endblock %}
 {% block og_description %}{{ store.descriptionpetite|truncatechars:155 }}{% endblock %}
-{% block og_image %}{% if store.photo %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.webp' %}{% endif %}{% endblock %}
-
+{% block og_image %}{% if store.photo_medium %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo_medium.url }}{% elif store.photo %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.webp' %}{% endif %}{% endblock %}
 {% block content %}
 <div class="page-container" id="page-container-store-details">
 <div class="store-action-bar">
