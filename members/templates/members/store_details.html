@@ -43,7 +43,9 @@
   "name": "{{ store.nom|escapejs }}",
   "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
   "description": "{{ store.descriptionpetite|escapejs }}",
-  "telephone": "{{ store.phone|escapejs }}"
+  {% if store.phone %}
+  ,"telephone": "{{ store.phone|escapejs }}"
+  {% endif %}
   {% if store.photo %}
   ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}"
   {% endif %}
