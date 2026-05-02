@@ -7,7 +7,8 @@ from django.core.exceptions import ValidationError
 from dal import autocomplete
 from .models import Store, ProductFamily, Product, StoreSuggestion
 from django.utils.safestring import mark_safe
-from .utils import convert_to_webp
+from .utils import convert_to_webp, resize_and_convert
+from django.utils.text import slugify
 
 # -------------------------------
 # Formulaire famille
@@ -123,7 +124,14 @@ class StoreForm(forms.ModelForm):
     def save(self, commit=True):
         store = super().save(commit=False)
         if 'photo' in self.changed_data and self.cleaned_data.get('photo'):
-            store.photo = convert_to_webp(self.cleaned_data['photo'])
+            nom = slugify(store.nom)
+            ville = slugify(store.ville)
+            categorie = slugify(store.categorie.name) if store.categorie else "commerce"
+            store.photo = resize_and_convert(
+                self.cleaned_data['photo'],
+                name=f"{nom}-{categorie}-a-{ville}",
+                max_width=1200,
+            )
         if commit:
             store.save()
         return store
