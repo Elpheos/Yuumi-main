@@ -325,7 +325,6 @@ def map_view(request, departement):
         .values(
             "slug",
             "name",
-            "icon",
             "super_categorie__slug",
             "super_categorie__name",
             "icon_perso",
