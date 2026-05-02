@@ -75,15 +75,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # WhiteNoise doit être juste après SecurityMiddleware
     "whitenoise.middleware.WhiteNoiseMiddleware",
+    "members.cache_middleware.LowercaseURLMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # No-cache sur les pages HTML (évite le cache navigateur mobile)
     "members.cache_middleware.NoCacheHTMLMiddleware",
     "axes.middleware.AxesMiddleware",
     "simple_history.middleware.HistoryRequestMiddleware",
