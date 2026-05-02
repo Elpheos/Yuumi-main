@@ -264,7 +264,7 @@ class SuperCategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
-    list_display = ("name", "super_categorie")
+    list_display = ("name", "super_categorie", "categorie_singulier")
     list_filter = ("super_categorie",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
