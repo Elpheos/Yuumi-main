@@ -143,11 +143,11 @@ class Store(models.Model):
     )
 
     # Descriptions
-    descriptionpetite = models.TextField(null=True, blank=True)
+    descriptionpetite = models.TextField
     descriptiongrande = models.TextField(null=True, blank=True)
 
     # Contact & liens
-    addressemaps = models.CharField(max_length=255, null=True, blank=True)
+    addressemaps = models.CharField
     addresseitineraire = models.CharField(
         max_length=255,
         null=True,
