@@ -248,7 +248,7 @@ class Store(models.Model):
     def _generate_photo_variants(self):
         ville = slugify(self.ville)
         nom = slugify(self.nom)
-        categorie = slugify(self.categorie.name) if self.categorie else "commerce"
+        cat = slugify(store.categorie.categorie_singulier or store.categorie.name) if store.categorie else "commerce"
     
         original = self.photo  # ← garder la référence originale
     
