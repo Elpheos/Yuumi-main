@@ -481,281 +481,118 @@ main {
 <!--          MODALS SUGGESTIONS   -->
 <!-- ============================= -->
 
-<!-- Modal : Suggérer un nouveau commerce -->
+<!-- ============================= -->
+<!--          MODALS SUGGESTIONS   -->
+<!-- ============================= -->
+
+<template id="tpl-modal-nouveau">
 <div class="modal fade" id="suggestNewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border-radius:14px; border: 2px solid #0a5bb4;">
-            
             <div class="modal-header" style="background:#0a5bb4; border-radius:12px 12px 0 0;">
                 <h5 class="modal-title" style="color:white;">
                     <i class="fa-solid fa-store"></i> Suggérer un nouveau commerce
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
-                <p style="color:#888; font-size:0.9rem; margin-bottom:16px;">
-                    Tous les champs sont optionnels, remplissez ce que vous savez !
-                </p>
-
+                <p style="color:#888; font-size:0.9rem; margin-bottom:16px;">Tous les champs sont optionnels, remplissez ce que vous savez !</p>
                 <form id="suggest-new-form" enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label class="form-label">Nom du commerce</label>
-                        <input type="text" name="nom" class="form-control" placeholder="Ex : Boulangerie Dupont">
-                    </div>
-
+                    <input type="hidden" name="csrfmiddlewaretoken" value="">
+                    <div class="mb-3"><label class="form-label">Nom du commerce</label><input type="text" name="nom" class="form-control" placeholder="Ex : Boulangerie Dupont"></div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Ville</label>
-                            <input type="text" name="ville" class="form-control" placeholder="Ex : Annecy">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Département</label>
-                            <input type="text" name="departement" class="form-control" placeholder="Ex : Haute-Savoie">
-                        </div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Ville</label><input type="text" name="ville" class="form-control" placeholder="Ex : Annecy"></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Département</label><input type="text" name="departement" class="form-control" placeholder="Ex : Haute-Savoie"></div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Quartier / ville précise</label>
-                        <input type="text" name="ville_precise" class="form-control" placeholder="Ex : Vieille ville">
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Description courte</label>
-                        <input type="text" name="descriptionpetite" class="form-control" placeholder="Ex : Boulangerie artisanale">
-                    </div>
-
-                                    <div class="mb-3">
-                    <label class="form-label">Description longue</label>
-                    <textarea name="descriptiongrande" class="form-control" rows="4"
-                        placeholder="Décrivez le commerce plus en détail..."></textarea>
-                </div>
-
+                    <div class="mb-3"><label class="form-label">Quartier / ville précise</label><input type="text" name="ville_precise" class="form-control" placeholder="Ex : Vieille ville"></div>
+                    <div class="mb-3"><label class="form-label">Description courte</label><input type="text" name="descriptionpetite" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label">Description longue</label><textarea name="descriptiongrande" class="form-control" rows="4"></textarea></div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Téléphone</label>
-                            <input type="text" name="phone" class="form-control" placeholder="Ex : 06 12 34 56 78">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Site web</label>
-                            <input type="text" name="site" class="form-control" placeholder="https://...">
-                        </div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Téléphone</label><input type="text" name="phone" class="form-control"></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Site web</label><input type="text" name="site" class="form-control" placeholder="https://..."></div>
                     </div>
-
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Instagram</label>
-                            <input type="text" name="instagram" class="form-control" placeholder="https://instagram.com/...">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Facebook</label>
-                            <input type="text" name="facebook" class="form-control" placeholder="https://facebook.com/...">
-                        </div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Instagram</label><input type="text" name="instagram" class="form-control"></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Facebook</label><input type="text" name="facebook" class="form-control"></div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Adresse</label>
-                        <input type="text" name="addressemaps" class="form-control" placeholder="Ex : 12 rue de la Paix, Annecy">
-                    </div>
-
-
+                    <div class="mb-3"><label class="form-label">Adresse</label><input type="text" name="addressemaps" class="form-control"></div>
                     <hr>
-<p class="form-label">Horaires (texte libre par jour)</p>
-
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Lundi</label></div>
-    <div class="col-9"><input type="text" name="lundi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Mardi</label></div>
-    <div class="col-9"><input type="text" name="mardi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Mercredi</label></div>
-    <div class="col-9"><input type="text" name="mercredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Jeudi</label></div>
-    <div class="col-9"><input type="text" name="jeudi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Vendredi</label></div>
-    <div class="col-9"><input type="text" name="vendredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Samedi</label></div>
-    <div class="col-9"><input type="text" name="samedi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Dimanche</label></div>
-    <div class="col-9"><input type="text" name="dimanche" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-                    <div class="mb-3">
-    <label class="form-label">Photo</label>
-    <input type="file" name="photo" class="form-control">
-</div>
-                    <div class="mb-3">
-                        <label class="form-label">Produits Suggérés</label>
-                        <textarea name="produits_suggeres" class="form-control" rows="3" 
-    placeholder="Ex : Foie gras, Chips, Pain de campagne..."></textarea>
-                    </div>
-
-
+                    <p class="form-label">Horaires (texte libre par jour)</p>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Lundi</label></div><div class="col-9"><input type="text" name="lundi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Mardi</label></div><div class="col-9"><input type="text" name="mardi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Mercredi</label></div><div class="col-9"><input type="text" name="mercredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Jeudi</label></div><div class="col-9"><input type="text" name="jeudi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Vendredi</label></div><div class="col-9"><input type="text" name="vendredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Samedi</label></div><div class="col-9"><input type="text" name="samedi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Dimanche</label></div><div class="col-9"><input type="text" name="dimanche" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="mb-3"><label class="form-label">Photo</label><input type="file" name="photo" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label">Produits Suggérés</label><textarea name="produits_suggeres" class="form-control" rows="3"></textarea></div>
                 </form>
-
-                <!-- Message de confirmation -->
                 <div id="suggest-new-success" style="display:none; text-align:center; padding:20px;">
                     <i class="fa-solid fa-circle-check" style="font-size:48px; color:#0a5bb4;"></i>
                     <p style="margin-top:12px; font-weight:600;">Merci pour votre suggestion !</p>
                 </div>
-
             </div>
-
             <div class="modal-footer" id="suggest-new-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="suggest-new-submit"
-                        style="background:#0a5bb4; border-color:#0a5bb4;">
-                    Envoyer ma suggestion
-                </button>
+                <button type="button" class="btn btn-primary" id="suggest-new-submit" style="background:#0a5bb4; border-color:#0a5bb4;">Envoyer ma suggestion</button>
             </div>
-
         </div>
     </div>
 </div>
+</template>
 
-    <!-- Modal : Suggérer une modification -->
+<template id="tpl-modal-modif">
 <div class="modal fade" id="suggestModifModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border-radius:14px; border: 2px solid #0a5bb4;">
-            
             <div class="modal-header" style="background:#0a5bb4; border-radius:12px 12px 0 0;">
                 <h5 class="modal-title" style="color:white;">
                     <i class="fa-solid fa-pencil"></i> Suggérer une modification pour ce commerce
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
-
             <div class="modal-body">
-                <p style="color:#888; font-size:0.9rem; margin-bottom:16px;">
-                    Tous les champs sont optionnels, remplissez uniquement ce que vous souhaitez modifier !
-                </p>
-
+                <p style="color:#888; font-size:0.9rem; margin-bottom:16px;">Tous les champs sont optionnels, remplissez uniquement ce que vous souhaitez modifier !</p>
                 <form id="suggest-modif-form" enctype="multipart/form-data">
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label class="form-label">Message</label>
-                        <textarea name="message" class="form-control" rows="4"
-                            placeholder="Décrivez la modification que vous nous suggérez..."></textarea>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Description courte</label>
-                        <input type="text" name="descriptionpetite" class="form-control" placeholder="Ex : Boulangerie artisanale">
-                    </div>
-
-                                    <div class="mb-3">
-                    <label class="form-label">Description longue</label>
-                    <textarea name="descriptiongrande" class="form-control" rows="4"
-                        placeholder="Décrivez le commerce plus en détail..."></textarea>
-                </div>
-
+                    <input type="hidden" name="csrfmiddlewaretoken" value="">
+                    <div class="mb-3"><label class="form-label">Message</label><textarea name="message" class="form-control" rows="4" placeholder="Décrivez la modification..."></textarea></div>
+                    <div class="mb-3"><label class="form-label">Description courte</label><input type="text" name="descriptionpetite" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label">Description longue</label><textarea name="descriptiongrande" class="form-control" rows="4"></textarea></div>
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Téléphone</label>
-                            <input type="text" name="phone" class="form-control" placeholder="Ex : 06 12 34 56 78">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Site web</label>
-                            <input type="text" name="site" class="form-control" placeholder="https://...">
-                        </div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Téléphone</label><input type="text" name="phone" class="form-control"></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Site web</label><input type="text" name="site" class="form-control" placeholder="https://..."></div>
                     </div>
-
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Instagram</label>
-                            <input type="text" name="instagram" class="form-control" placeholder="https://instagram.com/...">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Facebook</label>
-                            <input type="text" name="facebook" class="form-control" placeholder="https://facebook.com/...">
-                        </div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Instagram</label><input type="text" name="instagram" class="form-control"></div>
+                        <div class="col-md-6 mb-3"><label class="form-label">Facebook</label><input type="text" name="facebook" class="form-control"></div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Adresse</label>
-                        <input type="text" name="addressemaps" class="form-control" placeholder="Ex : 12 rue de la Paix, Annecy">
-                    </div>
-
+                    <div class="mb-3"><label class="form-label">Adresse</label><input type="text" name="addressemaps" class="form-control"></div>
                     <hr>
-<p class="form-label">Horaires (texte libre par jour)</p>
-
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Lundi</label></div>
-    <div class="col-9"><input type="text" name="lundi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Mardi</label></div>
-    <div class="col-9"><input type="text" name="mardi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Mercredi</label></div>
-    <div class="col-9"><input type="text" name="mercredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Jeudi</label></div>
-    <div class="col-9"><input type="text" name="jeudi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Vendredi</label></div>
-    <div class="col-9"><input type="text" name="vendredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Samedi</label></div>
-    <div class="col-9"><input type="text" name="samedi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-<div class="row align-items-center mb-2">
-    <div class="col-3"><label class="form-label mb-0">Dimanche</label></div>
-    <div class="col-9"><input type="text" name="dimanche" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div>
-</div>
-
-
-                    <div class="mb-3">
-    <label class="form-label">Photo</label>
-    <input type="file" name="photo" class="form-control">
-</div>
-                    <div class="mb-3">
-                        <label class="form-label">Produits Suggérés</label>
-                        <textarea name="produits_suggeres" class="form-control" rows="3" 
-    placeholder="Ex : Foie gras, Chips, Pain de campagne..."></textarea>
-                    </div>
-
-
+                    <p class="form-label">Horaires (texte libre par jour)</p>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Lundi</label></div><div class="col-9"><input type="text" name="lundi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Mardi</label></div><div class="col-9"><input type="text" name="mardi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Mercredi</label></div><div class="col-9"><input type="text" name="mercredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Jeudi</label></div><div class="col-9"><input type="text" name="jeudi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Vendredi</label></div><div class="col-9"><input type="text" name="vendredi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Samedi</label></div><div class="col-9"><input type="text" name="samedi" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="row align-items-center mb-2"><div class="col-3"><label class="form-label mb-0">Dimanche</label></div><div class="col-9"><input type="text" name="dimanche" class="form-control" placeholder="Ex : 9h-12h / 14h-18h"></div></div>
+                    <div class="mb-3"><label class="form-label">Photo</label><input type="file" name="photo" class="form-control"></div>
+                    <div class="mb-3"><label class="form-label">Produits Suggérés</label><textarea name="produits_suggeres" class="form-control" rows="3"></textarea></div>
                 </form>
-
-                <!-- Message de confirmation -->
                 <div id="suggest-modif-success" style="display:none; text-align:center; padding:20px;">
                     <i class="fa-solid fa-circle-check" style="font-size:48px; color:#0a5bb4;"></i>
                     <p style="margin-top:12px; font-weight:600;">Merci pour votre suggestion !</p>
                 </div>
-
             </div>
-
             <div class="modal-footer" id="suggest-modif-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="suggest-modif-submit"
-                        style="background:#0a5bb4; border-color:#0a5bb4;">
-                    Envoyer ma suggestion
-                </button>
+                <button type="button" class="btn btn-primary" id="suggest-modif-submit" style="background:#0a5bb4; border-color:#0a5bb4;">Envoyer ma suggestion</button>
             </div>
-
         </div>
     </div>
 </div>
-
-
+</template>
 
     
 <!-- ============================= -->
@@ -958,69 +795,74 @@ document.addEventListener("DOMContentLoaded", () => {
 <!--       JS SUGGESTIONS          -->
 <!-- ============================= -->
 <script>
+const CSRF_TOKEN = "{{ csrf_token }}";
+
+function injecterModal(templateId) {
+    const tpl = document.getElementById(templateId);
+    if (!tpl) return null;
+    const clone = tpl.content.cloneNode(true);
+    // Injecter le token CSRF dans le champ caché
+    clone.querySelector('[name="csrfmiddlewaretoken"]').value = CSRF_TOKEN;
+    document.body.appendChild(clone);
+    return document.querySelector(templateId === "tpl-modal-nouveau" ? "#suggestNewModal" : "#suggestModifModal");
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /* ===== NOUVEAU COMMERCE ===== */
-    const submitNew = document.getElementById("suggest-new-submit");
-    if (submitNew) {
-        submitNew.addEventListener("click", async () => {
+    document.addEventListener("click", e => {
+        const btn = e.target.closest('[data-bs-target="#suggestNewModal"]');
+        if (!btn) return;
+        e.preventDefault();
+
+        if (!document.getElementById("suggestNewModal")) {
+            injecterModal("tpl-modal-nouveau");
+        }
+
+        const modal = new bootstrap.Modal(document.getElementById("suggestNewModal"));
+        modal.show();
+
+        // Soumettre
+        document.getElementById("suggest-new-submit").addEventListener("click", async () => {
             const form = document.getElementById("suggest-new-form");
             const data = new FormData(form);
-
             try {
-                const resp = await fetch("{% url 'suggest-new-store' %}", {
-                    method: "POST",
-                    body: data,
-                });
-                const json = await resp.json();
-
-                if (resp.status === 429) {
-                    alert("Vous avez déjà envoyé une suggestion récemment. Réessayez dans 1h.");
-                    return;
-                }
-
-                // Afficher confirmation, cacher formulaire et footer
+                const resp = await fetch("{% url 'suggest-new-store' %}", { method: "POST", body: data });
+                if (resp.status === 429) { alert("Réessayez dans 1h."); return; }
                 form.style.display = "none";
                 document.getElementById("suggest-new-success").style.display = "block";
                 document.getElementById("suggest-new-footer").style.display = "none";
-
-            } catch (err) {
-                console.error("Erreur suggestion nouveau commerce :", err);
-            }
-        });
-    }
+            } catch (err) { console.error(err); }
+        }, { once: true });
+    });
 
     /* ===== MODIFICATION ===== */
-    const submitModif = document.getElementById("suggest-modif-submit");
-    if (submitModif) {
-        submitModif.addEventListener("click", async () => {
+    document.addEventListener("click", e => {
+        const btn = e.target.closest('[data-bs-target="#suggestModifModal"]');
+        if (!btn) return;
+        e.preventDefault();
+
+        if (!document.getElementById("suggestModifModal")) {
+            injecterModal("tpl-modal-modif");
+        }
+
+        const storeId = btn.dataset.storeId || btn.onclick?.toString().match(/\d+/)?.[0];
+        const modal = new bootstrap.Modal(document.getElementById("suggestModifModal"));
+        modal.show();
+
+        document.getElementById("suggest-modif-submit").addEventListener("click", async () => {
             const form = document.getElementById("suggest-modif-form");
             const data = new FormData(form);
-            const storeId = submitModif.dataset.storeId;
-
-            if (!storeId) return;
-
+            const id = storeId || document.getElementById("suggest-modif-submit").dataset.storeId;
             try {
-                const resp = await fetch(`/store/${storeId}/suggestion/`, {
-                    method: "POST",
-                    body: data,
-                });
-
-                if (resp.status === 429) {
-                    alert("Vous avez déjà envoyé une suggestion récemment. Réessayez dans 1h.");
-                    return;
-                }
-
+                const resp = await fetch(`/store/${id}/suggestion/`, { method: "POST", body: data });
+                if (resp.status === 429) { alert("Réessayez dans 1h."); return; }
                 form.style.display = "none";
                 document.getElementById("suggest-modif-success").style.display = "block";
                 document.getElementById("suggest-modif-footer").style.display = "none";
-
-            } catch (err) {
-                console.error("Erreur suggestion modification :", err);
-            }
-        });
-    }
-
+            } catch (err) { console.error(err); }
+        }, { once: true });
+    });
 });
 </script>
 {% block extra_js %}{% endblock %}
