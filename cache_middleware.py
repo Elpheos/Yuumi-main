@@ -1,5 +1,5 @@
 # members/cache_middleware.py
-
+from django.http import HttpResponsePermanentRedirect
 
 class NoCacheHTMLMiddleware:
     """
@@ -21,4 +21,16 @@ class NoCacheHTMLMiddleware:
             response["Pragma"] = "no-cache"
             response["Expires"] = "0"
 
+        return response
+
+
+
+class LowercaseURLMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.path != request.path.lower():
+            return HttpResponsePermanentRedirect(request.path.lower())
+        response = self.get_response(request)
         return response
