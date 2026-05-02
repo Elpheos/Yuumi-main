@@ -226,7 +226,7 @@
                        rel="noopener">
 
                         {% if commerce.photo %}
-                            <img loading="lazy" src="{{ commerce.photo.url }}" alt="Photo de {{ commerce.nom }} à {{ commerce.ville }} dans la catégorie {{ commerce.categorie }}">
+                            <img loading="lazy" src="{% if commerce.photo_medium %}{{ commerce.photo_medium.url }}{% else %}{{ commerce.photo.url }}{% endif %}" alt="Photo de {{ commerce.nom }} à {{ commerce.ville }} dans la catégorie {{ commerce.categorie }}">
                         {% else %}
                             <img loading="lazy" src="{% static 'placeholder.png' %}" alt="{{ commerce.nom }} — {{ commerce.categorie }} à {{ commerce.ville }}">
                         {% endif %}
