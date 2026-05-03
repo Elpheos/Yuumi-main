@@ -91,7 +91,7 @@
                         {% if commerce.photo %}
                             <img class="mise-en-avant-annecy-image"
                                  src="{{ commerce.photo.url }}"
-                                 alt="{{ commerce.nom }} — {{ store.categorie.categorie_singulier }} à {{ commerce.ville }}"
+                                 alt="{{ commerce.nom }} — {{ commerce.categorie.categorie_singulier }} à {{ commerce.ville }}"
                                  {% if forloop.first %}fetchpriority="high"{% else %}loading="lazy"{% endif %}
                                  width="1200"
                                  height="600"/>
@@ -113,7 +113,7 @@
                                 </h1>
                             {% endif %}
                             <h2>{{ commerce.nom }}</h2>
-                            <h3>{{ store.categorie.categorie_singulier }}</h3>
+                            <h3>{{ commerce.categorie.categorie_singulier }}</h3>
                         </div>
 
                         <a class="mise-en-avant-bouton"
