@@ -1,0 +1,51 @@
+# scripts/fix_adresses.py
+# Lancer avec : python manage.py runscript fix_adresses
+
+import re
+from members.models import Store
+
+REMPLACEMENTS = [
+    (r"\bAv\.",   "Avenue"),
+    (r"\bBd\.",   "Boulevard"),
+    (r"\bPass\.", "Passage"),
+    (r"\bPl\.",   "Place"),
+    (r"\bSq\.",   "Square"),
+    (r"\bSt\.",   "Saint"),
+    (r"\bAlle\.", "Allée"),
+    (r"\bImp\.",  "Impasse"),
+    (r"\bRte\.",  "Route"),
+    # Supprimer bis/b collé au numéro (ex: "10 bis", "10bis", "8BIS", "12b", "12B")
+    (r"\s+bis\b", "", ),
+    (r"\s+b\b",   ""),
+    (r"(\d+)BIS", r"\1"),
+    (r"(\d+)bis", r"\1"),
+]
+
+def run():
+    stores = Store.objects.exclude(addressemaps="").exclude(addressemaps__isnull=True)
+    modifies = []
+
+    for store in stores:
+        ancienne_adresse = store.addressemaps
+        nouvelle_adresse = ancienne_adresse
+
+        for pattern, remplacement in REMPLACEMENTS:
+            nouvelle_adresse = re.sub(pattern, remplacement, nouvelle_adresse, flags=re.IGNORECASE)
+
+        # On ne touche au commerce que si l'adresse a changé
+        if nouvelle_adresse != ancienne_adresse:
+            store.addressemaps = nouvelle_adresse
+            # save() va automatiquement relancer le géocodeur
+            # grâce au code dans Store.save() dans models.py
+            store.save()
+            modifies.append((store.nom, ancienne_adresse, nouvelle_adresse))
+
+    # --- Affichage du rapport ---
+    print("\n" + "="*60)
+    print(f"✅ {len(modifies)} adresses corrigées et géocodage relancé")
+    print("="*60)
+    for nom, avant, apres in modifies:
+        print(f"\n  {nom}")
+        print(f"    Avant  : {avant}")
+        print(f"    Après  : {apres}")
+    print()
