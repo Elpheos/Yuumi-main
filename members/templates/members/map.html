@@ -10,6 +10,9 @@ Carte des commerces - {{ departement }} | Yuumi
 <meta name="geo.region" content="FR">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -319,46 +322,50 @@ document.addEventListener("DOMContentLoaded", function () {
         { maxZoom: 19, attribution: '© OpenStreetMap © CARTO' }
     ).addTo(leafletMap);
 
+    /* ========= Groupe de clusters ========= */
+    // NOUVEAU : on crée un "groupe" intelligent qui gère
+    // le clustering et le spiderfy automatiquement
+    const clusterGroup = L.markerClusterGroup();
+
     /* ========= Mapping catégories ========= */
     const categories = JSON.parse(
         document.getElementById("categories-data").textContent
     );
 
-const categoryLabels = {};
-categories.forEach(cat => {
-    categoryLabels[cat.slug] = { 
-        name: cat.name, 
-        icon_perso: cat.icon_perso 
-    };
-});
+    const categoryLabels = {};
+    categories.forEach(cat => {
+        categoryLabels[cat.slug] = { 
+            name: cat.name, 
+            icon_perso: cat.icon_perso 
+        };
+    });
 
-function createIcon(categorySlug) {
-    const cat = categoryLabels[categorySlug] || {};
+    function createIcon(categorySlug) {
+        const cat = categoryLabels[categorySlug] || {};
 
-    
-    let iconHtml;
-    if (cat.icon_perso) {
-    iconHtml = `<img src="/media/${cat.icon_perso}" class="carte-icones-img">`;
-    } else {
-        iconHtml = `<img src="/static/images/yuumi-Icone-commerce.png" class="carte-icones-img">`;
+        let iconHtml;
+        if (cat.icon_perso) {
+            iconHtml = `<img src="/media/${cat.icon_perso}" class="carte-icones-img">`;
+        } else {
+            iconHtml = `<img src="/static/images/yuumi-Icone-commerce.png" class="carte-icones-img">`;
+        }
+
+        return L.divIcon({
+            className: "custom-pin",
+            html: `
+                <div style="position:relative;width:30px;height:50px;">
+                    <svg viewBox="0 0 24 40" width="30" height="50">
+                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                              fill="#ff8b38"/>
+                    </svg>
+                    ${iconHtml}
+                </div>
+            `,
+            iconSize: [30, 50],
+            iconAnchor: [15, 50],
+            popupAnchor: [0, -50]
+        });
     }
-
-    return L.divIcon({
-        className: "custom-pin",
-        html: `
-            <div style="position:relative;width:30px;height:50px;">
-                <svg viewBox="0 0 24 40" width="30" height="50">
-                    <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                          fill="#ff8b38"/>
-                </svg>
-                ${iconHtml}
-            </div>
-        `,
-        iconSize: [30, 50],
-        iconAnchor: [15, 50],
-        popupAnchor: [0, -50]
-});
-}
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
@@ -389,9 +396,14 @@ function createIcon(categorySlug) {
         );
 
         marker.category = store.categorie;
-        marker.addTo(leafletMap);
+        // MODIFIÉ : on n'ajoute plus à la carte directement,
+        // mais au groupe — le groupe s'occupe du reste
+        marker.addTo(clusterGroup);
         return marker;
     }).filter(Boolean);
+
+    // NOUVEAU : on ajoute le groupe (avec tous ses marqueurs) à la carte
+    leafletMap.addLayer(clusterGroup);
 
     /* ========= Utils ========= */
     function getActiveChildren() {
@@ -402,10 +414,13 @@ function createIcon(categorySlug) {
 
     function updateMap() {
         const active = getActiveChildren();
+        // MODIFIÉ : on vide le groupe, puis on remet seulement
+        // les marqueurs des catégories actives
+        clusterGroup.clearLayers();
         markers.forEach(marker => {
-            const visible = active.includes(marker.category);
-            if (visible && !leafletMap.hasLayer(marker)) leafletMap.addLayer(marker);
-            if (!visible && leafletMap.hasLayer(marker)) leafletMap.removeLayer(marker);
+            if (active.includes(marker.category)) {
+                clusterGroup.addLayer(marker);
+            }
         });
     }
 
@@ -514,14 +529,14 @@ function createIcon(categorySlug) {
 
     /*APPARITION MENU SUR MOBILE*/
     const mobileMenuButton = document.querySelector('.map-mobile-menu-opener-b');
-const categoryFilters = document.querySelector('.category-filters');
+    const categoryFilters = document.querySelector('.category-filters');
 
-if (mobileMenuButton && categoryFilters) {
-    mobileMenuButton.addEventListener('click', function () {
-        const isOpen = categoryFilters.style.display === 'block';
-        categoryFilters.style.display = isOpen ? 'none' : 'block';
-    });
-}
+    if (mobileMenuButton && categoryFilters) {
+        mobileMenuButton.addEventListener('click', function () {
+            const isOpen = categoryFilters.style.display === 'block';
+            categoryFilters.style.display = isOpen ? 'none' : 'block';
+        });
+    }
 
     /* ========= Init ========= */
     document.querySelectorAll('.child-buttons button')
