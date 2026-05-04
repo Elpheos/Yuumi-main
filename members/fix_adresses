@@ -14,11 +14,10 @@ REMPLACEMENTS = [
     (r"\bAlle\.", "Allée"),
     (r"\bImp\.",  "Impasse"),
     (r"\bRte\.",  "Route"),
-    # Supprimer bis/b collé au numéro (ex: "10 bis", "10bis", "8BIS", "12b", "12B")
-    (r"\s+bis\b", "", ),
-    (r"\s+b\b",   ""),
-    (r"(\d+)BIS", r"\1"),
-    (r"(\d+)bis", r"\1"),
+    (r"(\d+)BIS", r"\1 bis"),
+    (r"(\d+)bis", r"\1 bis"),
+    (r"(\d+)B\b", r"\1 bis"),
+    (r"(\d+)b\b", r"\1 bis"),
 ]
 
 def run():
