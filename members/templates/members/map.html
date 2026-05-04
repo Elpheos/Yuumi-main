@@ -230,7 +230,29 @@ Carte des commerces - {{ departement }} | Yuumi
     background: #ff8b38;
     color: #fff;
 }
+/* Petit cluster (moins de 10 marqueurs) */
+.marker-cluster-small div {
+    background-color: #ff8b38;
+}
+.marker-cluster-small {
+    background-color: rgba(255, 139, 56, 0.3);
+}
 
+/* Moyen cluster (10 à 100) */
+.marker-cluster-medium div {
+    background-color: #ff8b38;
+}
+.marker-cluster-medium {
+    background-color: rgba(255, 139, 56, 0.3);
+}
+
+/* Grand cluster (plus de 100) */
+.marker-cluster-large div {
+    background-color: #ff8b38;
+}
+.marker-cluster-large {
+    background-color: rgba(255, 139, 56, 0.3);
+}
 @media (max-width: 767px) {
     .map-content-supercontainer {
         background-color: initial;
