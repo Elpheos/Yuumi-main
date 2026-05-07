@@ -352,12 +352,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // NOUVEAU : on crée un "groupe" intelligent qui gère
     // le clustering et le spiderfy automatiquement
    const clusterGroup = L.markerClusterGroup({
-    maxClusterRadius: function(zoom) {
-        if (zoom >= 13) return 0;
-        if (zoom >= 11) return 10;
-        if (zoom >= 9)  return 40;
-        return 80;
-    },
+    maxClusterRadius: 0,
     spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
     animateAddingMarkers: true,
