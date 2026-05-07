@@ -349,9 +349,9 @@ document.addEventListener("DOMContentLoaded", function () {
     // le clustering et le spiderfy automatiquement
     const clusterGroup = L.markerClusterGroup({
     maxClusterRadius: function(zoom) {
-        if (zoom >= 14) return 0;
-        if (zoom >= 12) return 10;
-        if (zoom >= 10) return 40;
+        if (zoom >= 10) return 0;
+        if (zoom >= 8) return 10;
+        if (zoom >= 6) return 40;
         return 80;
     },
     spiderfyOnMaxZoom: false,
