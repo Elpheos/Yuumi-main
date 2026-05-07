@@ -348,9 +348,17 @@ document.addEventListener("DOMContentLoaded", function () {
     // NOUVEAU : on crée un "groupe" intelligent qui gère
     // le clustering et le spiderfy automatiquement
     const clusterGroup = L.markerClusterGroup({
-        maxClusterRadius: 1,
-        spiderfyOnMaxZoom: true,
-    });
+    maxClusterRadius: function(zoom) {
+        if (zoom >= 14) return 0;
+        if (zoom >= 12) return 10;
+        if (zoom >= 10) return 40;
+        return 80;
+    },
+    spiderfyOnMaxZoom: false,
+    showCoverageOnHover: false,
+    animateAddingMarkers: true,
+    zoomToBoundsOnClick: true,
+});
     /* ========= Mapping catégories ========= */
     const categories = JSON.parse(
         document.getElementById("categories-data").textContent
