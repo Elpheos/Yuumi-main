@@ -152,7 +152,8 @@ color: inherit;
 }
 
 .menu-icone-categorie {
-	margin-bottom:2px;
+	margin-bottom:4px;
+	width:25px;
 }
 
 #changer-de-ville:hover {
