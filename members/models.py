@@ -18,6 +18,7 @@ from simple_history.models import HistoricalRecords
 class SuperCategory(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
+    ordre = models.PositiveIntegerField(default=0)
 
     image = models.ImageField(
         upload_to="super_categories/",
@@ -31,7 +32,7 @@ class SuperCategory(models.Model):
     class Meta:
         verbose_name = "Super catégorie"
         verbose_name_plural = "Super catégories"
-        ordering = ["name"]
+        ordering = ["ordre","name"]
 
     def save(self, *args, **kwargs):
         if not self.slug:
