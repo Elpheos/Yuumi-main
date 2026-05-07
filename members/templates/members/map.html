@@ -502,19 +502,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     btn.classList.toggle('active', this.checked)
                 );
 
-                document.querySelectorAll('.child-buttons').forEach(otherGroup => {
-                    if (otherGroup.dataset.parent !== currentParent) {
-                        otherGroup.style.display = 'none';
-                    }
-                });
-
-                document.querySelectorAll('.toggle-children').forEach(toggle => {
-                    const isCurrent = toggle.dataset.parent === currentParent;
-                    toggle.classList.toggle('open', isCurrent);
-                });
-
-                group.style.display = 'flex';
-
                 syncUI();
             });
         });
