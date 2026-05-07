@@ -336,18 +336,21 @@ main {
                                     </div>
 
                                     <ul class="subcats-list">
-                                        {% for cat in cats %}
-                                        <li>
-                                            {% if menu_ville %}
-                                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">
-    {{ cat }}
-</a>
-                                            {% else %}
-                                                <span style="color:#aaa;">{{ cat }}</span>
-                                            {% endif %}
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
+    {% for cat in cats %}
+    <li>
+        {% if menu_ville %}
+            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">
+                {% if cat.icon_perso %}
+                    <img src="{{ cat.icon_perso.url }}" alt="{{ cat }}" width="20">
+                {% endif %}
+                {{ cat }}
+            </a>
+        {% else %}
+            <span style="color:#aaa;">{{ cat }}</span>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
 
                                 </div>
                                 {% endfor %}
