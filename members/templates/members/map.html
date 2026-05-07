@@ -345,12 +345,18 @@ document.addEventListener("DOMContentLoaded", function () {
     ).addTo(leafletMap);
 
     /* ========= Groupe de clusters ========= */
-    // NOUVEAU : on crée un "groupe" intelligent qui gère
-    // le clustering et le spiderfy automatiquement
     const clusterGroup = L.markerClusterGroup({
-        maxClusterRadius: 1,
-        spiderfyOnMaxZoom: true,
+        maxClusterRadius: function(zoom) {
+            if (zoom >= 16) return 0;
+            if (zoom >= 14) return 10;
+            if (zoom >= 12) return 40;
+            return 80;
+        },
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: false,
+        animateAddingMarkers: true,
     });
+
     /* ========= Mapping catégories ========= */
     const categories = JSON.parse(
         document.getElementById("categories-data").textContent
@@ -397,8 +403,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const label = categoryLabels[store.categorie] || { name: store.categorie };
 
+        // Décalage aléatoire de ~5-10 mètres pour éviter la superposition exacte
+        const lat = store.lat + (Math.random() - 0.5) * 0.0001;
+        const lng = store.lng + (Math.random() - 0.5) * 0.0001;
+
         const marker = L.marker(
-            [store.lat, store.lng],
+            [lat, lng],
             { icon: createIcon(store.categorie) }
         ).bindPopup(
             `
@@ -420,13 +430,10 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         marker.category = store.categorie;
-        // MODIFIÉ : on n'ajoute plus à la carte directement,
-        // mais au groupe — le groupe s'occupe du reste
         marker.addTo(clusterGroup);
         return marker;
     }).filter(Boolean);
 
-    // NOUVEAU : on ajoute le groupe (avec tous ses marqueurs) à la carte
     leafletMap.addLayer(clusterGroup);
 
     /* ========= Utils ========= */
@@ -438,8 +445,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateMap() {
         const active = getActiveChildren();
-        // MODIFIÉ : on vide le groupe, puis on remet seulement
-        // les marqueurs des catégories actives
         clusterGroup.clearLayers();
         markers.forEach(marker => {
             if (active.includes(marker.category)) {
@@ -479,12 +484,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.querySelector('input[data-category="all"]')
     .addEventListener('change', function () {
-
         document.querySelectorAll('.child-buttons button')
             .forEach(btn => {
                 btn.classList.toggle('active', this.checked);
             });
-
         syncUI();
     });
 
