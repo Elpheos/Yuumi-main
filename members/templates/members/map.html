@@ -230,6 +230,10 @@ Carte des commerces - {{ departement }} | Yuumi
     background: #ff8b38;
     color: #fff;
 }
+
+    .leaflet-overlay-pane svg path {
+    display: none;
+}
 /* Petit cluster (moins de 10 marqueurs) */
 .marker-cluster-small div {
     background-color: #ff8b38;
@@ -347,14 +351,14 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ========= Groupe de clusters ========= */
     // NOUVEAU : on crée un "groupe" intelligent qui gère
     // le clustering et le spiderfy automatiquement
-    const clusterGroup = L.markerClusterGroup({
+   const clusterGroup = L.markerClusterGroup({
     maxClusterRadius: function(zoom) {
-        if (zoom >= 10) return 0;
-        if (zoom >= 8) return 10;
-        if (zoom >= 6) return 40;
+        if (zoom >= 13) return 0;
+        if (zoom >= 11) return 10;
+        if (zoom >= 9)  return 40;
         return 80;
     },
-    spiderfyOnMaxZoom: false,
+    spiderfyOnMaxZoom: true,
     showCoverageOnHover: false,
     animateAddingMarkers: true,
     zoomToBoundsOnClick: true,
