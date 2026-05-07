@@ -347,7 +347,7 @@ main {
         {% if menu_ville %}
             <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">
                 {% if cat.icon_perso %}
-                    <img src="{{ cat.icon_perso.url }}" alt="{{ cat }}" width="20">
+                    <img class="menu-icone-categorie" src="{{ cat.icon_perso.url }}" alt="{{ cat }}" width="20"> - 
                 {% endif %}
                 {{ cat }}
             </a>
