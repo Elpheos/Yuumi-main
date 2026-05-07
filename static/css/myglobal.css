@@ -151,6 +151,10 @@ color: inherit;
     font-size: 0.8rem;
 }
 
+.menu-icone-categorie {
+	margin-bottom:2px;
+}
+
 #changer-de-ville:hover {
     text-decoration: underline;
 }
