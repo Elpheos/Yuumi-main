@@ -102,7 +102,6 @@ Carte des commerces - {{ departement }} | Yuumi
     display: none;
 }
 
-/* === Style popup Yuumi === */
 .leaflet-popup.yuumi-popup {
     max-width: 380px !important;
 }
@@ -118,7 +117,6 @@ Carte des commerces - {{ departement }} | Yuumi
     width: auto !important;
 }
 
-/* Croix de fermeture personnalisée */
 .yuumi-popup .leaflet-popup-close-button {
     width: 24px !important;
     height: 24px !important;
@@ -168,7 +166,6 @@ Carte des commerces - {{ departement }} | Yuumi
     box-sizing: border-box;
 }
 
-/* === Filtres catégories === */
 .category-filters {
     display: flex;
     font-size: 15px;
@@ -225,34 +222,18 @@ Carte des commerces - {{ departement }} | Yuumi
     height: fit-content;
 }
 
-/* État actif (toujours) */
 .child-buttons button.active {
     background: #ff8b38;
     color: #fff;
 }
-/* Petit cluster (moins de 10 marqueurs) */
-.marker-cluster-small div {
-    background-color: #ff8b38;
-}
-.marker-cluster-small {
-    background-color: rgba(255, 139, 56, 0.3);
-}
 
-/* Moyen cluster (10 à 100) */
-.marker-cluster-medium div {
-    background-color: #ff8b38;
-}
-.marker-cluster-medium {
-    background-color: rgba(255, 139, 56, 0.3);
-}
+.marker-cluster-small div { background-color: #ff8b38; }
+.marker-cluster-small { background-color: rgba(255, 139, 56, 0.3); }
+.marker-cluster-medium div { background-color: #ff8b38; }
+.marker-cluster-medium { background-color: rgba(255, 139, 56, 0.3); }
+.marker-cluster-large div { background-color: #ff8b38; }
+.marker-cluster-large { background-color: rgba(255, 139, 56, 0.3); }
 
-/* Grand cluster (plus de 100) */
-.marker-cluster-large div {
-    background-color: #ff8b38;
-}
-.marker-cluster-large {
-    background-color: rgba(255, 139, 56, 0.3);
-}
 @media (max-width: 767px) {
     .map-content-supercontainer {
         background-color: initial;
@@ -295,18 +276,17 @@ Carte des commerces - {{ departement }} | Yuumi
     }
 
     .parent-filter {
-    border: none;
-    padding: 3px 8px;
-}
+        border: none;
+        padding: 3px 8px;
+    }
 
     .child-buttons {
-    width: 100%;
-    height: auto;
-    min-height: 0;
-    position: static;
-}
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        position: static;
+    }
 
-    /* Popup compacte */
     .leaflet-popup-content-wrapper {
         max-width: 72vw !important;
     }
@@ -346,16 +326,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ========= Groupe de clusters ========= */
     const clusterGroup = L.markerClusterGroup({
-    maxClusterRadius: function(zoom) {
-        if (zoom >= 14) return 0;
-        if (zoom >= 12) return 10;
-        if (zoom >= 10) return 40; 
-        return 80;
-    },
-    spiderfyOnMaxZoom: false,
-    showCoverageOnHover: false,
-    animateAddingMarkers: true,
-});
+        maxClusterRadius: function(zoom) {
+            if (zoom >= 14) return 0;
+            if (zoom >= 12) return 10;
+            if (zoom >= 10) return 40;
+            return 80;
+        },
+        spiderfyOnMaxZoom: false,
+        showCoverageOnHover: false,
+        animateAddingMarkers: true,
+    });
 
     /* ========= Mapping catégories ========= */
     const categories = JSON.parse(
@@ -397,41 +377,57 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    /* ========= Marqueurs ========= */
-    const markers = stores.map(store => {
-        if (store.lat == null || store.lng == null || !store.categorie) return null;
+    /* ========= Marqueurs avec disposition en cercle ========= */
 
-        const label = categoryLabels[store.categorie] || { name: store.categorie };
+    // Regrouper les commerces par coordonnées identiques
+    const grouped = {};
+    stores.forEach(store => {
+        if (store.lat == null || store.lng == null || !store.categorie) return;
+        const key = `${store.lat},${store.lng}`;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(store);
+    });
 
-        const lat = store.lat + (Math.random() - 0.5) * 0.0004; 
-        const lng = store.lng + (Math.random() - 0.5) * 0.0004;
+    // Créer les marqueurs — cercle si plusieurs au même point, position exacte si seul
+    const markers = [];
+    Object.values(grouped).forEach(group => {
+        const total = group.length;
+        const radius = total > 1 ? 0.0003 : 0;
 
-        const marker = L.marker(
-            [lat, lng],
-            { icon: createIcon(store.categorie) }
-        ).bindPopup(
-            `
-            <div class="popup-content">
-                <a href="${store.url}">
-                    <h3 class="yuumi-popup-h3">
-                        ${store.nom}<br>
-                        <span>${label.name}</span>
-                    </h3>
-                    ${store.photo
-                        ? `<img class="yuumi-popup-img"
-                                src="${store.photo}"
-                                alt="${store.nom}">`
-                        : ''}
-                </a>
-            </div>
-            `,
-            { className: 'yuumi-popup' }
-        );
+        group.forEach((store, index) => {
+            const angle = (2 * Math.PI / total) * index;
+            const lat = store.lat + radius * Math.cos(angle);
+            const lng = store.lng + radius * Math.sin(angle);
 
-        marker.category = store.categorie;
-        marker.addTo(clusterGroup);
-        return marker;
-    }).filter(Boolean);
+            const label = categoryLabels[store.categorie] || { name: store.categorie };
+
+            const marker = L.marker(
+                [lat, lng],
+                { icon: createIcon(store.categorie) }
+            ).bindPopup(
+                `
+                <div class="popup-content">
+                    <a href="${store.url}">
+                        <h3 class="yuumi-popup-h3">
+                            ${store.nom}<br>
+                            <span>${label.name}</span>
+                        </h3>
+                        ${store.photo
+                            ? `<img class="yuumi-popup-img"
+                                    src="${store.photo}"
+                                    alt="${store.nom}">`
+                            : ''}
+                    </a>
+                </div>
+                `,
+                { className: 'yuumi-popup' }
+            );
+
+            marker.category = store.categorie;
+            marker.addTo(clusterGroup);
+            markers.push(marker);
+        });
+    });
 
     leafletMap.addLayer(clusterGroup);
 
