@@ -249,24 +249,24 @@ class Store(models.Model):
     def _generate_photo_variants(self):
         ville = slugify(self.ville)
         nom = slugify(self.nom)
-        cat = slugify(store.categorie.categorie_singulier or store.categorie.name) if store.categorie else "commerce"
-    
-        original = self.photo  # ← garder la référence originale
-    
+        cat = slugify(self.categorie.categorie_singulier or self.categorie.name) if self.categorie else "commerce"
+        
+        original = self.photo
+        
         self.photo = resize_and_convert(
-            original,
-            name=f"{nom}-{categorie}-a-{ville}",
-            max_width=1200,
+                original,
+                name=f"{nom}-{cat}-a-{ville}",
+                max_width=1200,
         )
         self.photo_medium = resize_and_convert(
-            original,
-            name=f"{categorie}-{nom}-a-{ville}",
-            max_width=600,
+                original,
+                name=f"{cat}-{nom}-a-{ville}",
+                max_width=600,
         )
         self.photo_small = resize_and_convert(
-            original,
-            name=f"{nom}-{ville}",
-            max_width=300,
+                original,
+                name=f"{nom}-{ville}",
+                max_width=300,
         )
 
     def save(self, *args, **kwargs):
