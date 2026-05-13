@@ -48,6 +48,14 @@
     font-size: 1.1rem;
 }
 
+.{
+    color:lightgrey;
+    font-size:0.7rem;
+    text-align:center;
+    margin: 12px 8px 0 8px;
+    
+}
+
 .arrivants-scrollbar-track {
     display: none;
 }
@@ -215,9 +223,9 @@
                             </div>
                             <h4>{{ store.nom }}</h4>
                             {% if store.addressemaps %}
-                                <h4>{{ store.addressemaps }}</h4>
+                                <h4 class="derniers-arrivants-adresse">{{ store.addressemaps }}</h4>
                             {% else %}
-                                <h4>{{ store.ville }}</h4>
+                                <h4 class="derniers-arrivants-adresse">{{ store.ville }}</h4>
                             {% endif %}
                         </a>
                     </div>
