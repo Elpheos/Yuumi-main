@@ -47,29 +47,35 @@ def is_open_now(store):
         af = getattr(store, f'{jour}_apresmidi_fermeture', None)
         return mo, mf, ao, af
 
-    # Vérifier les horaires d'aujourd'hui
     mo, mf, ao, af = check_jour(today)
-    if mo and mf and mo <= current_time <= mf:
-        return True
-    if ao and af:
-        if af > ao:  # Fermeture le même jour (cas normal)
+
+    if mo is not None and mf is not None:
+        if mf > mo:
+            if mo <= current_time <= mf:
+                return True
+        else:
+            if current_time >= mo:
+                return True
+
+    if ao is not None and af is not None:
+        if af > ao:
             if ao <= current_time <= af:
                 return True
-        else:  # Fermeture après minuit
+        else:
             if current_time >= ao:
                 return True
 
-    # Vérifier si hier avait une fermeture après minuit qui couvre maintenant
-    _, _, ao_hier, af_hier = check_jour(yesterday)
-    if ao_hier and af_hier and af_hier < ao_hier:
+    mo_hier, mf_hier, ao_hier, af_hier = check_jour(yesterday)
+    if mo_hier is not None and mf_hier is not None and mf_hier <= mo_hier:
+        if current_time <= mf_hier:
+            return True
+    if ao_hier is not None and af_hier is not None and af_hier <= ao_hier:
         if current_time <= af_hier:
             return True
 
-    if mo or mf or ao or af:
+    if mo is not None or mf is not None or ao is not None or af is not None:
         return False
     return None
-
-
 # ---------------------------
 # Helper : tri alphabétique sans accents
 # ---------------------------
