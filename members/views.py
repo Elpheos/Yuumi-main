@@ -37,17 +37,34 @@ def is_open_now(store):
     now = datetime.now(tz=ZoneInfo('Europe/Paris'))
     jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
     today = jours[now.weekday()]
+    yesterday = jours[(now.weekday() - 1) % 7]
     current_time = now.time().replace(second=0, microsecond=0)
 
-    mo = getattr(store, f'{today}_matin_ouverture', None)
-    mf = getattr(store, f'{today}_matin_fermeture', None)
-    ao = getattr(store, f'{today}_apresmidi_ouverture', None)
-    af = getattr(store, f'{today}_apresmidi_fermeture', None)
+    def check_jour(jour):
+        mo = getattr(store, f'{jour}_matin_ouverture', None)
+        mf = getattr(store, f'{jour}_matin_fermeture', None)
+        ao = getattr(store, f'{jour}_apresmidi_ouverture', None)
+        af = getattr(store, f'{jour}_apresmidi_fermeture', None)
+        return mo, mf, ao, af
 
+    # Vérifier les horaires d'aujourd'hui
+    mo, mf, ao, af = check_jour(today)
     if mo and mf and mo <= current_time <= mf:
         return True
-    if ao and af and ao <= current_time <= af:
-        return True
+    if ao and af:
+        if af > ao:  # Fermeture le même jour (cas normal)
+            if ao <= current_time <= af:
+                return True
+        else:  # Fermeture après minuit
+            if current_time >= ao:
+                return True
+
+    # Vérifier si hier avait une fermeture après minuit qui couvre maintenant
+    _, _, ao_hier, af_hier = check_jour(yesterday)
+    if ao_hier and af_hier and af_hier < ao_hier:
+        if current_time <= af_hier:
+            return True
+
     if mo or mf or ao or af:
         return False
     return None
