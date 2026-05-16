@@ -379,6 +379,14 @@ User.add_to_class(
     models.ManyToManyField(Store, blank=True, related_name="favorited_by"),
 )
 
+# ===========================================================
+# 🔹 Unfavoris utilisateurs
+# ===========================================================
+
+User.add_to_class(
+    "unfavoris",
+    models.ManyToManyField(Store, blank=True, related_name="unfavorited_by"),
+)
 
 # ===========================================================
 # 🔹 Catégories mises en avant par ville
