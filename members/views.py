@@ -253,6 +253,10 @@ def store_details(request, departement, ville, slug):
     if request.user.is_authenticated:
         is_favorite = store in request.user.favoris.all()
 
+    is_unfavorite = False
+    if request.user.is_authenticated:
+        is_unfavorite = store in request.user.unfavoris.all()
+
     est_ouvert = is_open_now(store)
     
     # Préparer les produits par lignes de 4
@@ -283,6 +287,7 @@ def store_details(request, departement, ville, slug):
         "product_formsets": product_formsets,
         "stores": store_data,
         "is_favorite": is_favorite,
+        "is_unfavorite": is_unfavorite,
         "est_ouvert": est_ouvert,
         "families_with_rows": families_with_rows,
         "opening_hours": opening_hours
