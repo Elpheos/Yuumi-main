@@ -475,7 +475,11 @@ def toggle_favoris(request, store_id):
 @login_required
 def my_favorites(request):
     favoris = request.user.favoris.all()
-    return render(request, "members/my_favorites.html", {"favoris": favoris})
+    unfavoris = request.user.unfavoris.all()
+    return render(request, "members/my_favorites.html", {
+        "favoris": favoris,
+        "unfavoris": unfavoris,
+    })
     
 # ---------------------------
 # Gestion des unfavor
