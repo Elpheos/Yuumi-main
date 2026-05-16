@@ -671,6 +671,35 @@ document.addEventListener("DOMContentLoaded", () => {
 
         updateUI(isFavorite);
 
+
+         const buttons = document.querySelectorAll(".unfavori-btn");
+
+    buttons.forEach(btn => {
+        const storeId = btn.dataset.storeId;
+        if (!storeId) return;
+
+        const isAuthenticated = btn.dataset.isAuthenticated === "true";
+        let isunFavorite = btn.dataset.isunFavorite === "true";
+        const span = btn.querySelector("span");
+
+        function updateUI(favorited) {
+          const outline = btn.querySelector(".heart-outline");
+          const filled = btn.querySelector(".heart-filled");
+          if (unfavorited) {
+              btn.classList.add("active");
+              outline.style.display = "none";
+              filled.style.display = "inline";
+              if (span) span.textContent = "Retirer des commerces à éviter";
+          } else {
+              btn.classList.remove("active");
+              outline.style.display = "inline";
+              filled.style.display = "none";
+              if (span) span.textContent = "Ajouter aux commerces à éviter";
+          }
+      }
+
+        updateUI(isFavorite);
+
         btn.addEventListener("click", () => {
             if (!isAuthenticated) {
                 const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
