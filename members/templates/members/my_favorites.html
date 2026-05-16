@@ -56,7 +56,7 @@
     </section>
     <section class="my-favorite-section">
 
-        <h1 class="my-favorite-title">Mes commerces à éviter</h1>
+        <h1 class="my-favorite-title">Mes commerces masqués</h1>
 
         {% if user.is_authenticated %}
             <p class="my-favorite-user">Connecté en tant que {{ user.username }}</p>
@@ -92,14 +92,14 @@
         <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
         <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
     </svg>
-    <span>Retirer des commerces à éviter</span>
+    <span>Retirer des commerces masqués</span>
 </button>
 
                     </div></div>
                 {% endfor %}
             </div>
         {% else %}
-            <p class="my-favorite-empty">Vous n'avez ajouté aucun commerce à éviter.</p>
+            <p class="my-favorite-empty">Vous n'avez ajouté aucun commerce masqués.</p>
         {% endif %}
 
     </section>
