@@ -462,6 +462,7 @@ def toggle_favoris(request, store_id):
     else:
         user.favoris.add(store)
         is_favorite = True
+        is_unfavorite = False
 
     return JsonResponse({"is_favorite": is_favorite})
 
@@ -470,6 +471,34 @@ def toggle_favoris(request, store_id):
 def my_favorites(request):
     favoris = request.user.favoris.all()
     return render(request, "members/my_favorites.html", {"favoris": favoris})
+    
+# ---------------------------
+# Gestion des unfavor
+# ---------------------------
+
+@login_required
+def toggle_unfavoris(request, store_id):
+    store = get_object_or_404(Store, id=store_id)
+    user = request.user
+
+    if store in user.unfavoris.all():
+        user.unfavoris.remove(store)
+        is_unfavorite = False
+    else:
+        user.unfavoris.add(store)
+        is_unfavorite = True
+        user.favoris.remove(store)
+
+    return JsonResponse({"is_unfavorite": is_unfavorite})
+
+@login_required
+def my_unfavorites(request):
+    favoris = request.user.unfavoris.all()
+    return render(request, "members/my_unfavorites.html", {"unfavoris": favoris})
+    
+# ---------------------------
+# Claim
+# ---------------------------
 
 
 @login_required
