@@ -45,11 +45,61 @@
                             </button>
                         </div>
 
+                        
                     </div>
                 {% endfor %}
             </div>
         {% else %}
             <p class="my-favorite-empty">Vous n'avez ajouté aucun favori pour le moment.</p>
+        {% endif %}
+
+    </section>
+    <section class="my-favorite-section">
+
+        <h1 class="my-favorite-title">Mes commerces à éviter</h1>
+
+        {% if user.is_authenticated %}
+            <p class="my-favorite-user">Connecté en tant que {{ user.username }}</p>
+        {% else %}
+            <p class="my-favorite-user">Non connecté</p>
+        {% endif %}
+
+        {% if unfavoris %}
+            <div class="my-favorite-list">
+                {% for store in unfavoris %}
+                    <div class="my-favorite-card">
+
+                        {% if store.photo %}
+                            <div class="my-favorite-photo">
+                                <a href="{{ store.get_absolute_url }}">
+                                    <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }}">
+                                </a>
+                            </div>
+                        {% endif %}
+
+                        <div class="my-favorite-info">
+                            <h2 class="my-favorite-name">
+                                <a href="{{ store.get_absolute_url }}">{{ store.nom }}</a>
+                            </h2>
+
+                            <p class="my-favorite-meta">
+                                {{ store.ville }}
+                                {% if store.categorie %} | {{ store.categorie }}{% endif %}
+                            </p>
+
+                            <button class="my-unfavorite-btn unfavori-btn active" data-store-id="{{ store.id }}">
+    <svg style="width: 16px;" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
+        <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
+    </svg>
+    <span>Retirer des commerces à éviter</span>
+</button>
+
+                    </div></div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="my-favorite-empty">Vous n'avez ajouté aucun commerce à éviter.</p>
         {% endif %}
 
     </section>
@@ -218,16 +268,24 @@
 </style>
 
 <script>
+function getCookie(name) {
+    let value = null;
+    document.cookie.split(";").forEach(cookie => {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + "=")) {
+            value = decodeURIComponent(cookie.substring(name.length + 1));
+        }
+    });
+    return value;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll(".favori-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const storeId = btn.dataset.storeId;
-
             fetch(`/store/${storeId}/favoris/`, {
                 method: "POST",
-                headers: {
-                    "X-CSRFToken": getCookie("csrftoken"),
-                },
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
             })
             .then(r => r.json())
             .then(data => {
@@ -238,16 +296,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    function getCookie(name) {
-        let value = null;
-        document.cookie.split(";").forEach(cookie => {
-            cookie = cookie.trim();
-            if (cookie.startsWith(name + "=")) {
-                value = decodeURIComponent(cookie.substring(name.length + 1));
-            }
+    document.querySelectorAll(".unfavori-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const storeId = btn.dataset.storeId;
+            fetch(`/store/${storeId}/unfavoris/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.is_unfavorite) {
+                    btn.closest(".my-favorite-card").remove();
+                }
+            });
         });
-        return value;
-    }
+    });
 });
 </script>
 {% endblock %}
