@@ -6,6 +6,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.utils.safestring import mark_safe
 from .utils import convert_to_webp
+import logging
 
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
@@ -91,7 +92,23 @@ def get_client_ip(request):
     if x_forwarded_for:
         return x_forwarded_for.split(",")[0]
     return request.META.get("REMOTE_ADDR")
-    
+
+# ---------------------------
+# Helper : unfavoris
+# ---------------------------
+
+
+logger = logging.getLogger(__name__)
+
+def get_unfavori_ids(request):
+    try:
+        if request.user.is_authenticated:
+            return list(
+                request.user.unfavoris.values_list('id', flat=True)
+            )
+    except Exception as e:
+        logger.error(f"get_unfavori_ids a échoué : {e}", exc_info=True)
+    return []
 # ---------------------------
 # Pages principales
 # ---------------------------
@@ -100,7 +117,7 @@ def main(request):
     dep = request.COOKIES.get("yuumi_departement")
     ville = request.COOKIES.get("yuumi_ville")
     if dep and ville:
-        return redirect("stores", departement=dep, ville=ville)
+        return redirect("stores", departement=dep.lower(), ville=ville.lower())
 
     stores = Store.objects.all().values("departement", "ville").distinct()
 
