@@ -2,7 +2,6 @@ import unicodedata
 from urllib.parse import unquote
 from .models import Store, Category, SuperCategory
 
-
 def menu_context(request):
     """
     Fournit :
@@ -14,7 +13,6 @@ def menu_context(request):
     /mes-favoris/, etc.), on utilise les cookies yuumi_departement et
     yuumi_ville comme fallback pour maintenir le contexte de navigation.
     """
-
     # Découpe du chemin
     path_parts = [unquote(p) for p in request.path.strip("/").split("/") if p]
 
@@ -22,16 +20,19 @@ def menu_context(request):
     ville = ""
     categories = []
 
-    # Départements existants
-    deps = set(Store.objects.values_list("departement", flat=True).distinct())
+    # Départements existants — clé lowercase, valeur réelle en base
+    deps_map = {
+        d.lower(): d
+        for d in Store.objects.values_list("departement", flat=True).distinct()
+    }
 
     # Cas : /carte/<departement>/
-    if len(path_parts) >= 2 and path_parts[0] == "carte" and path_parts[1] in deps:
-        departement = path_parts[1]
+    if len(path_parts) >= 2 and path_parts[0] == "carte" and path_parts[1] in deps_map:
+        departement = deps_map[path_parts[1]]
 
     # Cas : /<departement>/<ville>/...
-    elif len(path_parts) >= 2 and path_parts[0] in deps:
-        departement = path_parts[0]
+    elif len(path_parts) >= 2 and path_parts[0] in deps_map:
+        departement = deps_map[path_parts[0]]
         ville = path_parts[1]
 
     # -------------------------------------------------------
@@ -41,8 +42,8 @@ def menu_context(request):
     if not ville:
         cookie_dep   = request.COOKIES.get("yuumi_departement", "")
         cookie_ville = request.COOKIES.get("yuumi_ville", "")
-        if cookie_dep in deps and cookie_ville:
-            departement = cookie_dep
+        if cookie_dep.lower() in deps_map and cookie_ville:
+            departement = deps_map[cookie_dep.lower()]
             ville = cookie_ville
 
     # -----------------------------------------
@@ -74,21 +75,16 @@ def menu_context(request):
     # -----------------------------------------
     menu_supercategories = {}
 
-    # On initialise toutes les super catégories existantes
     for super_cat in SuperCategory.objects.all():
         menu_supercategories[super_cat.name] = []
 
-    # On remplit avec les catégories réellement présentes
     for store in qs.select_related("categorie__super_categorie"):
         if not store.categorie or not store.categorie.super_categorie:
             continue
-
         super_cat = store.categorie.super_categorie
-
         if store.categorie not in menu_supercategories[super_cat.name]:
             menu_supercategories[super_cat.name].append(store.categorie)
 
-    # On trie chaque liste de catégories alphabétiquement
     for super_cat_name in menu_supercategories:
         menu_supercategories[super_cat_name].sort(
             key=lambda cat: unicodedata.normalize("NFD", cat.name.lower()).encode("ascii", "ignore").decode()
