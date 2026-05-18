@@ -33,7 +33,13 @@ def menu_context(request):
     # Cas : /<departement>/<ville>/...
     elif len(path_parts) >= 2 and path_parts[0] in deps_map:
         departement = deps_map[path_parts[0]]
-        ville = path_parts[1]
+        villes_map = {
+            v.lower(): v
+            for v in Store.objects.filter(
+                departement=departement
+            ).values_list("ville", flat=True).distinct()
+        }
+        ville = villes_map.get(path_parts[1], path_parts[1])
 
     # -------------------------------------------------------
     # 🍪 Fallback cookie : si l'URL ne contient pas de ville,
