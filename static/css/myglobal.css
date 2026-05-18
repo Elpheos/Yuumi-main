@@ -1858,6 +1858,7 @@ body.menu-open {
     	width: 21px;
     	height: 21px;
     	object-fit: contain;
+		filter: brightness(0) invert(1);
 	}
 
 /* ── FIX carte : filtres et boutons responsive ── */
