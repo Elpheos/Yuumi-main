@@ -24,15 +24,10 @@ import json
 
 from .models import (
     Store, ProductFamily, Product, Category,
-    StoreImage, CityCategoryHighlight, SuperCategory,StoreGalerieImage,Click, PageView, StoreSuggestion,
+    StoreImage, CityCategoryHighlight, SuperCategory, StoreGalerieImage, Click, PageView, StoreSuggestion,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
-
-# ---------------------------
-# Helper : commerce ouvert ?
-# À réécrire à l'étape suivante avec les nouveaux champs plats.
-# ---------------------------
 
 def is_open_now(store):
     now = datetime.now(tz=ZoneInfo('Europe/Paris'))
@@ -77,16 +72,12 @@ def is_open_now(store):
     if mo is not None or mf is not None or ao is not None or af is not None:
         return False
     return None
-# ---------------------------
-# Helper : tri alphabétique sans accents
-# ---------------------------
+
 
 def sort_key(text):
     return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()
 
-# ---------------------------
-# Helper : récupérer IP client
-# ---------------------------
+
 def get_client_ip(request):
     x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
     if x_forwarded_for:
@@ -96,7 +87,6 @@ def get_client_ip(request):
 # ---------------------------
 # Helper : unfavoris
 # ---------------------------
-
 
 logger = logging.getLogger(__name__)
 
@@ -109,6 +99,7 @@ def get_unfavori_ids(request):
     except Exception as e:
         logger.error(f"get_unfavori_ids a échoué : {e}", exc_info=True)
     return []
+
 # ---------------------------
 # Pages principales
 # ---------------------------
@@ -139,10 +130,11 @@ def main(request):
 
 
 def stores(request, departement, ville):
+    unfavori_ids = get_unfavori_ids(request)  # ← NOUVEAU
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville,
-    )
+    ).exclude(id__in=unfavori_ids)  # ← NOUVEAU
 
     derniers_arrivants = stores_qs.order_by("-id")[:10]
 
@@ -174,11 +166,12 @@ def stores(request, departement, ville):
 
 
 def by_category(request, departement, ville, category):
+    unfavori_ids = get_unfavori_ids(request)  # ← NOUVEAU
     commerces_qs = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville,
         categorie__slug=category,
-    ).select_related("categorie")
+    ).exclude(id__in=unfavori_ids).select_related("categorie")  # ← NOUVEAU
 
     paginator = Paginator(commerces_qs, 20)
     page_number = request.GET.get("page", 1)
@@ -200,14 +193,9 @@ def by_category(request, departement, ville, category):
     })
 
 
-# ---------------------------
-# Détails d'un commerce
-# ---------------------------
-
 def store_details(request, departement, ville, slug):
     store = get_object_or_404(Store, slug=slug, departement__iexact=departement, ville__iexact=ville)
 
-    # --- TRACKING VUE ---
     session_id = request.session.session_key
     if not session_id:
         request.session.save()
@@ -228,7 +216,6 @@ def store_details(request, departement, ville, slug):
             ip_address=ip
         )
 
-    # --- LOGIQUE EXISTANTE ---
     if request.method == "POST":
         if not request.user.is_authenticated:
             return redirect("login")
@@ -275,8 +262,7 @@ def store_details(request, departement, ville, slug):
         is_unfavorite = store in request.user.unfavoris.all()
 
     est_ouvert = is_open_now(store)
-    
-    # Préparer les produits par lignes de 4
+
     families_with_rows = []
     for family in store.families.all():
         products = list(family.products.all())
@@ -285,7 +271,7 @@ def store_details(request, departement, ville, slug):
             while len(rows[-1]) < 4:
                 rows[-1].append(None)
         families_with_rows.append({"family": family, "rows": rows})
-    # Horaires structurés pour JSON-LD
+
     jours = [
         ("lundi", "Mo"), ("mardi", "Tu"), ("mercredi", "We"),
         ("jeudi", "Th"), ("vendredi", "Fr"), ("samedi", "Sa"), ("dimanche", "Su"),
@@ -297,7 +283,7 @@ def store_details(request, departement, ville, slug):
             fermeture = getattr(store, f"{jour_fr}_{periode}_fermeture", None)
             if ouverture and fermeture:
                 opening_hours.append(f"{jour_en} {ouverture.strftime('%H:%M')}-{fermeture.strftime('%H:%M')}")
-                
+
     return render(request, "members/store_details.html", {
         "store": store,
         "family_formset": family_formset,
@@ -310,19 +296,19 @@ def store_details(request, departement, ville, slug):
         "opening_hours": opening_hours
     })
 
-# ---------------------------
-# Recherche produit
-# ---------------------------
 
 def search_product(request):
     q = request.GET.get("q", "").strip()
     ville = request.GET.get("ville", "").strip()
+    unfavori_ids = get_unfavori_ids(request)  # ← NOUVEAU
     results = []
 
     if q:
         qs = Product.objects.filter(
             nom__icontains=q,
-        ).select_related("family", "family__store")
+        ).select_related("family", "family__store").exclude(
+            family__store__id__in=unfavori_ids  # ← NOUVEAU
+        )
 
         if ville:
             qs = qs.filter(family__store__ville__iexact=ville)
@@ -339,14 +325,12 @@ def search_product(request):
     return JsonResponse({"results": results})
 
 
-# ---------------------------
-# Carte des commerces
-# ---------------------------
-
 def map_view(request, departement):
-    stores_qs = (              # ← 4 espaces ✅
+    unfavori_ids = get_unfavori_ids(request)  # ← NOUVEAU
+    stores_qs = (
         Store.objects
         .filter(departement__iexact=departement)
+        .exclude(id__in=unfavori_ids)  # ← NOUVEAU
         .select_related("categorie__super_categorie")
     )
 
@@ -384,10 +368,6 @@ def map_view(request, departement):
     })
 
 
-# ---------------------------
-# Inscription utilisateur
-# ---------------------------
-
 def register(request):
     next_url = request.GET.get("next") or request.POST.get("next") or ""
     if next_url and not next_url.startswith("/"):
@@ -403,10 +383,6 @@ def register(request):
         form = RegisterForm()
     return render(request, "members/register.html", {"form": form, "next": next_url})
 
-
-# ---------------------------
-# Édition du commerce
-# ---------------------------
 
 @login_required
 def edit_store(request, departement, ville, slug):
@@ -425,13 +401,11 @@ def edit_store(request, departement, ville, slug):
         if form.is_valid():
             form.save()
 
-            # Suppression images carrousel
             for key in request.POST:
                 if key.startswith("delete_image_"):
                     img_id = key.split("_")[-1]
                     StoreImage.objects.filter(id=img_id, store=store).delete()
 
-            # Upload images carrousel
             for image in request.FILES.getlist("extra_images"):
                 if image.size > 2 * 1024 * 1024:
                     messages.warning(request, mark_safe(
@@ -442,13 +416,11 @@ def edit_store(request, departement, ville, slug):
                     webp_image = convert_to_webp(image)
                     StoreImage.objects.create(store=store, image=webp_image)
 
-            # Suppression images galerie
             for key in request.POST:
                 if key.startswith("delete_galerie_image_"):
                     img_id = key.split("_")[-1]
                     StoreGalerieImage.objects.filter(id=img_id, store=store).delete()
 
-            # Upload images galerie
             for image in request.FILES.getlist("extra_galerie_images"):
                 if image.size > 2 * 1024 * 1024:
                     messages.warning(request, mark_safe(
@@ -469,9 +441,7 @@ def edit_store(request, departement, ville, slug):
         "form": form,
         "store": store,
     })
-# ---------------------------
-# Gestion des favoris
-# ---------------------------
+
 
 @login_required
 def toggle_favoris(request, store_id):
@@ -497,10 +467,7 @@ def my_favorites(request):
         "favoris": favoris,
         "unfavoris": unfavoris,
     })
-    
-# ---------------------------
-# Gestion des unfavor
-# ---------------------------
+
 
 @login_required
 def toggle_unfavoris(request, store_id):
@@ -517,14 +484,11 @@ def toggle_unfavoris(request, store_id):
 
     return JsonResponse({"is_unfavorite": is_unfavorite})
 
+
 @login_required
 def my_unfavorites(request):
     favoris = request.user.unfavoris.all()
     return render(request, "members/my_unfavorites.html", {"unfavoris": favoris})
-    
-# ---------------------------
-# Claim
-# ---------------------------
 
 
 @login_required
@@ -579,10 +543,6 @@ def claim_store(request, store_id):
     })
 
 
-# ---------------------------
-# Autres pages
-# ---------------------------
-
 def categories_ville(request, departement, ville):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
@@ -614,7 +574,6 @@ def categories_ville(request, departement, ville):
             "image": image_url,
         })
 
-    # Tri alphabétique sans accents dans chaque groupe
     for super_cat in categories_by_super:
         categories_by_super[super_cat].sort(key=lambda cat: sort_key(cat["name"]))
 
@@ -677,7 +636,6 @@ def by_super_category(request, departement, ville, super_slug):
             "image": image_url,
         })
 
-    # Tri alphabétique sans accents
     categories.sort(key=lambda cat: sort_key(cat["name"]))
 
     return render(request, "members/by_supercategory.html", {
@@ -723,38 +681,30 @@ def track_click(request, store_id):
         Click.objects.create(store=store, type_click=type_click)
         return JsonResponse({"ok": True})
 
+
 def suggest_new_store(request):
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
-    # 1. Récupérer l'IP
     ip = get_client_ip(request)
 
-    # 2. Vérifier le cooldown par IP
-    if not request.user.is_superuser:    # 4 espaces
-        recent = StoreSuggestion.objects.filter(  # 8 espaces ← pas 12
+    if not request.user.is_superuser:
+        recent = StoreSuggestion.objects.filter(
             ip_address=ip,
             created_at__gte=timezone.now() - timedelta(hours=1)
         ).exists()
-        if recent:                        # 8 espaces ← pas 12
-            return JsonResponse(
-                {"error": "cooldown"},
-                status=429,
-            )
+        if recent:
+            return JsonResponse({"error": "cooldown"}, status=429)
 
-
-    # 3. Valider le formulaire
     form = NewStoreForm(request.POST, request.FILES)
     if not form.is_valid():
         return JsonResponse({"error": "Formulaire invalide"}, status=400)
 
-    # 4. Sauvegarder en BDD
     suggestion = form.save(commit=False)
     suggestion.type_suggestion = "new.store"
     suggestion.ip_address = ip
     suggestion.save()
 
-    # 5. Envoyer le mail
     send_mail(
         subject=f"Nouvelle suggestion de commerce — {suggestion.nom}",
         message=f"Nom : {suggestion.nom}\nVille : {suggestion.ville}\nDépartement : {suggestion.departement}\nTél : {suggestion.phone}\nSite : {suggestion.site}",
@@ -763,7 +713,6 @@ def suggest_new_store(request):
         fail_silently=False,
     )
 
-    # 6. Confirmer
     return JsonResponse({"message": "Merci pour votre suggestion !"})
 
 
@@ -772,36 +721,26 @@ def suggest_modif_store(request, store_id):
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
-    # 1. Récupérer l'IP
     ip = get_client_ip(request)
 
-
-    # 2. Vérifier le cooldown par IP
-    if not request.user.is_superuser:    # 4 espaces
-        recent = StoreSuggestion.objects.filter(  # 8 espaces ← pas 12
+    if not request.user.is_superuser:
+        recent = StoreSuggestion.objects.filter(
             ip_address=ip,
             created_at__gte=timezone.now() - timedelta(hours=1)
         ).exists()
-        if recent:                        # 8 espaces ← pas 12
-            return JsonResponse(
-                {"error": "cooldown"},
-                status=429,
-            )
+        if recent:
+            return JsonResponse({"error": "cooldown"}, status=429)
 
-
-    # 3. Valider le formulaire
     form = ModifStoreForm(request.POST, request.FILES)
     if not form.is_valid():
         return JsonResponse({"error": "Formulaire invalide"}, status=400)
 
-    # 4. Sauvegarder en BDD
     suggestion = form.save(commit=False)
     suggestion.type_suggestion = "modif.store"
     suggestion.ip_address = ip
     suggestion.store = store
     suggestion.save()
 
-    # 5. Envoyer le mail
     send_mail(
         subject=f"Suggestion de modification — {store.nom}",
         message=f"Commerce : {store.nom}\nVille : {store.ville}\nMessage : {suggestion.message}\nTél : {suggestion.phone}\nSite : {suggestion.site}",
@@ -810,7 +749,6 @@ def suggest_modif_store(request, store_id):
         fail_silently=False,
     )
 
-    # 6. Confirmer
     return JsonResponse({"message": "Merci pour votre suggestion !"})
 
 
