@@ -39,7 +39,6 @@ class CitySitemap(Sitemap):
     priority = 0.7
 
     def items(self):
-        # Retourne des tuples (departement, ville) distincts
         combos = (
             Store.objects
             .values_list("departement", "ville")
@@ -50,7 +49,7 @@ class CitySitemap(Sitemap):
 
     def location(self, item):
         departement, ville = item
-        return reverse("stores", args=[departement, ville])
+        return reverse("stores", args=[departement.lower(), ville.lower()])
 
 
 # ============================================================
@@ -62,7 +61,6 @@ class CategorySitemap(Sitemap):
     priority = 0.6
 
     def items(self):
-        # Toutes les combinaisons (departement, ville, categorie.slug) existantes
         combos = set()
         qs = (
             Store.objects
@@ -77,7 +75,7 @@ class CategorySitemap(Sitemap):
 
     def location(self, item):
         departement, ville, cat_slug = item
-        return reverse("by_category", args=[departement, ville, cat_slug])
+        return reverse("by_category", args=[departement.lower(), ville.lower(), cat_slug])
 
 
 # ============================================================
@@ -89,7 +87,6 @@ class SuperCategorySitemap(Sitemap):
     priority = 0.6
 
     def items(self):
-        # Toutes les combinaisons (departement, ville, super_categorie.slug)
         combos = set()
         qs = (
             Store.objects
@@ -105,7 +102,7 @@ class SuperCategorySitemap(Sitemap):
 
     def location(self, item):
         departement, ville, super_slug = item
-        return reverse("by_super_category", args=[departement, ville, super_slug])
+        return reverse("by_super_category", args=[departement.lower(), ville.lower(), super_slug])
 
 
 # ============================================================
@@ -120,11 +117,15 @@ class StoreSitemap(Sitemap):
         return Store.objects.all().order_by("departement", "ville", "slug")
 
     def location(self, obj):
-        return obj.get_absolute_url()
+        return obj.get_absolute_url().lower()
 
     def lastmod(self, obj):
         return obj.horaires_updated_at
 
+
+# ============================================================
+# 6. Pages catégories par ville
+# ============================================================
 
 class CategoriesVilleSitemap(Sitemap):
     changefreq = "weekly"
@@ -140,4 +141,4 @@ class CategoriesVilleSitemap(Sitemap):
 
     def location(self, item):
         departement, ville = item
-        return reverse("categories_ville", args=[departement, ville])
+        return reverse("categories_ville", args=[departement.lower(), ville.lower()])
