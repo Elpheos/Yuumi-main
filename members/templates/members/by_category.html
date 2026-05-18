@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block extra_head %}
-<meta name="geo.placename" content="{{ ville }}, {{ departement }}, France">
+<meta name="geo.placename" content="{{ ville|title }}, {{ departement }}, France">
 <meta name="geo.region" content="FR">
 <script type="application/ld+json">
 {
@@ -18,7 +18,7 @@
     {
       "@type": "ListItem",
       "position": 2,
-      "name": "{{ ville }}",
+      "name": "{{ ville|title }}",
       "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'stores' departement ville %}"
     },
     {
@@ -199,10 +199,10 @@
 
     <section class="derniers-arrivants-container">
         <h1 class="page-category-title">
-            Commerces à {{ ville }} — {{ category }}
+            Commerces à {{ ville|title }} — {{ category }}
         </h1>
       <p class="category-description">
-    Découvrez les meilleurs {{ category|lower }} à {{ ville }} sélectionnés par Yuumi. 
+    Découvrez les meilleurs {{ category|lower }} à {{ ville|title }} sélectionnés par Yuumi. 
     Retrouvez leurs horaires, adresses et informations pratiques pour chacun de ces commerces locaux.
       </p>
 
@@ -235,7 +235,7 @@
                     </a>
                 </div>
             {% empty %}
-                <p style="text-align:center;">Aucun commerce trouvé pour cette catégorie à {{ ville }}.</p>
+                <p style="text-align:center;">Aucun commerce trouvé pour cette catégorie à {{ ville|title }}.</p>
             {% endfor %}
         </div>
 
