@@ -371,32 +371,33 @@ document.addEventListener("DOMContentLoaded", function () {
         };
     });
 
-    function createIcon(categorySlug) {
-        const cat = categoryLabels[categorySlug] || {};
+    function createIcon(categorySlug, isFavorite = false) {
+    const cat = categoryLabels[categorySlug] || {};
+    const pinColor = isFavorite ? "#0a5bb4" : "#ff8b38";
 
-        let iconHtml;
-        if (cat.icon_perso) {
-            iconHtml = `<img src="/media/${cat.icon_perso}" class="carte-icones-img">`;
-        } else {
-            iconHtml = `<img src="/static/images/yuumi-Icone-commerce.png" class="carte-icones-img">`;
-        }
-
-        return L.divIcon({
-            className: "custom-pin",
-            html: `
-                <div style="position:relative;width:30px;height:50px;">
-                    <svg viewBox="0 0 24 40" width="30" height="50">
-                        <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                              fill="#ff8b38"/>
-                    </svg>
-                    ${iconHtml}
-                </div>
-            `,
-            iconSize: [30, 50],
-            iconAnchor: [15, 50],
-            popupAnchor: [0, -50]
-        });
+    let iconHtml;
+    if (cat.icon_perso) {
+        iconHtml = `<img src="/media/${cat.icon_perso}" class="carte-icones-img">`;
+    } else {
+        iconHtml = `<img src="/static/images/yuumi-Icone-commerce.png" class="carte-icones-img">`;
     }
+
+    return L.divIcon({
+        className: "custom-pin",
+        html: `
+            <div style="position:relative;width:30px;height:50px;">
+                <svg viewBox="0 0 24 40" width="30" height="50">
+                    <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
+                          fill="${pinColor}"/>
+                </svg>
+                ${iconHtml}
+            </div>
+        `,
+        iconSize: [30, 50],
+        iconAnchor: [15, 50],
+        popupAnchor: [0, -50]
+    });
+}
 
     /* ========= Marqueurs ========= */
     const markers = stores.map(store => {
@@ -406,7 +407,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const marker = L.marker(
             [store.lat, store.lng],
-            { icon: createIcon(store.categorie) }
+            { icon: createIcon(store.categorie, store.is_favorite) }
         ).bindPopup(
             `
             <div class="popup-content">
