@@ -326,13 +326,18 @@ def search_product(request):
 
 
 def map_view(request, departement):
-    unfavori_ids = get_unfavori_ids(request)  # ← NOUVEAU
+    unfavori_ids = get_unfavori_ids(request)
     stores_qs = (
         Store.objects
         .filter(departement__iexact=departement)
-        .exclude(id__in=unfavori_ids)  # ← NOUVEAU
+        .exclude(id__in=unfavori_ids)
         .select_related("categorie__super_categorie")
     )
+
+    if request.user.is_authenticated:
+        favorite_ids = list(request.user.favoris.values_list('id', flat=True))
+    else:
+        favorite_ids = []
 
     store_data = []
     for store in stores_qs:
@@ -344,6 +349,7 @@ def map_view(request, departement):
                 "lng": store.longitude,
                 "url": store.get_absolute_url(),
                 "photo": store.photo_small.url if store.photo_small else (store.photo.url if store.photo else ""),
+                "is_favorite": store.id in favorite_ids, 
             })
 
     categories = (
@@ -365,8 +371,8 @@ def map_view(request, departement):
         "stores": store_data,
         "categories": list(categories),
         "departement": departement,
+        "favorite_ids": favorite_ids,
     })
-
 
 def register(request):
     next_url = request.GET.get("next") or request.POST.get("next") or ""
