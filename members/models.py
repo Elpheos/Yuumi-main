@@ -55,6 +55,7 @@ class CategorieIntermediaire(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     ordre = models.PositiveIntegerField(default=0)
+    categorie_singulier = models.CharField(max_length=100, blank=True)
 
     image = models.ImageField(
         upload_to="categorie_intermediaire/",
