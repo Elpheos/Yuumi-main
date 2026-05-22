@@ -330,59 +330,54 @@ main {
                         {% else %}
                             <a class="disabled-link">Chercher un commerce</a>
                         {% endif %}
-
-                        <div id="supercats-dropdown" class="supercats-container">
-                            {% if menu_supercategories %}
-                                {% for supercat, cats in menu_supercategories.items %}
-                                <div class="supercat-block">
-
-                                    <div class="supercat-header">
-                                        <span>{{ supercat }}</span>
-                                        <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
-                                    </div>
-
-                                   <ul class="subcats-list">
-    {% for cat in cats.directes %}
-    <li>
-        {% if menu_ville %}
-            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">
-                {% if cat.icon_perso %}
-                    <img class="menu-icone-categorie" src="{{ cat.icon_perso.url }}" alt="{{ cat }}" width="25"> - 
-                {% endif %}
-                {{ cat }}
-            </a>
-        {% else %}
-            <span style="color:#aaa;">{{ cat }}</span>
-        {% endif %}
-    </li>
-    {% endfor %}
-
-    {% for inter_name, inter_cats in cats.intermediaires.items %}
-    <li>
-        <div class="supercat-header" style="padding-left:10px;">
-            <span>{{ inter_name }}</span>
-            <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
-        </div>
-        <ul class="subcats-list">
-            {% for cat in inter_cats %}
-            <li>
-                {% if menu_ville %}
-                    <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">{{ cat }}</a>
-                {% else %}
-                    <span style="color:#aaa;">{{ cat }}</span>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-    </li>
-    {% endfor %}
-</ul>
-</div>
-{% endfor %}
-                            {% endif %}
-                        </div>
+<div id="supercats-dropdown" class="supercats-container">
+    {% if menu_supercategories %}
+        {% for supercat, cats in menu_supercategories.items %}
+        <div class="supercat-block">
+            <div class="supercat-header">
+                <span>{{ supercat }}</span>
+                <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+            </div>
+            <ul class="subcats-list">
+                {% for item in cats.items %}
+                    {% if item.type == "direct" %}
+                    <li>
+                        {% if menu_ville %}
+                            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
+                                {% if item.obj.icon_perso %}
+                                    <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
+                                {% endif %}
+                                {{ item.obj }}
+                            </a>
+                        {% else %}
+                            <span style="color:#aaa;">{{ item.obj }}</span>
+                        {% endif %}
                     </li>
-
+                    {% else %}
+                    <li>
+                        <div class="supercat-header" style="padding-left:10px;">
+                            <span>{{ item.name }}</span>
+                            <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                        </div>
+                        <ul class="subcats-list">
+                            {% for cat in item.cats %}
+                            <li>
+                                {% if menu_ville %}
+                                    <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">{{ cat }}</a>
+                                {% else %}
+                                    <span style="color:#aaa;">{{ cat }}</span>
+                                {% endif %}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    {% endif %}
+</div>
                     <!-- CHERCHER UN PRODUIT -->
                     <li style="position:relative;">
                         {% if menu_departement and menu_ville %}
