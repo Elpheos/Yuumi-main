@@ -80,16 +80,28 @@ def menu_context(request):
     # 📌 menu_supercategories (100% dynamique)
     # -----------------------------------------
     menu_supercategories = {}
+    menu_categorie_intermediaire = {}
 
     for super_cat in SuperCategory.objects.all():
         menu_supercategories[super_cat.name] = []
 
-    for store in qs.select_related("categorie__super_categorie"):
+
+    for store in qs.select_related("categorie__super_categorie", "categorie__categorie_intermediaire"):
         if not store.categorie or not store.categorie.super_categorie:
             continue
         super_cat = store.categorie.super_categorie
-        if store.categorie not in menu_supercategories[super_cat.name]:
-            menu_supercategories[super_cat.name].append(store.categorie)
+        cat_inter = store.categorie.categorie_intermediaire
+        if cat_inter:
+            if cat_inter not in menu_categorie_intermediaire:
+                menu_categorie_intermediaire[cat_inter.name] = []
+            if store.categorie not in menu_categorie_intermediaire[cat_inter.name]:
+                menu_categorie_intermediaire[cat_inter.name].append(store.categorie)
+
+        else:
+            if store.categorie not in menu_supercategories[super_cat.name]:
+                menu_supercategories[super_cat.name].append(store.categorie)
+
+            
 
     for super_cat_name in menu_supercategories:
         menu_supercategories[super_cat_name].sort(
@@ -101,4 +113,5 @@ def menu_context(request):
         "menu_supercategories": menu_supercategories,
         "menu_departement": departement,
         "menu_ville": ville,
+        "menu_categorie_intermediaire":  menu_categorie_intermediaire,
     }
