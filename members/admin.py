@@ -272,8 +272,8 @@ class CategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
 
 @admin.register(CategorieIntermediaire)
 class CategoryInterAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
-    list_display = ("name", "categorie_intermediaire",)
-    list_filter = ("categorie_intermediaire",)
+    list_display = ("name", "super_categorie",)
+    list_filter = ("super_categorie",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
 
