@@ -356,28 +356,27 @@ main {
         {% endif %}
     </li>
     {% endfor %}
+
+    {% for inter_name, inter_cats in cats.intermediaires.items %}
+    <li>
+        <div class="supercat-header" style="padding-left:10px;">
+            <span>{{ inter_name }}</span>
+            <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+        </div>
+        <ul class="subcats-list">
+            {% for cat in inter_cats %}
+            <li>
+                {% if menu_ville %}
+                    <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">{{ cat }}</a>
+                {% else %}
+                    <span style="color:#aaa;">{{ cat }}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
 </ul>
-{% for inter_name, inter_cats in cats.intermediaires.items %}
-<div class="supercat-block">
-    <div class="supercat-header">
-        <span>{{ inter_name }}</span>
-        <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
-    </div>
-    <ul class="subcats-list">
-        {% for cat in inter_cats %}
-        <li>
-            {% if menu_ville %}
-                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">
-                    {{ cat }}
-                </a>
-            {% else %}
-                <span style="color:#aaa;">{{ cat }}</span>
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-{% endfor %}
 </div>
 {% endfor %}
                             {% endif %}
