@@ -23,6 +23,7 @@ from .models import (
     StoreClickStats,
     Click,
     StoreSuggestion,
+    CategorieIntermediaire,
 )
 
 from .forms import StoreForm
@@ -266,6 +267,13 @@ class SuperCategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
 class CategoryAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("name", "super_categorie", "categorie_singulier")
     list_filter = ("super_categorie",)
+    search_fields = ("name",)
+    prepopulated_fields = {"slug": ("name",)}
+
+@admin.register(CategorieIntermediaire)
+class CategoryInterAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
+    list_display = ("name", "categorie_intermediaire", "categorie_singulier")
+    list_filter = ("categorie_intermediaire",)
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
 
