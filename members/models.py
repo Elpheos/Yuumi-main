@@ -47,7 +47,46 @@ class SuperCategory(models.Model):
 
     def __str__(self):
         return self.name
+# ===========================================================
+# 🔹 Catégories-intermédiaires
+# ===========================================================
 
+class CategorieIntermediaire(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    ordre = models.PositiveIntegerField(default=0)
+
+    image = models.ImageField(
+        upload_to="categorie_intermediaire/",
+        null=True,
+        blank=True,
+        help_text="Image affichée pour la catégorie intermédiaire",
+    )
+
+    super_categorie = models.ForeignKey(
+        SuperCategory,
+        on_delete=models.CASCADE,
+        related_name="categories_intermediaires",
+    )
+    history = HistoricalRecords()
+    class Meta:
+        verbose_name = "Catégorie intermédiaire"
+        verbose_name_plural = "Catégories intermédiaires"
+        ordering = ["ordre","name"]
+        
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        if self.pk:
+            ancien = CategorieIntermediaire.objects.filter(pk=self.pk).values("image").first()
+            if ancien and self.image and ancien["image"] != self.image.name:
+                self.image = convert_to_webp(self.image)
+        elif self.image:
+            self.image = convert_to_webp(self.image)
+        super().save(*args, **kwargs)
+    
+    def __str__(self):
+         return self.name
 
 # ===========================================================
 # 🔹 Catégories
@@ -57,11 +96,20 @@ class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(blank=True)
     categorie_singulier = models.CharField(max_length=100, blank=True)
+    categorie_intermediaire = models.ForeignKey(
+        CategorieIntermediaire,
+        on_delete=models.CASCADE,
+        related_name="sous_categories",
+        null=True, 
+        blank=True
+    )
+
     super_categorie = models.ForeignKey(
         SuperCategory,
         on_delete=models.CASCADE,
         related_name="categories",
     )
+    
     icon_perso = models.ImageField(
         upload_to="categories/",
         null=True,
