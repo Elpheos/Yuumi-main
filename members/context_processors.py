@@ -80,28 +80,40 @@ def menu_context(request):
     # 📌 menu_supercategories (100% dynamique)
     # -----------------------------------------
     menu_supercategories = {}
-    for super_cat in SuperCategory.objects.all():
-        menu_supercategories[super_cat.name] = {
-            "directes": [],
-            "intermediaires": {}
-        }
-    for store in qs.select_related("categorie__super_categorie", "categorie__categorie_intermediaire"):
-        if not store.categorie or not store.categorie.super_categorie:
-            continue
-        super_cat = store.categorie.super_categorie
-        cat_inter = store.categorie.categorie_intermediaire
-        if cat_inter:
-            if cat_inter.name not in menu_supercategories[super_cat.name]["intermediaires"]:
-                menu_supercategories[super_cat.name]["intermediaires"][cat_inter.name] = []
-            if store.categorie not in menu_supercategories[super_cat.name]["intermediaires"][cat_inter.name]:
-                menu_supercategories[super_cat.name]["intermediaires"][cat_inter.name].append(store.categorie)
-        else:
-            if store.categorie not in menu_supercategories[super_cat.name]["directes"]:
-                menu_supercategories[super_cat.name]["directes"].append(store.categorie)
-
-    return {
-        "menu_categories": categories,
-        "menu_supercategories": menu_supercategories,
-        "menu_departement": departement,
-        "menu_ville": ville,
+for super_cat in SuperCategory.objects.all():
+    menu_supercategories[super_cat.name] = {
+        "items": []
     }
+for store in qs.select_related("categorie__super_categorie", "categorie__categorie_intermediaire"):
+    if not store.categorie or not store.categorie.super_categorie:
+        continue
+    super_cat = store.categorie.super_categorie
+    cat_inter = store.categorie.categorie_intermediaire
+    
+    if cat_inter:
+        # Vérifier si l'intermédiaire est déjà dans la liste
+        existing = next((i for i in menu_supercategories[super_cat.name]["items"] if i.get("type") == "inter" and i["obj"] == cat_inter), None)
+        if not existing:
+            menu_supercategories[super_cat.name]["items"].append({
+                "type": "inter",
+                "obj": cat_inter,
+                "name": cat_inter.name,
+                "cats": []
+            })
+            existing = menu_supercategories[super_cat.name]["items"][-1]
+        if store.categorie not in existing["cats"]:
+            existing["cats"].append(store.categorie)
+    else:
+        existing = next((i for i in menu_supercategories[super_cat.name]["items"] if i.get("type") == "direct" and i["obj"] == store.categorie), None)
+        if not existing:
+            menu_supercategories[super_cat.name]["items"].append({
+                "type": "direct",
+                "obj": store.categorie,
+                "name": store.categorie.name,
+            })
+
+# Tri alphabétique
+for super_cat_name in menu_supercategories:
+    menu_supercategories[super_cat_name]["items"].sort(
+        key=lambda x: unicodedata.normalize("NFD", x["name"].lower()).encode("ascii", "ignore").decode()
+    )
