@@ -76,42 +76,32 @@ def menu_context(request):
         )
         categories = [c for c in categories if c]
 
-    # -----------------------------------------
+ # -----------------------------------------
     # 📌 menu_supercategories (100% dynamique)
     # -----------------------------------------
     menu_supercategories = {}
-    menu_categorie_intermediaire = {}
-
     for super_cat in SuperCategory.objects.all():
-        menu_supercategories[super_cat.name] = []
-
-
+        menu_supercategories[super_cat.name] = {
+            "directes": [],
+            "intermediaires": {}
+        }
     for store in qs.select_related("categorie__super_categorie", "categorie__categorie_intermediaire"):
         if not store.categorie or not store.categorie.super_categorie:
             continue
         super_cat = store.categorie.super_categorie
         cat_inter = store.categorie.categorie_intermediaire
         if cat_inter:
-            if cat_inter not in menu_categorie_intermediaire:
-                menu_categorie_intermediaire[cat_inter.name] = []
-            if store.categorie not in menu_categorie_intermediaire[cat_inter.name]:
-                menu_categorie_intermediaire[cat_inter.name].append(store.categorie)
-
+            if cat_inter.name not in menu_supercategories[super_cat.name]["intermediaires"]:
+                menu_supercategories[super_cat.name]["intermediaires"][cat_inter.name] = []
+            if store.categorie not in menu_supercategories[super_cat.name]["intermediaires"][cat_inter.name]:
+                menu_supercategories[super_cat.name]["intermediaires"][cat_inter.name].append(store.categorie)
         else:
-            if store.categorie not in menu_supercategories[super_cat.name]:
-                menu_supercategories[super_cat.name].append(store.categorie)
-
-            
-
-    for super_cat_name in menu_supercategories:
-        menu_supercategories[super_cat_name].sort(
-            key=lambda cat: unicodedata.normalize("NFD", cat.name.lower()).encode("ascii", "ignore").decode()
-        )
+            if store.categorie not in menu_supercategories[super_cat.name]["directes"]:
+                menu_supercategories[super_cat.name]["directes"].append(store.categorie)
 
     return {
         "menu_categories": categories,
         "menu_supercategories": menu_supercategories,
         "menu_departement": departement,
         "menu_ville": ville,
-        "menu_categorie_intermediaire":  menu_categorie_intermediaire,
     }
