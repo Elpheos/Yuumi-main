@@ -60,6 +60,10 @@
     font-weight: bold;
     font-size: 1rem;
     pointer-events: none;
+    max-width: calc(100% - 56px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .categ-tile-inter {
     cursor: pointer;
@@ -71,19 +75,18 @@
 .categ-tile-inter > span {
     border-color: #0a5bb4;
     color: #0a5bb4;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: calc(100% - 24px);
 }
 .inter-count {
+    position: absolute;
+    top: 12px;
+    right: 12px;
     background: #0a5bb4;
     color: white;
     border-radius: 100px;
     padding: 2px 8px;
     font-size: 0.85rem;
     font-weight: bold;
-    flex-shrink: 0;
+    pointer-events: none;
 }
 .inter-grid {
     display: none;
@@ -110,7 +113,8 @@
             {% for inter, cats in data.intermediaires.items %}
             <div class="categ-tile categ-tile-inter" data-slug="{{ inter.slug }}">
                 <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
-                <span>{{ inter.name }} <span class="inter-count">{{ cats|length }}</span></span>
+                <span>{{ inter.name }}</span>
+                <div class="inter-count">{{ cats|length }}</div>
             </div>
             {% endfor %}
 
