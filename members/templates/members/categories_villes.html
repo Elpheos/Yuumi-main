@@ -142,8 +142,10 @@
 document.querySelectorAll(".categ-tile-inter").forEach(tile => {
     tile.addEventListener("click", () => {
         const slug = tile.dataset.slug;
+        const isOpen = document.querySelector(".hidden-sub-" + slug).style.display === "block";
         document.querySelectorAll(".hidden-sub-" + slug).forEach(sub => {
-            sub.style.display = sub.style.display === "block" ? "none" : "block";
+            sub.style.display = isOpen ? "none" : "block";
+            sub.style.borderBottom = isOpen ? "none" : "3px solid #0a5bb4";
         });
     });
 });
