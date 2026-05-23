@@ -115,7 +115,7 @@
             {% for inter, cats in data.intermediaires.items %}
             <a class="categ-tile categ-tile-inter" onclick="toggleInter(event, this)">
                 <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
-                <span>{{ inter.name }} <span class="inter-count">{{ cats|length }}</span></span>
+                <span>{{ inter.name }} <div class="inter-count">{{ cats|length }}</div></span>
             </a>
             <div class="inter-grid">
                 <div class="categ-ville-grid">
