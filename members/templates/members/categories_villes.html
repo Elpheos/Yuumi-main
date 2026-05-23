@@ -145,14 +145,13 @@
 
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".categ-tile-inter").forEach(tile => {
-        tile.addEventListener("click", () => {
-            const slug = tile.dataset.slug;
-            const grid = document.getElementById("inter-" + slug);
-            if (!grid) return;
-            grid.style.display = grid.style.display === "block" ? "none" : "block";
-        });
+document.querySelectorAll(".categ-tile-inter").forEach(tile => {
+    tile.addEventListener("click", () => {
+        const slug = tile.dataset.slug;
+        const grid = document.getElementById("inter-" + slug);
+        if (!grid) return;
+        const isOpen = grid.style.display === "block";
+        grid.style.display = isOpen ? "none" : "block";
     });
 });
 
