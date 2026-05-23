@@ -553,42 +553,56 @@ def categories_ville(request, departement, ville):
     stores_qs = Store.objects.filter(
         departement__iexact=departement,
         ville__iexact=ville,
-    ).select_related("categorie__super_categorie")
+    ).select_related("categorie__super_categorie", "categorie__categorie_intermediaire")
 
     categories_qs = (
         Category.objects
         .filter(stores__in=stores_qs)
         .distinct()
-        .select_related("super_categorie")
+        .select_related("super_categorie", "categorie_intermediaire")
     )
 
     categories_by_super = {}
 
     for cat in categories_qs:
         image_url = cat.image.url if cat.image else static("placeholder.png")
-
         super_cat = cat.super_categorie
+        cat_inter = cat.categorie_intermediaire
+
         if not super_cat:
             continue
 
         if super_cat not in categories_by_super:
-            categories_by_super[super_cat] = []
+            categories_by_super[super_cat] = {
+                "directes": [],
+                "intermediaires": {},
+            }
 
-        categories_by_super[super_cat].append({
-            "name": cat.name,
-            "slug": cat.slug,
-            "image": image_url,
-        })
+        if cat_inter:
+            if cat_inter not in categories_by_super[super_cat]["intermediaires"]:
+                categories_by_super[super_cat]["intermediaires"][cat_inter] = []
+            categories_by_super[super_cat]["intermediaires"][cat_inter].append({
+                "name": cat.name,
+                "slug": cat.slug,
+                "image": image_url,
+            })
+        else:
+            categories_by_super[super_cat]["directes"].append({
+                "name": cat.name,
+                "slug": cat.slug,
+                "image": image_url,
+            })
 
     for super_cat in categories_by_super:
-        categories_by_super[super_cat].sort(key=lambda cat: sort_key(cat["name"]))
+        categories_by_super[super_cat]["directes"].sort(key=lambda c: sort_key(c["name"]))
+        for inter in categories_by_super[super_cat]["intermediaires"]:
+            categories_by_super[super_cat]["intermediaires"][inter].sort(key=lambda c: sort_key(c["name"]))
 
     return render(request, "members/categories_villes.html", {
         "categories_by_super": categories_by_super,
         "departement": departement,
         "ville": ville,
     })
-
 
 def notre_projet(request):
     return render(request, "members/notre_projet.html")
