@@ -120,13 +120,6 @@
                 <div class="inter-count">{{ cats|length }}</div>
             </div>
             {% endfor %}
-
-            {% for cat in data.directes %}
-            <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
-                <span>{{ cat.name }}</span>
-            </a>
-            {% endfor %}
         </div>
 
         {% for inter, cats in data.intermediaires.items %}
@@ -141,6 +134,17 @@
             </div>
         </div>
         {% endfor %}
+
+        {% if data.directes %}
+        <div class="categ-ville-grid" style="margin-top: 16px;">
+            {% for cat in data.directes %}
+            <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
+                <span>{{ cat.name }}</span>
+            </a>
+            {% endfor %}
+        </div>
+        {% endif %}
 
     </section>
     {% endfor %}
