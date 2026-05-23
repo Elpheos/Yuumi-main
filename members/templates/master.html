@@ -40,12 +40,9 @@ main {
     flex: 1;
 }
 
-/* ============================= */
-
 #supercats-dropdown {
-    display: none ; 
+    display: none;
 }
-/* ===== MENU SUPER CATEGORIES ===== */
 
 .menu-supercats {
     position: relative;
@@ -63,20 +60,6 @@ main {
     z-index: 1000;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
     margin-top:1vh;
-}
-
-   @media (max-width: 767px) {
-    .supercats-container{
-        width: 85vw;
-        left: 20px;
-        padding: 10px 10px 10px 20px;
-        position: fixed;
-        z-index: 10002;
-        margin-top: 0;
-        overflow-y: auto;
-        top: 220px;
-        max-height: 70dvh;
-    }
 }
 
 .supercat-block {
@@ -98,14 +81,14 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 6px ;
+    padding: 4px 6px;
     cursor: pointer;
     font-weight: 600;
 }
 
 .menu-cat-intermediaire:hover {
     background: #0a5bb4;
-    color:white;
+    color: white;
 }
 
 .subcats-list {
@@ -119,11 +102,6 @@ main {
     font-size: 16px;
     color: #333;
 }
-
-
-/* ================================ */
-/*            FOOTER               */
-/* ================================ */
 
 .yuumi-footer {
     background: #fafafa;
@@ -180,7 +158,6 @@ main {
     color: #666;
 }
 
-/* Sécurité Android : overlays cachés */
 .resultats-recherche,
 #supercats-dropdown,
 #search-product-container {
@@ -193,7 +170,6 @@ main {
     pointer-events: auto;
 }
 
-/* Changer de ville : uniquement visible sur mobile */
 .menu-changer-ville-mobile {
     display: none;
 }
@@ -204,7 +180,6 @@ main {
     }
 }
 
-/* ── Ville courante dans la nav desktop (après Contact) ── */
 .header-ville-nav {
     display: flex;
     align-items: center;
@@ -240,17 +215,18 @@ main {
     font-size: 1.3rem;
 }
 
-#header-bouton-changerville-faicon {
-    margin-right: 5px;
-}
-
 @media (max-width: 767px) {
     .header-ville-nav {
         display: none;
     }
+    .supercats-container {
+        display: none !important;
+    }
+    #search-product-container {
+        display: none !important;
+    }
 }
 
-/* ── Messages Django (succès, erreurs) ── */
 .django-messages {
     position: fixed;
     top: 20px;
@@ -311,19 +287,94 @@ main {
     }
 }
 
+/* ===== MODALES MOBILE ===== */
+.mobile-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10010;
+    background: white;
+    flex-direction: column;
+}
+
+@media (max-width: 767px) {
+    .mobile-modal.open {
+        display: flex;
+    }
+}
+
+.mobile-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 2px solid #ff8b38;
+    font-weight: bold;
+    font-size: 1.1rem;
+    color: #ff8b38;
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 1;
+}
+
+.mobile-modal-close {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #333;
+    line-height: 1;
+    padding: 0 4px;
+}
+
+.mobile-modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.mobile-modal-body .supercat-header {
+    padding: 10px 0;
+    font-size: 1rem;
+}
+
+.mobile-modal-body .subcats-list li {
+    padding: 6px 0;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.mobile-modal-body .subcats-list li a {
+    font-size: 1rem;
+    color: #333;
+    text-decoration: none;
+}
+
+.mobile-modal-search-input {
+    width: 100%;
+    padding: 14px;
+    border: 2px solid #ff8b38;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    outline: none;
+}
+
+.mobile-modal-search-input:focus {
+    box-shadow: 0 0 0 3px rgba(255,139,56,0.15);
+}
+
 </style>
 </head>
 
 <body>
 
-
 <!-- ============================= -->
 <!--            HEADER             -->
 <!-- ============================= -->
 <header>
-    <!-- Bouton hamburger mobile -->
     <button class="nav-menu-bouton-mobile" id="nav-mobile-btn">☰</button>
-    <!-- Overlay sombre derrière le panneau -->
     <div class="nav-overlay" id="nav-overlay"></div>
     <div class="header-container" id="header-container-id">
         <nav class="nav-menu-header" style="position:relative;">
@@ -373,7 +424,7 @@ main {
                     <li>
                         <div class="menu-cat-intermediaire">
                             <span>{{ item.name }}</span>
-                            <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                            <svg class="chevron" style="width: 12px; fill: #0a5bb4;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
                         </div>
                         <ul class="subcats-list">
                             {% for cat in item.cats %}
@@ -394,10 +445,12 @@ main {
         {% endfor %}
     {% endif %}
 </div>
+                    </li>
+
                     <!-- CHERCHER UN PRODUIT -->
                     <li style="position:relative;">
                         {% if menu_departement and menu_ville %}
-<a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}" data-ville="{{ menu_ville }}">
+                            <a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}" data-ville="{{ menu_ville }}">
                                 Chercher un produit
                             </a>
                         {% else %}
@@ -410,16 +463,12 @@ main {
                         </div>
                     </li>
 
-                    <!-- CHANGER DE VILLE — visible seulement si on est sur une ville, mobile uniquement -->
                     {% if menu_departement and menu_ville %}
                     <li class="menu-changer-ville-mobile">
-                        <a href="{% url 'changer_ville' %}">
-                            Changer de ville
-                        </a>
+                        <a href="{% url 'changer_ville' %}">Changer de ville</a>
                     </li>
                     {% endif %}
 
-                    <!-- AUTRES ONGLETS -->
                     {% if menu_departement %}
                         {% url 'map-view' menu_departement as carte_url %}
                     {% else %}
@@ -429,20 +478,19 @@ main {
                     <li><a href="{{ carte_url }}">Carte des commerces</a></li>
                     <li><a href="{% url 'notre_projet' %}">Notre projet</a></li>
 
-<li>
-    <a href="{% if user.is_authenticated %}{% url 'account' %}{% else %}{% url 'login' %}{% endif %}">
-        Mon compte
-    </a>
-</li>
+                    <li>
+                        <a href="{% if user.is_authenticated %}{% url 'account' %}{% else %}{% url 'login' %}{% endif %}">
+                            Mon compte
+                        </a>
+                    </li>
 
                     <li><a href="{% url 'contact' %}">Contact</a></li>
 
-                    <!-- VILLE COURANTE — desktop uniquement, après Contact -->
                     {% if menu_departement and menu_ville %}
                     <li class="header-ville-nav">
                         <div class="header-bouton-changerville-desktop-container">
-                        <span class="header-bouton-changerville-span-nomville"><svg style="fill: var(--orange); width: 16px; margin-right: 5px; margin-bottom: 10px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>{{ menu_ville }}</span>
-                        <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
+                            <span class="header-bouton-changerville-span-nomville"><svg style="fill: var(--orange); width: 16px; margin-right: 5px; margin-bottom: 10px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>{{ menu_ville }}</span>
+                            <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
                         </div>
                     </li>
                     {% endif %}
@@ -463,22 +511,20 @@ main {
                     {% endif %}
 
                     <li>
-    {% if user.is_authenticated %}
-        <a href="{% url 'account' %}">
-            <svg viewBox="0 0 448 512"><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>
-        </a>
-    {% else %}
-        <a href="{% url 'login' %}">
-            <svg viewBox="0 0 448 512"><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>
-        </a>
-    {% endif %}
-</li>
-
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'account' %}">
+                                <svg viewBox="0 0 448 512"><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>
+                            </a>
+                        {% else %}
+                            <a href="{% url 'login' %}">
+                                <svg viewBox="0 0 448 512"><path d="M224 248a120 120 0 1 0 0-240 120 120 0 1 0 0 240zm-29.7 56C95.8 304 16 383.8 16 482.3 16 498.7 29.3 512 45.7 512l356.6 0c16.4 0 29.7-13.3 29.7-29.7 0-98.5-79.8-178.3-178.3-178.3l-59.4 0z"/></svg>
+                            </a>
+                        {% endif %}
+                    </li>
                 </ul>
             </div>
 
         </nav>
-
         <hr class="hr-full-width-menu"/>
     </div>
 </header>
@@ -486,10 +532,7 @@ main {
 <!-- ============================= -->
 <!--             CONTENT           -->
 <!-- ============================= -->
-
 <main>
-
-    <!-- Messages Django -->
     {% if messages %}
     <div class="django-messages">
         {% for message in messages %}
@@ -501,18 +544,8 @@ main {
     </div>
     {% endif %}
 
-   
-        {% block content %}{% endblock %}
-    
+    {% block content %}{% endblock %}
 </main>
-
-
-
-    
-
-<!-- ============================= -->
-<!--          MODALS SUGGESTIONS   -->
-<!-- ============================= -->
 
 <!-- ============================= -->
 <!--          MODALS SUGGESTIONS   -->
@@ -522,9 +555,9 @@ main {
 <div class="modal fade" id="suggestNewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" style="border-radius:14px; border: 2px solid #0a5bb4; margin-top:60px">
-            <div class="modal-header" style="background:#0a5bb4; border-radius:12px 12px 0 0; ">
+            <div class="modal-header" style="background:#0a5bb4; border-radius:12px 12px 0 0;">
                 <h5 class="modal-title" style="color:white;">
-                   <svg style="width: 16px;" viewBox="0 0 512 512"><path d="M30.7 72.3C37.6 48.4 59.5 32 84.4 32l344 0c24.9 0 46.8 16.4 53.8 40.3l23.4 80.2c12.8 43.7-20.1 87.5-65.6 87.5-26.3 0-49.4-14.9-60.8-37.1-11.6 21.9-34.6 37.1-61.4 37.1-26.6 0-49.7-15-61.3-37-11.6 22-34.7 37-61.3 37-26.8 0-49.8-15.1-61.4-37.1-11.4 22.1-34.5 37.1-60.8 37.1-45.6 0-78.4-43.7-65.6-87.5L30.7 72.3zM96.4 352l320 0 0-66.4c7.6 1.6 15.5 2.4 23.5 2.4 14.3 0 28-2.6 40.5-7.2l0 151.2c0 26.5-21.5 48-48 48l-352 0c-26.5 0-48-21.5-48-48l0-151.2c12.5 4.6 26.1 7.2 40.5 7.2 8.1 0 15.9-.8 23.5-2.4l0 66.4z"/></svg> 
+                   <svg style="width: 16px;" viewBox="0 0 512 512"><path d="M30.7 72.3C37.6 48.4 59.5 32 84.4 32l344 0c24.9 0 46.8 16.4 53.8 40.3l23.4 80.2c12.8 43.7-20.1 87.5-65.6 87.5-26.3 0-49.4-14.9-60.8-37.1-11.6 21.9-34.6 37.1-61.4 37.1-26.6 0-49.7-15-61.3-37-11.6 22-34.7 37-61.3 37-26.8 0-49.8-15.1-61.4-37.1-11.4 22.1-34.5 37.1-60.8 37.1-45.6 0-78.4-43.7-65.6-87.5L30.7 72.3zM96.4 352l320 0 0-66.4c7.6 1.6 15.5 2.4 23.5 2.4 14.3 0 28-2.6 40.5-7.2l0 151.2c0 26.5-21.5 48-48 48l-352 0c-26.5 0-48-21.5-48-48l0-151.2c12.5 4.6 26.1 7.2 40.5 7.2 8.1 0 15.9-.8 23.5-2.4l0 66.4z"/></svg>
                     Suggérer un nouveau commerce
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -629,54 +662,122 @@ main {
 </div>
 </template>
 
-    
 <!-- ============================= -->
 <!--             FOOTER            -->
 <!-- ============================= -->
 
 <footer class="yuumi-footer">
     <div class="yuumi-footer-container">
-
         <div class="yuumi-footer-socials">
-<a href="https://www.facebook.com/Yuumi.France/" target="_blank" rel="noopener">
-    <img src="{% static 'images/facebook-yuumi.webp' %}" class="yuumi-footer-icon" alt="icône du lien vers la page facebook de yuumi" width="32" height="32">
-</a>
-
-<a href="https://www.instagram.com/yuumi.france/" target="_blank" rel="noopener">  
-    <img src="{% static 'images/instagram-yuumi.webp' %}" class="yuumi-footer-icon" alt="icône du lien vers la page instagram de yuumi" width="32" height="32">
-</a>
-
-
+            <a href="https://www.facebook.com/Yuumi.France/" target="_blank" rel="noopener">
+                <img src="{% static 'images/facebook-yuumi.webp' %}" class="yuumi-footer-icon" alt="icône du lien vers la page facebook de yuumi" width="32" height="32">
+            </a>
+            <a href="https://www.instagram.com/yuumi.france/" target="_blank" rel="noopener">
+                <img src="{% static 'images/instagram-yuumi.webp' %}" class="yuumi-footer-icon" alt="icône du lien vers la page instagram de yuumi" width="32" height="32">
+            </a>
         </div>
-
         <div class="yuumi-footer-links">
             <a href="{% url 'mentions_legales' %}">Mentions légales</a>
-<span>|</span>
-<a href="{% url 'cookies_policy' %}">Politique de cookies</a>
-<span>|</span>
-<a href="{% url 'confidentialite' %}">Confidentialité</a>
-<span>|</span>
-<a href="{% url 'cgu' %}">CGU</a>
+            <span>|</span>
+            <a href="{% url 'cookies_policy' %}">Politique de cookies</a>
+            <span>|</span>
+            <a href="{% url 'confidentialite' %}">Confidentialité</a>
+            <span>|</span>
+            <a href="{% url 'cgu' %}">CGU</a>
         </div>
-
         <div class="yuumi-footer-copy">
             © 2026 Yuumi S.A.S. | Tous droits réservés
         </div>
-
     </div>
 </footer>
 
 <!-- ============================= -->
+<!--   MODALES MOBILE COMMERCE     -->
+<!-- ============================= -->
+<div class="mobile-modal" id="mobile-modal-commerce">
+    <div class="mobile-modal-header">
+        <span>🔍 Chercher un commerce</span>
+        <button class="mobile-modal-close" id="close-modal-commerce">✕</button>
+    </div>
+    <div class="mobile-modal-body">
+        {% if menu_supercategories %}
+            {% for supercat, cats in menu_supercategories.items %}
+            <div class="supercat-block">
+                <div class="supercat-header">
+                    <span>{{ supercat }}</span>
+                    <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                </div>
+                <ul class="subcats-list">
+                    {% for item in cats.items %}
+                        {% if item.type == "direct" %}
+                        <li>
+                            {% if menu_ville %}
+                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
+                                    {% if item.obj.icon_perso %}
+                                        <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
+                                    {% endif %}
+                                    {{ item.obj }}
+                                </a>
+                            {% else %}
+                                <span style="color:#aaa;">{{ item.obj }}</span>
+                            {% endif %}
+                        </li>
+                        {% else %}
+                        <li>
+                            <div class="menu-cat-intermediaire">
+                                <span>{{ item.name }}</span>
+                                <svg class="chevron" style="width: 12px; fill: #0a5bb4;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                            </div>
+                            <ul class="subcats-list">
+                                {% for cat in item.cats %}
+                                <li>
+                                    {% if menu_ville %}
+                                        <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">{{ cat }}</a>
+                                    {% else %}
+                                        <span style="color:#aaa;">{{ cat }}</span>
+                                    {% endif %}
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:#aaa; text-align:center; margin-top:24px;">Choisissez une ville pour voir les catégories.</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ============================= -->
+<!--   MODALE MOBILE PRODUIT       -->
+<!-- ============================= -->
+<div class="mobile-modal" id="mobile-modal-produit">
+    <div class="mobile-modal-header">
+        <span>🔍 Chercher un produit</span>
+        <button class="mobile-modal-close" id="close-modal-produit">✕</button>
+    </div>
+    <div class="mobile-modal-body">
+        <input type="text"
+               id="search-product-input-mobile"
+               class="mobile-modal-search-input"
+               placeholder="Tapez un nom de produit..."
+               autocomplete="off">
+        <ul id="search-product-results-mobile" style="list-style:none; padding:0; margin-top:12px;"></ul>
+    </div>
+</div>
+
+<!-- ============================= -->
 <!--             JS HEADER         -->
 <!-- ============================= -->
-
 <script>
 document.addEventListener("DOMContentLoaded", () => {
 
     /* ============================= */
     /*       MENU MOBILE             */
     /* ============================= */
-
     const mobileBtn = document.getElementById("nav-mobile-btn");
     const headerContainer = document.getElementById("header-container-id");
     const overlay = document.getElementById("nav-overlay");
@@ -700,97 +801,190 @@ document.addEventListener("DOMContentLoaded", () => {
             headerContainer.classList.contains("open") ? closeMenu() : openMenu();
         });
     }
-
     if (overlay) {
         overlay.addEventListener("click", closeMenu);
     }
-
-    // Fermer avec la touche Échap
     document.addEventListener("keydown", e => {
-        if (e.key === "Escape") closeMenu();
-    });
-
-  /* ============================= */
-/*   SUPER-CATEGORIES DROPDOWN   */
-/* ============================= */
-
-const btn = document.querySelector(".supercats-toggle");
-const dropdown = document.getElementById("supercats-dropdown");
-const btnChevron = btn?.querySelector(".chevron");
-
-if (btn && dropdown) {
-    btn.addEventListener("click", e => {
-        e.preventDefault();
-        const isOpen = dropdown.style.display === "block";
-        dropdown.style.display = isOpen ? "none" : "block";
-        if (btnChevron) btnChevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
-    });
-
-    document.addEventListener("click", e => {
-        if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
-            dropdown.style.display = "none";
-            if (btnChevron) btnChevron.style.transform = "rotate(0deg)";
+        if (e.key === "Escape") {
+            closeMenu();
+            closeMobileModal("mobile-modal-commerce");
+            closeMobileModal("mobile-modal-produit");
         }
     });
-}
 
-document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
-    const list = header.nextElementSibling;
-    const chevron = header.querySelector(".chevron");
+    /* ============================= */
+    /*   SUPER-CATEGORIES DROPDOWN   */
+    /* (desktop uniquement)          */
+    /* ============================= */
+    const btn = document.querySelector(".supercats-toggle");
+    const dropdown = document.getElementById("supercats-dropdown");
+    const btnChevron = btn?.querySelector(".chevron");
 
-    if (!list || !chevron) return;
+    if (btn && dropdown) {
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            if (window.innerWidth <= 767) return; // géré par modale
+            const isOpen = dropdown.style.display === "block";
+            dropdown.style.display = isOpen ? "none" : "block";
+            if (btnChevron) btnChevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+        });
 
-    header.addEventListener("click", () => {
-        const open = list.style.display === "block";
-        list.style.display = open ? "none" : "block";
-        chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
+        document.addEventListener("click", e => {
+            if (window.innerWidth > 767 && !dropdown.contains(e.target) && !btn.contains(e.target)) {
+                dropdown.style.display = "none";
+                if (btnChevron) btnChevron.style.transform = "rotate(0deg)";
+            }
+        });
+    }
+
+    document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
+        const list = header.nextElementSibling;
+        const chevron = header.querySelector(".chevron");
+        if (!list || !chevron) return;
+        header.addEventListener("click", () => {
+            const open = list.style.display === "block";
+            list.style.display = open ? "none" : "block";
+            chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
+        });
     });
-});
+
+    /* ============================= */
+    /*   MODALES MOBILE              */
+    /* ============================= */
+    const isMobile = () => window.innerWidth <= 767;
+
+    function openMobileModal(id) {
+        document.getElementById(id).classList.add("open");
+        document.body.style.overflow = "hidden";
+    }
+
+    function closeMobileModal(id) {
+        document.getElementById(id).classList.remove("open");
+        document.body.style.overflow = "";
+    }
+
+    // Modale commerce
+    const modalCommerce = document.getElementById("mobile-modal-commerce");
+    const closeCommerceBtn = document.getElementById("close-modal-commerce");
+
+    if (btn && modalCommerce) {
+        btn.addEventListener("click", e => {
+            if (isMobile()) {
+                e.preventDefault();
+                openMobileModal("mobile-modal-commerce");
+            }
+        });
+    }
+    if (closeCommerceBtn) {
+        closeCommerceBtn.addEventListener("click", () => closeMobileModal("mobile-modal-commerce"));
+    }
+
+    // Accordéon dans la modale commerce
+    if (modalCommerce) {
+        modalCommerce.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
+            const list = header.nextElementSibling;
+            const chevron = header.querySelector(".chevron");
+            if (!list || !chevron) return;
+            header.addEventListener("click", () => {
+                const open = list.style.display === "block";
+                list.style.display = open ? "none" : "block";
+                chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
+            });
+        });
+    }
+
+    // Modale produit
+    const modalProduit = document.getElementById("mobile-modal-produit");
+    const closeProduitBtn = document.getElementById("close-modal-produit");
+    const inputMobile = document.getElementById("search-product-input-mobile");
+    const listMobile = document.getElementById("search-product-results-mobile");
+
+    document.querySelectorAll(".search-product-toggle").forEach(toggle => {
+        toggle.addEventListener("click", e => {
+            if (isMobile()) {
+                e.preventDefault();
+                openMobileModal("mobile-modal-produit");
+                setTimeout(() => inputMobile && inputMobile.focus(), 150);
+            }
+        });
+    });
+
+    if (closeProduitBtn) {
+        closeProduitBtn.addEventListener("click", () => {
+            closeMobileModal("mobile-modal-produit");
+            if (inputMobile) inputMobile.value = "";
+            if (listMobile) listMobile.innerHTML = "";
+        });
+    }
+
+    // Recherche produit dans la modale mobile
+    if (inputMobile && listMobile) {
+        let timerMobile = null;
+        inputMobile.addEventListener("input", () => {
+            const q = inputMobile.value.trim();
+            clearTimeout(timerMobile);
+            if (!q) { listMobile.innerHTML = ""; return; }
+            timerMobile = setTimeout(async () => {
+                try {
+                    const toggleEl = document.querySelector(".search-product-toggle");
+                    const url = toggleEl?.dataset.url;
+                    const ville = toggleEl?.dataset.ville || "";
+                    if (!url) return;
+                    const resp = await fetch(url + "?q=" + encodeURIComponent(q) + (ville ? "&ville=" + encodeURIComponent(ville) : ""), {
+                        headers: { "X-Requested-With": "XMLHttpRequest" }
+                    });
+                    const data = await resp.json();
+                    listMobile.innerHTML = (data.results || []).map(item => `
+                        <li class="search-product-store-container">
+                            <a href="${item.url}">
+                                ${item.photo
+                                    ? `<img class="spr-thumb" src="${item.photo}">`
+                                    : `<span class="spr-thumb">🛍️</span>`}
+                                <span>
+                                    <strong>${item.product}</strong><br>
+                                    <small>${item.store}</small>
+                                </span>
+                            </a>
+                        </li>
+                    `).join("");
+                } catch (err) { console.error("Erreur recherche produit mobile :", err); }
+            }, 250);
+        });
+    }
 
     /* ============================= */
     /*       RECHERCHE PRODUIT       */
+    /* (desktop uniquement)          */
     /* ============================= */
-
     const toggles = document.querySelectorAll(".search-product-toggle");
     const box = document.getElementById("search-product-container");
     const input = document.getElementById("search-product-input");
     const list = document.getElementById("search-product-results");
 
     if (toggles.length && box && input && list) {
-
         toggles.forEach(toggle => {
             toggle.addEventListener("click", e => {
+                if (isMobile()) return; // géré par modale
                 e.preventDefault();
-                box.style.display =
-                    box.style.display === "block" ? "none" : "block";
+                box.style.display = box.style.display === "block" ? "none" : "block";
                 input.focus();
             });
         });
 
         let timer = null;
-
         input.addEventListener("input", () => {
             const q = input.value.trim();
             clearTimeout(timer);
-
-            if (!q) {
-                list.innerHTML = "";
-                return;
-            }
-
+            if (!q) { list.innerHTML = ""; return; }
             timer = setTimeout(async () => {
                 try {
                     const url = toggles[0].dataset.url;
                     if (!url) return;
-
                     const ville = toggles[0].dataset.ville || "";
                     const resp = await fetch(url + "?q=" + encodeURIComponent(q) + (ville ? "&ville=" + encodeURIComponent(ville) : ""), {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
-
                     const data = await resp.json();
-
-                    /* FIX : l'API retourne {"results": [...]}, pas un tableau direct */
                     list.innerHTML = (data.results || []).map(item => `
                         <li class="search-product-store-container">
                             <a href="${item.url}">
@@ -804,10 +998,7 @@ document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(h
                             </a>
                         </li>
                     `).join("");
-
-                } catch (err) {
-                    console.error("Erreur recherche produit :", err);
-                }
+                } catch (err) { console.error("Erreur recherche produit :", err); }
             }, 250);
         });
     }
@@ -815,11 +1006,8 @@ document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(h
 });
 </script>
 
-
-
 {% if menu_departement and menu_ville %}
 <script>
-// 🍪 Mémoriser la ville courante dans un cookie (durée 30 jours)
 (function() {
     var expires = new Date();
     expires.setDate(expires.getDate() + 30);
@@ -829,6 +1017,7 @@ document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(h
 })();
 </script>
 {% endif %}
+
 <!-- ============================= -->
 <!--       JS SUGGESTIONS          -->
 <!-- ============================= -->
@@ -839,7 +1028,6 @@ function injecterModal(templateId) {
     const tpl = document.getElementById(templateId);
     if (!tpl) return null;
     const clone = tpl.content.cloneNode(true);
-    // Injecter le token CSRF dans le champ caché
     clone.querySelector('[name="csrfmiddlewaretoken"]').value = CSRF_TOKEN;
     document.body.appendChild(clone);
     return document.querySelector(templateId === "tpl-modal-nouveau" ? "#suggestNewModal" : "#suggestModifModal");
@@ -847,20 +1035,15 @@ function injecterModal(templateId) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* ===== NOUVEAU COMMERCE ===== */
     document.addEventListener("click", e => {
         const btn = e.target.closest('[data-bs-target="#suggestNewModal"]');
         if (!btn) return;
         e.preventDefault();
-
         if (!document.getElementById("suggestNewModal")) {
             injecterModal("tpl-modal-nouveau");
         }
-
         const modal = new bootstrap.Modal(document.getElementById("suggestNewModal"));
         modal.show();
-
-        // Soumettre
         document.getElementById("suggest-new-submit").addEventListener("click", async () => {
             const form = document.getElementById("suggest-new-form");
             const data = new FormData(form);
@@ -874,20 +1057,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
     });
 
-    /* ===== MODIFICATION ===== */
     document.addEventListener("click", e => {
         const btn = e.target.closest('[data-bs-target="#suggestModifModal"]');
         if (!btn) return;
         e.preventDefault();
-
         if (!document.getElementById("suggestModifModal")) {
             injecterModal("tpl-modal-modif");
         }
-
         const storeId = btn.dataset.storeId || btn.onclick?.toString().match(/\d+/)?.[0];
         const modal = new bootstrap.Modal(document.getElementById("suggestModifModal"));
         modal.show();
-
         document.getElementById("suggest-modif-submit").addEventListener("click", async () => {
             const form = document.getElementById("suggest-modif-form");
             const data = new FormData(form);
@@ -904,7 +1083,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 {% block extra_js %}{% endblock %}
-
 
 </body>
 </html>
