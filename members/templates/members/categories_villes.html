@@ -59,40 +59,24 @@
     font-weight: bold;
     font-size: 1rem;
 }
-.inter-btn {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #0a5bb4;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
+.categ-tile-inter {
     cursor: pointer;
-    width: 100%;
-    margin-bottom: 12px;
+    border: 3px solid #0a5bb4;
 }
-.inter-btn span {
-    font-weight: 600;
-    color: white;
-    font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.categ-tile-inter img {
+    filter: brightness(0.5) sepia(1) hue-rotate(190deg) saturate(3);
 }
-.inter-btn-count {
-    background: rgba(255,255,255,0.25);
+.categ-tile-inter span {
+    border-color: #0a5bb4;
+    color: #0a5bb4;
+}
+.inter-count {
+    background: #0a5bb4;
     color: white;
-    font-size: 12px;
-    padding: 2px 8px;
     border-radius: 100px;
-}
-.inter-btn svg {
-    fill: white;
-    width: 14px;
-    transition: transform 0.2s ease;
-}
-.inter-btn:hover {
-    background: #185FA5;
+    padding: 1px 7px;
+    font-size: 0.85rem;
+    margin-left: 4px;
 }
 .inter-grid {
     display: none;
@@ -100,14 +84,11 @@
     border-left: 3px solid #0a5bb4;
     margin-bottom: 20px;
 }
-.inter-grid .categ-ville-grid {
-    margin-bottom: 0;
-}
 .directes-label {
     font-size: 0.85rem;
     color: #888;
     margin-bottom: 10px;
-    margin-top: 8px;
+    margin-top: 20px;
 }
 @media (max-width: 900px) {
     .categ-ville-grid { grid-template-columns: repeat(2, 1fr); }
@@ -124,39 +105,33 @@
     <section class="categ-ville-section">
         <h2>{{ super_cat.name }}</h2>
 
-        {% for inter, cats in data.intermediaires.items %}
-        <button class="inter-btn" onclick="toggleInter(this)">
-            <span>
-                {{ inter.name }}
-                <span class="inter-btn-count">{{ cats|length }} catégorie{{ cats|length|pluralize }}</span>
-            </span>
-            <svg viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
-        </button>
-        <div class="inter-grid">
-            <div class="categ-ville-grid">
-                {% for cat in cats %}
-                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                    <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
-                    <span>{{ cat.name }}</span>
-                </a>
-                {% endfor %}
-            </div>
-        </div>
-        {% endfor %}
+        <div class="categ-ville-grid">
 
-        {% if data.directes %}
-            {% if data.intermediaires %}
-            <p class="directes-label">Autres catégories</p>
-            {% endif %}
-            <div class="categ-ville-grid">
-                {% for cat in data.directes %}
-                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                    <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
-                    <span>{{ cat.name }}</span>
-                </a>
-                {% endfor %}
+            {% for inter, cats in data.intermediaires.items %}
+            <a class="categ-tile categ-tile-inter" onclick="toggleInter(event, this)">
+                <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
+                <span>{{ inter.name }} <span class="inter-count">{{ cats|length }}</span></span>
+            </a>
+            <div class="inter-grid">
+                <div class="categ-ville-grid">
+                    {% for cat in cats %}
+                    <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                        <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
+                        <span>{{ cat.name }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
-        {% endif %}
+            {% endfor %}
+
+            {% for cat in data.directes %}
+            <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
+                <span>{{ cat.name }}</span>
+            </a>
+            {% endfor %}
+
+        </div>
 
     </section>
     {% endfor %}
@@ -164,12 +139,10 @@
 </div>
 
 <script>
-function toggleInter(btn) {
-    const grid = btn.nextElementSibling;
-    const chevron = btn.querySelector("svg");
-    const isOpen = grid.style.display === "block";
-    grid.style.display = isOpen ? "none" : "block";
-    chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+function toggleInter(e, tile) {
+    e.preventDefault();
+    const grid = tile.nextElementSibling;
+    grid.style.display = grid.style.display === "block" ? "none" : "block";
 }
 </script>
 {% endblock %}
