@@ -58,29 +58,35 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
+    max-width: calc(100% - 24px);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: calc(100% - 24px);
 }
 .categ-tile-inter {
     cursor: pointer;
     border: 3px solid #0a5bb4;
+    position: relative;
 }
 .categ-tile-inter img {
     filter: brightness(0.5) sepia(1) hue-rotate(190deg) saturate(3);
+    pointer-events: none;
 }
 .categ-tile-inter span {
     border-color: #0a5bb4;
     color: #0a5bb4;
+    pointer-events: none;
 }
 .inter-count {
+    position: absolute;
+    top: 12px;
+    right: 12px;
     background: #0a5bb4;
     color: white;
     border-radius: 100px;
     padding: 1px 7px;
     font-size: 0.85rem;
-    margin-left: 4px;
+    pointer-events: none;
 }
 .inter-grid {
     display: none;
@@ -105,9 +111,10 @@
 
         <div class="categ-ville-grid">
             {% for inter, cats in data.intermediaires.items %}
-            <div class="categ-tile categ-tile-inter" onclick="toggleInter('{{ inter.slug }}')">
+            <div class="categ-tile categ-tile-inter" data-slug="{{ inter.slug }}">
                 <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
-                <span>{{ inter.name }} <span class="inter-count">{{ cats|length }}</span></span>
+                <span>{{ inter.name }}</span>
+                <span class="inter-count">{{ cats|length }}</span>
             </div>
             {% endfor %}
 
@@ -138,9 +145,15 @@
 </div>
 
 <script>
-function toggleInter(slug) {
-    const grid = document.getElementById("inter-" + slug);
-    grid.style.display = grid.style.display === "block" ? "none" : "block";
-}
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".categ-tile-inter").forEach(tile => {
+        tile.addEventListener("click", () => {
+            const slug = tile.dataset.slug;
+            const grid = document.getElementById("inter-" + slug);
+            if (!grid) return;
+            grid.style.display = grid.style.display === "block" ? "none" : "block";
+        });
+    });
+});
 </script>
 {% endblock %}
