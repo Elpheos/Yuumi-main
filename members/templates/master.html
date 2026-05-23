@@ -96,14 +96,17 @@ main {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-weight: 600;
-    font-size: 0.9rem;
+    font-weight: ;
+    font-size: 16px;
     color: #0a5bb4;
     cursor: pointer;
-    padding: 4px 0 4px 8px;
-    border-left: 3px solid #0a5bb4;
+    padding: 4px 6px;
     margin-top: 6px;
 }
+    .menu-cat-intermediaire:hover{
+        background:#ff8b38;
+        color;=:white;
+    }
 
 .subcats-list {
     list-style: none;
@@ -731,7 +734,7 @@ if (btn && dropdown) {
     });
 }
 
-document.querySelectorAll(".supercat-header").forEach(header => {
+document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
     const list = header.nextElementSibling;
     const chevron = header.querySelector(".chevron");
 
