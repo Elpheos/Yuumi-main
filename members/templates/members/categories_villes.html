@@ -155,5 +155,21 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+    document.addEventListener("DOMContentLoaded", () => {
+    console.log("JS chargé");
+    console.log(document.querySelectorAll(".categ-tile-inter").length, "tuiles trouvées");
+    
+    document.querySelectorAll(".categ-tile-inter").forEach(tile => {
+        tile.addEventListener("click", () => {
+            const slug = tile.dataset.slug;
+            console.log("clic sur", slug);
+            const grid = document.getElementById("inter-" + slug);
+            console.log("grid trouvée ?", grid);
+            if (!grid) return;
+            grid.style.display = grid.style.display === "block" ? "none" : "block";
+        });
+    });
+});
 </script>
 {% endblock %}
