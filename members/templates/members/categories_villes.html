@@ -97,7 +97,14 @@
 @media (max-width: 767px) {
     .categ-ville-section { margin-top: 80px; }
     .categ-ville-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .categ-tile span { font-size: 0.85rem; padding: 4px 8px; }
+    .categ-tile span {
+        font-size: 0.85rem;
+        padding: 4px 8px;
+        white-space: normal;
+        overflow: visible;
+        text-overflow: clip;
+        max-width: calc(100% - 16px);
+    }
 }
 </style>
 
