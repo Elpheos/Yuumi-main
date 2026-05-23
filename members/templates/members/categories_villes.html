@@ -47,7 +47,6 @@
     height: 100%;
     display: block;
     object-fit: cover;
-    pointer-events: none;
 }
 .categ-tile span {
     position: absolute;
@@ -59,11 +58,6 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
-    pointer-events: none;
-    max-width: calc(100% - 56px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 .categ-tile-inter {
     cursor: pointer;
@@ -72,27 +66,29 @@
 .categ-tile-inter img {
     filter: brightness(0.5) sepia(1) hue-rotate(190deg) saturate(3);
 }
-.categ-tile-inter > span {
+.categ-tile-inter span {
     border-color: #0a5bb4;
     color: #0a5bb4;
 }
 .inter-count {
-    position: absolute;
-    top: 12px;
-    right: 12px;
     background: #0a5bb4;
     color: white;
     border-radius: 100px;
-    padding: 2px 8px;
+    padding: 1px 7px;
     font-size: 0.85rem;
-    font-weight: bold;
-    pointer-events: none;
+    margin-left: 4px;
 }
 .inter-grid {
     display: none;
     padding-left: 12px;
     border-left: 3px solid #0a5bb4;
-    margin: 16px 0 20px 0;
+    margin-bottom: 20px;
+}
+.directes-label {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 10px;
+    margin-top: 20px;
 }
 @media (max-width: 900px) {
     .categ-ville-grid { grid-template-columns: repeat(2, 1fr); }
@@ -110,11 +106,21 @@
         <h2>{{ super_cat.name }}</h2>
 
         <div class="categ-ville-grid">
+
             {% for inter, cats in data.intermediaires.items %}
-            <div class="categ-tile categ-tile-inter" data-slug="{{ inter.slug }}">
+            <a class="categ-tile categ-tile-inter" onclick="toggleInter(event, this)">
                 <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
-                <span>{{ inter.name }}</span>
-                <span class="inter-count">{{ cats|length }}</span>
+                <span>{{ inter.name }} <span class="inter-count">{{ cats|length }}</span></span>
+            </a>
+            <div class="inter-grid">
+                <div class="categ-ville-grid">
+                    {% for cat in cats %}
+                    <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                        <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
+                        <span>{{ cat.name }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
             {% endfor %}
 
@@ -124,20 +130,8 @@
                 <span>{{ cat.name }}</span>
             </a>
             {% endfor %}
-        </div>
 
-        {% for inter, cats in data.intermediaires.items %}
-        <div class="inter-grid" id="inter-{{ inter.slug }}">
-            <div class="categ-ville-grid">
-                {% for cat in cats %}
-                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                    <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
-                    <span>{{ cat.name }}</span>
-                </a>
-                {% endfor %}
-            </div>
         </div>
-        {% endfor %}
 
     </section>
     {% endfor %}
@@ -145,15 +139,10 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".categ-tile-inter").forEach(tile => {
-        tile.addEventListener("click", () => {
-            const slug = tile.dataset.slug;
-            const grid = document.getElementById("inter-" + slug);
-            if (!grid) return;
-            grid.style.display = grid.style.display === "block" ? "none" : "block";
-        });
-    });
-});
+function toggleInter(e, tile) {
+    e.preventDefault();
+    const grid = tile.nextElementSibling;
+    grid.style.display = grid.style.display === "block" ? "none" : "block";
+}
 </script>
 {% endblock %}
