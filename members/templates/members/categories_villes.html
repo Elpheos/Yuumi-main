@@ -7,31 +7,28 @@
 <meta name="geo.placename" content="{{ ville }}, {{ departement }}, France">
 <meta name="geo.region" content="FR">
 {% endblock %}
+
 {% block content %}
 <div class="page-container">
 <style>
-
 .categ-ville-section {
     max-width: 1100px;
     margin: 60px auto;
     padding: 0 20px;
 }
-
 .categ-ville-section h2 {
     text-align: center;
     font-size: 2rem;
     margin-bottom: 28px;
     font-weight: 600;
 }
-
 .categ-ville-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 16px;
 }
-
-.categ-ville-grid .categ-tile {
-    display: block !important;
+.categ-tile {
+    display: block;
     position: relative;
     border-radius: 12px;
     overflow: hidden;
@@ -41,20 +38,17 @@
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     aspect-ratio: 3 / 4;
 }
-
-.categ-ville-grid .categ-tile:hover {
+.categ-tile:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 22px rgba(0,0,0,0.23);
 }
-
-.categ-ville-grid .categ-tile img {
+.categ-tile img {
     width: 100%;
     height: 100%;
     display: block;
     object-fit: cover;
 }
-
-.categ-ville-grid .categ-tile span {
+.categ-tile span {
     position: absolute;
     top: 12px;
     left: 12px;
@@ -64,63 +58,118 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
-    line-height: 1.3;
-    width: auto !important;
-    max-width: fit-content !important;
 }
-
+.inter-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #0a5bb4;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-bottom: 12px;
+}
+.inter-btn span {
+    font-weight: 600;
+    color: white;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.inter-btn-count {
+    background: rgba(255,255,255,0.25);
+    color: white;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 100px;
+}
+.inter-btn svg {
+    fill: white;
+    width: 14px;
+    transition: transform 0.2s ease;
+}
+.inter-btn:hover {
+    background: #185FA5;
+}
+.inter-grid {
+    display: none;
+    padding-left: 12px;
+    border-left: 3px solid #0a5bb4;
+    margin-bottom: 20px;
+}
+.inter-grid .categ-ville-grid {
+    margin-bottom: 0;
+}
+.directes-label {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 10px;
+    margin-top: 8px;
+}
 @media (max-width: 900px) {
-    .categ-ville-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .categ-ville-grid { grid-template-columns: repeat(2, 1fr); }
 }
-
 @media (max-width: 767px) {
-    .categ-ville-section {
-        margin-top: 80px;
-    }
-    .categ-ville-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-    }
-    .categ-ville-grid .categ-tile span {
-        font-size: 0.85rem;
-        padding: 4px 8px;
-    }
+    .categ-ville-section { margin-top: 80px; }
+    .categ-ville-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .categ-tile span { font-size: 0.85rem; padding: 4px 8px; }
 }
-
 </style>
 
 <main>
+    {% for super_cat, data in categories_by_super.items %}
+    <section class="categ-ville-section">
+        <h2>{{ super_cat.name }}</h2>
 
-    {% for super_cat, categories in categories_by_super.items %}
+        {% for inter, cats in data.intermediaires.items %}
+        <button class="inter-btn" onclick="toggleInter(this)">
+            <span>
+                {{ inter.name }}
+                <span class="inter-btn-count">{{ cats|length }} catégorie{{ cats|length|pluralize }}</span>
+            </span>
+            <svg viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+        </button>
+        <div class="inter-grid">
+            <div class="categ-ville-grid">
+                {% for cat in cats %}
+                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                    <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
+                    <span>{{ cat.name }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
 
-        <section class="categ-ville-section">
-            <h2>{{ super_cat.name }}</h2>
-
-            {% if categories %}
-                <div class="categ-ville-grid">
-                    {% for cat in categories %}
-                        <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
-                            {% if cat.image %}
-                                <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
-                            {% else %}
-                                <img src="{% static 'placeholder.png' %}" alt="Pas d'image" loading="lazy">
-                            {% endif %}
-                            <span>{{ cat.name }}</span>
-                        </a>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p style="text-align:center;">
-                    Aucune catégorie dans cette section.
-                </p>
+        {% if data.directes %}
+            {% if data.intermediaires %}
+            <p class="directes-label">Autres catégories</p>
             {% endif %}
+            <div class="categ-ville-grid">
+                {% for cat in data.directes %}
+                <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
+                    <img src="{{ cat.image }}" alt="{{ cat.name }}" loading="lazy">
+                    <span>{{ cat.name }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        {% endif %}
 
-        </section>
-
+    </section>
     {% endfor %}
-
 </main>
 </div>
+
+<script>
+function toggleInter(btn) {
+    const grid = btn.nextElementSibling;
+    const chevron = btn.querySelector("svg");
+    const isOpen = grid.style.display === "block";
+    grid.style.display = isOpen ? "none" : "block";
+    chevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
+}
+</script>
 {% endblock %}
