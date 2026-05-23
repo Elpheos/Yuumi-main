@@ -879,20 +879,6 @@ document.addEventListener("DOMContentLoaded", () => {
         closeCommerceBtn.addEventListener("click", () => closeMobileModal("mobile-modal-commerce"));
     }
 
-    // Accordéon dans la modale commerce
-    if (modalCommerce) {
-        modalCommerce.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
-            const list = header.nextElementSibling;
-            const chevron = header.querySelector(".chevron");
-            if (!list || !chevron) return;
-            header.addEventListener("click", () => {
-                const open = list.style.display === "block";
-                list.style.display = open ? "none" : "block";
-                chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
-            });
-        });
-    }
-
     // Modale produit
     const modalProduit = document.getElementById("mobile-modal-produit");
     const closeProduitBtn = document.getElementById("close-modal-produit");
