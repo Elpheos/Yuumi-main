@@ -598,6 +598,13 @@ def categories_ville(request, departement, ville):
         for inter in categories_by_super[super_cat]["intermediaires"]:
             categories_by_super[super_cat]["intermediaires"][inter].sort(key=lambda c: sort_key(c["name"]))
 
+    categories_by_super = dict(
+        sorted(
+            categories_by_super.items(),
+            key=lambda x: (x[0].name.lower() == "autres commerces", x[0].name.lower())
+        )
+    )
+
     return render(request, "members/categories_villes.html", {
         "categories_by_super": categories_by_super,
         "departement": departement,
