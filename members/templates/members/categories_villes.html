@@ -89,10 +89,13 @@
     pointer-events: none;
 }
 .inter-grid {
-    display: none;
+    display: block;
     padding-left: 12px;
     border-left: 3px solid #0a5bb4;
     margin: 16px 0 20px 0;
+}
+.inter-grid.hidden {
+    display: none;
 }
 @media (max-width: 900px) {
     .categ-ville-grid { grid-template-columns: repeat(2, 1fr); }
@@ -127,7 +130,7 @@
         </div>
 
         {% for inter, cats in data.intermediaires.items %}
-        <div class="inter-grid" id="inter-{{ inter.slug }}">
+        <div class="inter-grid hidden" id="inter-{{ inter.slug }}">
             <div class="categ-ville-grid">
                 {% for cat in cats %}
                 <a href="{% url 'by_category' departement ville cat.slug %}" class="categ-tile">
@@ -143,33 +146,15 @@
     {% endfor %}
 </main>
 
-
 <script>
 document.querySelectorAll(".categ-tile-inter").forEach(tile => {
     tile.addEventListener("click", () => {
         const slug = tile.dataset.slug;
         const grid = document.getElementById("inter-" + slug);
         if (!grid) return;
-        const isOpen = grid.style.display === "block";
-        grid.style.display = isOpen ? "none" : "block";
-    });
-});
-
-    document.addEventListener("DOMContentLoaded", () => {
-    console.log("JS chargé");
-    console.log(document.querySelectorAll(".categ-tile-inter").length, "tuiles trouvées");
-    
-    document.querySelectorAll(".categ-tile-inter").forEach(tile => {
-        tile.addEventListener("click", () => {
-            const slug = tile.dataset.slug;
-            console.log("clic sur", slug);
-            const grid = document.getElementById("inter-" + slug);
-            console.log("grid trouvée ?", grid);
-            if (!grid) return;
-            grid.style.display = grid.style.display === "block" ? "none" : "block";
-        });
+        grid.classList.toggle("hidden");
     });
 });
 </script>
-    </div>
+</div>
 {% endblock %}
