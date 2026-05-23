@@ -58,6 +58,10 @@
     border-radius: 4px;
     font-weight: bold;
     font-size: 1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: calc(100% - 24px);
 }
 .categ-tile-inter {
     cursor: pointer;
@@ -84,12 +88,6 @@
     border-left: 3px solid #0a5bb4;
     margin: 16px 0 20px 0;
 }
-.directes-label {
-    font-size: 0.85rem;
-    color: #888;
-    margin-bottom: 10px;
-    margin-top: 20px;
-}
 @media (max-width: 900px) {
     .categ-ville-grid { grid-template-columns: repeat(2, 1fr); }
 }
@@ -107,10 +105,10 @@
 
         <div class="categ-ville-grid">
             {% for inter, cats in data.intermediaires.items %}
-            <a class="categ-tile categ-tile-inter" onclick="toggleInter(event, '{{ inter.slug }}')">
+            <div class="categ-tile categ-tile-inter" onclick="toggleInter('{{ inter.slug }}')">
                 <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
                 <span>{{ inter.name }} <span class="inter-count">{{ cats|length }}</span></span>
-            </a>
+            </div>
             {% endfor %}
 
             {% for cat in data.directes %}
@@ -140,8 +138,7 @@
 </div>
 
 <script>
-function toggleInter(e, slug) {
-    e.preventDefault();
+function toggleInter(slug) {
     const grid = document.getElementById("inter-" + slug);
     grid.style.display = grid.style.display === "block" ? "none" : "block";
 }
