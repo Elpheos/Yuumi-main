@@ -168,6 +168,8 @@
     margin-bottom: 8px;
 }
 
+
+  .by_categoradresse{color:white; font-size:0.8rem; margin: 4px 8px 0;}
 /* ------------------------------------------------------------ */
 /* 🔸 Responsive */
 /* ------------------------------------------------------------ */
@@ -231,6 +233,9 @@
                         {% endif %}
 
                         <h4>{{ commerce.nom }}</h4>
+                        {% if commerce.addressemaps %}
+                            <p clas="by_categoradresse">{{ commerce.addressemaps }}</p>
+                        {% endif %}
                     </a>
                 </div>
             {% empty %}
