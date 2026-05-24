@@ -169,7 +169,12 @@
 }
 
 
-  .by_categoradresse{color:white; font-size:0.8rem; margin: 4px 8px 0;}
+  .by_category_adresse{
+    color:white; 
+    font-size:0.8rem; 
+    margin: 4px 8px 0;
+  }
+  
 /* ------------------------------------------------------------ */
 /* 🔸 Responsive */
 /* ------------------------------------------------------------ */
@@ -234,7 +239,7 @@
 
                         <h4>{{ commerce.nom }}</h4>
                         {% if commerce.addressemaps %}
-                            <p clas="by_categoradresse">{{ commerce.addressemaps }}</p>
+                            <p class="by_category_adresse">{{ commerce.addressemaps }}</p>
                         {% endif %}
                     </a>
                 </div>
