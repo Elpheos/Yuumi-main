@@ -151,48 +151,87 @@
 
 .sb-super-hd {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
-    cursor: pointer;
-    background: #fff5ee;
+    align-items: stretch;
     border-bottom: 1px solid #ffe0c7;
-    transition: background 0.15s;
-}
-
-.sb-super-hd:hover {
-    background: #ffecd6;
+    background: #fff5ee;
 }
 
 .sb-super-hd input {
     display: none;
 }
 
-.sb-super-hd > span:first-of-type {
+.sb-super-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 10px 10px 14px;
+    flex: 1;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sb-super-toggle:hover {
+    background: #ffecd6;
+}
+
+.sb-super-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    border: 2px solid #ff8b38;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.sb-super-hd.all-active .sb-super-dot {
+    background: #ff8b38;
+}
+
+.sb-super-hd.all-active .sb-super-toggle {
+    background: #ff8b38;
+}
+
+.sb-super-hd.all-active .sb-super-name {
+    color: white;
+}
+
+.sb-super-hd.all-active .sb-super-dot {
+    border-color: white;
+    background: white;
+}
+
+.sb-super-name {
     font-weight: 700;
     font-size: 14px;
     color: #cc6a00;
     flex: 1;
 }
 
-.sb-super-hd.all-active {
-    background: #ff8b38;
+.sb-super-accordion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    cursor: pointer;
+    border-left: 1px solid #ffe0c7;
+    min-width: 44px;
+    transition: background 0.15s;
 }
 
-.sb-super-hd.all-active > span:first-of-type {
-    color: white;
+.sb-super-accordion:hover {
+    background: #ffecd6;
 }
 
-.sb-super-hd.all-active .chevron {
-    color: white;
+.sb-super-hd.all-active .sb-super-accordion {
+    border-left-color: rgba(255,255,255,0.3);
 }
 
-.sb-super-hd.partial-active {
-    background: #fff5ee;
+.sb-super-hd.all-active .sb-super-accordion:hover {
+    background: #e87a2a;
 }
 
 .sb-super-hd .chevron {
-    font-size: 18px;
+    font-size: 26px;
     color: #ff8b38;
     transition: transform 0.2s;
     line-height: 1;
@@ -201,6 +240,10 @@
 
 .sb-super-hd.open .chevron {
     transform: rotate(90deg);
+}
+
+.sb-super-hd.all-active .chevron {
+    color: white;
 }
 
 .sb-super-content {
@@ -219,43 +262,87 @@
 
 .sb-inter-hd {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 14px 7px 20px;
-    cursor: pointer;
+    align-items: stretch;
     border-bottom: 1px solid #f0f0f0;
-    transition: background 0.15s;
-}
-
-.sb-inter-hd:hover {
-    background: #f0f5ff;
+    background: white;
 }
 
 .sb-inter-hd input {
     display: none;
 }
 
-.sb-inter-hd > span:first-of-type {
+.sb-inter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 8px 7px 20px;
+    flex: 1;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.sb-inter-toggle:hover {
+    background: #f0f5ff;
+}
+
+.sb-inter-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid #0a5bb4;
+    flex-shrink: 0;
+    transition: background 0.15s;
+}
+
+.sb-inter-hd.all-active .sb-inter-dot {
+    background: #0a5bb4;
+}
+
+.sb-inter-hd.all-active .sb-inter-toggle {
+    background: #0a5bb4;
+}
+
+.sb-inter-hd.all-active .sb-inter-name {
+    color: white;
+}
+
+.sb-inter-hd.all-active .sb-inter-dot {
+    border-color: white;
+    background: white;
+}
+
+.sb-inter-name {
     font-weight: 600;
     font-size: 13px;
     color: #0a5bb4;
     flex: 1;
 }
 
-.sb-inter-hd.all-active {
-    background: #0a5bb4;
+.sb-inter-accordion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+    cursor: pointer;
+    border-left: 1px solid #e8eef8;
+    min-width: 40px;
+    transition: background 0.15s;
 }
 
-.sb-inter-hd.all-active > span:first-of-type {
-    color: white;
+.sb-inter-accordion:hover {
+    background: #e8eef8;
 }
 
-.sb-inter-hd.all-active .chevron {
-    color: white;
+.sb-inter-hd.all-active .sb-inter-accordion {
+    border-left-color: rgba(255,255,255,0.3);
+}
+
+.sb-inter-hd.all-active .sb-inter-accordion:hover {
+    background: #0850a0;
 }
 
 .sb-inter-hd .chevron {
-    font-size: 16px;
+    font-size: 22px;
     color: #0a5bb4;
     transition: transform 0.2s;
     line-height: 1;
@@ -264,6 +351,10 @@
 
 .sb-inter-hd.open .chevron {
     transform: rotate(90deg);
+}
+
+.sb-inter-hd.all-active .chevron {
+    color: white;
 }
 
 .sb-inter-content {
@@ -599,21 +690,21 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ========= EVENTS COMMUNS (sidebar + overlay) ========= */
     function bindMenuEvents(container) {
 
-        // Toggle accordéon super — chevron uniquement
-        container.querySelectorAll('.sb-super-hd .chevron').forEach(chevron => {
-            chevron.addEventListener('click', e => {
+        // Accordéon super — zone droite dédiée
+        container.querySelectorAll('.sb-super-accordion').forEach(zone => {
+            zone.addEventListener('click', e => {
                 e.stopPropagation();
-                const hd = chevron.closest('.sb-super-hd');
+                const hd = zone.closest('.sb-super-hd');
                 hd.classList.toggle('open');
                 hd.nextElementSibling.classList.toggle('open');
             });
         });
 
-        // Toggle accordéon inter — chevron uniquement
-        container.querySelectorAll('.sb-inter-hd .chevron').forEach(chevron => {
-            chevron.addEventListener('click', e => {
+        // Accordéon inter — zone droite dédiée
+        container.querySelectorAll('.sb-inter-accordion').forEach(zone => {
+            zone.addEventListener('click', e => {
                 e.stopPropagation();
-                const hd = chevron.closest('.sb-inter-hd');
+                const hd = zone.closest('.sb-inter-hd');
                 hd.classList.toggle('open');
                 hd.nextElementSibling.classList.toggle('open');
             });
@@ -630,13 +721,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Clic intermédiaire (header)
-        container.querySelectorAll('.sb-inter-hd').forEach(hd => {
-            hd.addEventListener('click', e => {
-                if (e.target.closest('.chevron') || e.currentTarget !== e.target && !e.target.closest('.sb-inter-hd > span')) {
-                    // handled by accordion
-                }
-                const block = hd.closest('.sb-inter-block');
+        // Toggle inter — zone gauche dédiée
+        container.querySelectorAll('.sb-inter-toggle').forEach(toggle => {
+            toggle.addEventListener('click', e => {
+                e.stopPropagation();
+                const block = toggle.closest('.sb-inter-block');
                 const allActive = Array.from(block.querySelectorAll('.sb-cat-item')).every(c => c.classList.contains('is-active'));
                 block.querySelectorAll('.sb-cat-item').forEach(item => {
                     const slug = item.dataset.category;
@@ -648,10 +737,11 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Clic super (header)
-        container.querySelectorAll('.sb-super-hd').forEach(hd => {
-            hd.addEventListener('click', e => {
-                const block = hd.closest('.sb-super-block');
+        // Toggle super — zone gauche dédiée
+        container.querySelectorAll('.sb-super-toggle').forEach(toggle => {
+            toggle.addEventListener('click', e => {
+                e.stopPropagation();
+                const block = toggle.closest('.sb-super-block');
                 const allActive = Array.from(block.querySelectorAll('.sb-cat-item')).every(c => c.classList.contains('is-active'));
                 block.querySelectorAll('.sb-cat-item').forEach(item => {
                     const slug = item.dataset.category;
@@ -686,40 +776,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Catégories
             container.querySelectorAll('.sb-cat-item').forEach(item => {
-                const slug = item.dataset.category;
-                const cb = item.querySelector('.cb-cat');
-                const active = activeCategories.has(slug);
-                if (cb) cb.checked = active;
-                item.classList.toggle('is-active', active);
+                item.classList.toggle('is-active', activeCategories.has(item.dataset.category));
             });
 
             // Intermédiaires
             container.querySelectorAll('.sb-inter-hd').forEach(hd => {
-                const block = hd.closest('.sb-inter-block');
-                const cats = block.querySelectorAll('.sb-cat-item');
+                const cats = hd.closest('.sb-inter-block').querySelectorAll('.sb-cat-item');
                 const allActive = Array.from(cats).every(c => c.classList.contains('is-active'));
                 hd.classList.toggle('all-active', allActive);
-                const cb = hd.querySelector('.cb-inter');
-                if (cb) { cb.checked = allActive; cb.indeterminate = !allActive && Array.from(cats).some(c => c.classList.contains('is-active')); }
             });
 
             // Super
             container.querySelectorAll('.sb-super-hd').forEach(hd => {
-                const block = hd.closest('.sb-super-block');
-                const cats = block.querySelectorAll('.sb-cat-item');
+                const cats = hd.closest('.sb-super-block').querySelectorAll('.sb-cat-item');
                 const allActive = Array.from(cats).every(c => c.classList.contains('is-active'));
                 hd.classList.toggle('all-active', allActive);
-                const cb = hd.querySelector('.cb-super');
-                if (cb) { cb.checked = allActive; cb.indeterminate = !allActive && Array.from(cats).some(c => c.classList.contains('is-active')); }
             });
 
             // Tous
             const allActive = activeCategories.size === categoriesRaw.length;
             const allLabel = container.querySelector('.sb-label');
             if (allLabel) allLabel.classList.toggle('is-active', allActive);
-            container.querySelectorAll('input[data-category="all"]').forEach(cb => {
-                cb.checked = allActive;
-            });
         });
     }
 
