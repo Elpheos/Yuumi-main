@@ -91,13 +91,14 @@
 
 /* ===== SIDEBAR PC ===== */
 .map-sidebar {
-    width: 240px;
+    width: 260px;
     flex-shrink: 0;
     background: white;
-    border-right: 1px solid #e5e5e5;
+    border-right: 2px solid #ff8b38;
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.06);
 }
 
 .sidebar-header {
@@ -115,9 +116,9 @@
 }
 
 .sidebar-all {
-    padding: 6px 14px 8px;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 4px;
+    padding: 10px 14px 12px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 0;
 }
 
 .sb-label {
@@ -126,13 +127,14 @@
     gap: 8px;
     cursor: pointer;
     font-size: 14px;
+    font-weight: 600;
     color: #333;
     user-select: none;
 }
 
 .sb-label input {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     accent-color: #ff8b38;
     flex-shrink: 0;
 }
@@ -145,34 +147,37 @@
 .sb-super-hd {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
+    gap: 8px;
+    padding: 10px 14px;
     cursor: pointer;
-    background: #fafafa;
-    border-bottom: 1px solid #f0f0f0;
+    background: #fff5ee;
+    border-bottom: 1px solid #ffe0c7;
 }
 
 .sb-super-hd:hover {
-    background: #f5f5f5;
+    background: #ffecd6;
 }
 
 .sb-super-hd input {
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     accent-color: #ff8b38;
+    flex-shrink: 0;
 }
 
 .sb-super-hd span {
-    font-weight: 600;
+    font-weight: 700;
     font-size: 14px;
-    color: #ff8b38;
+    color: #cc6a00;
     flex: 1;
 }
 
 .sb-super-hd .chevron {
-    font-size: 11px;
-    color: #aaa;
+    font-size: 18px;
+    color: #ff8b38;
     transition: transform 0.2s;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
 .sb-super-hd.open .chevron {
@@ -196,32 +201,36 @@
 .sb-inter-hd {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 5px 14px 5px 24px;
+    gap: 8px;
+    padding: 7px 14px 7px 20px;
     cursor: pointer;
+    border-bottom: 1px solid #f0f0f0;
 }
 
 .sb-inter-hd:hover {
-    background: #f5f5f5;
+    background: #f0f5ff;
 }
 
 .sb-inter-hd input {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     accent-color: #0a5bb4;
+    flex-shrink: 0;
 }
 
 .sb-inter-hd span {
-    font-weight: 500;
+    font-weight: 600;
     font-size: 13px;
     color: #0a5bb4;
     flex: 1;
 }
 
 .sb-inter-hd .chevron {
-    font-size: 10px;
-    color: #aaa;
+    font-size: 16px;
+    color: #0a5bb4;
     transition: transform 0.2s;
+    line-height: 1;
+    flex-shrink: 0;
 }
 
 .sb-inter-hd.open .chevron {
@@ -241,25 +250,28 @@
 .sb-cat-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 14px 4px 34px;
+    gap: 8px;
+    padding: 6px 14px 6px 32px;
     cursor: pointer;
     font-size: 13px;
-    color: #555;
+    color: #444;
+    border-bottom: 1px solid #f8f8f8;
 }
 
 .sb-cat-item.direct {
-    padding-left: 24px;
+    padding-left: 20px;
 }
 
 .sb-cat-item:hover {
-    background: #fafafa;
+    background: #fffaf5;
+    color: #ff8b38;
 }
 
 .sb-cat-item input {
-    width: 13px;
-    height: 13px;
+    width: 14px;
+    height: 14px;
     accent-color: #ff8b38;
+    flex-shrink: 0;
 }
 
 /* ===== CARTE ===== */
@@ -277,7 +289,7 @@
 .map-mobile-filter-btn {
     display: none;
     position: absolute;
-    bottom: 24px;
+    bottom: 28px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
@@ -285,13 +297,14 @@
     color: white;
     border: none;
     border-radius: 100px;
-    padding: 10px 22px;
-    font-size: 14px;
-    font-weight: 600;
+    padding: 12px 26px;
+    font-size: 15px;
+    font-weight: 700;
     cursor: pointer;
     align-items: center;
     gap: 8px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    box-shadow: 0 6px 20px rgba(255,139,56,0.45);
+    letter-spacing: 0.3px;
 }
 
 .mobile-filter-badge {
@@ -395,11 +408,11 @@
     #map { height: 100dvh; }
 
     /* overlay reprend les styles sidebar */
-    .map-mobile-overlay .sb-super-hd { padding: 10px 16px; }
+    .map-mobile-overlay .sb-super-hd { padding: 12px 16px; }
     .map-mobile-overlay .sb-super-hd span { font-size: 15px; }
-    .map-mobile-overlay .sb-inter-hd { padding: 8px 16px 8px 28px; }
+    .map-mobile-overlay .sb-inter-hd { padding: 10px 16px 10px 26px; }
     .map-mobile-overlay .sb-inter-hd span { font-size: 14px; }
-    .map-mobile-overlay .sb-cat-item { padding: 7px 16px 7px 40px; font-size: 14px; }
+    .map-mobile-overlay .sb-cat-item { padding: 9px 16px 9px 42px; font-size: 14px; }
     .map-mobile-overlay .sb-cat-item.direct { padding-left: 28px; }
     .map-mobile-overlay .sb-label { font-size: 15px; }
 
@@ -516,7 +529,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div class="sb-super-hd open" data-super="${superSlug}">
                     <input type="checkbox" class="cb-super" data-super="${superSlug}" checked>
                     <span>${superName}</span>
-                    <span class="chevron">▶</span>
+                    <span class="chevron">›</span>
                 </div>
                 <div class="sb-super-content open">
             `;
@@ -527,7 +540,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     <div class="sb-inter-hd open" data-inter="${interSlug}">
                         <input type="checkbox" class="cb-inter" data-inter="${interSlug}" checked>
                         <span>${interName}</span>
-                        <span class="chevron">▶</span>
+                        <span class="chevron">›</span>
                     </div>
                     <div class="sb-inter-content open">
                 `;
