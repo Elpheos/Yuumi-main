@@ -21,15 +21,10 @@
 
         <!-- ===== SIDEBAR PC ===== -->
         <div class="map-sidebar" id="map-sidebar">
-            <div class="sidebar-header">
-                <span>Filtres</span>
-            </div>
+            <div class="sidebar-header">Filtres</div>
             <div class="sidebar-scroll">
                 <div class="sidebar-all">
-                    <label class="sb-label">
-                        <input type="checkbox" data-category="all" id="cb-all" checked>
-                        <span>Tous</span>
-                    </label>
+                    <button class="sb-tous-btn" id="btn-tous-sidebar">Tous</button>
                 </div>
                 <div id="sidebar-groups"></div>
             </div>
@@ -38,8 +33,6 @@
         <!-- ===== CARTE ===== -->
         <div class="map-wrapper">
             <div id="map"></div>
-
-            <!-- Bouton mobile flottant -->
             <button class="map-mobile-filter-btn" id="mobile-filter-btn">
                 <svg style="width:16px;height:16px;fill:white" viewBox="0 0 512 512"><path d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm-32-44.7c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 192c-17.7 0-32 14.3-32 32s14.3 32 32 32l109.3 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 256c17.7 0 32-14.3 32-32s-14.3-32-32-32l-192 0z"/></svg>
                 Filtres
@@ -57,10 +50,7 @@
         </div>
         <div class="overlay-body">
             <div class="overlay-all">
-                <label class="sb-label">
-                    <input type="checkbox" data-category="all" id="cb-all-mobile" checked>
-                    <span>Tous</span>
-                </label>
+                <button class="sb-tous-btn" id="btn-tous-overlay">Tous</button>
             </div>
             <div id="overlay-groups"></div>
         </div>
@@ -78,479 +68,133 @@
 
 {% block extra_js %}
 <style>
-#page-container-map {
-    padding-left: 0;
-    padding-right: 0;
-}
+#page-container-map { padding-left:0; padding-right:0; }
 
-/* ===== LAYOUT ===== */
-.map-layout {
-    display: flex;
-    height: calc(100vh - 80px);
-}
+.map-layout { display:flex; height:calc(100vh - 80px); }
 
-/* ===== SIDEBAR PC ===== */
-.map-sidebar {
-    width: 260px;
-    flex-shrink: 0;
-    background: white;
-    border-right: 2px solid #ff8b38;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 2px 0 8px rgba(0,0,0,0.06);
-}
+.map-sidebar { width:260px; flex-shrink:0; background:white; border-right:2px solid #ff8b38; display:flex; flex-direction:column; overflow:hidden; box-shadow:2px 0 8px rgba(0,0,0,0.06); }
 
-.sidebar-header {
-    background: #ff8b38;
-    color: white;
-    font-weight: 600;
-    padding: 12px 16px;
-    font-size: 15px;
-}
+.sidebar-header { background:#ff8b38; color:white; font-weight:600; padding:12px 16px; font-size:15px; }
 
-.sidebar-scroll {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 0;
-}
+.sidebar-scroll { flex:1; overflow-y:auto; padding:8px 0; }
 
-.sidebar-all {
-    padding: 0;
-    border-bottom: 0;
-    margin-bottom: 0;
-}
-
-.sb-label {
-    display: none;
-}
-
-/* Super catégorie */
-.sb-super-block {
-    margin-bottom: 2px;
-}
-
-.sb-super-hd {
-    display: flex;
-    align-items: stretch;
-    border-bottom: 1px solid #ffe0c7;
-    background: #fff5ee;
-}
-
-.sb-super-hd input {
-    display: none;
-}
-
-.sb-super-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 10px 10px 14px;
-    flex: 1;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-
-.sb-super-toggle:hover {
-    background: #ffecd6;
-}
-
-.sb-super-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 2px solid #ff8b38;
-    flex-shrink: 0;
-    transition: background 0.15s;
-}
-
-.sb-super-hd.all-active .sb-super-dot {
-    background: #ff8b38;
-}
-
-.sb-super-hd.all-active .sb-super-toggle {
-    background: #ff8b38;
-}
-
-.sb-super-hd.all-active .sb-super-name {
-    color: white;
-}
-
-.sb-super-hd.all-active .sb-super-dot {
-    border-color: white;
-    background: white;
-}
-
-.sb-super-name {
-    font-weight: 700;
-    font-size: 14px;
-    color: #cc6a00;
-    flex: 1;
-}
-
-.sb-super-accordion {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 14px;
-    cursor: pointer;
-    border-left: 1px solid #ffe0c7;
-    min-width: 44px;
-    transition: background 0.15s;
-}
-
-.sb-super-accordion:hover {
-    background: #ffecd6;
-}
-
-.sb-super-hd.all-active .sb-super-accordion {
-    border-left-color: rgba(255,255,255,0.3);
-}
-
-.sb-super-hd.all-active .sb-super-accordion:hover {
-    background: #e87a2a;
-}
-
-.sb-super-hd .chevron {
-    font-size: 26px;
-    color: #ff8b38;
-    transition: transform 0.2s;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
-.sb-super-hd.open .chevron {
-    transform: rotate(90deg);
-}
-
-.sb-super-hd.all-active .chevron {
-    color: white;
-}
-
-.sb-super-content {
-    display: none;
-    padding: 4px 0;
-}
-
-.sb-super-content.open {
-    display: block;
-}
-
-/* Catégorie intermédiaire */
-.sb-inter-block {
-    margin: 2px 0;
-}
-
-.sb-inter-hd {
-    display: flex;
-    align-items: stretch;
-    border-bottom: 1px solid #f0f0f0;
-    background: white;
-}
-
-.sb-inter-hd input {
-    display: none;
-}
-
-.sb-inter-toggle {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 8px 7px 20px;
-    flex: 1;
-    cursor: pointer;
-    transition: background 0.15s;
-}
-
-.sb-inter-toggle:hover {
-    background: #f0f5ff;
-}
-
-.sb-inter-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 2px solid #0a5bb4;
-    flex-shrink: 0;
-    transition: background 0.15s;
-}
-
-.sb-inter-hd.all-active .sb-inter-dot {
-    background: #0a5bb4;
-}
-
-.sb-inter-hd.all-active .sb-inter-toggle {
-    background: #0a5bb4;
-}
-
-.sb-inter-hd.all-active .sb-inter-name {
-    color: white;
-}
-
-.sb-inter-hd.all-active .sb-inter-dot {
-    border-color: white;
-    background: white;
-}
-
-.sb-inter-name {
-    font-weight: 600;
-    font-size: 13px;
-    color: #0a5bb4;
-    flex: 1;
-}
-
-.sb-inter-accordion {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 12px;
-    cursor: pointer;
-    border-left: 1px solid #e8eef8;
-    min-width: 40px;
-    transition: background 0.15s;
-}
-
-.sb-inter-accordion:hover {
-    background: #e8eef8;
-}
-
-.sb-inter-hd.all-active .sb-inter-accordion {
-    border-left-color: rgba(255,255,255,0.3);
-}
-
-.sb-inter-hd.all-active .sb-inter-accordion:hover {
-    background: #0850a0;
-}
-
-.sb-inter-hd .chevron {
-    font-size: 22px;
-    color: #0a5bb4;
-    transition: transform 0.2s;
-    line-height: 1;
-    flex-shrink: 0;
-}
-
-.sb-inter-hd.open .chevron {
-    transform: rotate(90deg);
-}
-
-.sb-inter-hd.all-active .chevron {
-    color: white;
-}
-
-.sb-inter-content {
-    display: none;
-    padding: 2px 0 4px;
-}
-
-.sb-inter-content.open {
-    display: block;
-}
-
-/* Catégorie directe */
-.sb-cats-pills {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    padding: 6px 10px 8px 14px;
-}
-
-.sb-cats-pills.inter-pills {
-    padding-left: 20px;
-}
-
-.sb-cat-item {
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 11px;
-    border-radius: 100px;
-    font-size: 12px;
-    border: 1.5px solid #ff8b38;
-    color: #ff8b38;
-    background: white;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.15s, color 0.15s;
-    user-select: none;
-}
-
-.sb-cat-item:hover {
-    background: #fff0e6;
-}
-
-.sb-cat-item.is-active {
-    background: #ff8b38;
-    color: white;
-}
-
-.sb-cat-item.is-active:hover {
-    background: #e87a2a;
-    color: white;
-}
+.sidebar-all { padding:0; }
 
 /* Bouton Tous */
-.sb-tous-btn {
-    display: inline-flex;
-    align-items: center;
-    padding: 5px 14px;
-    border-radius: 100px;
-    font-size: 13px;
-    font-weight: 700;
-    border: 2px solid #ff8b38;
-    background: #ff8b38;
-    color: white;
-    cursor: pointer;
-    margin: 8px 14px 10px;
-    transition: background 0.15s;
-    user-select: none;
-}
+.sb-tous-btn { display:inline-flex; align-items:center; padding:5px 16px; border-radius:100px; font-size:13px; font-weight:700; border:2px solid #ff8b38; background:#ff8b38; color:white; cursor:pointer; margin:8px 14px 10px; transition:background 0.15s; user-select:none; }
+.sb-tous-btn.is-inactive { background:white; color:#ff8b38; }
 
-.sb-tous-btn.is-inactive {
-    background: white;
-    color: #ff8b38;
-}
+/* Super catégorie */
+.sb-super-block { margin-bottom:2px; }
 
-/* ===== CARTE ===== */
-.map-wrapper {
-    flex: 1;
-    position: relative;
-}
+.sb-super-hd { display:flex; align-items:stretch; border-bottom:1px solid #ffe0c7; background:#fff5ee; }
 
-#map {
-    width: 100%;
-    height: 100%;
-}
+.sb-super-toggle { display:flex; align-items:center; gap:8px; padding:10px 10px 10px 14px; flex:1; cursor:pointer; transition:background 0.15s; }
+.sb-super-toggle:hover { background:#ffecd6; }
 
-/* ===== BOUTON MOBILE ===== */
-.map-mobile-filter-btn {
-    display: none;
-    position: absolute;
-    bottom: 28px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    background: #ff8b38;
-    color: white;
-    border: none;
-    border-radius: 100px;
-    padding: 12px 26px;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 0 6px 20px rgba(255,139,56,0.45);
-    letter-spacing: 0.3px;
-}
+.sb-super-dot { width:10px; height:10px; border-radius:50%; border:2px solid #ff8b38; flex-shrink:0; transition:background 0.15s; }
 
-.mobile-filter-badge {
-    background: white;
-    color: #ff8b38;
-    border-radius: 100px;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 1px 6px;
-}
+.sb-super-name { font-weight:700; font-size:14px; color:#cc6a00; flex:1; }
 
-/* ===== OVERLAY MOBILE ===== */
-.map-mobile-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 10020;
-    background: white;
-    flex-direction: column;
-}
+.sb-super-hd.all-active .sb-super-toggle { background:#ff8b38; }
+.sb-super-hd.all-active .sb-super-name { color:white; }
+.sb-super-hd.all-active .sb-super-dot { border-color:white; background:white; }
 
-.map-mobile-overlay.open {
-    display: flex;
-}
+.sb-super-accordion { display:flex; align-items:center; justify-content:center; padding:0 14px; cursor:pointer; border-left:1px solid #ffe0c7; min-width:44px; transition:background 0.15s; }
+.sb-super-accordion:hover { background:#ffecd6; }
+.sb-super-hd.all-active .sb-super-accordion { border-left-color:rgba(255,255,255,0.3); }
+.sb-super-hd.all-active .sb-super-accordion:hover { background:#e87a2a; }
 
-.overlay-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 16px;
-    background: #ff8b38;
-    color: white;
-    font-weight: 600;
-    font-size: 16px;
-}
+.sb-super-hd .chevron { font-size:26px; color:#ff8b38; transition:transform 0.2s; line-height:1; }
+.sb-super-hd.open .chevron { transform:rotate(90deg); }
+.sb-super-hd.all-active .chevron { color:white; }
 
-.overlay-close {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 22px;
-    cursor: pointer;
-    line-height: 1;
-}
+.sb-super-content { display:none; padding:4px 0; }
+.sb-super-content.open { display:block; }
 
-.overlay-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 0;
-    -webkit-overflow-scrolling: touch;
-}
+/* Catégorie intermédiaire */
+.sb-inter-block { margin:2px 0; }
 
-.overlay-all {
-    padding: 4px 0 0;
-    border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 4px;
-}
+.sb-inter-hd { display:flex; align-items:stretch; border-bottom:1px solid #f0f0f0; background:white; }
 
-.overlay-footer {
-    padding: 12px 16px;
-    border-top: 1px solid #f0f0f0;
-}
+.sb-inter-toggle { display:flex; align-items:center; gap:8px; padding:7px 8px 7px 20px; flex:1; cursor:pointer; transition:background 0.15s; }
+.sb-inter-toggle:hover { background:#f0f5ff; }
 
-.overlay-apply {
-    width: 100%;
-    background: #ff8b38;
-    color: white;
-    border: none;
-    border-radius: 10px;
-    padding: 14px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-}
+.sb-inter-dot { width:8px; height:8px; border-radius:50%; border:2px solid #0a5bb4; flex-shrink:0; }
+.sb-inter-name { font-weight:600; font-size:13px; color:#0a5bb4; flex:1; }
 
-/* ===== POPUP ===== */
-.leaflet-popup.yuumi-popup { max-width: 380px !important; }
-.leaflet-popup-content-wrapper.yuumi-popup { border-radius: 12px; padding: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
-.leaflet-popup-content { margin: 8px !important; width: auto !important; }
-.yuumi-popup .leaflet-popup-close-button { width: 24px !important; height: 24px !important; background: #ff8b38 !important; color: white !important; border-radius: 50% !important; font-size: 16px !important; line-height: 24px !important; text-align: center !important; top: -10px !important; right: -10px !important; padding: 0 !important; }
-.popup-content { width: 200px; }
-.popup-content a { text-decoration: none; color: #ff8b38; display: block; }
-.yuumi-popup-h3 { color: #ff8b38; font-size: 16px; text-align: center; margin: 0 0 6px; }
-.yuumi-popup-h3 span { font-size: 13px; color: #555; font-weight: normal; }
-.yuumi-popup-img { border: 3px solid #ff8b38; border-radius: 10px; max-width: 100%; height: 140px; object-fit: cover; display: block; margin: 8px auto 0; box-sizing: border-box; }
+.sb-inter-hd.all-active .sb-inter-toggle { background:#0a5bb4; }
+.sb-inter-hd.all-active .sb-inter-name { color:white; }
+.sb-inter-hd.all-active .sb-inter-dot { border-color:white; background:white; }
 
-/* Clusters */
-.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: #ff8b38; }
-.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(255,139,56,0.3); }
-.leaflet-overlay-pane svg path { display: none; }
+.sb-inter-accordion { display:flex; align-items:center; justify-content:center; padding:0 12px; cursor:pointer; border-left:1px solid #e8eef8; min-width:40px; transition:background 0.15s; }
+.sb-inter-accordion:hover { background:#e8eef8; }
+.sb-inter-hd.all-active .sb-inter-accordion { border-left-color:rgba(255,255,255,0.3); }
+.sb-inter-hd.all-active .sb-inter-accordion:hover { background:#0850a0; }
 
-/* ===== MOBILE ===== */
+.sb-inter-hd .chevron { font-size:22px; color:#0a5bb4; transition:transform 0.2s; line-height:1; }
+.sb-inter-hd.open .chevron { transform:rotate(90deg); }
+.sb-inter-hd.all-active .chevron { color:white; }
+
+.sb-inter-content { display:none; padding:2px 0 4px; }
+.sb-inter-content.open { display:block; }
+
+/* Pills catégories */
+.sb-cats-pills { display:flex; flex-wrap:wrap; gap:5px; padding:6px 10px 8px 14px; }
+.sb-cats-pills.inter-pills { padding-left:20px; }
+
+.sb-cat-item { display:inline-flex; align-items:center; padding:4px 11px; border-radius:100px; font-size:12px; border:1.5px solid #ff8b38; color:#ff8b38; background:white; cursor:pointer; white-space:nowrap; transition:background 0.15s, color 0.15s; user-select:none; }
+.sb-cat-item:hover { background:#fff0e6; }
+.sb-cat-item.is-active { background:#ff8b38; color:white; }
+.sb-cat-item.is-active:hover { background:#e87a2a; color:white; }
+
+/* Carte */
+.map-wrapper { flex:1; position:relative; }
+#map { width:100%; height:100%; }
+
+/* Bouton mobile */
+.map-mobile-filter-btn { display:none; position:absolute; bottom:28px; left:50%; transform:translateX(-50%); z-index:1000; background:#ff8b38; color:white; border:none; border-radius:100px; padding:12px 26px; font-size:15px; font-weight:700; cursor:pointer; align-items:center; gap:8px; box-shadow:0 6px 20px rgba(255,139,56,0.45); }
+.mobile-filter-badge { background:white; color:#ff8b38; border-radius:100px; font-size:11px; font-weight:700; padding:1px 6px; }
+
+/* Overlay mobile */
+.map-mobile-overlay { display:none; position:fixed; inset:0; z-index:10020; background:white; flex-direction:column; }
+.map-mobile-overlay.open { display:flex; }
+.overlay-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:#ff8b38; color:white; font-weight:600; font-size:16px; }
+.overlay-close { background:none; border:none; color:white; font-size:22px; cursor:pointer; line-height:1; }
+.overlay-body { flex:1; overflow-y:auto; padding:8px 0; -webkit-overflow-scrolling:touch; }
+.overlay-all { padding:0; border-bottom:1px solid #f0f0f0; margin-bottom:4px; }
+.overlay-footer { padding:12px 16px; border-top:1px solid #f0f0f0; }
+.overlay-apply { width:100%; background:#ff8b38; color:white; border:none; border-radius:10px; padding:14px; font-size:15px; font-weight:600; cursor:pointer; }
+
+/* Popup */
+.leaflet-popup.yuumi-popup { max-width:380px !important; }
+.leaflet-popup-content-wrapper.yuumi-popup { border-radius:12px; padding:8px; box-shadow:0 6px 20px rgba(0,0,0,0.12); }
+.leaflet-popup-content { margin:8px !important; width:auto !important; }
+.yuumi-popup .leaflet-popup-close-button { width:24px !important; height:24px !important; background:#ff8b38 !important; color:white !important; border-radius:50% !important; font-size:16px !important; line-height:24px !important; text-align:center !important; top:-10px !important; right:-10px !important; padding:0 !important; }
+.popup-content { width:200px; }
+.popup-content a { text-decoration:none; color:#ff8b38; display:block; }
+.yuumi-popup-h3 { color:#ff8b38; font-size:16px; text-align:center; margin:0 0 6px; }
+.yuumi-popup-h3 span { font-size:13px; color:#555; font-weight:normal; }
+.yuumi-popup-img { border:3px solid #ff8b38; border-radius:10px; max-width:100%; height:140px; object-fit:cover; display:block; margin:8px auto 0; box-sizing:border-box; }
+
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color:#ff8b38; }
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color:rgba(255,139,56,0.3); }
+.leaflet-overlay-pane svg path { display:none; }
+
 @media (max-width: 767px) {
-    .map-layout { height: 100dvh; }
-    .map-sidebar { display: none; }
-    .map-mobile-filter-btn { display: flex; }
-    #map { height: 100dvh; }
-
-    /* overlay reprend les styles sidebar */
-    .map-mobile-overlay .sb-super-hd { }
-    .map-mobile-overlay .sb-super-name { font-size: 15px; }
-    .map-mobile-overlay .sb-inter-name { font-size: 14px; }
-    .map-mobile-overlay .sb-cats-pills { padding: 8px 14px 10px 16px; gap: 7px; }
-    .map-mobile-overlay .sb-cats-pills.inter-pills { padding-left: 26px; }
-    .map-mobile-overlay .sb-cat-item { font-size: 13px; padding: 6px 14px; }
-
-    .leaflet-popup-content-wrapper { max-width: 72vw !important; }
-    .popup-content { width: 40vw; }
-    .yuumi-popup-img { width: 100%; height: 110px; object-fit: cover; }
-    .yuumi-popup-h3 { font-size: 13px; }
+    .map-layout { height:100dvh; }
+    .map-sidebar { display:none; }
+    .map-mobile-filter-btn { display:flex; }
+    #map { height:100dvh; }
+    .map-mobile-overlay .sb-super-name { font-size:15px; }
+    .map-mobile-overlay .sb-inter-name { font-size:14px; }
+    .map-mobile-overlay .sb-cats-pills { padding:8px 14px 10px 16px; gap:7px; }
+    .map-mobile-overlay .sb-cats-pills.inter-pills { padding-left:26px; }
+    .map-mobile-overlay .sb-cat-item { font-size:13px; padding:6px 14px; }
+    .leaflet-popup-content-wrapper { max-width:72vw !important; }
+    .popup-content { width:40vw; }
+    .yuumi-popup-img { width:100%; height:110px; object-fit:cover; }
+    .yuumi-popup-h3 { font-size:13px; }
 }
 </style>
 
@@ -570,8 +214,9 @@ document.addEventListener("DOMContentLoaded", function () {
         maxClusterRadius: 0,
         spiderfyOnMaxZoom: true,
         showCoverageOnHover: false,
-        animateAddingMarkers: true,
+        animateAddingMarkers: false,
         zoomToBoundsOnClick: true,
+        removeOutsideVisibleBounds: false,
     });
 
     /* ========= GROUPEMENT 3 NIVEAUX ========= */
@@ -626,74 +271,75 @@ document.addEventListener("DOMContentLoaded", function () {
 
     leafletMap.addLayer(clusterGroup);
 
-    /* ========= STATE DES FILTRES ========= */
+    /* ========= STATE ========= */
     const activeCategories = new Set(categoriesRaw.map(c => c.slug));
 
     function updateMap() {
         clusterGroup.clearLayers();
-        const toAdd = markers.filter(m => activeCategories.has(m.category));
-        clusterGroup.addLayers(toAdd);
+        clusterGroup.addLayers(markers.filter(m => activeCategories.has(m.category)));
         updateBadge();
     }
 
     function updateBadge() {
-        const total = categoriesRaw.length;
-        const active = activeCategories.size;
         const badge = document.getElementById('mobile-filter-badge');
-        if (active < total) {
-            badge.textContent = active;
-            badge.style.display = 'inline';
-        } else {
-            badge.style.display = 'none';
-        }
+        const active = activeCategories.size;
+        const total = categoriesRaw.length;
+        if (active < total) { badge.textContent = active; badge.style.display = 'inline'; }
+        else { badge.style.display = 'none'; }
     }
 
-    /* ========= CONSTRUCTION HTML DU MENU ========= */
-    function buildMenuHTML(containerClass) {
+    /* ========= BUILD MENU HTML ========= */
+    function buildMenuHTML() {
         let html = '';
         Object.entries(grouped).forEach(([superName, data]) => {
-            const hasInter = Object.keys(data.inter).length > 0;
-            const superSlug = superName.toLowerCase().replace(/\s+/g, '-');
-            html += `
-            <div class="sb-super-block">
-                <div class="sb-super-hd open" data-super="${superSlug}">
-                    <input type="checkbox" class="cb-super" data-super="${superSlug}" checked>
-                    <span>${superName}</span>
-                    <span class="chevron">›</span>
+            const superSlug = superName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            html += `<div class="sb-super-block">
+                <div class="sb-super-hd open all-active" data-super="${superSlug}">
+                    <div class="sb-super-toggle">
+                        <span class="sb-super-dot"></span>
+                        <span class="sb-super-name">${superName}</span>
+                    </div>
+                    <div class="sb-super-accordion"><span class="chevron">›</span></div>
                 </div>
-                <div class="sb-super-content open">
-            `;
+                <div class="sb-super-content open">`;
+
             Object.entries(data.inter).forEach(([interName, cats]) => {
-                const interSlug = interName.toLowerCase().replace(/\s+/g, '-');
-                html += `
-                <div class="sb-inter-block">
-                    <div class="sb-inter-hd open" data-inter="${interSlug}">
-                        <input type="checkbox" class="cb-inter" data-inter="${interSlug}" checked>
-                        <span>${interName}</span>
-                        <span class="chevron">›</span>
+                const interSlug = interName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+                html += `<div class="sb-inter-block">
+                    <div class="sb-inter-hd open all-active" data-inter="${interSlug}">
+                        <div class="sb-inter-toggle">
+                            <span class="sb-inter-dot"></span>
+                            <span class="sb-inter-name">${interName}</span>
+                        </div>
+                        <div class="sb-inter-accordion"><span class="chevron">›</span></div>
                     </div>
                     <div class="sb-inter-content open">
-                `;
+                        <div class="sb-cats-pills inter-pills">`;
                 cats.forEach(cat => {
-                    html += `<div class="sb-cat-item" data-category="${cat.slug}"><input type="checkbox" class="cb-cat" data-category="${cat.slug}" checked><span>${cat.name}</span></div>`;
+                    html += `<div class="sb-cat-item is-active" data-category="${cat.slug}">${cat.name}</div>`;
                 });
-                html += `</div></div>`;
+                html += `</div></div></div>`;
             });
-            data.direct.forEach(cat => {
-                html += `<div class="sb-cat-item direct" data-category="${cat.slug}"><input type="checkbox" class="cb-cat" data-category="${cat.slug}" checked><span>${cat.name}</span></div>`;
-            });
+
+            if (data.direct.length > 0) {
+                html += `<div class="sb-cats-pills">`;
+                data.direct.forEach(cat => {
+                    html += `<div class="sb-cat-item is-active" data-category="${cat.slug}">${cat.name}</div>`;
+                });
+                html += `</div>`;
+            }
             html += `</div></div>`;
         });
         return html;
     }
 
-    document.getElementById('sidebar-groups').innerHTML = buildMenuHTML('sidebar');
-    document.getElementById('overlay-groups').innerHTML = buildMenuHTML('overlay');
+    const menuHTML = buildMenuHTML();
+    document.getElementById('sidebar-groups').innerHTML = menuHTML;
+    document.getElementById('overlay-groups').innerHTML = menuHTML;
 
-    /* ========= EVENTS COMMUNS (sidebar + overlay) ========= */
+    /* ========= EVENTS ========= */
     function bindMenuEvents(container) {
 
-        // Accordéon super — zone droite dédiée
         container.querySelectorAll('.sb-super-accordion').forEach(zone => {
             zone.addEventListener('click', e => {
                 e.stopPropagation();
@@ -703,7 +349,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Accordéon inter — zone droite dédiée
         container.querySelectorAll('.sb-inter-accordion').forEach(zone => {
             zone.addEventListener('click', e => {
                 e.stopPropagation();
@@ -713,100 +358,83 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Clic catégorie
         container.querySelectorAll('.sb-cat-item').forEach(item => {
             item.addEventListener('click', () => {
                 const slug = item.dataset.category;
                 if (activeCategories.has(slug)) activeCategories.delete(slug);
                 else activeCategories.add(slug);
-                syncAllCheckboxes();
+                syncAll();
                 updateMap();
             });
         });
 
-        // Toggle inter — zone gauche dédiée
         container.querySelectorAll('.sb-inter-toggle').forEach(toggle => {
-            toggle.addEventListener('click', e => {
-                e.stopPropagation();
+            toggle.addEventListener('click', () => {
                 const block = toggle.closest('.sb-inter-block');
-                const allActive = Array.from(block.querySelectorAll('.sb-cat-item')).every(c => c.classList.contains('is-active'));
-                block.querySelectorAll('.sb-cat-item').forEach(item => {
-                    const slug = item.dataset.category;
-                    if (allActive) activeCategories.delete(slug);
-                    else activeCategories.add(slug);
+                const cats = block.querySelectorAll('.sb-cat-item');
+                const allActive = Array.from(cats).every(c => c.classList.contains('is-active'));
+                cats.forEach(item => {
+                    if (allActive) activeCategories.delete(item.dataset.category);
+                    else activeCategories.add(item.dataset.category);
                 });
-                syncAllCheckboxes();
+                syncAll();
                 updateMap();
             });
         });
 
-        // Toggle super — zone gauche dédiée
         container.querySelectorAll('.sb-super-toggle').forEach(toggle => {
-            toggle.addEventListener('click', e => {
-                e.stopPropagation();
+            toggle.addEventListener('click', () => {
                 const block = toggle.closest('.sb-super-block');
-                const allActive = Array.from(block.querySelectorAll('.sb-cat-item')).every(c => c.classList.contains('is-active'));
-                block.querySelectorAll('.sb-cat-item').forEach(item => {
-                    const slug = item.dataset.category;
-                    if (allActive) activeCategories.delete(slug);
-                    else activeCategories.add(slug);
+                const cats = block.querySelectorAll('.sb-cat-item');
+                const allActive = Array.from(cats).every(c => c.classList.contains('is-active'));
+                cats.forEach(item => {
+                    if (allActive) activeCategories.delete(item.dataset.category);
+                    else activeCategories.add(item.dataset.category);
                 });
-                syncAllCheckboxes();
+                syncAll();
                 updateMap();
             });
         });
     }
 
-    // Clic "Tous"
     document.querySelectorAll('.sb-tous-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const allActive = activeCategories.size === categoriesRaw.length;
             if (allActive) activeCategories.clear();
             else categoriesRaw.forEach(c => activeCategories.add(c.slug));
-            syncAllCheckboxes();
+            syncAll();
             updateMap();
         });
     });
 
-    /* ========= SYNC TOUTES LES CHECKBOXES ========= */
-    function syncAllCheckboxes() {
-        const allContainers = [
-            document.getElementById('map-sidebar'),
-            document.getElementById('map-mobile-overlay')
-        ];
-        allContainers.forEach(container => {
+    /* ========= SYNC ========= */
+    function syncAll() {
+        [document.getElementById('map-sidebar'), document.getElementById('map-mobile-overlay')].forEach(container => {
             if (!container) return;
 
-            // Catégories
             container.querySelectorAll('.sb-cat-item').forEach(item => {
                 item.classList.toggle('is-active', activeCategories.has(item.dataset.category));
             });
 
-            // Intermédiaires
             container.querySelectorAll('.sb-inter-hd').forEach(hd => {
                 const cats = hd.closest('.sb-inter-block').querySelectorAll('.sb-cat-item');
-                const allActive = Array.from(cats).every(c => c.classList.contains('is-active'));
-                hd.classList.toggle('all-active', allActive);
+                hd.classList.toggle('all-active', Array.from(cats).every(c => c.classList.contains('is-active')));
             });
 
-            // Super
             container.querySelectorAll('.sb-super-hd').forEach(hd => {
                 const cats = hd.closest('.sb-super-block').querySelectorAll('.sb-cat-item');
-                const allActive = Array.from(cats).every(c => c.classList.contains('is-active'));
-                hd.classList.toggle('all-active', allActive);
+                hd.classList.toggle('all-active', Array.from(cats).every(c => c.classList.contains('is-active')));
             });
 
-            // Tous
-            const allActive = activeCategories.size === categoriesRaw.length;
             const tousBtn = container.querySelector('.sb-tous-btn');
-            if (tousBtn) tousBtn.classList.toggle('is-inactive', !allActive);
+            if (tousBtn) tousBtn.classList.toggle('is-inactive', activeCategories.size !== categoriesRaw.length);
         });
     }
 
     bindMenuEvents(document.getElementById('map-sidebar'));
     bindMenuEvents(document.getElementById('map-mobile-overlay'));
 
-    /* ========= MOBILE OVERLAY ========= */
+    /* ========= OVERLAY MOBILE ========= */
     const overlay = document.getElementById('map-mobile-overlay');
     document.getElementById('mobile-filter-btn').addEventListener('click', () => {
         overlay.classList.add('open');
@@ -823,7 +451,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /* ========= INIT ========= */
     updateMap();
-    syncAllCheckboxes();
+    syncAll();
 
 });
 </script>
