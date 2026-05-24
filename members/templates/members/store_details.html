@@ -471,7 +471,13 @@
     </section>
     <!-- BLOC BAS MOBILE UNIQUEMENT -->
     <div class="mobile-bottom-actions">
-        {% if request.user == store.owner or request.user.is_superuser %}
+
+    
+        <button class="btn-suggest-modif" style="display:block;width:calc(100% - 32px);margin:6px 16px;text-align:center;box-sizing:border-box;" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
+            onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
+            Suggérer une modification
+        </button>
+              {% if request.user == store.owner or request.user.is_superuser %}
         <div class="store-modifier-commerce-container" style="margin-bottom:8px;">
             <div class="store-modifier-commerce-content-container">
                 <a href="{% url 'edit_store' store.departement store.ville store.slug %}" class="store-modifier-commerce-b">
@@ -481,12 +487,6 @@
             </div>
         </div>
         {% endif %}
-
-    
-        <button class="btn-suggest-modif" style="display:block;width:calc(100% - 32px);margin:6px 16px;text-align:center;box-sizing:border-box;" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
-            onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
-            Suggérer une modification
-        </button>
               {% if not store.owner or store.owner.is_superuser %}
         <div class="store-revendiquer-container" style="padding:8px 16px 12px;">
             <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
