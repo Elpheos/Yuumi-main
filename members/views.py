@@ -352,10 +352,12 @@ def map_view(request, departement):
                 "is_favorite": store.id in favorite_ids, 
             })
 
+   # Dans views.py, remplace la requête categories dans map_view par ceci :
+
     categories = (
         Category.objects
         .filter(stores__in=stores_qs)
-        .select_related("super_categorie")
+        .select_related("super_categorie", "categorie_intermediaire")
         .distinct()
         .values(
             "slug",
@@ -363,8 +365,10 @@ def map_view(request, departement):
             "super_categorie__slug",
             "super_categorie__name",
             "icon_perso",
+            "categorie_intermediaire__name",
+            "categorie_intermediaire__slug",
         )
-        .order_by("super_categorie__name", "name")
+        .order_by("super_categorie__name", "categorie_intermediaire__name", "name")
     )
 
     return render(request, "members/map.html", {
