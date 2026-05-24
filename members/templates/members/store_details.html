@@ -178,7 +178,11 @@
               {% if not store.owner or store.owner.is_superuser %}
         <div class="store-revendiquer-container" style="padding:8px 16px 12px;">
             <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
-            <button class="store-revendiquer-b" data-store-id="{{ store.id }}" data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}" onclick="claimStore({{ store.id }})">
+            <button class="store-revendiquer-b"
+                    id="claimButton"
+                    data-store-id="{{ store.id }}"
+                    data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+                    onclick="claimStore({{ store.id }})">
                 Prenez le contrôle de votre page
             </button>
         </div>
@@ -195,17 +199,6 @@
     {% endif %}
 {% endif %}
                     {% if est_ouvert is not None %}<small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances - Les horaires peuvent être erronés</small>{% endif %}
-                     {% if not store.owner or store.owner.is_superuser %}
-                    <div class="store-revendiquer-container desktop-only-btn">
-                        <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
-    <button class="store-revendiquer-b"
-            id="claimButton"
-            data-store-id="{{ store.id }}"
-            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
-            onclick="claimStore({{ store.id }})">
-        Prenez le contrôle de votre page
-    </button>
-                    </div>
 {% endif %}
 
                     <hr class="hr-page-commerce" />
@@ -1133,7 +1126,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .site-commerce                     { order: 8; }
     .commerce-wishlist                 { order: 9; }
     .description-secondaire            { order: 10; }
-    .description-container .store-revendiquer-container       { display: none !important; }
     .desktop-only-btn                  { display: none !important; }
 }
 </style>
