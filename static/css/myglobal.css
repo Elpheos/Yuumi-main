@@ -953,8 +953,6 @@ body.menu-open {
     scroll-snap-type: x mandatory;
     gap: 10px;
     padding-bottom: 8px;
-    padding-left: 5%;
-    padding-right: 5%;
 	scrollbar-width: none;
 }
 
