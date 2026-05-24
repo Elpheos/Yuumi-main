@@ -9,26 +9,66 @@
   "@context": "https://schema.org",
   "@type": "BreadcrumbList",
   "itemListElement": [
-    {"@type":"ListItem","position":1,"name":"Accueil","item":"{{ request.scheme }}://{{ request.get_host }}"},
-    {"@type":"ListItem","position":2,"name":"{{ store.ville }}","item":"{{ request.scheme }}://{{ request.get_host }}{% url 'stores' store.departement store.ville %}"},
-    {"@type":"ListItem","position":3,"name":"{{ store.categorie }}","item":"{{ request.scheme }}://{{ request.get_host }}{% url 'by_category' store.departement store.ville store.categorie.slug %}"},
-    {"@type":"ListItem","position":4,"name":"{{ store.nom }}"}
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Accueil",
+      "item": "{{ request.scheme }}://{{ request.get_host }}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "{{ store.ville }}",
+      "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'stores' store.departement store.ville %}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": "{{ store.categorie }}",
+      "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'by_category' store.departement store.ville store.categorie.slug %}"
+    },
+    {
+      "@type": "ListItem",
+      "position": 4,
+      "name": "{{ store.nom }}"
+    }
   ]
 }
 </script>
 <script type="application/ld+json">
+
 {
   "@context": "https://schema.org",
   "@type": "LocalBusiness",
   "name": "{{ store.nom|escapejs }}",
   "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
   "description": "{{ store.descriptionpetite|escapejs }}"
-  {% if store.phone %},"telephone": "{{ store.phone|escapejs }}"{% endif %}
-  {% if store.photo_medium %},"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo_medium.url }}"
-  {% elif store.photo %},"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}"{% endif %}
-  ,"address": {"@type":"PostalAddress","streetAddress":"{{ store.addressemaps|escapejs }}","addressLocality":"{{ store.ville|escapejs }}","addressRegion":"{{ store.departement|escapejs }}","addressCountry":"FR"}
-  {% if store.latitude and store.longitude %},"geo": {"@type":"GeoCoordinates","latitude":"{{ store.latitude }}","longitude":"{{ store.longitude }}"}{% endif %}
-  ,"openingHours": [{% for h in opening_hours %}"{{ h }}"{% if not forloop.last %},{% endif %}{% endfor %}]
+  {% if store.phone %}
+  ,"telephone": "{{ store.phone|escapejs }}"
+  {% endif %}
+  {% if store.photo_medium %}
+  ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo_medium.url }}"
+  {% elif store.photo %}
+  ,"image": "{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}"
+  {% endif %}
+  ,"address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{ store.addressemaps|escapejs }}",
+    "addressLocality": "{{ store.ville|escapejs }}",
+    "addressRegion": "{{ store.departement|escapejs }}",
+    "addressCountry": "FR"
+  }
+  {% if store.latitude and store.longitude %}
+  ,"geo": {
+    "@type": "GeoCoordinates",
+    "latitude": "{{ store.latitude }}",
+    "longitude": "{{ store.longitude }}"
+  }
+  {% endif %}
+  ,"openingHours": [
+    {% for h in opening_hours %}"{{ h }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
 }
 </script>
 {% endblock %}
@@ -38,44 +78,62 @@
 {% block og_title %}{{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }} | Yuumi{% endblock %}
 {% block og_description %}{{ store.descriptionpetite|truncatechars:155 }}{% endblock %}
 {% block og_image %}{% if store.photo_medium %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo_medium.url }}{% elif store.photo %}{{ request.scheme }}://{{ request.get_host }}{{ store.photo.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo.webp' %}{% endif %}{% endblock %}
-
 {% block content %}
 <div class="page-container" id="page-container-store-details">
-<div class="store-action-bar"></div>
+<div class="store-action-bar">
+
+</div>
 
 {% if request.user.is_authenticated and request.user != store.owner %}
 <p id="claimTimer" style="display:none; font-size:14px; margin: 0 16px 10px; color:#666;"></p>
 {% endif %}
 
+
 <main>
     <section aria-label="Informations principales du commerce">
         <div class="informations-principales-commerce-container">
 
-            <!-- CARROUSEL -->
+            <!-- 🖼️ CARROUSEL D'IMAGES -->
             <div class="photo-commerce-container">
                 <div id="carouselStoreImages" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+
+                    <!-- Points indicateurs -->
                     {% with total_images=store.images.count %}
                     {% if store.photo and total_images >= 1 or not store.photo and total_images > 1 %}
                     <div class="carousel-indicators">
-                        {% if store.photo %}<button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="0" class="active" aria-current="true"></button>{% endif %}
+                        {% if store.photo %}
+                            <button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="0" class="active" aria-current="true"></button>
+                        {% endif %}
                         {% for img in store.images.all %}
-                            <button type="button" data-bs-target="#carouselStoreImages" data-bs-slide-to="{% if store.photo %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}"></button>
+                            <button type="button"
+                                    data-bs-target="#carouselStoreImages"
+                                    data-bs-slide-to="{% if store.photo %}{{ forloop.counter }}{% else %}{{ forloop.counter0 }}{% endif %}">
+                            </button>
                         {% endfor %}
                     </div>
                     {% endif %}
                     {% endwith %}
+
+                    <!-- Conteneur des images -->
                     <div class="carousel-inner">
                         {% if store.photo %}
-                            <div class="carousel-item active"><img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}"></div>
+                            <div class="carousel-item active">
+                                <img src="{{ store.photo.url }}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
+                            </div>
                         {% else %}
-                            <div class="carousel-item active"><img src="{% static 'placeholder.png' %}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}"></div>
+                            <div class="carousel-item active">
+                                <img src="{% static 'placeholder.png' %}" class="d-block w-100 store-carousel-img" alt="Photo principale de {{ store.nom }}">
+                            </div>
                         {% endif %}
+
                         {% for img in store.images.all %}
                             <div class="carousel-item {% if not store.photo and forloop.first %}active{% endif %}">
                                 <img src="{{ img.image.url }}" class="d-block w-100 store-carousel-img" alt="Photo de {{ store.nom }} — {{ store.categorie.categorie_singulier }} à {{ store.ville }}">
                             </div>
                         {% endfor %}
                     </div>
+
+                    <!-- Boutons de navigation -->
                     {% with total_images=store.images.count %}
                     {% if store.photo and total_images >= 1 or not store.photo and total_images > 1 %}
                     <button class="carousel-control-prev" type="button" data-bs-target="#carouselStoreImages" data-bs-slide="prev">
@@ -91,47 +149,58 @@
                 </div>
             </div>
 
-            <!-- INFOS -->
+            <!-- PARTIE DROITE : infos + liens -->
             <div class="commerce-right-part-container">
                 <div class="description-container">
-                    <nav aria-label="fil d'ariane" class="breadcrumb-yuumi">
-                        <a href="{% url 'stores' store.departement store.ville %}">{{ store.ville }}</a>
-                        <span>›</span>
-                        {% if store.categorie %}
-                        <a href="{% url 'by_category' store.departement store.ville store.categorie.slug %}">{{ store.categorie.name }}</a>
-                        <span>›</span>
-                        {% endif %}
-                        <span class="breadcrumb-current">{{ store.nom }}</span>
-                    </nav>
-
+                   <nav aria-label="fil d'ariane" class="breadcrumb-yuumi">
+        <a href="{% url 'stores' store.departement store.ville %}">{{ store.ville }}</a>
+        <span>›</span>
+        {% if store.categorie %}
+        <a href="{% url 'by_category' store.departement store.ville store.categorie.slug %}">{{ store.categorie.name }}</a>
+        <span>›</span>
+        {% endif %}
+        <span class="breadcrumb-current">{{ store.nom }}</span>
+    </nav>
                     <h1>{{ store.nom }} | {{ store.ville }}</h1>
 
+                    <!-- Badge ouvert / fermé -->
                     {% if est_ouvert is not None %}
-                        {% if est_ouvert %}
-                            <span class="badge-statut badge-ouvert"><span class="badge-dot"></span> Ouvert en ce moment</span>
-                        {% else %}
-                            <span class="badge-statut badge-ferme"><span class="badge-dot"></span> Fermé en ce moment</span>
-                        {% endif %}
-                    {% endif %}
+    {% if est_ouvert %}
+        <span class="badge-statut badge-ouvert">
+            <span class="badge-dot"></span> Ouvert en ce moment
+        </span>
+    {% else %}
+        <span class="badge-statut badge-ferme">
+            <span class="badge-dot"></span> Fermé en ce moment
+        </span>
+    {% endif %}
+{% endif %}
                     {% if est_ouvert is not None %}<small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances - Les horaires peuvent être erronés</small>{% endif %}
-
-                    {% if not store.owner or store.owner.is_superuser %}
+                     {% if not store.owner or store.owner.is_superuser %}
                     <div class="store-revendiquer-container desktop-only-btn">
                         <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
-                        <button class="store-revendiquer-b" id="claimButton" data-store-id="{{ store.id }}" data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}" onclick="claimStore({{ store.id }})">Prenez le contrôle de votre page</button>
+    <button class="store-revendiquer-b"
+            id="claimButton"
+            data-store-id="{{ store.id }}"
+            data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}"
+            onclick="claimStore({{ store.id }})">
+        Prenez le contrôle de votre page
+    </button>
                     </div>
-                    {% endif %}
+{% endif %}
 
-                    {% if request.user == store.owner or request.user.is_superuser %}
+                  
+                     {% if request.user == store.owner or request.user.is_superuser %}
                     <div class="store-modifier-commerce-container desktop-only-btn">
                         <div class="store-modifier-commerce-content-container">
-                            <a href="{% url 'edit_store' store.departement store.ville store.slug %}" class="store-modifier-commerce-b">
-                                <svg style="fill:white;width:16px;margin-bottom:3px;" viewBox="0 0 512 512"><path d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
-                                Modifier ce commerce
-                            </a>
+        <a href="{% url 'edit_store' store.departement store.ville store.slug %}"
+           class="store-modifier-commerce-b">
+          <svg style="fill: white; width: 16px; margin-bottom: 3px;" viewBox="0 0 512 512"><path d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
+            Modifier ce commerce
+        </a>
                         </div>
                     </div>
-                    {% endif %}
+    {% endif %}
 
                     <hr class="hr-page-commerce" />
 
@@ -143,22 +212,20 @@
                         <p>{{ store.descriptiongrande }}</p>
                     </div>
 
-                    <!-- Boutons côte à côte dans un wrapper -->
-                    <div class="actions-commerce-row">
-                        <div class="itinéraire-commerce">
-                            {% if store.addresseitineraire %}
-                                <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description" data-store-id="{{ store.id }}">
-                                    Je me rends sur place
-                                </a>
-                            {% endif %}
-                        </div>
-                        <div class="site-commerce">
-                            {% if store.site %}
-                                <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description" data-store-id="{{ store.id }}">
-                                    Site du commerce
-                                </a>
-                            {% endif %}
-                        </div>
+                    <div class="itinéraire-commerce">
+                        {% if store.addresseitineraire %}
+                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description" data-store-id="{{ store.id }}">
+                                Je me rends sur place
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="site-commerce">
+                        {% if store.site %}
+                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description" data-store-id="{{ store.id }}">
+                                Site du commerce
+                            </a>
+                        {% endif %}
                     </div>
 
                     <div class="commerce-réseaux">
@@ -169,11 +236,13 @@
                                 {% endwith %}
                             </a>
                         {% endif %}
+
                         {% if store.instagram %}
                             <a href="{{ store.instagram }}" class="btn-instagram" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
                                 <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
                             </a>
                         {% endif %}
+
                         {% if store.facebook %}
                             <a href="{{ store.facebook }}" class="btn-facebook" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
                                 <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
@@ -182,153 +251,298 @@
                     </div>
 
                     <!-- FAVORIS + UNFAVORIS -->
-                    <div class="commerce-wishlist" style="display:flex; gap:40px; align-items:center; justify-content:center; margin: 16px auto;">
-                        <button class="favori-btn" data-store-id="{{ store.id }}" data-is-favorite="{{ is_favorite|yesno:'true,false' }}" data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
-                            <svg class="heart-outline" style="width:16px; margin-bottom:3px;" fill="#000000" viewBox="0 0 512 512"><path d="M378.9 80c-27.3 0-53 13.1-69 35.2l-34.4 47.6c-4.5 6.2-11.7 9.9-19.4 9.9s-14.9-3.7-19.4-9.9l-34.4-47.6c-16-22.1-41.7-35.2-69-35.2-47 0-85.1 38.1-85.1 85.1 0 49.9 32 98.4 68.1 142.3 41.1 50 91.4 94 125.9 120.3 3.2 2.4 7.9 4.2 14 4.2s10.8-1.8 14-4.2c34.5-26.3 84.8-70.4 125.9-120.3 36.2-43.9 68.1-92.4 68.1-142.3 0-47-38.1-85.1-85.1-85.1zM271 87.1c25-34.6 65.2-55.1 107.9-55.1 73.5 0 133.1 59.6 133.1 133.1 0 68.6-42.9 128.9-79.1 172.8-44.1 53.6-97.3 100.1-133.8 127.9-12.3 9.4-27.5 14.1-43.1 14.1s-30.8-4.7-43.1-14.1C176.4 438 123.2 391.5 79.1 338 42.9 294.1 0 233.7 0 165.1 0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1l15 20.7 15-20.7z"/></svg>
-                            <svg class="heart-filled" style="width:16px; margin-bottom:3px; display:none;" viewBox="0 0 512 512"><path d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
-                            <span>Ajouter aux favoris</span>
-                        </button>
-                        <button class="unfavori-btn" data-store-id="{{ store.id }}" data-is-unfavorite="{{ is_unfavorite|yesno:'true,false' }}" data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
-                            <svg class="interdit-outline" style="width:16px; margin-bottom:3px;" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="none" stroke="#333" stroke-width="12"/><rect x="22" y="82" width="156" height="36" rx="4" fill="#333"/></svg>
-                            <svg class="interdit-filled" style="width:16px; margin-bottom:3px; display:none;" viewBox="0 0 200 200"><circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/><rect x="22" y="82" width="156" height="36" rx="4" fill="white"/></svg>
-                            <span>Ajouter aux commerces masqués</span>
-                        </button>
-                    </div>
+<div class="commerce-wishlist" style="display:flex; gap:40px; align-items:center; justify-content:center; margin: 16px auto;">
+    <button class="favori-btn"
+        data-store-id="{{ store.id }}"
+        data-is-favorite="{{ is_favorite|yesno:'true,false' }}"
+        data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+        <svg class="heart-outline" style="width:16px; margin-bottom:3px;" fill="#000000" viewBox="0 0 512 512"><path d="M378.9 80c-27.3 0-53 13.1-69 35.2l-34.4 47.6c-4.5 6.2-11.7 9.9-19.4 9.9s-14.9-3.7-19.4-9.9l-34.4-47.6c-16-22.1-41.7-35.2-69-35.2-47 0-85.1 38.1-85.1 85.1 0 49.9 32 98.4 68.1 142.3 41.1 50 91.4 94 125.9 120.3 3.2 2.4 7.9 4.2 14 4.2s10.8-1.8 14-4.2c34.5-26.3 84.8-70.4 125.9-120.3 36.2-43.9 68.1-92.4 68.1-142.3 0-47-38.1-85.1-85.1-85.1zM271 87.1c25-34.6 65.2-55.1 107.9-55.1 73.5 0 133.1 59.6 133.1 133.1 0 68.6-42.9 128.9-79.1 172.8-44.1 53.6-97.3 100.1-133.8 127.9-12.3 9.4-27.5 14.1-43.1 14.1s-30.8-4.7-43.1-14.1C176.4 438 123.2 391.5 79.1 338 42.9 294.1 0 233.7 0 165.1 0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1l15 20.7 15-20.7z"/></svg>
+        <svg class="heart-filled" style="width:16px; margin-bottom:3px; display:none;" viewBox="0 0 512 512"><path d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+        <span>Ajouter aux favoris</span>
+    </button>
 
-                    <button class="btn-suggest-modif desktop-only-btn" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
-                        onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
-                        Suggérer une modification
-                    </button>
+    <button class="unfavori-btn"
+        data-store-id="{{ store.id }}"
+        data-is-unfavorite="{{ is_unfavorite|yesno:'true,false' }}"
+        data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
+        <svg class="interdit-outline" style="width:16px; margin-bottom:3px;" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="90" fill="none" stroke="#333" stroke-width="12"/>
+            <rect x="22" y="82" width="156" height="36" rx="4" fill="#333"/>
+        </svg>
+        <svg class="interdit-filled" style="width:16px; margin-bottom:3px; display:none;" viewBox="0 0 200 200">
+            <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
+            <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
+        </svg>
+        <span>Ajouter aux commerces masqués</span>
+    </button>
+</div>
+
+                  <button class="btn-suggest-modif desktop-only-btn" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
+        onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
+    Suggérer une modification
+</button>
                 </div>
             </div>
+ <!-- Boutons onglets secondaires -->
+    <div class="store-informations-secondaires-super-container">
+        <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
+            <div class="informations-secondaires-commerce-container">
+                <div class="informations-secondaires-commerce-buttons-container">
+                    <button id="bouton1" class="onglet-btn onglet-actif" data-target="infospratiques">Informations pratiques</button>
+                    <button id="bouton2" class="onglet-btn" data-target="galerie">Galerie</button>
+                    <button id="bouton3" class="onglet-btn" data-target="produits">Liste des produits</button>
+                </div>
+            </div>
+        </section>
 
-            <!-- ONGLETS -->
-            <div class="store-informations-secondaires-super-container">
-                <section aria-label="Boutons pour accéder aux informations secondaires du commerce">
-                    <div class="informations-secondaires-commerce-container">
-                        <div class="informations-secondaires-commerce-buttons-container">
-                            <button id="bouton1" class="onglet-btn onglet-actif" data-target="infospratiques">Informations pratiques</button>
-                            <button id="bouton2" class="onglet-btn" data-target="galerie">Galerie</button>
-                            <button id="bouton3" class="onglet-btn" data-target="produits">Liste des produits</button>
-                        </div>
-                    </div>
-                </section>
+        <!-- Infos pratiques -->
+        <section aria-label="Informations pratiques concernant le commerce" id="infospratiques" class="infopratiques-container">
+            <div class="infopratiques-content-container">
 
-                <section aria-label="Informations pratiques concernant le commerce" id="infospratiques" class="infopratiques-container">
-                    <div class="infopratiques-content-container">
-                        <div class="infopratiques-horaires-container" id="horairesip">
-                            <table class="infopratiques-horaires-table">
-                                <thead><tr><th colspan="2"><b>Horaires</b></th></tr></thead>
-                                <tbody>
-                                    <tr><td><b>Lundi :</b></td><td>{% if store.lundi_matin_ouverture and store.lundi_matin_fermeture %}{{ store.lundi_matin_ouverture|time:"H:i" }} - {{ store.lundi_matin_fermeture|time:"H:i" }}{% endif %}{% if store.lundi_apresmidi_ouverture and store.lundi_apresmidi_fermeture %}{% if store.lundi_matin_ouverture and store.lundi_matin_fermeture %} / {% endif %}{{ store.lundi_apresmidi_ouverture|time:"H:i" }} - {{ store.lundi_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.lundi_matin_ouverture and not store.lundi_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                    <tr><td><b>Mardi :</b></td><td>{% if store.mardi_matin_ouverture and store.mardi_matin_fermeture %}{{ store.mardi_matin_ouverture|time:"H:i" }} - {{ store.mardi_matin_fermeture|time:"H:i" }}{% endif %}{% if store.mardi_apresmidi_ouverture and store.mardi_apresmidi_fermeture %}{% if store.mardi_matin_ouverture and store.mardi_matin_fermeture %} / {% endif %}{{ store.mardi_apresmidi_ouverture|time:"H:i" }} - {{ store.mardi_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.mardi_matin_ouverture and not store.mardi_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                    <tr><td><b>Mercredi :</b></td><td>{% if store.mercredi_matin_ouverture and store.mercredi_matin_fermeture %}{{ store.mercredi_matin_ouverture|time:"H:i" }} - {{ store.mercredi_matin_fermeture|time:"H:i" }}{% endif %}{% if store.mercredi_apresmidi_ouverture and store.mercredi_apresmidi_fermeture %}{% if store.mercredi_matin_ouverture and store.mercredi_matin_fermeture %} / {% endif %}{{ store.mercredi_apresmidi_ouverture|time:"H:i" }} - {{ store.mercredi_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.mercredi_matin_ouverture and not store.mercredi_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                    <tr><td><b>Jeudi :</b></td><td>{% if store.jeudi_matin_ouverture and store.jeudi_matin_fermeture %}{{ store.jeudi_matin_ouverture|time:"H:i" }} - {{ store.jeudi_matin_fermeture|time:"H:i" }}{% endif %}{% if store.jeudi_apresmidi_ouverture and store.jeudi_apresmidi_fermeture %}{% if store.jeudi_matin_ouverture and store.jeudi_matin_fermeture %} / {% endif %}{{ store.jeudi_apresmidi_ouverture|time:"H:i" }} - {{ store.jeudi_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.jeudi_matin_ouverture and not store.jeudi_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                    <tr><td><b>Vendredi :</b></td><td>{% if store.vendredi_matin_ouverture and store.vendredi_matin_fermeture %}{{ store.vendredi_matin_ouverture|time:"H:i" }} - {{ store.vendredi_matin_fermeture|time:"H:i" }}{% endif %}{% if store.vendredi_apresmidi_ouverture and store.vendredi_apresmidi_fermeture %}{% if store.vendredi_matin_ouverture and store.vendredi_matin_fermeture %} / {% endif %}{{ store.vendredi_apresmidi_ouverture|time:"H:i" }} - {{ store.vendredi_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.vendredi_matin_ouverture and not store.vendredi_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                    <tr><td><b>Samedi :</b></td><td>{% if store.samedi_matin_ouverture and store.samedi_matin_fermeture %}{{ store.samedi_matin_ouverture|time:"H:i" }} - {{ store.samedi_matin_fermeture|time:"H:i" }}{% endif %}{% if store.samedi_apresmidi_ouverture and store.samedi_apresmidi_fermeture %}{% if store.samedi_matin_ouverture and store.samedi_matin_fermeture %} / {% endif %}{{ store.samedi_apresmidi_ouverture|time:"H:i" }} - {{ store.samedi_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.samedi_matin_ouverture and not store.samedi_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                    <tr><td><b>Dimanche :</b></td><td>{% if store.dimanche_matin_ouverture and store.dimanche_matin_fermeture %}{{ store.dimanche_matin_ouverture|time:"H:i" }} - {{ store.dimanche_matin_fermeture|time:"H:i" }}{% endif %}{% if store.dimanche_apresmidi_ouverture and store.dimanche_apresmidi_fermeture %}{% if store.dimanche_matin_ouverture and store.dimanche_matin_fermeture %} / {% endif %}{{ store.dimanche_apresmidi_ouverture|time:"H:i" }} - {{ store.dimanche_apresmidi_fermeture|time:"H:i" }}{% endif %}{% if not store.dimanche_matin_ouverture and not store.dimanche_apresmidi_ouverture %}Fermé{% endif %}</td></tr>
-                                </tbody>
-                            </table>
-                            <p class="infopratiques-miseajour">
-                                {% if store.horaires_updated_at %}<b>Dernière mise à jour :</b> {{ store.horaires_updated_at|date:"d.m.Y" }}<br>{% endif %}
-                                Les horaires peuvent changer, assurez-vous de l'ouverture d'un commerce avant de vous rendre sur place.
-                            </p>
-                        </div>
-                        <div class="infopratiques-adresse-container" id="adresseip">
-                            <svg style="width:40px;height:40px;fill:#ff8b38;margin-bottom:15px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
-                            <p class="infopratiques-adresse-texte">{{ store.addressemaps }}</p>
-                        </div>
-                    </div>
-                </section>
+                <!-- Horaires -->
+                <div class="infopratiques-horaires-container" id="horairesip">
+                    <table class="infopratiques-horaires-table">
+                        <thead>
+                            <tr><th colspan="2"><b>Horaires</b></th></tr>
+                        </thead>
+                        <tbody>
+    {# LUNDI #}
+    <tr>
+        <td><b>Lundi :</b></td>
+        <td>
+            {% if store.lundi_matin_ouverture and store.lundi_matin_fermeture %}
+                {{ store.lundi_matin_ouverture|time:"H:i" }} - {{ store.lundi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.lundi_apresmidi_ouverture and store.lundi_apresmidi_fermeture %}
+                {% if store.lundi_matin_ouverture and store.lundi_matin_fermeture %} / {% endif %}
+                {{ store.lundi_apresmidi_ouverture|time:"H:i" }} - {{ store.lundi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.lundi_matin_ouverture and not store.lundi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# MARDI #}
+    <tr>
+        <td><b>Mardi :</b></td>
+        <td>
+            {% if store.mardi_matin_ouverture and store.mardi_matin_fermeture %}
+                {{ store.mardi_matin_ouverture|time:"H:i" }} - {{ store.mardi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.mardi_apresmidi_ouverture and store.mardi_apresmidi_fermeture %}
+                {% if store.mardi_matin_ouverture and store.mardi_matin_fermeture %} / {% endif %}
+                {{ store.mardi_apresmidi_ouverture|time:"H:i" }} - {{ store.mardi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.mardi_matin_ouverture and not store.mardi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# MERCREDI #}
+    <tr>
+        <td><b>Mercredi :</b></td>
+        <td>
+            {% if store.mercredi_matin_ouverture and store.mercredi_matin_fermeture %}
+                {{ store.mercredi_matin_ouverture|time:"H:i" }} - {{ store.mercredi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.mercredi_apresmidi_ouverture and store.mercredi_apresmidi_fermeture %}
+                {% if store.mercredi_matin_ouverture and store.mercredi_matin_fermeture %} / {% endif %}
+                {{ store.mercredi_apresmidi_ouverture|time:"H:i" }} - {{ store.mercredi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.mercredi_matin_ouverture and not store.mercredi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# JEUDI #}
+    <tr>
+        <td><b>Jeudi :</b></td>
+        <td>
+            {% if store.jeudi_matin_ouverture and store.jeudi_matin_fermeture %}
+                {{ store.jeudi_matin_ouverture|time:"H:i" }} - {{ store.jeudi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.jeudi_apresmidi_ouverture and store.jeudi_apresmidi_fermeture %}
+                {% if store.jeudi_matin_ouverture and store.jeudi_matin_fermeture %} / {% endif %}
+                {{ store.jeudi_apresmidi_ouverture|time:"H:i" }} - {{ store.jeudi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.jeudi_matin_ouverture and not store.jeudi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# VENDREDI #}
+    <tr>
+        <td><b>Vendredi :</b></td>
+        <td>
+            {% if store.vendredi_matin_ouverture and store.vendredi_matin_fermeture %}
+                {{ store.vendredi_matin_ouverture|time:"H:i" }} - {{ store.vendredi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.vendredi_apresmidi_ouverture and store.vendredi_apresmidi_fermeture %}
+                {% if store.vendredi_matin_ouverture and store.vendredi_matin_fermeture %} / {% endif %}
+                {{ store.vendredi_apresmidi_ouverture|time:"H:i" }} - {{ store.vendredi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.vendredi_matin_ouverture and not store.vendredi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# SAMEDI #}
+    <tr>
+        <td><b>Samedi :</b></td>
+        <td>
+            {% if store.samedi_matin_ouverture and store.samedi_matin_fermeture %}
+                {{ store.samedi_matin_ouverture|time:"H:i" }} - {{ store.samedi_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.samedi_apresmidi_ouverture and store.samedi_apresmidi_fermeture %}
+                {% if store.samedi_matin_ouverture and store.samedi_matin_fermeture %} / {% endif %}
+                {{ store.samedi_apresmidi_ouverture|time:"H:i" }} - {{ store.samedi_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.samedi_matin_ouverture and not store.samedi_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+    {# DIMANCHE #}
+    <tr>
+        <td><b>Dimanche :</b></td>
+        <td>
+            {% if store.dimanche_matin_ouverture and store.dimanche_matin_fermeture %}
+                {{ store.dimanche_matin_ouverture|time:"H:i" }} - {{ store.dimanche_matin_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if store.dimanche_apresmidi_ouverture and store.dimanche_apresmidi_fermeture %}
+                {% if store.dimanche_matin_ouverture and store.dimanche_matin_fermeture %} / {% endif %}
+                {{ store.dimanche_apresmidi_ouverture|time:"H:i" }} - {{ store.dimanche_apresmidi_fermeture|time:"H:i" }}
+            {% endif %}
+            {% if not store.dimanche_matin_ouverture and not store.dimanche_apresmidi_ouverture %}Fermé{% endif %}
+        </td>
+    </tr>
+</tbody>
+                    </table>
 
-                <section aria-label="Galerie du commerce" class="galerie-container" id="galerie" style="display:none;">
-                    {% if store.galerie_images.exists %}
-                        <div class="galerie-grid">
-                            {% for img in store.galerie_images.all %}
-                                <div class="galerie-item"><img src="{{ img.image.url }}" alt="Galerie {{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}"></div>
-                            {% endfor %}
-                        </div>
-                    {% else %}
-                        <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
-                    {% endif %}
-                </section>
+                    <p class="infopratiques-miseajour">
+                        {% if store.horaires_updated_at %}
+                            <b>Dernière mise à jour :</b> {{ store.horaires_updated_at|date:"d.m.Y" }}<br>
+                        {% endif %}
+                        Les horaires peuvent changer, assurez-vous de l'ouverture d'un commerce avant de vous rendre sur place.
+                    </p>
+                </div>
 
-                <section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits" style="display:none;">
-                    {% for item in families_with_rows %}
-                        <table>
-                            <thead><tr><th colspan="4">{{ item.family.nom }}</th></tr></thead>
-                            <tbody>{% for row in item.rows %}<tr>{% for product in row %}<td>{% if product %}{{ product.nom }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody>
-                        </table>
-                    {% empty %}
-                    <div class="infopratiques-container">
-                        <p class="produits-empty">
-                            <svg style="fill:#ffcba4;margin:0 auto 12px auto;display:block;width:50px;" viewBox="0 0 640 512"><path d="M560.3 237.2c10.4 11.8 28.3 14.4 41.8 5.5 14.7-9.8 18.7-29.7 8.9-44.4l-48-72c-2.8-4.2-6.6-7.7-11.1-10.2L351.4 4.7c-19.3-10.7-42.8-10.7-62.2 0L88.8 116c-5.4 3-9.7 7.4-12.6 12.8L27.7 218.7c-12.6 23.4-3.8 52.5 19.6 65.1l33 17.7 0 53.3c0 23 12.4 44.3 32.4 55.7l176 99.7c19.6 11.1 43.5 11.1 63.1 0l176-99.7c20.1-11.4 32.4-32.6 32.4-55.7l0-117.5zm-240-9.8L170.2 144 320.3 60.6 470.4 144 320.3 227.4zm-41.5 50.2l-21.3 46.2-165.8-88.8 25.4-47.2 161.7 89.8z"/></svg>
-                            Ce commerce n'a pas encore renseigné sa liste de produits.
-                        </p>
-                    </div>
+                <!-- Adresse -->
+                <div class="infopratiques-adresse-container" id="adresseip">
+                    <svg style=" width: 40px; height: 40px; fill: #ff8b38; margin-bottom: 15px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
+                    <p class="infopratiques-adresse-texte">{{ store.addressemaps }}</p>
+                </div>
+
+            </div>
+        </section>
+       
+
+        <!-- Galerie -->
+        <section aria-label="Galerie du commerce" class="galerie-container" id="galerie" style="display:none;">
+            {% if store.galerie_images.exists %}
+                <div class="galerie-grid">
+                    {% for img in store.galerie_images.all %}
+                        <div class="galerie-item">
+                            <img src="{{ img.image.url }}" alt="Galerie {{ store.nom }} — {{ store.categorie.name }} à {{ store.ville }}">
+                        </div>
                     {% endfor %}
-                </section>
-            </div>
-
-            <!-- BLOC BAS MOBILE UNIQUEMENT -->
-            <div class="mobile-bottom-actions">
-                {% if request.user == store.owner or request.user.is_superuser %}
-                <div class="store-modifier-commerce-container" style="margin-bottom:8px;">
-                    <div class="store-modifier-commerce-content-container">
-                        <a href="{% url 'edit_store' store.departement store.ville store.slug %}" class="store-modifier-commerce-b">
-                            <svg style="fill:white;width:16px;margin-bottom:3px;" viewBox="0 0 512 512"><path d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
-                            Modifier ce commerce
-                        </a>
-                    </div>
                 </div>
-                {% endif %}
-                {% if not store.owner or store.owner.is_superuser %}
-                <div class="store-revendiquer-container" style="padding:8px 16px 12px;">
-                    <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
-                    <button class="store-revendiquer-b" data-store-id="{{ store.id }}" data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}" onclick="claimStore({{ store.id }})">
-                        Prenez le contrôle de votre page
-                    </button>
-                </div>
-                {% endif %}
-                <button class="btn-suggest-modif" style="display:block;width:calc(100% - 32px);margin:6px 16px;text-align:center;box-sizing:border-box;" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
-                    onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
-                    Suggérer une modification
-                </button>
-            </div>
+            {% else %}
+                <p class="galerie-empty">Aucune photo disponible pour ce commerce.</p>
+            {% endif %}
+        </section>
 
+      <!-- Produits -->
+    <!-- Produits -->
+<section aria-label="Liste des produits disponibles dans ce commerce" class="liste-produits-container" id="produits" style="display:none;">
+    {% for item in families_with_rows %}
+        <table>
+            <thead>
+                <tr><th colspan="4">{{ item.family.nom }}</th></tr>
+            </thead>
+            <tbody>
+                {% for row in item.rows %}
+                <tr>
+                    {% for product in row %}
+                    <td>{% if product %}{{ product.nom }}{% endif %}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% empty %}
+    <div class="infopratiques-container">
+        <p class="produits-empty">
+            <svg style="fill: #ffcba4; margin: 0 auto 12px auto; display: block; width:50px;" viewBox="0 0 640 512"><path d="M560.3 237.2c10.4 11.8 28.3 14.4 41.8 5.5 14.7-9.8 18.7-29.7 8.9-44.4l-48-72c-2.8-4.2-6.6-7.7-11.1-10.2L351.4 4.7c-19.3-10.7-42.8-10.7-62.2 0L88.8 116c-5.4 3-9.7 7.4-12.6 12.8L27.7 218.7c-12.6 23.4-3.8 52.5 19.6 65.1l33 17.7 0 53.3c0 23 12.4 44.3 32.4 55.7l176 99.7c19.6 11.1 43.5 11.1 63.1 0l176-99.7c20.1-11.4 32.4-32.6 32.4-55.7l0-117.5zm-240-9.8L170.2 144 320.3 60.6 470.4 144 320.3 227.4zm-41.5 50.2l-21.3 46.2-165.8-88.8 25.4-47.2 161.7 89.8z"/></svg>
+            Ce commerce n'a pas encore renseigné sa liste de produits.
+        </p>
+    </div>
+    {% endfor %}
+</section>
+
+    </section>
+    <!-- BLOC BAS MOBILE UNIQUEMENT -->
+    <div class="mobile-bottom-actions">
+
+    
+        <button class="btn-suggest-modif" style="display:block;width:calc(100% - 32px);margin:6px 16px;text-align:center;box-sizing:border-box;" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
+            onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
+            Suggérer une modification
+        </button>
+              {% if request.user == store.owner or request.user.is_superuser %}
+        <div class="store-modifier-commerce-container" style="margin-bottom:8px;">
+            <div class="store-modifier-commerce-content-container">
+                <a href="{% url 'edit_store' store.departement store.ville store.slug %}" class="store-modifier-commerce-b">
+                    <svg style="fill:white;width:16px;margin-bottom:3px;" viewBox="0 0 512 512"><path d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
+                    Modifier ce commerce
+                </a>
+            </div>
+        </div>
+        {% endif %}
+              {% if not store.owner or store.owner.is_superuser %}
+        <div class="store-revendiquer-container" style="padding:8px 16px 12px;">
+            <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
+            <button class="store-revendiquer-b" data-store-id="{{ store.id }}" data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}" onclick="claimStore({{ store.id }})">
+                Prenez le contrôle de votre page
+            </button>
+        </div>
+        {% endif %}
+          </div>
         </div>
     </section>
 </main>
 
-<!-- Modales -->
+<!-- Modal : connexion requise pour les favoris -->
 <div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:14px;border:2px solid #ff8b38;">
-            <div class="modal-body" style="text-align:center;padding:32px 24px;">
-                <i class="fa-solid fa-heart" style="font-size:48px;color:#ff8b38;margin-bottom:16px;"></i>
-                <h5 style="font-weight:700;margin-bottom:10px;">Créez un compte pour sauvegarder vos favoris</h5>
-                <p style="color:#666;margin-bottom:24px;">Rejoignez Yuumi gratuitement et retrouvez tous vos commerces préférés en un clic.</p>
-                <a href="{% url 'register' %}?next={{ request.path }}" class="btn" style="background:#ff8b38;color:white;border-radius:10px;padding:10px 28px;font-weight:600;font-size:1rem;text-decoration:none;">Créer un compte</a>
-                <div style="margin-top:14px;"><a href="{% url 'login' %}?next={{ request.path }}" style="color:#ff8b38;font-size:0.9rem;">J'ai déjà un compte</a></div>
+        <div class="modal-content" style="border-radius:14px; border: 2px solid #ff8b38;">
+            <div class="modal-body" style="text-align:center; padding: 32px 24px;">
+                <i class="fa-solid fa-heart" style="font-size:48px; color:#ff8b38; margin-bottom:16px;"></i>
+                <h5 style="font-weight:700; margin-bottom:10px;">Créez un compte pour sauvegarder vos favoris</h5>
+                <p style="color:#666; margin-bottom:24px;">Rejoignez Yuumi gratuitement et retrouvez tous vos commerces préférés en un clic.</p>
+                <a href="{% url 'register' %}?next={{ request.path }}"
+                   class="btn"
+                   style="background:#ff8b38; color:white; border-radius:10px; padding:10px 28px; font-weight:600; font-size:1rem; text-decoration:none;">
+                    Créer un compte
+                </a>
+                <div style="margin-top:14px;">
+                    <a href="{% url 'login' %}?next={{ request.path }}" style="color:#ff8b38; font-size:0.9rem;">J'ai déjà un compte</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal : connexion requise pour revendiquer -->
 <div class="modal fade" id="loginRequiredClaimModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:14px;border:2px solid #ff8b38;">
-            <div class="modal-body" style="text-align:center;padding:32px 24px;">
-                <i class="fa-solid fa-store" style="font-size:48px;color:#ff8b38;margin-bottom:16px;"></i>
-                <h5 style="font-weight:700;margin-bottom:10px;">Vous êtes le propriétaire de ce commerce ?</h5>
-                <p style="color:#666;margin-bottom:24px;">Créez un compte ou connectez-vous pour revendiquer ce commerce et gérer sa fiche.</p>
-                <a href="{% url 'register' %}?next={{ request.path }}" class="btn" style="background:#ff8b38;color:white;border-radius:10px;padding:10px 28px;font-weight:600;font-size:1rem;text-decoration:none;">Créer un compte</a>
-                <div style="margin-top:14px;"><a href="{% url 'login' %}?next={{ request.path }}" style="color:#ff8b38;font-size:0.9rem;">J'ai déjà un compte</a></div>
+        <div class="modal-content" style="border-radius:14px; border: 2px solid #ff8b38;">
+            <div class="modal-body" style="text-align:center; padding: 32px 24px;">
+                <i class="fa-solid fa-store" style="font-size:48px; color:#ff8b38; margin-bottom:16px;"></i>
+                <h5 style="font-weight:700; margin-bottom:10px;">Vous êtes le propriétaire de ce commerce ?</h5>
+                <p style="color:#666; margin-bottom:24px;">Créez un compte ou connectez-vous pour revendiquer ce commerce et gérer sa fiche.</p>
+                <a href="{% url 'register' %}?next={{ request.path }}"
+                   class="btn"
+                   style="background:#ff8b38; color:white; border-radius:10px; padding:10px 28px; font-weight:600; font-size:1rem; text-decoration:none;">
+                    Créer un compte
+                </a>
+                <div style="margin-top:14px;">
+                    <a href="{% url 'login' %}?next={{ request.path }}" style="color:#ff8b38; font-size:0.9rem;">J'ai déjà un compte</a>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
+<!-- Modal de confirmation pour revendication -->
 <div class="modal fade" id="claimModal" tabindex="-1" aria-labelledby="claimModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -336,7 +550,9 @@
                 <h5 class="modal-title" id="claimModalLabel">Confirmer la revendication</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
             </div>
-            <div class="modal-body">Êtes-vous sûr de vouloir dire que ce commerce est le vôtre ?</div>
+            <div class="modal-body">
+                Êtes-vous sûr de vouloir dire que ce commerce est le vôtre ?
+            </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
                 <button type="button" class="btn btn-primary" id="confirmClaim">Oui, revendiquer</button>
@@ -345,6 +561,7 @@
     </div>
 </div>
 
+<!-- Lightbox Galerie -->
 {% if store.galerie_images.exists %}
 <div class="galerie-lightbox" id="galerieLightbox" style="position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;justify-content:center;align-items:center;">
     <div class="galerie-lightbox-wrapper" style="position:relative;display:inline-block;">
@@ -357,29 +574,49 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>window.stores = {{ stores|safe }};</script>
+<script>
+    window.stores = {{ stores|safe }};
+</script>
+
+<!-- getCookie global — utilisé par tous les scripts -->
 <script>
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
         const cookies = document.cookie.split(";").map(c => c.trim());
         for (let cookie of cookies) {
-            if (cookie.startsWith(name + "=")) { cookieValue = decodeURIComponent(cookie.substring(name.length + 1)); break; }
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
         }
     }
     return cookieValue;
 }
 </script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const carouselEl = document.querySelector("#carouselStoreImages");
-    if (carouselEl) new bootstrap.Carousel(carouselEl, { interval: false, ride: false, wrap: true });
+    if (carouselEl) {
+        new bootstrap.Carousel(carouselEl, {
+            interval: false,
+            ride: false,
+            wrap: true
+        });
+    }
 });
 </script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const onglets = document.querySelectorAll(".onglet-btn");
-    const sections = { infospratiques: document.getElementById("infospratiques"), galerie: document.getElementById("galerie"), produits: document.getElementById("produits") };
+    const sections = {
+        infospratiques: document.getElementById("infospratiques"),
+        galerie: document.getElementById("galerie"),
+        produits: document.getElementById("produits"),
+    };
+
     onglets.forEach(btn => {
         btn.addEventListener("click", () => {
             const target = btn.dataset.target;
@@ -387,199 +624,529 @@ document.addEventListener("DOMContentLoaded", () => {
             btn.classList.add("onglet-actif");
             Object.entries(sections).forEach(([key, el]) => {
                 if (!el) return;
-                el.style.display = key === target ? (key === "galerie" ? "flex" : "block") : "none";
+                if (key === target) {
+                    el.style.display = key === "galerie" ? "flex" : "block";
+                } else {
+                    el.style.display = "none";
+                }
             });
         });
     });
 });
 </script>
+
+<!-- Tracking clics -->
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const trackables = [
         { selector: ".button-1-description", type: "itineraire" },
         { selector: ".button-2-description", type: "site" },
-        { selector: ".btn-instagram", type: "instagram" },
-        { selector: ".btn-facebook", type: "facebook" },
+        { selector: ".btn-instagram",        type: "instagram" },
+        { selector: ".btn-facebook",         type: "facebook" },
     ];
+
     trackables.forEach(({ selector, type }) => {
         const btn = document.querySelector(selector);
         if (!btn) return;
+
         btn.addEventListener("click", () => {
-            fetch(`/store/${btn.dataset.storeId}/click/`, { method: "POST", headers: { "X-CSRFToken": getCookie("csrftoken"), "Content-Type": "application/json" }, body: JSON.stringify({ type_click: type }) });
+            const storeId = btn.dataset.storeId;
+            fetch(`/store/${storeId}/click/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ type_click: type })
+            });
         });
     });
 });
-</script>
-<script>
-document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll(".favori-btn").forEach(btn => {
+  </script>
+    <script>
+     document.addEventListener("DOMContentLoaded", () => {
+    const favoriBtns = document.querySelectorAll(".favori-btn");
+    const unfavoriBtns = document.querySelectorAll(".unfavori-btn");
+
+    favoriBtns.forEach(btn => {
         const storeId = btn.dataset.storeId;
         if (!storeId) return;
+
         const isAuthenticated = btn.dataset.isAuthenticated === "true";
         let isFavorite = btn.dataset.isFavorite === "true";
         const span = btn.querySelector("span");
+
         function updateFavoriUI(favorited) {
             const outline = btn.querySelector(".heart-outline");
             const filled = btn.querySelector(".heart-filled");
-            if (favorited) { btn.classList.add("active"); outline.style.display = "none"; filled.style.display = "inline"; if (span) span.textContent = "Retirer des favoris"; }
-            else { btn.classList.remove("active"); outline.style.display = "inline"; filled.style.display = "none"; if (span) span.textContent = "Ajouter aux favoris"; }
+            if (favorited) {
+                btn.classList.add("active");
+                outline.style.display = "none";
+                filled.style.display = "inline";
+                if (span) span.textContent = "Retirer des favoris";
+            } else {
+                btn.classList.remove("active");
+                outline.style.display = "inline";
+                filled.style.display = "none";
+                if (span) span.textContent = "Ajouter aux favoris";
+            }
         }
+
         updateFavoriUI(isFavorite);
+
         btn.addEventListener("click", () => {
-            if (!isAuthenticated) { new bootstrap.Modal(document.getElementById('loginRequiredModal')).show(); return; }
-            fetch(`/store/${storeId}/favoris/`, { method: "POST", headers: { "X-CSRFToken": getCookie("csrftoken"), "X-Requested-With": "XMLHttpRequest" } })
-            .then(res => res.json()).then(data => { isFavorite = data.is_favorite; updateFavoriUI(isFavorite); });
+            if (!isAuthenticated) {
+                const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+                modal.show();
+                return;
+            }
+
+            fetch(`/store/${storeId}/favoris/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+                isFavorite = data.is_favorite;
+                updateFavoriUI(isFavorite);
+            });
         });
     });
-    document.querySelectorAll(".unfavori-btn").forEach(btn => {
-        const storeId = btn.dataset.storeId;
+
+    // 👉 bloc unfavori à écrire ici
+    unfavoriBtns.forEach(btn => {
+      const storeId = btn.dataset.storeId;  
         if (!storeId) return;
+
         const isAuthenticated = btn.dataset.isAuthenticated === "true";
-        let isunFavorite = btn.dataset.isUnfavorite === "true";
+        let isunFavorite = btn.dataset.isUnfavorite === "true";  
         const span = btn.querySelector("span");
+
         function updateunFavoriUI(unfavorited) {
             const outline = btn.querySelector(".interdit-outline");
             const filled = btn.querySelector(".interdit-filled");
-            if (unfavorited) { btn.classList.add("active"); outline.style.display = "none"; filled.style.display = "inline"; if (span) span.textContent = "Retirer des commerces à éviter"; }
-            else { btn.classList.remove("active"); outline.style.display = "inline"; filled.style.display = "none"; if (span) span.textContent = "Ajouter aux commerces à éviter"; }
+            if (unfavorited) {
+                btn.classList.add("active");
+                outline.style.display = "none";
+                filled.style.display = "inline";
+                if (span) span.textContent = "Retirer des commerces à éviter";
+            } else {
+                btn.classList.remove("active");
+                outline.style.display = "inline";
+                filled.style.display = "none";
+                if (span) span.textContent = "Ajouter aux commerces à éviter";
+            }
         }
+
         updateunFavoriUI(isunFavorite);
+
         btn.addEventListener("click", () => {
-            if (!isAuthenticated) { new bootstrap.Modal(document.getElementById('loginRequiredModal')).show(); return; }
-            fetch(`/store/${storeId}/unfavoris/`, { method: "POST", headers: { "X-CSRFToken": getCookie("csrftoken"), "X-Requested-With": "XMLHttpRequest" } })
-            .then(res => res.json()).then(data => { isunFavorite = data.is_unfavorite; updateunFavoriUI(isunFavorite); });
-        });
+            if (!isAuthenticated) {
+                const modal = new bootstrap.Modal(document.getElementById('loginRequiredModal'));
+                modal.show();
+                return;
+            }
+
+            fetch(`/store/${storeId}/unfavoris/`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+                isunFavorite = data.is_unfavorite;
+                updateunFavoriUI(isunFavorite);
+            });
+});
     });
 });
-</script>
+    </script>
+
 <script>
 let currentStoreId = null;
+
 function claimStore(storeId) {
     const btn = document.getElementById("claimButton");
-    if (btn && btn.dataset.isAuthenticated !== "true") { new bootstrap.Modal(document.getElementById('loginRequiredClaimModal')).show(); return; }
+    if (btn && btn.dataset.isAuthenticated !== "true") {
+        const modal = new bootstrap.Modal(document.getElementById('loginRequiredClaimModal'));
+        modal.show();
+        return;
+    }
     currentStoreId = storeId;
-    new bootstrap.Modal(document.getElementById('claimModal')).show();
+    const modal = new bootstrap.Modal(document.getElementById('claimModal'));
+    modal.show();
 }
+
 document.getElementById('confirmClaim').addEventListener('click', function () {
     if (!currentStoreId) return;
-    fetch(`/store/${currentStoreId}/claim/`, { method: "POST", headers: { "X-CSRFToken": getCookie("csrftoken"), "X-Requested-With": "XMLHttpRequest" } })
+
+    fetch(`/store/${currentStoreId}/claim/`, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+            "X-Requested-With": "XMLHttpRequest",
+        },
+    })
     .then(async res => {
         const data = await res.json();
-        if (res.status === 429 && data.error === "cooldown") { startCooldown(data.remaining); return; }
-        if (!res.ok) { alert(data.error || "Erreur lors de la revendication."); return; }
+        if (res.status === 429 && data.error === "cooldown") {
+            startCooldown(data.remaining);
+            return;
+        }
+        if (!res.ok) {
+            alert(data.error || "Erreur lors de la revendication.");
+            return;
+        }
         alert(data.message || "Demande envoyée avec succès.");
         location.reload();
-    }).catch(() => alert("Erreur réseau lors de la revendication."));
-    bootstrap.Modal.getInstance(document.getElementById('claimModal')).hide();
+    })
+    .catch(err => {
+        console.error("Erreur réseau :", err);
+        alert("Erreur réseau lors de la revendication.");
+    });
+
+    const modal = bootstrap.Modal.getInstance(document.getElementById('claimModal'));
+    modal.hide();
 });
+</script>
+
+<script>
 function startCooldown(seconds) {
     const btn = document.getElementById("claimButton");
     const timer = document.getElementById("claimTimer");
+
     if (!btn || !timer) return;
-    btn.disabled = true; timer.style.display = "block";
+
+    btn.disabled = true;
+    timer.style.display = "block";
+
     const interval = setInterval(() => {
-        const min = Math.floor(seconds / 60); const sec = seconds % 60;
+        const min = Math.floor(seconds / 60);
+        const sec = seconds % 60;
         timer.textContent = `Nouvelle demande possible dans ${min}m ${sec}s`;
-        if (seconds <= 0) { clearInterval(interval); btn.disabled = false; timer.style.display = "none"; }
+
+        if (seconds <= 0) {
+            clearInterval(interval);
+            btn.disabled = false;
+            timer.style.display = "none";
+        }
         seconds--;
     }, 1000);
 }
 </script>
+
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const lightbox = document.getElementById("galerieLightbox");
     const lightboxImg = document.getElementById("galerieLightboxImg");
     const closeBtn = document.querySelector(".galerie-lightbox-close");
+
     if (!lightbox || !lightboxImg || !closeBtn) return;
-    function closeLightbox() { lightbox.style.display = "none"; lightboxImg.src = ""; document.body.style.overflow = ""; }
+
+    function closeLightbox() {
+        lightbox.style.display = "none";
+        lightboxImg.src = "";
+        document.body.style.overflow = "";
+    }
+
     document.querySelectorAll(".galerie-item img, .galerie-main-img").forEach(img => {
         img.style.cursor = "zoom-in";
-        img.addEventListener("click", () => { lightboxImg.src = img.src; lightbox.style.display = "flex"; document.body.style.overflow = "hidden"; });
+        img.addEventListener("click", () => {
+            lightboxImg.src = img.src;
+            lightbox.style.display = "flex";
+            document.body.style.overflow = "hidden";
+        });
     });
-    closeBtn.addEventListener("click", e => { e.stopPropagation(); closeLightbox(); });
-    lightbox.addEventListener("click", e => { if (e.target === lightbox) closeLightbox(); });
-    document.addEventListener("keydown", e => { if (e.key === "Escape") closeLightbox(); });
+
+    closeBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeLightbox();
+    });
+
+    lightbox.addEventListener("click", (e) => {
+        if (e.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") closeLightbox();
+    });
 });
 </script>
 
 <style>
-.badge-statut { display:inline-flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:700; padding:4px 12px; border-radius:99px; margin-bottom:10px; letter-spacing:0.02em; }
-.badge-ouvert { background:#e8f8ee; color:#1a7a3c; border:1.5px solid #6fcf97; }
-.badge-ferme { background:#fdf0f0; color:#b52b2b; border:1.5px solid #e57373; }
-.badge-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
-.texte-badge-commerce { color:#888; font-size:0.74rem; text-align:center; margin-bottom:10px; display:block; }
-.badge-ouvert .badge-dot { background:#27ae60; }
-.badge-ferme .badge-dot { background:#e53935; }
-.store-revendiquer-container { display:flex; gap:5px; align-items:center; flex-wrap:wrap; justify-content:center; }
-.store-revendiquer-b { color:var(--orange); border:none; background-color:initial; font-size:0.8rem; font-weight:bold; }
-.store-revendiquer-p { margin-bottom:0; font-size:0.75rem; }
-.store-modifier-commerce-container { display:flex; width:100%; justify-content:center; align-items:center; }
-.store-modifier-commerce-content-container { background-color:var(--orange); border-radius:999px; display:flex; justify-content:center; align-items:center; padding:0 10px; }
-.store-modifier-commerce-b { border:none; color:white; }
-.btn-suggest-modif { border:solid 1px #0a5bb4; margin-top:2vh; padding:10px; font-weight:bold; font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; border-radius:5px; background-color:#c5d8f5; margin-bottom:3vh; }
-.onglet-btn { background:white; color:#333; border:1px solid #ddd; padding:8px 18px; cursor:pointer; font-family:inherit; font-size:0.95rem; border-radius:6px; transition:background 0.15s,color 0.15s; }
-.onglet-btn.onglet-actif { background:#ff8b38; color:white; border-color:#ff8b38; }
-.onglet-btn:hover:not(.onglet-actif) { background:#fff5ee; border-color:#ff8b38; color:#ff8b38; }
-.store-action-bar { display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin:16px 16px 10px; }
-.store-action-bar .btn { white-space:nowrap; }
-#carouselStoreImages { max-width:100%; margin:0 auto 20px auto; border:8px solid #ff8b38; border-radius:15px; overflow:hidden; background:#fff; }
-.carousel-item { max-height:75vh; }
-.store-carousel-img { width:100%; object-fit:contain; display:block; max-height:75vh; }
-.carousel-indicators [data-bs-target] { background-color:#ff8b38; }
-.carousel-control-prev-icon, .carousel-control-next-icon { background-color:#ff8b38; border-radius:50%; }
-.produits-empty { text-align:center; color:#aaa; font-style:italic; padding:40px 16px; font-size:1rem; }
+.badge-statut {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 99px;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+}
+
+.badge-ouvert {
+    background: #e8f8ee;
+    color: #1a7a3c;
+    border: 1.5px solid #6fcf97;
+}
+
+.badge-ferme {
+    background: #fdf0f0;
+    color: #b52b2b;
+    border: 1.5px solid #e57373;
+}
+
+.badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+  .texte-badge-commerce {
+  color:#888; 
+  font-size:0.74rem;
+  text-align: center;
+  margin-bottom:10px;
+  display:block;
+    
+  }
+
+.badge-ouvert .badge-dot { background: #27ae60; }
+.badge-ferme .badge-dot  { background: #e53935; }
+
+.store-revendiquer-container {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.store-revendiquer-b {
+    color: var(--orange);
+    border: none;
+    background-color: initial;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.store-revendiquer-p {
+    margin-bottom: 0;
+    font-size: 0.75rem;
+}
+
+.store-modifier-commerce-container {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    margin-top:18px;
+}
+
+.store-modifier-commerce-content-container {
+    background-color: var(--orange);
+    border-radius: 999px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 10px;
+}
+
+#store-modifier-commerce-icon {
+    margin-right: 5px;
+    color: white;
+}
+    
+.store-modifier-commerce-b {
+    border: none;
+    color: white;
+}
+
+
+.btn-suggest-modif{   
+    border: solid 1px #0a5bb4;
+    margin-top: 2vh;
+    padding: 10px;
+    font-weight: bold;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    border-radius: 5px;
+    background-color: #c5d8f5;
+    margin-bottom:3vh;
+}
+
+.onglet-btn {
+    background: white;
+    color: #333;
+    border: 1px solid #ddd;
+    padding: 8px 18px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    transition: background 0.15s, color 0.15s;
+}
+
+.onglet-btn.onglet-actif {
+    background: #ff8b38;
+    color: white;
+    border-color: #ff8b38;
+}
+
+.onglet-btn:hover:not(.onglet-actif) {
+    background: #fff5ee;
+    border-color: #ff8b38;
+    color: #ff8b38;
+}
+
+.store-action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 16px 16px 10px;
+}
+
+.store-action-bar .btn { white-space: nowrap; }
+
+#carouselStoreImages {
+    max-width: 100%;
+    margin: 0 auto 20px auto;
+    border: 8px solid #ff8b38;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.carousel-item { max-height: 75vh; }
+
+.store-carousel-img {
+    width: 100%;
+    object-fit: contain;
+    display: block;
+    max-height: 75vh;
+}
+
+.carousel-indicators [data-bs-target] { background-color: #ff8b38; }
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #ff8b38;
+    border-radius: 50%;
+}
+
+.produits-empty {
+    text-align: center;
+    color: #aaa;
+    font-style: italic;
+    padding: 40px 16px;
+    font-size: 1rem;
+}
+
+.produits-empty .fa-box-open {
+    display: block;
+    font-size: 2.6rem;
+    margin-bottom: 12px;
+    color: #ffcba4;
+}
 
 /* Desktop: bloc bas masqué */
-.mobile-bottom-actions { display:none !important; }
+.mobile-bottom-actions { display: none !important; }
 
 @media (max-width: 767px) {
-    #page-container-store-details { padding-left:0; padding-right:0; }
-    .store-action-bar { margin:0; }
-    #carouselStoreImages { border:none; border-radius:0; border-bottom:2px solid #ff8b38; }
-    .store-carousel-img { min-height:220px; max-height:60vh; height:auto; object-fit:cover; }
+    #page-container-store-details { padding-left: 0; padding-right: 0; }
+    .store-action-bar { margin: 0; }
+    #carouselStoreImages { border: none; border-radius: 0; border-bottom: 2px solid #ff8b38; }
+    .store-carousel-img { min-height: 220px; max-height: 60vh; height: auto; object-fit: cover; }
 
-    .desktop-only-btn { display:none !important; }
+    /* Masquer les éléments qui passent en bas */
+    .desktop-only-btn { display: none !important; }
 
-    .mobile-bottom-actions { display:block !important; border-top:2px solid #f0f0f0; padding-top:8px; margin-top:8px; }
-
-    .commerce-réseaux { background:#f8f8f8; border-top:1px solid #eee; border-bottom:1px solid #eee; padding:14px 0; margin:8px 0; display:flex !important; justify-content:center; gap:22px; }
-
-    .commerce-wishlist { display:flex !important; gap:0 !important; margin:0 16px 10px !important; border:1px solid #eee; border-radius:8px; overflow:hidden; }
-    .commerce-wishlist .favori-btn, .commerce-wishlist .unfavori-btn { flex:1 !important; display:flex !important; flex-direction:column; align-items:center; gap:5px; padding:12px 6px; font-size:12px; background:white; border:none; cursor:pointer; text-align:center; line-height:1.3; }
-    .commerce-wishlist .favori-btn { border-right:1px solid #eee; }
-
-    /* Boutons itinéraire + site côte à côte */
-    .actions-commerce-row { display:flex; gap:8px; padding:0 16px; margin:8px 0; order:7; }
-    .actions-commerce-row .itinéraire-commerce,
-    .actions-commerce-row .site-commerce { flex:1; }
-    .actions-commerce-row .button-1-description,
-    .actions-commerce-row .button-2-description {
-        display:block !important;
-        width:100% !important;
-        text-align:center !important;
-        margin:0 !important;
-        box-sizing:border-box;
-        padding:8px 6px !important;
-        font-size:12px !important;
-        border-radius:8px;
-        position:static !important;
+    /* Bloc bas — visible mobile */
+    .mobile-bottom-actions {
+        display: block !important;
+        border-top: 2px solid #f0f0f0;
+        padding-top: 8px;
+        margin-top: 28px;
     }
 
-    .hr-page-commerce { display:none; }
+    /* Réseaux — bloc distinct */
+    .commerce-réseaux {
+        background: #f8f8f8;
+        border-top: 1px solid #eee;
+        border-bottom: 1px solid #eee;
+        padding: 14px 0;
+        margin: 8px 0;
+        display: flex !important;
+        justify-content: center;
+        gap: 22px;
+    }
 
-    .description-container { display:flex; flex-direction:column; }
-    .breadcrumb-yuumi                  { order:1; }
-    .description-container > h1        { order:2; }
-    .badge-statut                      { order:3; }
-    .texte-badge-commerce              { order:4; display:none; }
-    .description-principale            { order:5; }
-    .commerce-réseaux                  { order:6; }
-    .actions-commerce-row              { order:7; }
-    .commerce-wishlist                 { order:8; }
-    .description-secondaire            { order:9; }
+    /* Wishlist — deux blocs égaux */
+    .commerce-wishlist {
+        display: flex !important;
+        gap: 0 !important;
+        margin: 0 16px 10px !important;
+        border: 1px solid #eee;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .commerce-wishlist .favori-btn,
+    .commerce-wishlist .unfavori-btn {
+        flex: 1 !important;
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        padding: 12px 6px;
+        font-size: 12px;
+        background: white;
+        border: none;
+        cursor: pointer;
+        text-align: center;
+        line-height: 1.3;
+    }
+    .commerce-wishlist .favori-btn { border-right: 1px solid #eee; }
 
-    .description-container .store-revendiquer-container       { display:none !important; }
-    .description-container .store-modifier-commerce-container { display:none !important; }
+    /* Boutons itinéraire / site — pleine largeur */
+    .itinéraire-commerce, .site-commerce { padding: 0 16px; }
+    .itinéraire-commerce .button-1-description,
+    .site-commerce .button-2-description {
+        display: block !important;
+        width: 100% !important;
+        text-align: center !important;
+        margin: 6px 0 !important;
+        box-sizing: border-box;
+        padding: 12px 16px !important;
+        border-radius: 8px;
+        position: static !important;
+    }
+
+    /* HR masqué */
+    .hr-page-commerce { display: none; }
+
+    /* Ordre correct des éléments sur mobile */
+    .breadcrumb-yuumi                  { order: 1; }
+    .description-container > h1        { order: 2; }
+    .badge-statut                      { order: 3; }
+    .texte-badge-commerce              { order: 4; display: none; }
+    .description-principale            { order: 5; }
+    .commerce-réseaux                  { order: 6; }
+    .itinéraire-commerce               { order: 7; }
+    .site-commerce                     { order: 8; }
+    .commerce-wishlist                 { order: 9; }
+    .description-secondaire            { order: 10; }
+    .description-container .store-revendiquer-container       { display: none !important; }
+    .description-container .store-modifier-commerce-container { display: none !important; }
+    .desktop-only-btn                  { display: none !important; }
 }
 </style>
+
 {% endblock %}
