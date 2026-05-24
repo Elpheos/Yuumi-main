@@ -1057,7 +1057,7 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 /* Desktop: bloc bas masqué */
-.mobile-bottom-actions { display: none; }
+.mobile-bottom-actions { display: none !important; }
 
 @media (max-width: 767px) {
     #page-container-store-details { padding-left: 0; padding-right: 0; }
@@ -1130,9 +1130,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* HR masqué */
     .hr-page-commerce { display: none; }
+
+    /* Ordre correct des éléments sur mobile */
+    .breadcrumb-yuumi                  { order: 1; }
+    .description-container > h1        { order: 2; }
+    .badge-statut                      { order: 3; }
+    .texte-badge-commerce              { order: 4; display: none; }
+    .description-principale            { order: 5; }
+    .commerce-réseaux                  { order: 6; }
+    .itinéraire-commerce               { order: 7; }
+    .site-commerce                     { order: 8; }
+    .commerce-wishlist                 { order: 9; }
+    .description-secondaire            { order: 10; }
+    .store-revendiquer-container       { order: 99; display: none !important; }
+    .store-modifier-commerce-container { order: 99; display: none !important; }
+    .desktop-only-btn                  { display: none !important; }
 }
 </style>
 
 {% endblock %}
-
 
