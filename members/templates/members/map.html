@@ -500,9 +500,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateMap() {
         clusterGroup.clearLayers();
-        markers.forEach(marker => {
-            if (activeCategories.has(marker.category)) clusterGroup.addLayer(marker);
-        });
+        const toAdd = markers.filter(m => activeCategories.has(m.category));
+        clusterGroup.addLayers(toAdd);
         updateBadge();
     }
 
