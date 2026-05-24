@@ -1,9 +1,7 @@
 {% extends "master.html" %}
 {% load static %}
 
-{% block title %}
-Carte des commerces - {{ departement }} | Yuumi
-{% endblock %}
+{% block title %}Carte des commerces - {{ departement }} | Yuumi{% endblock %}
 
 {% block extra_head %}
 <meta name="geo.placename" content="{{ departement }}, France">
@@ -18,59 +16,57 @@ Carte des commerces - {{ departement }} | Yuumi
 {% block content %}
 <div class="page-container" id="page-container-map">
 <main>
-    
-    <!-- ===================== Filtres ===================== -->
-    <div class="map-content-supercontainer">
-    <div class="category-filters">
 
-        <!-- Tous -->
-        <div class="parent-filter">
-            <label>
-                <input type="checkbox" data-category="all" checked>
-                Tous
-            </label>
+    <div class="map-layout">
+
+        <!-- ===== SIDEBAR PC ===== -->
+        <div class="map-sidebar" id="map-sidebar">
+            <div class="sidebar-header">
+                <span>Filtres</span>
+            </div>
+            <div class="sidebar-scroll">
+                <div class="sidebar-all">
+                    <label class="sb-label">
+                        <input type="checkbox" data-category="all" id="cb-all" checked>
+                        <span>Tous</span>
+                    </label>
+                </div>
+                <div id="sidebar-groups"></div>
+            </div>
         </div>
 
-    {% regroup categories by super_categorie__name as grouped_categories %}
+        <!-- ===== CARTE ===== -->
+        <div class="map-wrapper">
+            <div id="map"></div>
 
+            <!-- Bouton mobile flottant -->
+            <button class="map-mobile-filter-btn" id="mobile-filter-btn">
+                <svg style="width:16px;height:16px;fill:white" viewBox="0 0 512 512"><path d="M0 416c0 17.7 14.3 32 32 32l54.7 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 448c17.7 0 32-14.3 32-32s-14.3-32-32-32l-246.7 0c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 384c-17.7 0-32 14.3-32 32zm128 0a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zM320 256a32 32 0 1 1 64 0 32 32 0 1 1 -64 0zm-32-44.7c-12.3-28.3-40.5-48-73.3-48s-61 19.7-73.3 48L32 192c-17.7 0-32 14.3-32 32s14.3 32 32 32l109.3 0c12.3 28.3 40.5 48 73.3 48s61-19.7 73.3-48L480 256c17.7 0 32-14.3 32-32s-14.3-32-32-32l-192 0z"/></svg>
+                Filtres
+                <span class="mobile-filter-badge" id="mobile-filter-badge" style="display:none">0</span>
+            </button>
+        </div>
 
-        {% for group in grouped_categories %}
-        <div class="parent-filter">
+    </div>
 
-            <div>
-                <label>
-                    <input type="checkbox"
-                           class="parent-checkbox"
-                           data-parent="{{ group.grouper }}">
-                    {{ group.grouper|title }}
+    <!-- ===== OVERLAY MOBILE ===== -->
+    <div class="map-mobile-overlay" id="map-mobile-overlay">
+        <div class="overlay-header">
+            <span>Filtres</span>
+            <button class="overlay-close" id="overlay-close">✕</button>
+        </div>
+        <div class="overlay-body">
+            <div class="overlay-all">
+                <label class="sb-label">
+                    <input type="checkbox" data-category="all" id="cb-all-mobile" checked>
+                    <span>Tous</span>
                 </label>
-
-                <button class="toggle-children"
-                        data-parent="{{ group.grouper }}">
-                    <span class="toggle-arrow"><svg style="width: 12px;" viewBox="0 0 256 512"><path fill="rgb(10, 91, 180)" d="M249.3 235.8c10.2 12.6 9.5 31.1-2.2 42.8l-128 128c-9.2 9.2-22.9 11.9-34.9 6.9S64.5 396.9 64.5 384l0-256c0-12.9 7.8-24.6 19.8-29.6s25.7-2.2 34.9 6.9l128 128 2.2 2.4z"/></svg></span>
-                </button>
             </div>
-
-            <div class="child-buttons"
-                 data-parent="{{ group.grouper }}">
-
-                {% for cat in group.list %}
-                    <button class="map-child-buttons" data-category="{{ cat.slug }}">
-                        {{ cat.name }}
-                    </button>
-                {% endfor %}
-
-            </div>
+            <div id="overlay-groups"></div>
         </div>
-        {% endfor %}
-
-    </div>
-
-    <!-- ===================== Carte ===================== -->
-    <div id="map">
-        <div class="map-mobile-menu-opener"><button class="map-mobile-menu-opener-b"><svg id="map-editsearch-mobile-icon" style="width: 8px;" viewBox="0 0 512 512"><path fill="rgb(255, 255, 255)" d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
-            Afficher / Masquer le menu</button></div>
-    </div>
+        <div class="overlay-footer">
+            <button class="overlay-apply" id="overlay-apply">Voir les résultats</button>
+        </div>
     </div>
 
     {{ stores|json_script:"stores-data" }}
@@ -81,490 +77,616 @@ Carte des commerces - {{ departement }} | Yuumi
 {% endblock %}
 
 {% block extra_js %}
-
 <style>
-#page-container-map{
+#page-container-map {
     padding-left: 0;
     padding-right: 0;
 }
-    
-.map-content-supercontainer {
-    background: var(--orange);
-    border: #ff8b38 solid 2px;
-}
-    
-#map {
-    height: 700px;
-    align-items: center;
-}
 
-.map-mobile-menu-opener {
-    display: none;
-}
-
-/* === Style popup Yuumi === */
-.leaflet-popup.yuumi-popup {
-    max-width: 380px !important;
-}
-
-.leaflet-popup-content-wrapper.yuumi-popup {
-    border-radius: 12px;
-    padding: 8px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-}
-
-.leaflet-popup-content {
-    margin: 8px !important;
-    width: auto !important;
-}
-
-/* Croix de fermeture personnalisée */
-.yuumi-popup .leaflet-popup-close-button {
-    width: 24px !important;
-    height: 24px !important;
-    background: #ff8b38 !important;
-    color: white !important;
-    border-radius: 50% !important;
-    font-size: 16px !important;
-    line-height: 24px !important;
-    text-align: center !important;
-    top: -10px !important;
-    right: -10px !important;
-    padding: 0 !important;
-}
-
-.popup-content {
-    width: 200px;
-}
-
-.popup-content a {
-    text-decoration: none;
-    color: #ff8b38;
-    display: block;
-}
-
-.yuumi-popup-h3 {
-    color: #ff8b38;
-    font-size: 16px;
-    text-align: center;
-    margin: 0 0 6px;
-}
-
-.yuumi-popup-h3 span {
-    font-size: 13px;
-    color: #555;
-    font-weight: normal;
-}
-
-.yuumi-popup-img {
-    border: 3px solid #ff8b38;
-    border-radius: 10px;
-    max-width: 100%;
-    height: 140px;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-    margin: 8px auto 0;
-    box-sizing: border-box;
-}
-
-/* === Filtres catégories === */
-.category-filters {
+/* ===== LAYOUT ===== */
+.map-layout {
     display: flex;
+    height: calc(100vh - 80px);
+}
+
+/* ===== SIDEBAR PC ===== */
+.map-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: white;
+    border-right: 1px solid #e5e5e5;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.sidebar-header {
+    background: #ff8b38;
+    color: white;
+    font-weight: 600;
+    padding: 12px 16px;
     font-size: 15px;
 }
 
-.parent-filter {
-    background: var(--orange);
-    border-right: 1px solid #fff;
-    border-collapse: collapse;
-    padding: 12px 16px;
-    position: relative;
+.sidebar-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
 }
 
-#map-menu-arrow {
-    color: var(--bleu);
-    font-size: 1.5rem;
+.sidebar-all {
+    padding: 6px 14px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 4px;
 }
 
-.toggle-children {
-    border: none;
-    background: none;
+.sb-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     cursor: pointer;
-    font-size: 18px;
-    color: #ff8b38;
+    font-size: 14px;
+    color: #333;
+    user-select: none;
 }
 
-.toggle-children.open {
+.sb-label input {
+    width: 15px;
+    height: 15px;
+    accent-color: #ff8b38;
+    flex-shrink: 0;
+}
+
+/* Super catégorie */
+.sb-super-block {
+    margin-bottom: 2px;
+}
+
+.sb-super-hd {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    cursor: pointer;
+    background: #fafafa;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.sb-super-hd:hover {
+    background: #f5f5f5;
+}
+
+.sb-super-hd input {
+    width: 15px;
+    height: 15px;
+    accent-color: #ff8b38;
+}
+
+.sb-super-hd span {
+    font-weight: 600;
+    font-size: 14px;
+    color: #ff8b38;
+    flex: 1;
+}
+
+.sb-super-hd .chevron {
+    font-size: 11px;
+    color: #aaa;
+    transition: transform 0.2s;
+}
+
+.sb-super-hd.open .chevron {
     transform: rotate(90deg);
 }
 
-.child-buttons {
+.sb-super-content {
+    display: none;
+    padding: 4px 0;
+}
+
+.sb-super-content.open {
+    display: block;
+}
+
+/* Catégorie intermédiaire */
+.sb-inter-block {
+    margin: 2px 0;
+}
+
+.sb-inter-hd {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px 5px 24px;
+    cursor: pointer;
+}
+
+.sb-inter-hd:hover {
+    background: #f5f5f5;
+}
+
+.sb-inter-hd input {
+    width: 13px;
+    height: 13px;
+    accent-color: #0a5bb4;
+}
+
+.sb-inter-hd span {
+    font-weight: 500;
+    font-size: 13px;
+    color: #0a5bb4;
+    flex: 1;
+}
+
+.sb-inter-hd .chevron {
+    font-size: 10px;
+    color: #aaa;
+    transition: transform 0.2s;
+}
+
+.sb-inter-hd.open .chevron {
+    transform: rotate(90deg);
+}
+
+.sb-inter-content {
+    display: none;
+    padding: 2px 0 4px;
+}
+
+.sb-inter-content.open {
+    display: block;
+}
+
+/* Catégorie directe */
+.sb-cat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 14px 4px 34px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #555;
+}
+
+.sb-cat-item.direct {
+    padding-left: 24px;
+}
+
+.sb-cat-item:hover {
+    background: #fafafa;
+}
+
+.sb-cat-item input {
+    width: 13px;
+    height: 13px;
+    accent-color: #ff8b38;
+}
+
+/* ===== CARTE ===== */
+.map-wrapper {
+    flex: 1;
+    position: relative;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+}
+
+/* ===== BOUTON MOBILE ===== */
+.map-mobile-filter-btn {
     display: none;
     position: absolute;
-    top: 50px;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 1000;
-    background: rgb(255, 255, 255);
-    border: 2px solid rgb(255, 139, 56);
-    border-radius: 8px;
-    padding: 8px 5px;
-    min-width: 30dvw;
-    min-height: 15dvh;
-    margin-top: 10px;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.map-child-buttons {
-    padding: 6px 12px;
-    border: 2px solid #ff8b38;
-    border-radius: 8px;
-    background: #fff;
-    color: #ff8b38;
-    cursor: pointer; 
-    height: fit-content;
-}
-
-/* État actif (toujours) */
-.child-buttons button.active {
     background: #ff8b38;
-    color: #fff;
-}
-
-    .leaflet-overlay-pane svg path {
-    display: none;
-}
-/* Petit cluster (moins de 10 marqueurs) */
-.marker-cluster-small div {
-    background-color: #ff8b38;
-}
-.marker-cluster-small {
-    background-color: rgba(255, 139, 56, 0.3);
-}
-
-/* Moyen cluster (10 à 100) */
-.marker-cluster-medium div {
-    background-color: #ff8b38;
-}
-.marker-cluster-medium {
-    background-color: rgba(255, 139, 56, 0.3);
-}
-
-/* Grand cluster (plus de 100) */
-.marker-cluster-large div {
-    background-color: #ff8b38;
-}
-.marker-cluster-large {
-    background-color: rgba(255, 139, 56, 0.3);
-}
-@media (max-width: 767px) {
-    .map-content-supercontainer {
-        background-color: initial;
-        border: none;
-    }
-
-    #map {
-        margin-top: 0;
-        width: 100%;
-        height: 100dvh;
-        position: relative;
-    }
-
-    .map-mobile-menu-opener {
-        position: absolute;
-        top: 5px;
-        left: 0;
-        display: flex;
-        z-index: 401;
-        justify-content: center;
-        width: 100%;
-    }
-
-    .map-mobile-menu-opener-b {
-        color: #fff;
-        border: none;
-        background-color: #ff8b38;
-        padding: 3px 5px;
-        border-radius: 100px;
-        font-size: 0.8rem;
-    }
-
-    #map-editsearch-mobile-icon {
-        margin: 0 0px 3px 0;
-    }
-
-    .category-filters {
-        padding: 0;
-        display: none;
-    }
-
-    .parent-filter {
+    color: white;
     border: none;
-    padding: 3px 8px;
+    border-radius: 100px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 
-    .child-buttons {
+.mobile-filter-badge {
+    background: white;
+    color: #ff8b38;
+    border-radius: 100px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 1px 6px;
+}
+
+/* ===== OVERLAY MOBILE ===== */
+.map-mobile-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 10020;
+    background: white;
+    flex-direction: column;
+}
+
+.map-mobile-overlay.open {
+    display: flex;
+}
+
+.overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #ff8b38;
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.overlay-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.overlay-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 0;
+    -webkit-overflow-scrolling: touch;
+}
+
+.overlay-all {
+    padding: 10px 16px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 4px;
+}
+
+.overlay-all .sb-label {
+    font-size: 15px;
+}
+
+.overlay-footer {
+    padding: 12px 16px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.overlay-apply {
     width: 100%;
-    height: auto;
-    min-height: 0;
-    position: static;
+    background: #ff8b38;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-    /* Popup compacte */
-    .leaflet-popup-content-wrapper {
-        max-width: 72vw !important;
-    }
+/* ===== POPUP ===== */
+.leaflet-popup.yuumi-popup { max-width: 380px !important; }
+.leaflet-popup-content-wrapper.yuumi-popup { border-radius: 12px; padding: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.leaflet-popup-content { margin: 8px !important; width: auto !important; }
+.yuumi-popup .leaflet-popup-close-button { width: 24px !important; height: 24px !important; background: #ff8b38 !important; color: white !important; border-radius: 50% !important; font-size: 16px !important; line-height: 24px !important; text-align: center !important; top: -10px !important; right: -10px !important; padding: 0 !important; }
+.popup-content { width: 200px; }
+.popup-content a { text-decoration: none; color: #ff8b38; display: block; }
+.yuumi-popup-h3 { color: #ff8b38; font-size: 16px; text-align: center; margin: 0 0 6px; }
+.yuumi-popup-h3 span { font-size: 13px; color: #555; font-weight: normal; }
+.yuumi-popup-img { border: 3px solid #ff8b38; border-radius: 10px; max-width: 100%; height: 140px; object-fit: cover; display: block; margin: 8px auto 0; box-sizing: border-box; }
 
-    .popup-content {
-        width: 40vw;
-    }
+/* Clusters */
+.marker-cluster-small div, .marker-cluster-medium div, .marker-cluster-large div { background-color: #ff8b38; }
+.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(255,139,56,0.3); }
+.leaflet-overlay-pane svg path { display: none; }
 
-    .yuumi-popup-img {
-        width: 100%;
-        height: 110px;
-        object-fit: cover;
-    }
+/* ===== MOBILE ===== */
+@media (max-width: 767px) {
+    .map-layout { height: 100dvh; }
+    .map-sidebar { display: none; }
+    .map-mobile-filter-btn { display: flex; }
+    #map { height: 100dvh; }
 
-    .yuumi-popup-h3 {
-        font-size: 13px;
-    }
+    /* overlay reprend les styles sidebar */
+    .map-mobile-overlay .sb-super-hd { padding: 10px 16px; }
+    .map-mobile-overlay .sb-super-hd span { font-size: 15px; }
+    .map-mobile-overlay .sb-inter-hd { padding: 8px 16px 8px 28px; }
+    .map-mobile-overlay .sb-inter-hd span { font-size: 14px; }
+    .map-mobile-overlay .sb-cat-item { padding: 7px 16px 7px 40px; font-size: 14px; }
+    .map-mobile-overlay .sb-cat-item.direct { padding-left: 28px; }
+    .map-mobile-overlay .sb-label { font-size: 15px; }
+
+    .leaflet-popup-content-wrapper { max-width: 72vw !important; }
+    .popup-content { width: 40vw; }
+    .yuumi-popup-img { width: 100%; height: 110px; object-fit: cover; }
+    .yuumi-popup-h3 { font-size: 13px; }
 }
 </style>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    /* ========= Données ========= */
-    const stores = JSON.parse(
-        document.getElementById('stores-data').textContent
-    );
+    const stores = JSON.parse(document.getElementById('stores-data').textContent);
+    const categoriesRaw = JSON.parse(document.getElementById("categories-data").textContent);
 
-    const leafletMap = L.map('map').setView(
-        [stores[0]?.lat || 46, stores[0]?.lng || 2], 10
-    );
+    /* ========= CARTE ========= */
+    const leafletMap = L.map('map').setView([stores[0]?.lat || 46, stores[0]?.lng || 2], 10);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19, attribution: '© OpenStreetMap © CARTO'
+    }).addTo(leafletMap);
 
-    L.tileLayer(
-        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        { maxZoom: 19, attribution: '© OpenStreetMap © CARTO' }
-    ).addTo(leafletMap);
+    const clusterGroup = L.markerClusterGroup({
+        maxClusterRadius: 0,
+        spiderfyOnMaxZoom: true,
+        showCoverageOnHover: false,
+        animateAddingMarkers: true,
+        zoomToBoundsOnClick: true,
+    });
 
-    /* ========= Groupe de clusters ========= */
-    // NOUVEAU : on crée un "groupe" intelligent qui gère
-    // le clustering et le spiderfy automatiquement
-   const clusterGroup = L.markerClusterGroup({
-    maxClusterRadius: 0,
-    spiderfyOnMaxZoom: true,
-    showCoverageOnHover: false,
-    animateAddingMarkers: true,
-    zoomToBoundsOnClick: true,
-});
-    /* ========= Mapping catégories ========= */
-    const categories = JSON.parse(
-        document.getElementById("categories-data").textContent
-    );
+    /* ========= GROUPEMENT 3 NIVEAUX ========= */
+    const grouped = {};
+    categoriesRaw.forEach(cat => {
+        const sn = cat.super_categorie__name || 'Autres';
+        const inN = cat.categorie_intermediaire__name || null;
+        if (!grouped[sn]) grouped[sn] = { direct: [], inter: {} };
+        if (inN) {
+            if (!grouped[sn].inter[inN]) grouped[sn].inter[inN] = [];
+            grouped[sn].inter[inN].push(cat);
+        } else {
+            grouped[sn].direct.push(cat);
+        }
+    });
 
+    /* ========= ICÔNES ========= */
     const categoryLabels = {};
-    categories.forEach(cat => {
-        categoryLabels[cat.slug] = { 
-            name: cat.name, 
-            icon_perso: cat.icon_perso 
-        };
+    categoriesRaw.forEach(cat => {
+        categoryLabels[cat.slug] = { name: cat.name, icon_perso: cat.icon_perso };
     });
 
     function createIcon(categorySlug, isFavorite = false) {
-    const cat = categoryLabels[categorySlug] || {};
-    const pinColor = isFavorite ? "#D61372" : "#ff8b38";
-
-    let iconHtml;
-    if (cat.icon_perso) {
-        iconHtml = `<img src="/media/${cat.icon_perso}" class="carte-icones-img">`;
-    } else {
-        iconHtml = `<img src="/static/images/yuumi-Icone-commerce.png" class="carte-icones-img">`;
+        const cat = categoryLabels[categorySlug] || {};
+        const pinColor = isFavorite ? "#D61372" : "#ff8b38";
+        const iconHtml = cat.icon_perso
+            ? `<img src="/media/${cat.icon_perso}" class="carte-icones-img">`
+            : `<img src="/static/images/yuumi-Icone-commerce.png" class="carte-icones-img">`;
+        return L.divIcon({
+            className: "custom-pin",
+            html: `<div style="position:relative;width:30px;height:50px;"><svg viewBox="0 0 24 40" width="30" height="50"><path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z" fill="${pinColor}"/></svg>${iconHtml}</div>`,
+            iconSize: [30, 50], iconAnchor: [15, 50], popupAnchor: [0, -50]
+        });
     }
 
-    return L.divIcon({
-        className: "custom-pin",
-        html: `
-            <div style="position:relative;width:30px;height:50px;">
-                <svg viewBox="0 0 24 40" width="30" height="50">
-                    <path d="M12 0C7.03 0 3 4.03 3 9c0 6.75 9 21 9 21s9-14.25 9-21c0-4.97-4.03-9-9-9z"
-                          fill="${pinColor}"/>
-                </svg>
-                ${iconHtml}
-            </div>
-        `,
-        iconSize: [30, 50],
-        iconAnchor: [15, 50],
-        popupAnchor: [0, -50]
-    });
-}
-
-    /* ========= Marqueurs ========= */
+    /* ========= MARQUEURS ========= */
     const markers = stores.map(store => {
         if (store.lat == null || store.lng == null || !store.categorie) return null;
-
         const label = categoryLabels[store.categorie] || { name: store.categorie };
-
-        const marker = L.marker(
-            [store.lat, store.lng],
-            { icon: createIcon(store.categorie, store.is_favorite) }
-        ).bindPopup(
-            `
-            <div class="popup-content">
-                <a href="${store.url}">
-                    <h3 class="yuumi-popup-h3">
-                        ${store.nom}<br>
-                        <span>${label.name}</span>
-                    </h3>
-                    ${store.photo
-                        ? `<img class="yuumi-popup-img"
-                                src="${store.photo}"
-                                alt="${store.nom}">`
-                        : ''}
-                </a>
-            </div>
-            `,
-            { className: 'yuumi-popup' }
-        );
-
+        const marker = L.marker([store.lat, store.lng], { icon: createIcon(store.categorie, store.is_favorite) })
+            .bindPopup(`
+                <div class="popup-content">
+                    <a href="${store.url}">
+                        <h3 class="yuumi-popup-h3">${store.nom}<br><span>${label.name}</span></h3>
+                        ${store.photo ? `<img class="yuumi-popup-img" src="${store.photo}" alt="${store.nom}">` : ''}
+                    </a>
+                </div>`, { className: 'yuumi-popup' });
         marker.category = store.categorie;
-        // MODIFIÉ : on n'ajoute plus à la carte directement,
-        // mais au groupe — le groupe s'occupe du reste
         marker.addTo(clusterGroup);
         return marker;
     }).filter(Boolean);
 
-    // NOUVEAU : on ajoute le groupe (avec tous ses marqueurs) à la carte
     leafletMap.addLayer(clusterGroup);
 
-    /* ========= Utils ========= */
-    function getActiveChildren() {
-        return Array.from(
-            document.querySelectorAll('.child-buttons button.active')
-        ).map(btn => btn.dataset.category);
-    }
+    /* ========= STATE DES FILTRES ========= */
+    const activeCategories = new Set(categoriesRaw.map(c => c.slug));
 
     function updateMap() {
-        const active = getActiveChildren();
-        // MODIFIÉ : on vide le groupe, puis on remet seulement
-        // les marqueurs des catégories actives
         clusterGroup.clearLayers();
         markers.forEach(marker => {
-            if (active.includes(marker.category)) {
-                clusterGroup.addLayer(marker);
-            }
+            if (activeCategories.has(marker.category)) clusterGroup.addLayer(marker);
         });
+        updateBadge();
     }
 
-    function updateParentsState() {
-        document.querySelectorAll('.parent-checkbox').forEach(parent => {
-            const group = document.querySelector(
-                `.child-buttons[data-parent="${parent.dataset.parent}"]`
-            );
-            const children = group.querySelectorAll('button');
-            const hasActive = Array.from(children)
-                .some(btn => btn.classList.contains('active'));
-
-            parent.checked = hasActive;
-        });
+    function updateBadge() {
+        const total = categoriesRaw.length;
+        const active = activeCategories.size;
+        const badge = document.getElementById('mobile-filter-badge');
+        if (active < total) {
+            badge.textContent = active;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
     }
 
-    function updateAllState() {
-        const allChildren = document.querySelectorAll('.child-buttons button');
-        const allActive = Array.from(allChildren)
-            .every(btn => btn.classList.contains('active'));
-
-        document.querySelector('input[data-category="all"]').checked = allActive;
-    }
-
-    function syncUI() {
-        updateParentsState();
-        updateAllState();
-        updateMap();
-    }
-
-    /* ========= Events ========= */
-
-    document.querySelector('input[data-category="all"]')
-    .addEventListener('change', function () {
-
-        document.querySelectorAll('.child-buttons button')
-            .forEach(btn => {
-                btn.classList.toggle('active', this.checked);
+    /* ========= CONSTRUCTION HTML DU MENU ========= */
+    function buildMenuHTML(containerClass) {
+        let html = '';
+        Object.entries(grouped).forEach(([superName, data]) => {
+            const hasInter = Object.keys(data.inter).length > 0;
+            const superSlug = superName.toLowerCase().replace(/\s+/g, '-');
+            html += `
+            <div class="sb-super-block">
+                <div class="sb-super-hd open" data-super="${superSlug}">
+                    <input type="checkbox" class="cb-super" data-super="${superSlug}" checked>
+                    <span>${superName}</span>
+                    <span class="chevron">▶</span>
+                </div>
+                <div class="sb-super-content open">
+            `;
+            Object.entries(data.inter).forEach(([interName, cats]) => {
+                const interSlug = interName.toLowerCase().replace(/\s+/g, '-');
+                html += `
+                <div class="sb-inter-block">
+                    <div class="sb-inter-hd open" data-inter="${interSlug}">
+                        <input type="checkbox" class="cb-inter" data-inter="${interSlug}" checked>
+                        <span>${interName}</span>
+                        <span class="chevron">▶</span>
+                    </div>
+                    <div class="sb-inter-content open">
+                `;
+                cats.forEach(cat => {
+                    html += `<div class="sb-cat-item" data-category="${cat.slug}"><input type="checkbox" class="cb-cat" data-category="${cat.slug}" checked><span>${cat.name}</span></div>`;
+                });
+                html += `</div></div>`;
             });
+            data.direct.forEach(cat => {
+                html += `<div class="sb-cat-item direct" data-category="${cat.slug}"><input type="checkbox" class="cb-cat" data-category="${cat.slug}" checked><span>${cat.name}</span></div>`;
+            });
+            html += `</div></div>`;
+        });
+        return html;
+    }
 
-        syncUI();
+    document.getElementById('sidebar-groups').innerHTML = buildMenuHTML('sidebar');
+    document.getElementById('overlay-groups').innerHTML = buildMenuHTML('overlay');
+
+    /* ========= EVENTS COMMUNS (sidebar + overlay) ========= */
+    function bindMenuEvents(container) {
+
+        // Toggle accordéon super
+        container.querySelectorAll('.sb-super-hd').forEach(hd => {
+            hd.addEventListener('click', e => {
+                if (e.target.type === 'checkbox') return;
+                hd.classList.toggle('open');
+                hd.nextElementSibling.classList.toggle('open');
+            });
+        });
+
+        // Toggle accordéon inter
+        container.querySelectorAll('.sb-inter-hd').forEach(hd => {
+            hd.addEventListener('click', e => {
+                if (e.target.type === 'checkbox') return;
+                hd.classList.toggle('open');
+                hd.nextElementSibling.classList.toggle('open');
+            });
+        });
+
+        // Checkbox catégorie
+        container.querySelectorAll('.cb-cat').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const slug = cb.dataset.category;
+                if (cb.checked) activeCategories.add(slug);
+                else activeCategories.delete(slug);
+                syncAllCheckboxes();
+                updateMap();
+            });
+        });
+
+        // Checkbox intermédiaire
+        container.querySelectorAll('.cb-inter').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const interSlug = cb.dataset.inter;
+                const block = cb.closest('.sb-inter-block');
+                block.querySelectorAll('.cb-cat').forEach(catCb => {
+                    catCb.checked = cb.checked;
+                    const slug = catCb.dataset.category;
+                    if (cb.checked) activeCategories.add(slug);
+                    else activeCategories.delete(slug);
+                });
+                syncAllCheckboxes();
+                updateMap();
+            });
+        });
+
+        // Checkbox super
+        container.querySelectorAll('.cb-super').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const superSlug = cb.dataset.super;
+                const block = cb.closest('.sb-super-block');
+                block.querySelectorAll('.cb-cat').forEach(catCb => {
+                    catCb.checked = cb.checked;
+                    const slug = catCb.dataset.category;
+                    if (cb.checked) activeCategories.add(slug);
+                    else activeCategories.delete(slug);
+                });
+                block.querySelectorAll('.cb-inter').forEach(interCb => {
+                    interCb.checked = cb.checked;
+                });
+                syncAllCheckboxes();
+                updateMap();
+            });
+        });
+    }
+
+    // Checkbox "Tous"
+    document.querySelectorAll('input[data-category="all"]').forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (cb.checked) {
+                categoriesRaw.forEach(c => activeCategories.add(c.slug));
+            } else {
+                activeCategories.clear();
+            }
+            syncAllCheckboxes();
+            updateMap();
+        });
     });
 
-    document.querySelectorAll('.parent-checkbox')
-        .forEach(parent => {
-            parent.addEventListener('change', function () {
-                const currentParent = this.dataset.parent;
-
-                const group = document.querySelector(
-                    `.child-buttons[data-parent="${currentParent}"]`
-                );
-                const children = group.querySelectorAll('button');
-
-                children.forEach(btn =>
-                    btn.classList.toggle('active', this.checked)
-                );
-
-                syncUI();
+    /* ========= SYNC TOUTES LES CHECKBOXES ========= */
+    function syncAllCheckboxes() {
+        const allContainers = [
+            document.getElementById('map-sidebar'),
+            document.getElementById('map-mobile-overlay')
+        ];
+        allContainers.forEach(container => {
+            if (!container) return;
+            // Catégories
+            container.querySelectorAll('.cb-cat').forEach(cb => {
+                cb.checked = activeCategories.has(cb.dataset.category);
             });
-        });
-
-    document.querySelectorAll('.child-buttons button')
-        .forEach(btn => {
-            btn.addEventListener('click', function () {
-                this.classList.toggle('active');
-                syncUI();
+            // Intermédiaires
+            container.querySelectorAll('.cb-inter').forEach(cb => {
+                const block = cb.closest('.sb-inter-block');
+                const cats = block.querySelectorAll('.cb-cat');
+                const allChecked = Array.from(cats).every(c => c.checked);
+                cb.checked = allChecked;
+                cb.indeterminate = !allChecked && Array.from(cats).some(c => c.checked);
             });
-        });
-
-    document.querySelectorAll('.toggle-children')
-        .forEach(btn => {
-            btn.addEventListener('click', function () {
-                const currentParent = this.dataset.parent;
-                const group = document.querySelector(
-                    `.child-buttons[data-parent="${currentParent}"]`
-                );
-                const open = group.style.display === 'flex';
-
-                document.querySelectorAll('.child-buttons').forEach(otherGroup => {
-                    otherGroup.style.display = 'none';
-                });
-
-                document.querySelectorAll('.toggle-children').forEach(toggle => {
-                    toggle.classList.remove('open');
-                });
-
-                if (!open) {
-                    group.style.display = 'flex';
-                    this.classList.add('open');
-                }
+            // Super
+            container.querySelectorAll('.cb-super').forEach(cb => {
+                const block = cb.closest('.sb-super-block');
+                const cats = block.querySelectorAll('.cb-cat');
+                const allChecked = Array.from(cats).every(c => c.checked);
+                cb.checked = allChecked;
+                cb.indeterminate = !allChecked && Array.from(cats).some(c => c.checked);
             });
-        });
-
-    /*APPARITION MENU SUR MOBILE*/
-    const mobileMenuButton = document.querySelector('.map-mobile-menu-opener-b');
-    const categoryFilters = document.querySelector('.category-filters');
-
-    if (mobileMenuButton && categoryFilters) {
-        mobileMenuButton.addEventListener('click', function () {
-            const isOpen = categoryFilters.style.display === 'block';
-            categoryFilters.style.display = isOpen ? 'none' : 'block';
+            // Tous
+            const allActive = activeCategories.size === categoriesRaw.length;
+            container.querySelectorAll('input[data-category="all"]').forEach(cb => {
+                cb.checked = allActive;
+                cb.indeterminate = !allActive && activeCategories.size > 0;
+            });
         });
     }
 
-    /* ========= Init ========= */
-    document.querySelectorAll('.child-buttons button')
-        .forEach(btn => btn.classList.add('active'));
+    bindMenuEvents(document.getElementById('map-sidebar'));
+    bindMenuEvents(document.getElementById('map-mobile-overlay'));
 
-    document.querySelector('input[data-category="all"]').checked = true;
-    syncUI();
+    /* ========= MOBILE OVERLAY ========= */
+    const overlay = document.getElementById('map-mobile-overlay');
+    document.getElementById('mobile-filter-btn').addEventListener('click', () => {
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    });
+    document.getElementById('overlay-close').addEventListener('click', () => {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+    document.getElementById('overlay-apply').addEventListener('click', () => {
+        overlay.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+
+    /* ========= INIT ========= */
+    updateMap();
+    syncAllCheckboxes();
 
 });
 </script>
-
 {% endblock %}
