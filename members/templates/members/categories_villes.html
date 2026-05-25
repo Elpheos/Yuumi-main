@@ -67,9 +67,7 @@
     cursor: pointer;
     border: 3px solid #0a5bb4;
 }
-.categ-tile-inter img {
-    filter: brightness(0.5) sepia(1) hue-rotate(190deg) saturate(3);
-}
+
 .categ-tile-inter > span {
     border-color: #0a5bb4;
     color: #0a5bb4;
@@ -118,7 +116,7 @@
                 {% if inter.image %}
     <img src="{{ inter.image.url }}" alt="{{ inter.name }}" loading="lazy">
 {% else %}
-    <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
+    <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy" style="filter: brightness(0.5) sepia(1) hue-rotate(190deg) saturate(3);">
 {% endif %}
                 <span>{{ inter.name }}</span>
                 <div class="inter-count">{{ cats|length }}</div>
