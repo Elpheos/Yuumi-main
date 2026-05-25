@@ -115,7 +115,11 @@
 
             {% for inter, cats in data.intermediaires.items %}
             <div class="categ-tile categ-tile-inter" data-slug="{{ inter.slug }}">
-                <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
+                {% if inter.image %}
+    <img src="{{ inter.image }}" alt="{{ inter.name }}" loading="lazy">
+{% else %}
+    <img src="{% static 'placeholder.png' %}" alt="{{ inter.name }}" loading="lazy">
+{% endif %}
                 <span>{{ inter.name }}</span>
                 <div class="inter-count">{{ cats|length }}</div>
             </div>
