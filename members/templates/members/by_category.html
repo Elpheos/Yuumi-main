@@ -64,7 +64,7 @@
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     width: 90%;
-    margin: 16px auto 0auto;
+    margin: 16px auto 0 auto;
 }
 
 /* ------------------------------------------------------------ */
@@ -100,6 +100,105 @@
     margin-top: 12px;
     font-weight: 600;
     font-size: 1rem;
+}
+
+/* ------------------------------------------------------------ */
+/* 🔸 En-tête de section avec slider */
+/* ------------------------------------------------------------ */
+.category-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 90%;
+    margin: 0 auto;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.category-header-left {
+    flex: 1;
+}
+
+/* ------------------------------------------------------------ */
+/* 🔸 Slider de distance */
+/* ------------------------------------------------------------ */
+.distance-slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 220px;
+}
+
+.distance-slider-label {
+    font-size: 0.82rem;
+    color: #666;
+    white-space: nowrap;
+}
+
+.distance-slider-label span {
+    font-weight: 700;
+    color: #ff8b38;
+}
+
+.distance-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.distance-slider-row input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 160px;
+    height: 4px;
+    border-radius: 2px;
+    background: #ddd;
+    outline: none;
+    cursor: pointer;
+}
+
+.distance-slider-row input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ff8b38;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(255,139,56,0.4);
+    transition: background 0.15s;
+}
+
+.distance-slider-row input[type="range"]::-webkit-slider-thumb:hover {
+    background: #e87a2a;
+}
+
+.distance-slider-row input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ff8b38;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(255,139,56,0.4);
+}
+
+.distance-no-geo {
+    font-size: 0.78rem;
+    color: #aaa;
+    font-style: italic;
+}
+
+/* Message aucun résultat après filtre */
+.distance-no-result {
+    display: none;
+    text-align: center;
+    color: #aaa;
+    font-size: 0.95rem;
+    padding: 30px 0;
+    width: 90%;
+    margin: 0 auto;
 }
 
 /* ------------------------------------------------------------ */
@@ -198,6 +297,25 @@
     .derniers-arrivants-grid-container {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .category-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .distance-slider-wrapper {
+        align-items: flex-start;
+        width: 100%;
+    }
+
+    .distance-slider-row input[type="range"] {
+        width: 100%;
+        flex: 1;
+    }
+
+    .distance-slider-row {
+        width: 100%;
+    }
 }
 @media (max-width: 480px) {
     .derniers-arrivants-grid-container {
@@ -210,26 +328,49 @@
 <main>
 
     <section class="derniers-arrivants-container">
-        <h1 class="page-category-title">
-            Commerces à {{ ville|title }} — {{ category }}
-        </h1>
-        <p class="category-description">
-            Découvrez les {{ category|lower }} à {{ ville|title }}. 
-            Retrouvez leurs horaires, adresses et informations pratiques pour chacun de ces commerces locaux.
-        </p>
+
+        <!-- En-tête : titre + slider -->
+        <div class="category-header">
+            <div class="category-header-left">
+                <h1 class="page-category-title">
+                    Commerces à {{ ville|title }} — {{ category }}
+                </h1>
+                <p class="category-description">
+                    Découvrez les {{ category|lower }} à {{ ville|title }}. 
+                    Retrouvez leurs horaires, adresses et informations pratiques pour chacun de ces commerces locaux.
+                </p>
+            </div>
+
+            <!-- Slider distance -->
+            <div class="distance-slider-wrapper" id="distance-slider-wrapper">
+                <div class="distance-no-geo" id="distance-no-geo">Activez la géolocalisation pour filtrer par distance</div>
+                <div id="distance-slider-controls" style="display:none; flex-direction:column; align-items:flex-end; gap:4px; width:100%;">
+                    <div class="distance-slider-label">
+                        Rayon : <span id="distance-slider-value">5</span> km
+                    </div>
+                    <div class="distance-slider-row">
+                        <input type="range" id="distance-slider" min="0.5" max="50" step="0.5" value="50">
+                    </div>
+                </div>
+            </div>
+        </div>
 
         {% if message %}
             <p style="text-align:center; margin-top:16px;">{{ message }}</p>
         {% endif %}
 
         {% if page_obj.paginator.count > 0 %}
-            <p class="pagination-info">
+            <p class="pagination-info" id="pagination-info">
                 {{ page_obj.paginator.count }} commerce{{ page_obj.paginator.count|pluralize }}
                 {% if page_obj.paginator.num_pages > 1 %}
                     — page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
                 {% endif %}
             </p>
         {% endif %}
+
+        <p class="distance-no-result" id="distance-no-result">
+            Aucun commerce dans ce rayon. Élargissez le filtre.
+        </p>
 
         <div class="derniers-arrivants-grid-container">
             {% for commerce in commerces %}
@@ -297,34 +438,92 @@
 
 {% block extra_js %}
 <script>
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-        const uLat = pos.coords.latitude;
-        const uLng = pos.coords.longitude;
+(function () {
 
-        function distanceKm(lat1, lng1, lat2, lng2) {
-            const R = 6371;
-            const dLat = (lat2 - lat1) * Math.PI / 180;
-            const dLng = (lng2 - lng1) * Math.PI / 180;
-            const a = Math.sin(dLat/2) ** 2 +
-                      Math.cos(lat1 * Math.PI / 180) *
-                      Math.cos(lat2 * Math.PI / 180) *
-                      Math.sin(dLng/2) ** 2;
-            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        }
+    function distanceKm(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) ** 2 +
+                  Math.cos(lat1 * Math.PI / 180) *
+                  Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLng/2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
 
-        document.querySelectorAll('.derniers-arrivants-grid-commerces[data-lat]').forEach(card => {
+    function formatDistance(km) {
+        return km * 1000 < 500
+            ? `${Math.round(km * 1000)} m de vous`
+            : `${km.toFixed(1)} km de vous`;
+    }
+
+    const slider = document.getElementById('distance-slider');
+    const sliderValue = document.getElementById('distance-slider-value');
+    const sliderControls = document.getElementById('distance-slider-controls');
+    const noGeo = document.getElementById('distance-no-geo');
+    const noResult = document.getElementById('distance-no-result');
+    const cards = document.querySelectorAll('.derniers-arrivants-grid-commerces[data-lat]');
+
+    let userLat = null;
+    let userLng = null;
+
+    // Stocker la distance en km sur chaque carte
+    function attachDistances() {
+        cards.forEach(card => {
             const lat = parseFloat(card.dataset.lat);
             const lng = parseFloat(card.dataset.lng);
-            if (isNaN(lat) || isNaN(lng)) return;
-            const km = distanceKm(uLat, uLng, lat, lng);
+            if (isNaN(lat) || isNaN(lng)) {
+                card.dataset.km = '';
+                return;
+            }
+            const km = distanceKm(userLat, userLng, lat, lng);
+            card.dataset.km = km;
+
             const el = card.querySelector('.distance-commerce');
             if (el) {
-                    const dist = km * 1000 < 500 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
-                    el.innerHTML = `<img src="/static/images/Yuumi-pin-localisation.png" style="width:1.2rem;height:1.2rem;object-fit:contain;vertical-align:middle;"> à ${dist} de vous`;
-                }
+                el.innerHTML = `<img src="/static/images/Yuumi-pin-localisation.png" style="width:1.2rem;height:1.2rem;object-fit:contain;vertical-align:middle;"> à ${formatDistance(km)}`;
+            }
         });
-    });
-}
+    }
+
+    function applyFilter() {
+        if (userLat === null) return;
+
+        const maxKm = parseFloat(slider.value);
+        sliderValue.textContent = maxKm % 1 === 0 ? maxKm : maxKm.toFixed(1);
+
+        let visible = 0;
+        cards.forEach(card => {
+            const km = parseFloat(card.dataset.km);
+            if (isNaN(km) || km <= maxKm) {
+                card.style.display = '';
+                visible++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        noResult.style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            userLat = pos.coords.latitude;
+            userLng = pos.coords.longitude;
+
+            // Afficher le slider, masquer le message
+            noGeo.style.display = 'none';
+            sliderControls.style.display = 'flex';
+
+            attachDistances();
+            applyFilter();
+
+            slider.addEventListener('input', applyFilter);
+        }, () => {
+            // Géoloc refusée — on garde le message
+        });
+    }
+
+})();
 </script>
 {% endblock %}
