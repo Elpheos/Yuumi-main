@@ -57,9 +57,6 @@
 {% block content %}
 
 <style>
-/* ------------------------------------------------------------ */
-/* 🔸 Grille des commerces (style Yuumi) */
-/* ------------------------------------------------------------ */
 .derniers-arrivants-grid-container {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -67,9 +64,6 @@
     margin: 16px auto 0 auto;
 }
 
-/* ------------------------------------------------------------ */
-/* 🔸 Cartes commerces */
-/* ------------------------------------------------------------ */
 .derniers-arrivants-grid-commerces {
     text-align: center;
     background-color: #ff8b38;
@@ -102,9 +96,6 @@
     font-size: 1rem;
 }
 
-/* ------------------------------------------------------------ */
-/* 🔸 En-tête de section avec slider */
-/* ------------------------------------------------------------ */
 .category-header {
     display: flex;
     align-items: center;
@@ -119,9 +110,6 @@
     flex: 1;
 }
 
-/* ------------------------------------------------------------ */
-/* 🔸 Slider de distance */
-/* ------------------------------------------------------------ */
 .distance-slider-wrapper {
     display: flex;
     flex-direction: column;
@@ -136,11 +124,6 @@
     white-space: nowrap;
 }
 
-.distance-slider-label span {
-    font-weight: 700;
-    color: #ff8b38;
-}
-
 .distance-slider-row {
     display: flex;
     align-items: center;
@@ -150,7 +133,7 @@
 .distance-slider-row input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    width: 160px;
+    width: 140px;
     height: 4px;
     border-radius: 2px;
     background: #ddd;
@@ -190,7 +173,6 @@
     font-style: italic;
 }
 
-/* Message aucun résultat après filtre */
 .distance-no-result {
     display: none;
     text-align: center;
@@ -201,9 +183,6 @@
     margin: 0 auto;
 }
 
-/* ------------------------------------------------------------ */
-/* 🔸 Pagination */
-/* ------------------------------------------------------------ */
 .pagination-container {
     display: flex;
     justify-content: center;
@@ -280,56 +259,27 @@
     justify-content: center;
 }
 
-/* ------------------------------------------------------------ */
-/* 🔸 Responsive */
-/* ------------------------------------------------------------ */
 @media (max-width: 1200px) {
-    .derniers-arrivants-grid-container {
-        grid-template-columns: repeat(4, 1fr);
-    }
+    .derniers-arrivants-grid-container { grid-template-columns: repeat(4, 1fr); }
 }
 @media (max-width: 992px) {
-    .derniers-arrivants-grid-container {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    .derniers-arrivants-grid-container { grid-template-columns: repeat(3, 1fr); }
 }
 @media (max-width: 768px) {
-    .derniers-arrivants-grid-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .category-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .distance-slider-wrapper {
-        align-items: flex-start;
-        width: 100%;
-    }
-
-    .distance-slider-row input[type="range"] {
-        width: 100%;
-        flex: 1;
-    }
-
-    .distance-slider-row {
-        width: 100%;
-    }
+    .derniers-arrivants-grid-container { grid-template-columns: repeat(2, 1fr); }
+    .category-header { flex-direction: column; align-items: flex-start; }
+    .distance-slider-wrapper { align-items: flex-start; width: 100%; }
+    .distance-slider-row input[type="range"] { width: 100%; flex: 1; }
+    .distance-slider-row { width: 100%; }
 }
 @media (max-width: 480px) {
-    .derniers-arrivants-grid-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
+    .derniers-arrivants-grid-container { grid-template-columns: repeat(2, 1fr); }
 }
 </style>
 
-
 <main>
-
     <section class="derniers-arrivants-container">
 
-        <!-- En-tête : titre + slider -->
         <div class="category-header">
             <div class="category-header-left">
                 <h1 class="page-category-title">
@@ -341,13 +291,10 @@
                 </p>
             </div>
 
-            <!-- Slider distance -->
             <div class="distance-slider-wrapper" id="distance-slider-wrapper">
                 <div class="distance-no-geo" id="distance-no-geo">Activez la géolocalisation pour filtrer par distance</div>
                 <div id="distance-slider-controls" style="display:none; flex-direction:column; align-items:flex-end; gap:4px; width:100%;">
-                    <div class="distance-slider-label">
-                        Rayon max
-                    </div>
+                    <div class="distance-slider-label">Rayon max</div>
                     <div class="distance-slider-row">
                         <input type="range" id="distance-slider" min="0.1" max="15" step="0.1" value="15">
                         <input type="number" id="distance-input" min="0.1" max="15" step="0.1" value="15"
@@ -363,7 +310,7 @@
         {% endif %}
 
         {% if page_obj.paginator.count > 0 %}
-            <p class="pagination-info" id="pagination-info">
+            <p class="pagination-info">
                 {{ page_obj.paginator.count }} commerce{{ page_obj.paginator.count|pluralize }}
                 {% if page_obj.paginator.num_pages > 1 %}
                     — page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
@@ -382,13 +329,11 @@
                      data-lng="{% if commerce.longitude %}{{ commerce.longitude|unlocalize }}{% endif %}">
                     <a href="{% url 'store_details' departement=commerce.departement ville=commerce.ville slug=commerce.slug %}"
                        rel="noopener">
-
                         {% if commerce.photo %}
                             <img loading="lazy" src="{% if commerce.photo_medium %}{{ commerce.photo_medium.url }}{% else %}{{ commerce.photo.url }}{% endif %}" alt="Photo de {{ commerce.nom }} à {{ commerce.ville }} dans la catégorie {{ commerce.categorie }}">
                         {% else %}
                             <img loading="lazy" src="{% static 'placeholder.png' %}" alt="{{ commerce.nom }} — {{ commerce.categorie }} à {{ commerce.ville }}">
                         {% endif %}
-
                         <h4>{{ commerce.nom }}</h4>
                         {% if commerce.addressemaps %}
                             <p class="by_category_adresse">{{ commerce.addressemaps }}</p>
@@ -401,9 +346,8 @@
             {% endfor %}
         </div>
 
-        <!-- Pagination -->
         {% if page_obj.paginator.num_pages > 1 %}
-        <div class="pagination-container">
+        <div class="pagination-container" id="pagination-container">
 
             {% if page_obj.has_previous %}
                 <a href="?page=1" class="pagination-btn" title="Première page">«</a>
@@ -433,9 +377,7 @@
         {% endif %}
 
     </section>
-
     <hr class="hr-separator" />
-
 </main>
 {% endblock %}
 
@@ -460,6 +402,22 @@
             : `${km.toFixed(1)} km de vous`;
     }
 
+    // Lire le paramètre distance depuis l'URL
+    function getDistanceFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const d = parseFloat(params.get('distance'));
+        return (!isNaN(d) && d >= 0.1 && d <= 15) ? d : 15;
+    }
+
+    // Injecter le paramètre distance dans tous les liens de pagination
+    function updatePaginationLinks(distanceVal) {
+        document.querySelectorAll('#pagination-container a.pagination-btn').forEach(a => {
+            const url = new URL(a.href);
+            url.searchParams.set('distance', distanceVal);
+            a.href = url.toString();
+        });
+    }
+
     const slider = document.getElementById('distance-slider');
     const input = document.getElementById('distance-input');
     const sliderControls = document.getElementById('distance-slider-controls');
@@ -467,10 +425,14 @@
     const noResult = document.getElementById('distance-no-result');
     const cards = document.querySelectorAll('.derniers-arrivants-grid-commerces[data-lat]');
 
+    // Restaurer la valeur depuis l'URL
+    const savedDistance = getDistanceFromURL();
+    slider.value = savedDistance;
+    input.value = savedDistance;
+
     let userLat = null;
     let userLng = null;
 
-    // Stocker la distance en km sur chaque carte
     function attachDistances() {
         cards.forEach(card => {
             const lat = parseFloat(card.dataset.lat);
@@ -481,7 +443,6 @@
             }
             const km = distanceKm(userLat, userLng, lat, lng);
             card.dataset.km = km;
-
             const el = card.querySelector('.distance-commerce');
             if (el) {
                 el.innerHTML = `<img src="/static/images/Yuumi-pin-localisation.png" style="width:1.2rem;height:1.2rem;object-fit:contain;vertical-align:middle;"> à ${formatDistance(km)}`;
@@ -491,8 +452,8 @@
 
     function applyFilter() {
         if (userLat === null) return;
-
         const maxKm = parseFloat(slider.value);
+        updatePaginationLinks(maxKm);
 
         let visible = 0;
         cards.forEach(card => {
@@ -504,7 +465,6 @@
                 card.style.display = 'none';
             }
         });
-
         noResult.style.display = visible === 0 ? 'block' : 'none';
     }
 
@@ -533,7 +493,7 @@
             });
 
         }, () => {
-            // Géoloc refusée — on garde le message
+            // Géoloc refusée
         });
     }
 
