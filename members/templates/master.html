@@ -321,13 +321,6 @@ main {
     padding: 0 4px;
 }
 
-.mobile-modal-body {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px;
-    -webkit-overflow-scrolling: touch;
-}
-
 .mobile-modal-body .supercat-header {
     padding: 10px 0;
     font-size: 1rem;
@@ -399,21 +392,9 @@ main {
                 <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
             </div>
             <ul class="subcats-list">
+                {# --- Catégories intermédiaires en premier --- #}
                 {% for item in cats.items %}
-                    {% if item.type == "direct" %}
-                    <li>
-                        {% if menu_ville %}
-                            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
-                                {% if item.obj.icon_perso %}
-                                    <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
-                                {% endif %}
-                                {{ item.obj }}
-                            </a>
-                        {% else %}
-                            <span style="color:#aaa;">{{ item.obj }}</span>
-                        {% endif %}
-                    </li>
-                    {% else %}
+                    {% if item.type != "direct" %}
                     <li>
                         <div class="menu-cat-intermediaire">
                             <span>{{ item.name }}</span>
@@ -430,6 +411,23 @@ main {
                             </li>
                             {% endfor %}
                         </ul>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                {# --- Catégories directes en dessous --- #}
+                {% for item in cats.items %}
+                    {% if item.type == "direct" %}
+                    <li>
+                        {% if menu_ville %}
+                            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
+                                {% if item.obj.icon_perso %}
+                                    <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
+                                {% endif %}
+                                {{ item.obj }}
+                            </a>
+                        {% else %}
+                            <span style="color:#aaa;">{{ item.obj }}</span>
+                        {% endif %}
                     </li>
                     {% endif %}
                 {% endfor %}
@@ -701,21 +699,9 @@ main {
                     <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
                 </div>
                 <ul class="subcats-list">
+                    {# --- Catégories intermédiaires en premier --- #}
                     {% for item in cats.items %}
-                        {% if item.type == "direct" %}
-                        <li>
-                            {% if menu_ville %}
-                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
-                                    {% if item.obj.icon_perso %}
-                                        <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
-                                    {% endif %}
-                                    {{ item.obj }}
-                                </a>
-                            {% else %}
-                                <span style="color:#aaa;">{{ item.obj }}</span>
-                            {% endif %}
-                        </li>
-                        {% else %}
+                        {% if item.type != "direct" %}
                         <li>
                             <div class="menu-cat-intermediaire">
                                 <span>{{ item.name }}</span>
@@ -732,6 +718,23 @@ main {
                                 </li>
                                 {% endfor %}
                             </ul>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    {# --- Catégories directes en dessous --- #}
+                    {% for item in cats.items %}
+                        {% if item.type == "direct" %}
+                        <li>
+                            {% if menu_ville %}
+                                <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
+                                    {% if item.obj.icon_perso %}
+                                        <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
+                                    {% endif %}
+                                    {{ item.obj }}
+                                </a>
+                            {% else %}
+                                <span style="color:#aaa;">{{ item.obj }}</span>
+                            {% endif %}
                         </li>
                         {% endif %}
                     {% endfor %}
