@@ -771,7 +771,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 /* ========= GÉOLOCALISATION ========= */
-if (navigator.geolocation) {
+ if (navigator.geolocation) {
     let _locUpdating = false;
 
     navigator.geolocation.watchPosition(pos => {
@@ -808,6 +808,14 @@ if (navigator.geolocation) {
 
         window._userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap);
         _locUpdating = false;
+    },
+    error => {
+        console.log("Erreur géolocalisation :", error);
+    },
+    {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
     });
 }
     /* ========= INIT ========= */
