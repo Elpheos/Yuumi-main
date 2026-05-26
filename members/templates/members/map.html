@@ -154,17 +154,32 @@
 }
 
 .sb-super-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
+    width: 18px;
+    height: 18px;
     border: 2px solid rgba(255,255,255,0.6);
+    border-radius: 3px;
     flex-shrink: 0;
     transition: background 0.15s;
+    position: relative;
 }
 
+/* La coche apparaît quand c'est actif */
 .sb-super-hd.all-active .sb-super-dot {
     background: white;
     border-color: white;
+}
+
+.sb-super-hd.all-active .sb-super-dot::after {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0px;
+    width: 5px;
+    height: 10px;
+    border: 2px solid #ff8b38;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
 }
 
 .sb-super-name {
