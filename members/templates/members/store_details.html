@@ -418,6 +418,7 @@
                 <div class="infopratiques-adresse-container" id="adresseip">
                     <svg style=" width: 40px; height: 40px; fill: #ff8b38; margin-bottom: 15px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
                     <p class="infopratiques-adresse-texte">{{ store.addressemaps }}</p>
+                    <p class="distance-commerce" style="color:#ff8b38; font-weight:600; font-size:0.9rem; margin-top:6px;"></p>
                 </div>
 
             </div>
@@ -698,7 +699,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // 👉 bloc unfavori à écrire ici
     unfavoriBtns.forEach(btn => {
       const storeId = btn.dataset.storeId;  
         if (!storeId) return;
@@ -859,6 +859,40 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
+
+<!-- Distance à vol d'oiseau -->
+{% if store.latitude and store.longitude %}
+<script>
+(function() {
+    const storeLat = {{ store.latitude }};
+    const storeLng = {{ store.longitude }};
+
+    function distanceKm(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) ** 2 +
+                  Math.cos(lat1 * Math.PI / 180) *
+                  Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLng/2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    }
+
+    function formatDistance(km) {
+        if (km < 1) return `${Math.round(km * 1000)} m de vous`;
+        return `${km.toFixed(1)} km de vous`;
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const km = distanceKm(pos.coords.latitude, pos.coords.longitude, storeLat, storeLng);
+            const el = document.querySelector('.distance-commerce');
+            if (el) el.textContent = formatDistance(km);
+        });
+    }
+})();
+</script>
+{% endif %}
 
 <style>
 .badge-statut {
