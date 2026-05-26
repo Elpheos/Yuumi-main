@@ -153,6 +153,7 @@
     cursor: pointer;
 }
 
+/* ===== CHECKBOX SUPER (inactive = case vide blanche) ===== */
 .sb-super-dot {
     width: 18px;
     height: 18px;
@@ -163,7 +164,7 @@
     position: relative;
 }
 
-/* La coche apparaît quand c'est actif */
+/* Active = case blanche avec coche orange */
 .sb-super-hd.all-active .sb-super-dot {
     background: white;
     border-color: white;
@@ -172,14 +173,14 @@
 .sb-super-hd.all-active .sb-super-dot::after {
     content: '';
     position: absolute;
-    left: 3px;
-    top: 0px;
-    width: 5px;
-    height: 10px;
+    left: 50%;
+    top: 45%;
+    width: 4px;
+    height: 8px;
     border: 2px solid #ff8b38;
     border-top: none;
     border-left: none;
-    transform: rotate(45deg);
+    transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .sb-super-name {
@@ -230,10 +231,11 @@
     border-bottom: 1px solid #eee;
 }
 
+/* Inactif = fond orange + texte blanc (comme super) */
 .sb-inter-hd {
     display: flex;
     align-items: stretch;
-    background: #f0f5ff;
+    background: #ff8b38;
 }
 
 .sb-inter-toggle {
@@ -245,25 +247,25 @@
     cursor: pointer;
 }
 
+/* ===== CHECKBOX INTER (inactive = case vide blanche) ===== */
 .sb-inter-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    border: 2px solid #0a5bb4;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.6);
+    border-radius: 3px;
     flex-shrink: 0;
+    transition: background 0.15s;
+    position: relative;
 }
 
 .sb-inter-name {
     font-weight: 600;
     font-size: 13px;
-    color: #0a5bb4;
+    color: white;
     flex: 1;
 }
 
-.sb-inter-hd.all-active .sb-inter-dot {
-    background: #0a5bb4;
-}
-
+/* Actif = fond bleu + case blanche + coche bleue */
 .sb-inter-hd.all-active .sb-inter-toggle {
     background: #0a5bb4;
 }
@@ -273,8 +275,21 @@
 }
 
 .sb-inter-hd.all-active .sb-inter-dot {
-    border-color: white;
     background: white;
+    border-color: white;
+}
+
+.sb-inter-hd.all-active .sb-inter-dot::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 45%;
+    width: 4px;
+    height: 8px;
+    border: 2px solid #0a5bb4;
+    border-top: none;
+    border-left: none;
+    transform: translate(-50%, -50%) rotate(45deg);
 }
 
 .sb-inter-accordion {
@@ -283,9 +298,9 @@
     justify-content: center;
     padding: 0 12px;
     cursor: pointer;
-    border-left: 1px solid #d0dff5;
+    border-left: 1px solid rgba(255,255,255,0.25);
     min-width: 40px;
-    background: #e6eeff;
+    background: rgba(0,0,0,0.08);
 }
 
 .sb-inter-hd.all-active .sb-inter-accordion {
@@ -295,7 +310,7 @@
 
 .sb-inter-hd .chevron {
     font-size: 22px;
-    color: #0a5bb4;
+    color: white;
     transition: transform 0.2s;
     line-height: 1;
 }
@@ -352,8 +367,9 @@
 @media (hover: hover) {
     .sb-super-toggle:hover { background: rgba(0,0,0,0.08); }
     .sb-super-accordion:hover { background: rgba(0,0,0,0.15); }
-    .sb-inter-toggle:hover { background: #ddeaff; }
+    .sb-inter-toggle:hover { background: rgba(0,0,0,0.08); }
     .sb-inter-hd.all-active .sb-inter-toggle:hover { background: #0a5bb4; }
+    .sb-inter-accordion:hover { background: rgba(0,0,0,0.15); }
     .sb-cat-item:hover { background: #fff0e6; }
     .sb-cat-item.is-active:hover { background: #e87a2a; color: white; }
 }
@@ -492,10 +508,11 @@
     background: #f0f5ff;
 }
 
-    @keyframes pulse-user {
+@keyframes pulse-user {
     0%   { transform: scale(0.5); opacity: 0.8; }
     100% { transform: scale(2.5); opacity: 0; }
 }
+
 /* ===== MOBILE ===== */
 @media (max-width: 767px) {
     .map-layout {
@@ -783,55 +800,55 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.overflow = '';
     });
 
+    /* ========= GÉOLOCALISATION ========= */
+    if (navigator.geolocation) {
+        let _locUpdating = false;
 
-/* ========= GÉOLOCALISATION ========= */
- if (navigator.geolocation) {
-    let _locUpdating = false;
+        navigator.geolocation.watchPosition(pos => {
+            if (_locUpdating) return;
+            _locUpdating = true;
 
-    navigator.geolocation.watchPosition(pos => {
-        if (_locUpdating) return;
-        _locUpdating = true;
+            const { latitude: lat, longitude: lng } = pos.coords;
 
-        const { latitude: lat, longitude: lng } = pos.coords;
+            if (window._userMarker) window._userMarker.remove();
 
-        if (window._userMarker) window._userMarker.remove();
+            const userIcon = L.divIcon({
+                className: '',
+                html: `
+                    <div style="position:relative;width:20px;height:20px;">
+                        <div style="
+                            position:absolute;inset:0;
+                            background:#0a5bb4;
+                            border-radius:50%;
+                            border:3px solid white;
+                            box-shadow:0 2px 8px rgba(10,91,180,0.5);
+                            z-index:2;
+                        "></div>
+                        <div style="
+                            position:absolute;inset:-8px;
+                            background:rgba(10,91,180,0.2);
+                            border-radius:50%;
+                            animation:pulse-user 1.8s ease-out infinite;
+                            z-index:1;
+                        "></div>
+                    </div>`,
+                iconSize: [20, 20],
+                iconAnchor: [10, 10],
+            });
 
-        const userIcon = L.divIcon({
-            className: '',
-            html: `
-                <div style="position:relative;width:20px;height:20px;">
-                    <div style="
-                        position:absolute;inset:0;
-                        background:#0a5bb4;
-                        border-radius:50%;
-                        border:3px solid white;
-                        box-shadow:0 2px 8px rgba(10,91,180,0.5);
-                        z-index:2;
-                    "></div>
-                    <div style="
-                        position:absolute;inset:-8px;
-                        background:rgba(10,91,180,0.2);
-                        border-radius:50%;
-                        animation:pulse-user 1.8s ease-out infinite;
-                        z-index:1;
-                    "></div>
-                </div>`,
-            iconSize: [20, 20],
-            iconAnchor: [10, 10],
+            window._userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap);
+            _locUpdating = false;
+        },
+        error => {
+            console.log("Erreur géolocalisation :", error);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
         });
+    }
 
-        window._userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap);
-        _locUpdating = false;
-    },
-    error => {
-        console.log("Erreur géolocalisation :", error);
-    },
-    {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-    });
-}
     /* ========= INIT ========= */
     updateMap();
     syncAll();
