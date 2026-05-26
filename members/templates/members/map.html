@@ -807,7 +807,7 @@ if (navigator.geolocation) {
                     popupAnchor: [0, -14],
                 });
 
-                window._userMarker = L.marker([lat, lng], { icon: userIcon })
+                window._userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap);
 
 
                 leafletMap.setView([lat, lng], 13);
