@@ -606,7 +606,7 @@ document.addEventListener("DOMContentLoaded", function () {
             Object.entries(data.inter).forEach(([interName, cats]) => {
                 const interSlug = interName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                 html += `<div class="sb-inter-block">
-                    <div class="sb-inter-hd all-active" data-inter="${interSlug}">
+    <div class="sb-inter-hd all-active open" data-inter="${interSlug}">
                         <div class="sb-inter-toggle">
                             <span class="sb-inter-dot"></span>
                             <span class="sb-inter-name">${interName}</span>
