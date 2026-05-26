@@ -179,7 +179,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
 }
 
 /* ------------------------------------------------------------ */
@@ -322,7 +321,7 @@ if (navigator.geolocation) {
             const el = card.querySelector('.distance-commerce');
             if (el) {
                     const dist = km * 1000 < 500 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
-                    el.innerHTML = `<img src="/static/images/Yuumi-pin-localisation.png" style="width:32px;height:32px;object-fit:contain;vertical-align:middle;margin-right:4px;"> à ${dist} de vous`;
+                    el.innerHTML = `<img src="/static/images/Yuumi-pin-localisation.png" style="width:32px;height:32px;object-fit:contain;vertical-align:middle;"> à ${dist} de vous`;
                 }
         });
     });
