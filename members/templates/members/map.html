@@ -174,7 +174,6 @@
     flex: 1;
 }
 
-/* Quand inactif : fondu */
 .sb-super-hd.all-inactive .sb-super-toggle {
     opacity: 0.5;
 }
@@ -335,7 +334,6 @@
     color: white;
 }
 
-/* Hover uniquement sur vrai pointeur (pas tactile) */
 @media (hover: hover) {
     .sb-super-toggle:hover { background: rgba(0,0,0,0.08); }
     .sb-super-accordion:hover { background: rgba(0,0,0,0.15); }
@@ -356,7 +354,7 @@
     height: 100%;
 }
 
-/* ===== BOUTON MOBILE ===== */
+/* ===== BOUTON MOBILE FILTRES ===== */
 .map-mobile-filter-btn {
     display: none;
     position: absolute;
@@ -465,20 +463,33 @@
 .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-color: rgba(255,139,56,0.3); }
 .leaflet-overlay-pane svg path { display: none; }
 
+/* ===== BOUTON LOCALISATION ===== */
+.map-locate-btn {
+    background: white;
+    border: 2px solid #0a5bb4;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+.map-locate-btn:hover {
+    background: #f0f5ff;
+}
+
 /* ===== MOBILE ===== */
 @media (max-width: 767px) {
     .map-layout {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: 100dvh;
-}
-
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 100dvh;
+    }
     .map-sidebar { display: none; }
     .map-mobile-filter-btn { display: flex; }
-    #map { height: 100dvh; margin:0; }
+    #map { height: 100dvh; margin: 0; }
     .map-mobile-overlay .sb-super-name { font-size: 15px; }
     .map-mobile-overlay .sb-inter-name { font-size: 14px; }
     .map-mobile-overlay .sb-cats-pills { padding: 8px 14px 10px 16px; gap: 7px; }
@@ -488,9 +499,16 @@
     .popup-content { width: 40vw; }
     .yuumi-popup-img { width: 100%; height: 110px; object-fit: cover; }
     .yuumi-popup-h3 { font-size: 13px; }
-    .yuumi-footer {
-    display: none;
-}
+    .yuumi-footer { display: none; }
+    header,
+    #header-container-id {
+        background: transparent !important;
+        box-shadow: none !important;
+        pointer-events: none;
+    }
+    #nav-mobile-btn {
+        pointer-events: auto;
+    }
 }
 </style>
 
@@ -592,7 +610,6 @@ document.addEventListener("DOMContentLoaded", function () {
         Object.entries(grouped).forEach(([superName, data]) => {
             const superSlug = superName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
 
-            // Fermé par défaut — pas de classe "open"
             html += `<div class="sb-super-block">
                 <div class="sb-super-hd all-active" data-super="${superSlug}">
                     <div class="sb-super-toggle">
@@ -606,7 +623,7 @@ document.addEventListener("DOMContentLoaded", function () {
             Object.entries(data.inter).forEach(([interName, cats]) => {
                 const interSlug = interName.toLowerCase().replace(/[^a-z0-9]+/g, '-');
                 html += `<div class="sb-inter-block">
-    <div class="sb-inter-hd all-active open" data-inter="${interSlug}">
+                    <div class="sb-inter-hd all-active open" data-inter="${interSlug}">
                         <div class="sb-inter-toggle">
                             <span class="sb-inter-dot"></span>
                             <span class="sb-inter-name">${interName}</span>
@@ -640,7 +657,6 @@ document.addEventListener("DOMContentLoaded", function () {
     /* ========= EVENTS ========= */
     function bindMenuEvents(container) {
 
-        // Accordéon super
         container.querySelectorAll('.sb-super-accordion').forEach(zone => {
             zone.addEventListener('click', e => {
                 e.stopPropagation();
@@ -650,7 +666,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Accordéon inter
         container.querySelectorAll('.sb-inter-accordion').forEach(zone => {
             zone.addEventListener('click', e => {
                 e.stopPropagation();
@@ -660,7 +675,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Clic pill catégorie
         container.querySelectorAll('.sb-cat-item').forEach(item => {
             item.addEventListener('click', () => {
                 const slug = item.dataset.category;
@@ -671,7 +685,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Toggle inter
         container.querySelectorAll('.sb-inter-toggle').forEach(toggle => {
             toggle.addEventListener('click', () => {
                 const block = toggle.closest('.sb-inter-block');
@@ -686,7 +699,6 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        // Toggle super
         container.querySelectorAll('.sb-super-toggle').forEach(toggle => {
             toggle.addEventListener('click', () => {
                 const block = toggle.closest('.sb-super-block');
@@ -702,7 +714,6 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Bouton Tous
     document.querySelectorAll('.sb-tous-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const allActive = activeCategories.size === categoriesRaw.length;
@@ -754,6 +765,32 @@ document.addEventListener("DOMContentLoaded", function () {
         overlay.classList.remove('open');
         document.body.style.overflow = '';
     });
+
+    /* ========= GÉOLOCALISATION ========= */
+    if (navigator.geolocation) {
+        const locBtn = L.control({ position: 'topright' });
+        locBtn.onAdd = () => {
+            const btn = L.DomUtil.create('button', 'map-locate-btn');
+            btn.innerHTML = '📍';
+            btn.title = 'Me localiser';
+            btn.onclick = () => {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    const { latitude: lat, longitude: lng } = pos.coords;
+                    if (window._userMarker) window._userMarker.remove();
+                    window._userMarker = L.circleMarker([lat, lng], {
+                        radius: 10,
+                        fillColor: '#0a5bb4',
+                        color: 'white',
+                        weight: 3,
+                        fillOpacity: 1,
+                    }).addTo(leafletMap).bindPopup('Vous êtes ici').openPopup();
+                    leafletMap.setView([lat, lng], 13);
+                }, () => alert('Localisation refusée ou indisponible.'));
+            };
+            return btn;
+        };
+        locBtn.addTo(leafletMap);
+    }
 
     /* ========= INIT ========= */
     updateMap();
