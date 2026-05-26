@@ -83,11 +83,15 @@ main {
     color: #ff8b38;
     cursor: pointer;
 }
+
+.li-classe-inter-style {
+    background: #fff5ee;
+    border-left: 3px solid #ff8b38;
+}
+    
 .subcats-list >li:first-child {
     margin-top:0;
     }
-.li-cat-inter {
-    background-color:red;}
     
 .subcats-list > li:has(.menu-cat-intermediaire):not(:first-child) {
     padding-top: 8px;
@@ -416,7 +420,7 @@ main {
                 {% for item in cats.items %}
                     {% if item.type != "direct" %}
                 
-                    <li class="li-cat-inter">
+                    <li class="li-cat-inter li-classe-inter-style">
                         <div class="menu-cat-intermediaire">
                             <span>{{ item.name }}</span>
                             <svg class="chevron" style="width: 12px; fill: #ff8b38;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
@@ -790,7 +794,7 @@ main {
 <!-- ============================= -->
 <!--             JS HEADER         -->
 <!-- ============================= -->
-<script>
+<script>  
 document.addEventListener("DOMContentLoaded", () => {
 
     /* ============================= */
@@ -856,15 +860,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
-        const list = header.nextElementSibling;
-        const chevron = header.querySelector(".chevron");
-        if (!list || !chevron) return;
-        header.addEventListener("click", () => {
-            const open = list.style.display === "block";
-            list.style.display = open ? "none" : "block";
+    const list = header.nextElementSibling;
+    const chevron = header.querySelector(".chevron");
+    if (!list || !chevron) return;
+    header.addEventListener("click", () => {
+        const open = list.style.display === "block";
+        list.style.display = open ? "none" : "block";
+        if (header.classList.contains("menu-cat-intermediaire")) {
+            const parentLi = header.closest("li");
+            if (parentLi) parentLi.classList.toggle("li-classe-inter-style", !open);
+            chevron.style.transform = open ? "rotate(180deg)" : "rotate(0deg)";
+        } else {
             chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
-        });
+        }
     });
+});
 
     /* ============================= */
     /*   MODALES MOBILE              */
