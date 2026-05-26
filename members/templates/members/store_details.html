@@ -861,37 +861,36 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 <!-- Distance à vol d'oiseau -->
+{% load l10n %}
 {% if store.latitude and store.longitude %}
 <script>
 (function() {
-    const storeLat = {{ store.latitude }};
-    const storeLng = {{ store.longitude }};
-    console.log("Store coords:", storeLat, storeLng);
+    const storeLat = {{ store.latitude|unlocalize }};
+    const storeLng = {{ store.longitude|unlocalize }};
 
-    const el = document.querySelector('.distance-commerce');
-    console.log("Element trouvé:", el);
-
-    if (!navigator.geolocation) {
-        console.log("Géolocation non supportée");
-        return;
+    function distanceKm(lat1, lng1, lat2, lng2) {
+        const R = 6371;
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLng = (lng2 - lng1) * Math.PI / 180;
+        const a = Math.sin(dLat/2) ** 2 +
+                  Math.cos(lat1 * Math.PI / 180) *
+                  Math.cos(lat2 * Math.PI / 180) *
+                  Math.sin(dLng/2) ** 2;
+        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
     }
 
-    navigator.geolocation.getCurrentPosition(
-        pos => {
-            console.log("Position obtenue:", pos.coords.latitude, pos.coords.longitude);
-            const R = 6371;
-            const dLat = (storeLat - pos.coords.latitude) * Math.PI / 180;
-            const dLng = (storeLng - pos.coords.longitude) * Math.PI / 180;
-            const a = Math.sin(dLat/2) ** 2 +
-                      Math.cos(pos.coords.latitude * Math.PI / 180) *
-                      Math.cos(storeLat * Math.PI / 180) *
-                      Math.sin(dLng/2) ** 2;
-            const km = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            console.log("Distance:", km);
-            if (el) el.textContent = km < 1 ? `${Math.round(km * 1000)} m de vous` : `${km.toFixed(1)} km de vous`;
-        },
-        err => console.log("Erreur géoloc:", err.code, err.message)
-    );
+    function formatDistance(km) {
+        if (km < 1) return `${Math.round(km * 1000)} m de vous`;
+        return `${km.toFixed(1)} km de vous`;
+    }
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(pos => {
+            const km = distanceKm(pos.coords.latitude, pos.coords.longitude, storeLat, storeLng);
+            const el = document.querySelector('.distance-commerce');
+            if (el) el.textContent = formatDistance(km);
+        });
+    }
 })();
 </script>
 {% endif %}
