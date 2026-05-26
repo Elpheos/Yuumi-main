@@ -770,52 +770,38 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.style.overflow = '';
     });
 
-   /* ========= GÉOLOCALISATION ========= */
+
+/* ========= GÉOLOCALISATION ========= */
 if (navigator.geolocation) {
-    const locBtn = L.control({ position: 'topright' });
-    locBtn.onAdd = () => {
-        const btn = L.DomUtil.create('button', 'map-locate-btn');
-        btn.innerHTML = '📍';
-        btn.title = 'Me localiser';
-        btn.onclick = () => {
-            navigator.geolocation.getCurrentPosition(pos => {
-                const { latitude: lat, longitude: lng } = pos.coords;
-                if (window._userMarker) window._userMarker.remove();
+    navigator.geolocation.getCurrentPosition(pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
 
-                const userIcon = L.divIcon({
-                    className: '',
-                    html: `
-                        <div style="position:relative;width:20px;height:20px;">
-                            <div style="
-                                position:absolute;inset:0;
-                                background:#0a5bb4;
-                                border-radius:50%;
-                                border:3px solid white;
-                                box-shadow:0 2px 8px rgba(10,91,180,0.5);
-                                z-index:2;
-                            "></div>
-                            <div style="
-                                position:absolute;inset:-8px;
-                                background:rgba(10,91,180,0.2);
-                                border-radius:50%;
-                                animation:pulse-user 1.8s ease-out infinite;
-                                z-index:1;
-                            "></div>
-                        </div>`,
-                    iconSize: [20, 20],
-                    iconAnchor: [10, 10],
-                    popupAnchor: [0, -14],
-                });
+        const userIcon = L.divIcon({
+            className: '',
+            html: `
+                <div style="position:relative;width:20px;height:20px;">
+                    <div style="
+                        position:absolute;inset:0;
+                        background:#0a5bb4;
+                        border-radius:50%;
+                        border:3px solid white;
+                        box-shadow:0 2px 8px rgba(10,91,180,0.5);
+                        z-index:2;
+                    "></div>
+                    <div style="
+                        position:absolute;inset:-8px;
+                        background:rgba(10,91,180,0.2);
+                        border-radius:50%;
+                        animation:pulse-user 1.8s ease-out infinite;
+                        z-index:1;
+                    "></div>
+                </div>`,
+            iconSize: [20, 20],
+            iconAnchor: [10, 10],
+        });
 
-                window._userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap);
-
-
-                leafletMap.setView([lat, lng], 13);
-            }, () => alert('Localisation refusée ou indisponible.'));
-        };
-        return btn;
-    };
-    locBtn.addTo(leafletMap);
+        window._userMarker = L.marker([lat, lng], { icon: userIcon }).addTo(leafletMap);
+    });
 }
     /* ========= INIT ========= */
     updateMap();
