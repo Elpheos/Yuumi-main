@@ -174,9 +174,13 @@
 
 .distance-commerce {
     color: white;
-    font-size: 0.75rem;
-    margin: 2px 8px 0;
-    opacity: 0.85;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin: 6px 8px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 
 /* ------------------------------------------------------------ */
@@ -317,7 +321,10 @@ if (navigator.geolocation) {
             if (isNaN(lat) || isNaN(lng)) return;
             const km = distanceKm(uLat, uLng, lat, lng);
             const el = card.querySelector('.distance-commerce');
-            if (el) el.textContent = km < 1 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+            if (el) {
+                    const dist = km * 1000 < 500 ? `${Math.round(km * 1000)} m` : `${km.toFixed(1)} km`;
+                    el.innerHTML = `📍 à ${dist} de vous`;
+                }
         });
     });
 }
