@@ -407,7 +407,6 @@ main {
     gap: 12px;
     padding: 10px 12px;
     text-decoration: none;
-    border: 1.5px solid #ff8b38;
 }
 
 #search-product-results li a:hover,
@@ -865,7 +864,7 @@ function buildResultItem(item) {
     const dist = item.lat && item.lng ? window._distanceStr(item.lat, item.lng) : '';
     return `
         <li style="list-style:none;">
-            <a href="${item.url}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;text-decoration:none;border-bottom:0.5px solid #f0f0f0;">
+            <a href="${item.url}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;text-decoration:none;border:2px solid #ff8b38;border-radius:10px;margin-bottom:6px;display:flex;">
                 ${item.photo
                     ? `<img src="${item.photo}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;">`
                     : `<div style="width:52px;height:52px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">🛍️</div>`}
