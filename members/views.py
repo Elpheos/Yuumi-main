@@ -320,6 +320,7 @@ def search_product(request):
                 "store": store.nom,
                 "url": store.get_absolute_url(),
                 "photo": store.photo_small.url if store.photo_small else (store.photo.url if store.photo else ""),
+                 "address": store.addressemaps or "",
             })
 
     return JsonResponse({"results": results})
