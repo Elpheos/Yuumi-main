@@ -85,9 +85,7 @@
     object-fit: cover;
 }
 
-.derniers-arrivants-grid-commerces a {
-    text-decoration: none;
-}
+.derniers-arrivants-grid-commerces a { text-decoration: none; }
 
 .derniers-arrivants-grid-commerces h4 {
     color: white;
@@ -96,47 +94,56 @@
     font-size: 1rem;
 }
 
+/* ===== EN-TÊTE ===== */
 .category-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     width: 90%;
     margin: 0 auto;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 16px;
 }
 
-.category-header-left {
-    flex: 1;
-}
+.category-header-left { flex: 1; }
 
+/* ===== SLIDER PC ===== */
 .distance-slider-wrapper {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 4px;
-    min-width: 220px;
+    gap: 8px;
+    min-width: 260px;
+    background: #fff8f3;
+    border: 2px solid #ff8b38;
+    border-radius: 12px;
+    padding: 14px 18px;
+    box-shadow: 0 2px 10px rgba(255,139,56,0.12);
 }
 
-.distance-slider-label {
-    font-size: 0.82rem;
-    color: #666;
-    white-space: nowrap;
+.distance-slider-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ff8b38;
+    width: 100%;
+    text-align: right;
 }
 
 .distance-slider-row {
     display: flex;
     align-items: center;
     gap: 8px;
+    width: 100%;
+    justify-content: flex-end;
 }
 
 .distance-slider-row input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
-    width: 140px;
-    height: 4px;
-    border-radius: 2px;
-    background: #ddd;
+    width: 150px;
+    height: 5px;
+    border-radius: 3px;
+    background: #ffd4b0;
     outline: none;
     cursor: pointer;
 }
@@ -144,33 +151,58 @@
 .distance-slider-row input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #ff8b38;
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(255,139,56,0.4);
-    transition: background 0.15s;
+    box-shadow: 0 2px 8px rgba(255,139,56,0.5);
+    transition: background 0.15s, transform 0.1s;
 }
 
 .distance-slider-row input[type="range"]::-webkit-slider-thumb:hover {
     background: #e87a2a;
+    transform: scale(1.1);
 }
 
 .distance-slider-row input[type="range"]::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #ff8b38;
     cursor: pointer;
     border: none;
-    box-shadow: 0 2px 6px rgba(255,139,56,0.4);
+    box-shadow: 0 2px 8px rgba(255,139,56,0.5);
+}
+
+.distance-input-number {
+    width: 58px;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    padding: 4px 6px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #ff8b38;
+    text-align: center;
+    outline: none;
+    background: white;
+}
+
+.distance-input-number:focus {
+    box-shadow: 0 0 0 3px rgba(255,139,56,0.2);
+}
+
+.distance-unit {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ff8b38;
 }
 
 .distance-no-geo {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: #aaa;
     font-style: italic;
+    text-align: right;
 }
 
 .distance-no-result {
@@ -183,6 +215,7 @@
     margin: 0 auto;
 }
 
+/* ===== PAGINATION ===== */
 .pagination-container {
     display: flex;
     justify-content: center;
@@ -209,10 +242,9 @@
     background: white;
 }
 
-.pagination-btn:hover {
-    background: #ff8b38;
-    color: white;
-}
+.pagination-btn:hover { background: #ff8b38; color: white; }
+.pagination-btn.active { background: #ff8b38; color: white; pointer-events: none; }
+.pagination-btn.disabled { border-color: #ddd; color: #ccc; pointer-events: none; background: white; }
 
 .category-description {
     max-width: 600px;
@@ -223,31 +255,15 @@
     text-align: center;
 }
 
-.pagination-btn.active {
-    background: #ff8b38;
-    color: white;
-    pointer-events: none;
-}
-
-.pagination-btn.disabled {
-    border-color: #ddd;
-    color: #ccc;
-    pointer-events: none;
-    background: white;
-}
-
 .pagination-info {
     font-size: 0.85rem;
     color: #888;
     text-align: center;
     margin-bottom: 8px;
+    min-height: 1.2em;
 }
 
-.by_category_adresse {
-    color: white;
-    font-size: 0.8rem;
-    margin: 4px 8px 0;
-}
+.by_category_adresse { color: white; font-size: 0.8rem; margin: 4px 8px 0; }
 
 .distance-commerce {
     color: white;
@@ -259,22 +275,19 @@
     justify-content: center;
 }
 
-@media (max-width: 1200px) {
-    .derniers-arrivants-grid-container { grid-template-columns: repeat(4, 1fr); }
-}
-@media (max-width: 992px) {
-    .derniers-arrivants-grid-container { grid-template-columns: repeat(3, 1fr); }
-}
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1200px) { .derniers-arrivants-grid-container { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 992px)  { .derniers-arrivants-grid-container { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 768px) {
     .derniers-arrivants-grid-container { grid-template-columns: repeat(2, 1fr); }
     .category-header { flex-direction: column; align-items: flex-start; }
-    .distance-slider-wrapper { align-items: flex-start; width: 100%; }
-    .distance-slider-row input[type="range"] { width: 100%; flex: 1; }
+    .distance-slider-wrapper { align-items: flex-start; width: 100%; min-width: unset; padding: 12px 14px; }
+    .distance-slider-title { text-align: left; }
     .distance-slider-row { width: 100%; }
+    .distance-slider-row input[type="range"] { flex: 1; width: auto; }
+    .distance-no-geo { text-align: left; }
 }
-@media (max-width: 480px) {
-    .derniers-arrivants-grid-container { grid-template-columns: repeat(2, 1fr); }
-}
+@media (max-width: 480px) { .derniers-arrivants-grid-container { grid-template-columns: repeat(2, 1fr); } }
 </style>
 
 <main>
@@ -292,14 +305,13 @@
             </div>
 
             <div class="distance-slider-wrapper" id="distance-slider-wrapper">
-                <div class="distance-no-geo" id="distance-no-geo">Activez la géolocalisation pour filtrer par distance</div>
-                <div id="distance-slider-controls" style="display:none; flex-direction:column; align-items:flex-end; gap:4px; width:100%;">
-                    <div class="distance-slider-label">Rayon max</div>
+                <div class="distance-slider-title">Filtrer par distance</div>
+                <div class="distance-no-geo" id="distance-no-geo">Activez la géolocalisation pour filtrer</div>
+                <div id="distance-slider-controls" style="display:none; flex-direction:column; gap:8px; width:100%;">
                     <div class="distance-slider-row">
                         <input type="range" id="distance-slider" min="0.1" max="15" step="0.1" value="15">
-                        <input type="number" id="distance-input" min="0.1" max="15" step="0.1" value="15"
-                               style="width:55px; border:2px solid #ff8b38; border-radius:6px; padding:2px 6px; font-size:0.85rem; text-align:center; outline:none;">
-                        <span style="font-size:0.82rem; color:#666;">km</span>
+                        <input type="number" id="distance-input" class="distance-input-number" min="0.1" max="15" step="0.1" value="15">
+                        <span class="distance-unit">km</span>
                     </div>
                 </div>
             </div>
@@ -309,14 +321,14 @@
             <p style="text-align:center; margin-top:16px;">{{ message }}</p>
         {% endif %}
 
-        {% if page_obj.paginator.count > 0 %}
-            <p class="pagination-info">
+        <p class="pagination-info" id="pagination-info">
+            {% if page_obj.paginator.count > 0 %}
                 {{ page_obj.paginator.count }} commerce{{ page_obj.paginator.count|pluralize }}
                 {% if page_obj.paginator.num_pages > 1 %}
                     — page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
                 {% endif %}
-            </p>
-        {% endif %}
+            {% endif %}
+        </p>
 
         <p class="distance-no-result" id="distance-no-result">
             Aucun commerce dans ce rayon. Élargissez le filtre.
@@ -327,8 +339,7 @@
                 <div class="derniers-arrivants-grid-commerces"
                      data-lat="{% if commerce.latitude %}{{ commerce.latitude|unlocalize }}{% endif %}"
                      data-lng="{% if commerce.longitude %}{{ commerce.longitude|unlocalize }}{% endif %}">
-                    <a href="{% url 'store_details' departement=commerce.departement ville=commerce.ville slug=commerce.slug %}"
-                       rel="noopener">
+                    <a href="{% url 'store_details' departement=commerce.departement ville=commerce.ville slug=commerce.slug %}" rel="noopener">
                         {% if commerce.photo %}
                             <img loading="lazy" src="{% if commerce.photo_medium %}{{ commerce.photo_medium.url }}{% else %}{{ commerce.photo.url }}{% endif %}" alt="Photo de {{ commerce.nom }} à {{ commerce.ville }} dans la catégorie {{ commerce.categorie }}">
                         {% else %}
@@ -348,7 +359,6 @@
 
         {% if page_obj.paginator.num_pages > 1 %}
         <div class="pagination-container" id="pagination-container">
-
             {% if page_obj.has_previous %}
                 <a href="?page=1" class="pagination-btn" title="Première page">«</a>
                 <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">‹</a>
@@ -372,7 +382,6 @@
                 <span class="pagination-btn disabled">›</span>
                 <span class="pagination-btn disabled">»</span>
             {% endif %}
-
         </div>
         {% endif %}
 
@@ -402,14 +411,12 @@
             : `${km.toFixed(1)} km de vous`;
     }
 
-    // Lire le paramètre distance depuis l'URL
     function getDistanceFromURL() {
         const params = new URLSearchParams(window.location.search);
         const d = parseFloat(params.get('distance'));
         return (!isNaN(d) && d >= 0.1 && d <= 15) ? d : 15;
     }
 
-    // Injecter le paramètre distance dans tous les liens de pagination
     function updatePaginationLinks(distanceVal) {
         document.querySelectorAll('#pagination-container a.pagination-btn').forEach(a => {
             const url = new URL(a.href);
@@ -423,9 +430,12 @@
     const sliderControls = document.getElementById('distance-slider-controls');
     const noGeo = document.getElementById('distance-no-geo');
     const noResult = document.getElementById('distance-no-result');
+    const paginationInfo = document.getElementById('pagination-info');
+    const totalCards = {{ page_obj.paginator.count }};
+    const currentPage = {{ page_obj.number }};
+    const totalPages = {{ page_obj.paginator.num_pages }};
     const cards = document.querySelectorAll('.derniers-arrivants-grid-commerces[data-lat]');
 
-    // Restaurer la valeur depuis l'URL
     const savedDistance = getDistanceFromURL();
     slider.value = savedDistance;
     input.value = savedDistance;
@@ -437,10 +447,7 @@
         cards.forEach(card => {
             const lat = parseFloat(card.dataset.lat);
             const lng = parseFloat(card.dataset.lng);
-            if (isNaN(lat) || isNaN(lng)) {
-                card.dataset.km = '';
-                return;
-            }
+            if (isNaN(lat) || isNaN(lng)) { card.dataset.km = ''; return; }
             const km = distanceKm(userLat, userLng, lat, lng);
             card.dataset.km = km;
             const el = card.querySelector('.distance-commerce');
@@ -465,7 +472,20 @@
                 card.style.display = 'none';
             }
         });
+
         noResult.style.display = visible === 0 ? 'block' : 'none';
+
+        // Mise à jour du compteur
+        const filterActive = maxKm < 15;
+        if (filterActive) {
+            const s = visible > 1 ? 's' : '';
+            paginationInfo.textContent = `${visible} commerce${s} visible${s} sur cette page (filtre : ${maxKm % 1 === 0 ? maxKm : maxKm.toFixed(1)} km)`;
+        } else {
+            const s = totalCards > 1 ? 's' : '';
+            let text = `${totalCards} commerce${s}`;
+            if (totalPages > 1) text += ` — page ${currentPage} / ${totalPages}`;
+            paginationInfo.textContent = text;
+        }
     }
 
     if (navigator.geolocation) {
