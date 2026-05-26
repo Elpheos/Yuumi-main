@@ -978,6 +978,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     <strong>${item.product}</strong><br>
                                     <small>${item.store}</small><br>
                                     ${item.address ? `<small>${item.address}</small>` : ''}
+                                    ${item.lat && item.lng ? `<small><img src="/static/images/Yuumi-pin-localisation.png" style="width:12px;vertical-align:middle;margin-right:3px;">à ${window._distanceStr(item.lat, item.lng)} de vous</small>` : ''}
                                 </span>
                             </a>
                         </li>
@@ -1030,6 +1031,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                     <strong>${item.product}</strong><br>
                                     <small>${item.store}</small><br>
                                     ${item.address ? `<small>${item.address}</small>` : ''}
+                                    ${item.lat && item.lng ? `<small><img src="/static/images/Yuumi-pin-localisation.png" style="width:12px;vertical-align:middle;margin-right:3px;">à ${window._distanceStr(item.lat, item.lng)} de vous</small>` : ''}
                                 </span>
                             </a>
                         </li>
@@ -1117,7 +1119,32 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
     });
 });
+    
+    /* ============================= */
+/*   GÉOLOC GLOBALE              */
+/* ============================= */
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+        window._userLat = pos.coords.latitude;
+        window._userLng = pos.coords.longitude;
+    });
+}
+
+window._distanceStr = function(lat, lng) {
+    if (!window._userLat || !window._userLng || !lat || !lng) return '';
+    const R = 6371;
+    const dLat = (lat - window._userLat) * Math.PI / 180;
+    const dLng = (lng - window._userLng) * Math.PI / 180;
+    const a = Math.sin(dLat/2) ** 2 +
+              Math.cos(window._userLat * Math.PI / 180) *
+              Math.cos(lat * Math.PI / 180) *
+              Math.sin(dLng/2) ** 2;
+    const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const m = Math.round(km * 1000);
+    return m < 500 ? `${m} m` : `${km.toFixed(1)} km`;
+};
 </script>
+    
 {% block extra_js %}{% endblock %}
 
 </body>
