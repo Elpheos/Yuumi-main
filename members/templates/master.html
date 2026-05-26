@@ -201,8 +201,6 @@ main {
     .menu-changer-ville-mobile {
         display: block;
     }
-    
-
 }
 
 .header-ville-nav {
@@ -239,8 +237,6 @@ main {
     color: var(--orange);
     font-size: 1.3rem;
 }
-    
-
 
 @media (max-width: 767px) {
     .header-ville-nav {
@@ -329,8 +325,8 @@ main {
         display: flex;
     }
 
-        .subcats-list {
-    padding-left:0.5rem;
+    .subcats-list {
+        padding-left:0.5rem;
     }
 }
 
@@ -370,6 +366,7 @@ main {
     padding: 16px;
     -webkit-overflow-scrolling: touch;
 }
+
 .mobile-modal-body .subcats-list li {
     padding: 6px 0;
     border-bottom: 1px solid #f5f5f5;
@@ -393,6 +390,29 @@ main {
 
 .mobile-modal-search-input:focus {
     box-shadow: 0 0 0 3px rgba(255,139,56,0.15);
+}
+
+/* ===== RÉSULTATS RECHERCHE PRODUIT ===== */
+#search-product-results,
+#search-product-results-mobile {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#search-product-results li a,
+#search-product-results-mobile li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    text-decoration: none;
+    border-bottom: 0.5px solid #f0f0f0;
+}
+
+#search-product-results li a:hover,
+#search-product-results-mobile li a:hover {
+    background: #fff5ee;
 }
 
 </style>
@@ -439,7 +459,6 @@ main {
                 {# --- Catégories intermédiaires en premier --- #}
                 {% for item in cats.items %}
                     {% if item.type != "direct" %}
-                
                     <li class="li-cat-inter">
                         <div class="menu-cat-intermediaire">
                             <span>{{ item.name }}</span>
@@ -457,7 +476,6 @@ main {
                             {% endfor %}
                         </ul>
                     </li>
-                    
                     {% endif %}
                 {% endfor %}
                 {# --- Catégories directes en dessous --- #}
@@ -814,7 +832,58 @@ main {
 <!-- ============================= -->
 <!--             JS HEADER         -->
 <!-- ============================= -->
-<script>  
+<script>
+
+/* ============================= */
+/*   GÉOLOC GLOBALE              */
+/* ============================= */
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+        window._userLat = pos.coords.latitude;
+        window._userLng = pos.coords.longitude;
+    });
+}
+
+window._distanceStr = function(lat, lng) {
+    if (!window._userLat || !window._userLng || !lat || !lng) return '';
+    const R = 6371;
+    const dLat = (lat - window._userLat) * Math.PI / 180;
+    const dLng = (lng - window._userLng) * Math.PI / 180;
+    const a = Math.sin(dLat/2) ** 2 +
+              Math.cos(window._userLat * Math.PI / 180) *
+              Math.cos(lat * Math.PI / 180) *
+              Math.sin(dLng/2) ** 2;
+    const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const m = Math.round(km * 1000);
+    return m < 500 ? `${m} m` : `${km.toFixed(1)} km`;
+};
+
+/* ============================= */
+/*   BUILDER RÉSULTAT PRODUIT    */
+/* ============================= */
+function buildResultItem(item) {
+    const dist = item.lat && item.lng ? window._distanceStr(item.lat, item.lng) : '';
+    return `
+        <li style="list-style:none;">
+            <a href="${item.url}" style="display:flex;align-items:center;gap:12px;padding:10px 12px;text-decoration:none;border-bottom:0.5px solid #f0f0f0;">
+                ${item.photo
+                    ? `<img src="${item.photo}" style="width:52px;height:52px;border-radius:8px;object-fit:cover;flex-shrink:0;">`
+                    : `<div style="width:52px;height:52px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">🛍️</div>`}
+                <div style="flex:1;min-width:0;">
+                    <p style="font-weight:600;font-size:14px;color:#333;margin:0 0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.product}</p>
+                    <p style="font-size:13px;color:#888;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${item.store}</p>
+                    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                        ${item.address ? `<span style="font-size:12px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;">${item.address}</span>` : ''}
+                        ${dist ? `<span style="display:inline-flex;align-items:center;gap:3px;background:#e8f0fb;color:#185FA5;font-size:11px;font-weight:600;padding:2px 7px;border-radius:99px;white-space:nowrap;">
+                            <svg width="10" height="10" viewBox="0 0 384 512" fill="#185FA5"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
+                            ${dist}
+                        </span>` : ''}
+                    </div>
+                </div>
+            </a>
+        </li>`;
+}
+
 document.addEventListener("DOMContentLoaded", () => {
 
     /* ============================= */
@@ -856,7 +925,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ============================= */
     /*   SUPER-CATEGORIES DROPDOWN   */
-    /* (desktop uniquement)          */
     /* ============================= */
     const btn = document.querySelector(".supercats-toggle");
     const dropdown = document.getElementById("supercats-dropdown");
@@ -865,7 +933,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (btn && dropdown) {
         btn.addEventListener("click", e => {
             e.preventDefault();
-            if (window.innerWidth <= 767) return; // géré par modale
+            if (window.innerWidth <= 767) return;
             const isOpen = dropdown.style.display === "block";
             dropdown.style.display = isOpen ? "none" : "block";
             if (btnChevron) btnChevron.style.transform = isOpen ? "rotate(0deg)" : "rotate(180deg)";
@@ -880,21 +948,21 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.querySelectorAll(".supercat-header, .menu-cat-intermediaire").forEach(header => {
-    const list = header.nextElementSibling;
-    const chevron = header.querySelector(".chevron");
-    if (!list || !chevron) return;
-    header.addEventListener("click", () => {
-        const open = list.style.display === "block";
-        list.style.display = open ? "none" : "block";
-        if (header.classList.contains("menu-cat-intermediaire")) {
-            const parentLi = header.closest("li");
-            if (parentLi) parentLi.classList.toggle("li-classe-inter-style", !open);
-            chevron.style.transform = open ? "rotate(180deg)" : "rotate(0deg)";
-        } else {
-            chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
-        }
+        const list = header.nextElementSibling;
+        const chevron = header.querySelector(".chevron");
+        if (!list || !chevron) return;
+        header.addEventListener("click", () => {
+            const open = list.style.display === "block";
+            list.style.display = open ? "none" : "block";
+            if (header.classList.contains("menu-cat-intermediaire")) {
+                const parentLi = header.closest("li");
+                if (parentLi) parentLi.classList.toggle("li-classe-inter-style", !open);
+                chevron.style.transform = open ? "rotate(180deg)" : "rotate(0deg)";
+            } else {
+                chevron.style.transform = open ? "rotate(0deg)" : "rotate(180deg)";
+            }
+        });
     });
-});
 
     /* ============================= */
     /*   MODALES MOBILE              */
@@ -911,7 +979,6 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflow = "";
     }
 
-    // Modale commerce
     const modalCommerce = document.getElementById("mobile-modal-commerce");
     const closeCommerceBtn = document.getElementById("close-modal-commerce");
 
@@ -927,7 +994,6 @@ document.addEventListener("DOMContentLoaded", () => {
         closeCommerceBtn.addEventListener("click", () => closeMobileModal("mobile-modal-commerce"));
     }
 
-    // Modale produit
     const modalProduit = document.getElementById("mobile-modal-produit");
     const closeProduitBtn = document.getElementById("close-modal-produit");
     const inputMobile = document.getElementById("search-product-input-mobile");
@@ -951,7 +1017,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Recherche produit dans la modale mobile
+    /* ============================= */
+    /*   RECHERCHE PRODUIT MOBILE    */
+    /* ============================= */
     if (inputMobile && listMobile) {
         let timerMobile = null;
         inputMobile.addEventListener("input", () => {
@@ -968,29 +1036,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
                     const data = await resp.json();
-                    listMobile.innerHTML = (data.results || []).map(item => `
-                        <li class="search-product-store-container">
-                            <a href="${item.url}">
-                                ${item.photo
-                                    ? `<img class="spr-thumb" src="${item.photo}">`
-                                    : `<span class="spr-thumb">🛍️</span>`}
-                                <span>
-                                    <strong>${item.product}</strong><br>
-                                    <small>${item.store}</small><br>
-                                    ${item.address ? `<small>${item.address}</small>` : ''}
-                                    ${item.lat && item.lng ? `<small><img src="/static/images/Yuumi-pin-localisation.png" style="width:12px;vertical-align:middle;margin-right:3px;">à ${window._distanceStr(item.lat, item.lng)} de vous</small>` : ''}
-                                </span>
-                            </a>
-                        </li>
-                    `).join("");
+                    listMobile.innerHTML = (data.results || []).map(item => buildResultItem(item)).join("");
                 } catch (err) { console.error("Erreur recherche produit mobile :", err); }
             }, 250);
         });
     }
 
     /* ============================= */
-    /*       RECHERCHE PRODUIT       */
-    /* (desktop uniquement)          */
+    /*   RECHERCHE PRODUIT DESKTOP   */
     /* ============================= */
     const toggles = document.querySelectorAll(".search-product-toggle");
     const box = document.getElementById("search-product-container");
@@ -1000,7 +1053,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (toggles.length && box && input && list) {
         toggles.forEach(toggle => {
             toggle.addEventListener("click", e => {
-                if (isMobile()) return; // géré par modale
+                if (isMobile()) return;
                 e.preventDefault();
                 box.style.display = box.style.display === "block" ? "none" : "block";
                 input.focus();
@@ -1021,21 +1074,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
                     const data = await resp.json();
-                    list.innerHTML = (data.results || []).map(item => `
-                        <li class="search-product-store-container">
-                            <a href="${item.url}">
-                                ${item.photo
-                                    ? `<img class="spr-thumb" src="${item.photo}">`
-                                    : `<span class="spr-thumb">🛍️</span>`}
-                                <span>
-                                    <strong>${item.product}</strong><br>
-                                    <small>${item.store}</small><br>
-                                    ${item.address ? `<small>${item.address}</small>` : ''}
-                                    ${item.lat && item.lng ? `<small><img src="/static/images/Yuumi-pin-localisation.png" style="width:12px;vertical-align:middle;margin-right:3px;">à ${window._distanceStr(item.lat, item.lng)} de vous</small>` : ''}
-                                </span>
-                            </a>
-                        </li>
-                    `).join("");
+                    list.innerHTML = (data.results || []).map(item => buildResultItem(item)).join("");
                 } catch (err) { console.error("Erreur recherche produit :", err); }
             }, 250);
         });
@@ -1119,32 +1158,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
     });
 });
-    
-    /* ============================= */
-/*   GÉOLOC GLOBALE              */
-/* ============================= */
-if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
-        window._userLat = pos.coords.latitude;
-        window._userLng = pos.coords.longitude;
-    });
-}
-
-window._distanceStr = function(lat, lng) {
-    if (!window._userLat || !window._userLng || !lat || !lng) return '';
-    const R = 6371;
-    const dLat = (lat - window._userLat) * Math.PI / 180;
-    const dLng = (lng - window._userLng) * Math.PI / 180;
-    const a = Math.sin(dLat/2) ** 2 +
-              Math.cos(window._userLat * Math.PI / 180) *
-              Math.cos(lat * Math.PI / 180) *
-              Math.sin(dLng/2) ** 2;
-    const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    const m = Math.round(km * 1000);
-    return m < 500 ? `${m} m` : `${km.toFixed(1)} km`;
-};
 </script>
-    
 {% block extra_js %}{% endblock %}
 
 </body>
