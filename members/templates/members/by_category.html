@@ -346,10 +346,13 @@
                 <div class="distance-no-geo" id="distance-no-geo">Activez la géolocalisation pour filtrer par distance</div>
                 <div id="distance-slider-controls" style="display:none; flex-direction:column; align-items:flex-end; gap:4px; width:100%;">
                     <div class="distance-slider-label">
-                        Rayon : <span id="distance-slider-value">5</span> km
+                        Rayon max
                     </div>
                     <div class="distance-slider-row">
-                        <input type="range" id="distance-slider" min="0.5" max="50" step="0.5" value="50">
+                        <input type="range" id="distance-slider" min="0.1" max="15" step="0.1" value="15">
+                        <input type="number" id="distance-input" min="0.1" max="15" step="0.1" value="15"
+                               style="width:55px; border:2px solid #ff8b38; border-radius:6px; padding:2px 6px; font-size:0.85rem; text-align:center; outline:none;">
+                        <span style="font-size:0.82rem; color:#666;">km</span>
                     </div>
                 </div>
             </div>
@@ -458,7 +461,7 @@
     }
 
     const slider = document.getElementById('distance-slider');
-    const sliderValue = document.getElementById('distance-slider-value');
+    const input = document.getElementById('distance-input');
     const sliderControls = document.getElementById('distance-slider-controls');
     const noGeo = document.getElementById('distance-no-geo');
     const noResult = document.getElementById('distance-no-result');
@@ -490,7 +493,6 @@
         if (userLat === null) return;
 
         const maxKm = parseFloat(slider.value);
-        sliderValue.textContent = maxKm % 1 === 0 ? maxKm : maxKm.toFixed(1);
 
         let visible = 0;
         cards.forEach(card => {
@@ -511,14 +513,25 @@
             userLat = pos.coords.latitude;
             userLng = pos.coords.longitude;
 
-            // Afficher le slider, masquer le message
             noGeo.style.display = 'none';
             sliderControls.style.display = 'flex';
 
             attachDistances();
             applyFilter();
 
-            slider.addEventListener('input', applyFilter);
+            slider.addEventListener('input', () => {
+                input.value = slider.value;
+                applyFilter();
+            });
+
+            input.addEventListener('input', () => {
+                let val = parseFloat(input.value);
+                if (isNaN(val)) return;
+                val = Math.min(15, Math.max(0.1, val));
+                slider.value = val;
+                applyFilter();
+            });
+
         }, () => {
             // Géoloc refusée — on garde le message
         });
