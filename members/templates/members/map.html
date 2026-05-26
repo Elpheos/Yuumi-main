@@ -773,7 +773,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 /* ========= GÉOLOCALISATION ========= */
 if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(pos => {
+    navigator.geolocation.watchPosition(pos => {
         const { latitude: lat, longitude: lng } = pos.coords;
 
         const userIcon = L.divIcon({
