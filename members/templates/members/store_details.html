@@ -247,6 +247,9 @@
                                 <img src="{% static 'images/facebook-yuumi.webp' %}" alt="Facebook {{ store.nom }}" />
                             </a>
                         {% endif %}
+                      <button id="share-btn" style="display:none; align-items:center; gap:6px; background:#ff8b38; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-size:0.9rem; font-weight:600;">
+                          📤 Partager
+                      </button>
                     </div>
 
                     <!-- FAVORIS + UNFAVORIS -->
@@ -892,7 +895,27 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 })();
+  
+  // Partage natif Capacitor
+document.addEventListener("DOMContentLoaded", async () => {
+    const shareBtn = document.getElementById("share-btn");
+    if (!shareBtn) return;
+
+    // Vérifie si on est dans l'app Capacitor
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        shareBtn.style.display = "flex";
+        shareBtn.addEventListener("click", async () => {
+            const { Share } = await import('https://cdn.jsdelivr.net/npm/@capacitor/share/dist/esm/index.js');
+            await Share.share({
+                title: "{{ store.nom }}",
+                text: "Découvre {{ store.nom }} sur Yuumi !",
+                url: "{{ request.scheme }}://{{ request.get_host }}{{ store.get_absolute_url }}",
+            });
+        });
+    }
+});
 </script>
+
 {% endif %}
 
 <style>
