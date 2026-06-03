@@ -416,6 +416,8 @@ main {
 
 </style>
 </head>
+<body>
+
 <!-- ===== PULL TO REFRESH CAPACITOR ===== -->
 <script>
 (function() {
@@ -474,7 +476,6 @@ main {
     }, { passive: true });
 })();
 </script>
-<body>
 
 <!-- ============================= -->
 <!--            HEADER             -->
@@ -819,7 +820,6 @@ main {
                     <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
                 </div>
                 <ul class="subcats-list">
-                    {# --- Catégories intermédiaires en premier --- #}
                     {% for item in cats.items %}
                         {% if item.type != "direct" %}
                         <li>
@@ -841,7 +841,6 @@ main {
                         </li>
                         {% endif %}
                     {% endfor %}
-                    {# --- Catégories directes en dessous --- #}
                     {% for item in cats.items %}
                         {% if item.type == "direct" %}
                         <li>
@@ -1215,7 +1214,104 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 </script>
+
 {% block extra_js %}{% endblock %}
+
+<!-- ===== ONBOARDING CAPACITOR ===== -->
+<div id="yuumi-onboarding" style="display:none; position:fixed; inset:0; z-index:99999; background:white; flex-direction:column;"></div>
+
+<script>
+(function() {
+    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+    if (localStorage.getItem('yuumi_onboarding_done') === '1') return;
+
+    const overlay = document.getElementById('yuumi-onboarding');
+    overlay.style.display = 'flex';
+    overlay.innerHTML = `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;text-align:center;background:#fff8f3;" id="slide-0">
+            <div style="font-size:90px;margin-bottom:32px;">🏪</div>
+            <h1 style="font-size:1.8rem;font-weight:800;color:#ff8b38;margin-bottom:16px;">Bienvenue sur Yuumi</h1>
+            <p style="font-size:1rem;color:#666;line-height:1.7;max-width:300px;">L'annuaire des commerces locaux qui valorise les artisans et commerçants de votre quartier.</p>
+        </div>
+        <div style="flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;text-align:center;background:#f3f8ff;" id="slide-1">
+            <div style="font-size:90px;margin-bottom:32px;">📍</div>
+            <h1 style="font-size:1.8rem;font-weight:800;color:#ff8b38;margin-bottom:16px;">Trouvez, filtrez, géolocalisez</h1>
+            <p style="font-size:1rem;color:#666;line-height:1.7;max-width:300px;">Découvrez les commerces autour de vous sur la carte et filtrez par catégorie.</p>
+        </div>
+        <div style="flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;text-align:center;background:#f3fff6;" id="slide-2">
+            <div style="font-size:90px;margin-bottom:32px;">❤️</div>
+            <h1 style="font-size:1.8rem;font-weight:800;color:#ff8b38;margin-bottom:16px;">Vos favoris, toujours là</h1>
+            <p style="font-size:1rem;color:#666;line-height:1.7;max-width:300px;">Sauvegardez vos commerces préférés et retrouvez-les en un clic !</p>
+        </div>
+        <div style="padding:0 32px 32px;padding-bottom:calc(32px + env(safe-area-inset-bottom));">
+            <div style="display:flex;justify-content:center;gap:8px;margin-bottom:20px;">
+                <div style="width:24px;height:8px;border-radius:4px;background:#ff8b38;" id="dot-0"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#ddd;" id="dot-1"></div>
+                <div style="width:8px;height:8px;border-radius:50%;background:#ddd;" id="dot-2"></div>
+            </div>
+            <button id="ob-btn-next" style="width:100%;padding:16px;background:#ff8b38;color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,139,56,0.35);">Suivant →</button>
+            <button id="ob-btn-skip" style="width:100%;background:none;border:none;color:#aaa;font-size:0.9rem;cursor:pointer;padding:12px;font-family:inherit;margin-top:4px;">Passer l'introduction</button>
+        </div>
+    `;
+
+    let current = 0;
+    const total = 3;
+
+    function goTo(i) {
+        document.getElementById('slide-' + current).style.display = 'none';
+        current = i;
+        const slide = document.getElementById('slide-' + current);
+        slide.style.display = 'flex';
+        slide.style.flexDirection = 'column';
+        slide.style.alignItems = 'center';
+        slide.style.justifyContent = 'center';
+
+        for (let j = 0; j < total; j++) {
+            const dot = document.getElementById('dot-' + j);
+            if (j === current) {
+                dot.style.width = '24px';
+                dot.style.borderRadius = '4px';
+                dot.style.background = '#ff8b38';
+            } else {
+                dot.style.width = '8px';
+                dot.style.borderRadius = '50%';
+                dot.style.background = '#ddd';
+            }
+        }
+
+        const btnNext = document.getElementById('ob-btn-next');
+        const btnSkip = document.getElementById('ob-btn-skip');
+        if (current === total - 1) {
+            btnNext.textContent = "C'est parti ! 🚀";
+            btnSkip.style.display = 'none';
+        } else {
+            btnNext.textContent = 'Suivant →';
+            btnSkip.style.display = 'block';
+        }
+    }
+
+    function finish() {
+        localStorage.setItem('yuumi_onboarding_done', '1');
+        overlay.style.display = 'none';
+        if (window.Capacitor?.Plugins?.Haptics) {
+            Capacitor.Plugins.Haptics.impact({ style: 'MEDIUM' });
+        }
+    }
+
+    document.getElementById('ob-btn-next').addEventListener('click', () => {
+        if (current < total - 1) {
+            goTo(current + 1);
+            if (window.Capacitor?.Plugins?.Haptics) {
+                Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
+            }
+        } else {
+            finish();
+        }
+    });
+
+    document.getElementById('ob-btn-skip').addEventListener('click', finish);
+})();
+</script>
 
 </body>
 </html>
