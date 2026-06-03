@@ -724,13 +724,29 @@ document.addEventListener("DOMContentLoaded", () => {
         return `${km.toFixed(1)} km de vous`;
     }
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-            const km = distanceKm(pos.coords.latitude, pos.coords.longitude, storeLat, storeLng);
-            const el = document.querySelector('.distance-commerce');
-            if (el) el.textContent = formatDistance(km);
-        });
+   // APRÈS
+async function getDistance() {
+    try {
+        let coords;
+        if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+            const pos = await Capacitor.Plugins.Geolocation.getCurrentPosition();
+            coords = pos.coords;
+        } else {
+            coords = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(
+                    pos => resolve(pos.coords),
+                    reject
+                );
+            });
+        }
+        const km = distanceKm(coords.latitude, coords.longitude, storeLat, storeLng);
+        const el = document.querySelector('.distance-commerce');
+        if (el) el.textContent = formatDistance(km);
+    } catch (e) {
+        console.log("Géoloc non disponible", e);
     }
+}
+getDistance();
 })();
 </script>
 {% endif %}
