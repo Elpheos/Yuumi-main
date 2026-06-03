@@ -261,7 +261,7 @@ LOGGING = {
 # -------------------------------------------------------------------
 
 LOGIN_URL = "/login/"
-LOGIN_REDIRECT_URL = "/"
+LOGIN_REDIRECT_URL = 'https://yuumi-shop.com/'
 LOGOUT_REDIRECT_URL = "/"
 
 AUTHENTICATION_BACKENDS = [
