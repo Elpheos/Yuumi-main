@@ -772,6 +772,37 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 });
+
+  <!-- ===== HAPTIC FEEDBACK CAPACITOR ===== -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+
+    const { Haptics, ImpactStyle } = Capacitor.Plugins;
+
+    // Favoris → impact moyen
+    document.querySelectorAll(".favori-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            Haptics.impact({ style: "MEDIUM" });
+        });
+    });
+
+    // Unfavoris → impact léger
+    document.querySelectorAll(".unfavori-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+            Haptics.impact({ style: "LIGHT" });
+        });
+    });
+
+    // Partage → impact lourd
+    const shareBtn = document.getElementById("share-btn");
+    if (shareBtn) {
+        shareBtn.addEventListener("click", () => {
+            Haptics.impact({ style: "HEAVY" });
+        });
+    }
+});
+</script>
 </script>
 
 <style>
