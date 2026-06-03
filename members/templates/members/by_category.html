@@ -475,7 +475,6 @@
 
         noResult.style.display = visible === 0 ? 'block' : 'none';
 
-        // Mise à jour du compteur
         const filterActive = maxKm < 15;
         if (filterActive) {
             const s = visible > 1 ? 's' : '';
@@ -488,10 +487,23 @@
         }
     }
 
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(pos => {
-            userLat = pos.coords.latitude;
-            userLng = pos.coords.longitude;
+    async function initGeoDistance() {
+        try {
+            let coords;
+            if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+                const pos = await Capacitor.Plugins.Geolocation.getCurrentPosition();
+                coords = pos.coords;
+            } else {
+                coords = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        pos => resolve(pos.coords),
+                        reject
+                    );
+                });
+            }
+
+            userLat = coords.latitude;
+            userLng = coords.longitude;
 
             noGeo.style.display = 'none';
             sliderControls.style.display = 'flex';
@@ -512,10 +524,12 @@
                 applyFilter();
             });
 
-        }, () => {
-            // Géoloc refusée
-        });
+        } catch (e) {
+            console.log("Géoloc non disponible", e);
+        }
     }
+
+    initGeoDistance();
 
 })();
 </script>
