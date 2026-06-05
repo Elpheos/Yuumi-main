@@ -7,8 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Yuumi{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}Yuumi — Découvrez les commerces locaux près de chez vous.{% endblock %}">
-
-    <!-- Open Graph -->
     <meta property="og:title" content="{% block og_title %}Yuumi{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Découvrez les commerces locaux près de chez vous.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{% static 'images/logo.webp' %}{% endblock %}">
@@ -16,23 +14,16 @@
     <meta property="og:locale" content="fr_FR">
     <link rel="canonical" href="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
     <meta property="og:url" content="{{ request.scheme }}://{{ request.get_host }}{{ request.path }}">
-
     <link rel="icon" type="image/webp" href="{% static 'images/logo.webp' %}">
-
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
-
-    <!-- Global CSS -->
     <link rel="stylesheet" href="{% static 'css/myglobal.css' %}">
-
-    <!-- Tabler Icons (pour la tab bar) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-
-    {% block extra_head %}
-    {% endblock %}
+    {% block extra_head %}{% endblock %}
 
 <style>
+
+/* ===== BODY & LAYOUT ===== */
 body {
     display: flex;
     flex-direction: column;
@@ -43,6 +34,7 @@ main {
     flex: 1;
 }
 
+/* ===== SUPERCATS DROPDOWN ===== */
 #supercats-dropdown {
     display: none;
 }
@@ -62,7 +54,7 @@ main {
     width: 25vw;
     z-index: 10000;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
-    margin-top:1vh;
+    margin-top: 1vh;
 }
 
 .supercat-block {
@@ -85,24 +77,25 @@ main {
     font-weight: bold;
     color: #ff8b38;
     cursor: pointer;
+    padding-left: 3px;
 }
 
 .li-classe-inter-style {
     background: #fff5ee;
     border-left: 3px solid #ff8b38;
 }
-    
-.subcats-list >li:first-child {
-    margin-top:0;
-    }
-    
+
+.subcats-list > li:first-child {
+    margin-top: 0;
+}
+
 .subcats-list > li:has(.menu-cat-intermediaire):not(:first-child) {
     padding-top: 8px;
 }
 
 .subcats-list {
     list-style: none;
-    padding-left: 10px;
+    padding-left: 1.5rem;
     margin-top: 6px;
     display: none;
 }
@@ -117,6 +110,11 @@ main {
     display: block;
 }
 
+.subcats-list .subcats-list {
+    padding-left: 0;
+}
+
+/* ===== FOOTER ===== */
 .yuumi-footer {
     background: #fafafa;
     padding: 30px 10px;
@@ -172,6 +170,7 @@ main {
     color: #666;
 }
 
+/* ===== POINTER EVENTS ===== */
 .resultats-recherche,
 #supercats-dropdown,
 #search-product-container {
@@ -184,21 +183,10 @@ main {
     pointer-events: auto;
 }
 
+/* ===== CHANGER VILLE MOBILE ===== */
 .menu-changer-ville-mobile {
     display: none;
 }
-
-.subcats-list {
-    padding-left:1.5rem;
-    }
-
-.menu-cat-intermediaire{
-    padding-left:3px;
-    }
-
-.subcats-list .subcats-list {
-    padding-left:0;
-    }
 
 @media (max-width: 767px) {
     .menu-changer-ville-mobile {
@@ -206,6 +194,7 @@ main {
     }
 }
 
+/* ===== HEADER VILLE NAV ===== */
 .header-ville-nav {
     display: flex;
     align-items: center;
@@ -253,6 +242,7 @@ main {
     }
 }
 
+/* ===== MESSAGES DJANGO ===== */
 .django-messages {
     position: fixed;
     top: 20px;
@@ -275,14 +265,20 @@ main {
     border-radius: 10px;
     font-weight: 600;
     font-size: 0.95rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
     pointer-events: auto;
     animation: slideDown 0.3s ease;
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-10px); }
-    to   { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .django-message--success {
@@ -327,9 +323,8 @@ main {
     .mobile-modal.open {
         display: flex;
     }
-
     .subcats-list {
-        padding-left:0.5rem;
+        padding-left: 0.5rem;
     }
 }
 
@@ -358,16 +353,16 @@ main {
     padding: 0 4px;
 }
 
-.mobile-modal-body .supercat-header {
-    padding: 10px 0;
-    font-size: 1rem;
-}
-    
 .mobile-modal-body {
     flex: 1;
     overflow-y: auto;
     padding: 16px;
     -webkit-overflow-scrolling: touch;
+}
+
+.mobile-modal-body .supercat-header {
+    padding: 10px 0;
+    font-size: 1rem;
 }
 
 .mobile-modal-body .subcats-list li {
@@ -392,7 +387,7 @@ main {
 }
 
 .mobile-modal-search-input:focus {
-    box-shadow: 0 0 0 3px rgba(255,139,56,0.15);
+    box-shadow: 0 0 0 3px rgba(255, 139, 56, 0.15);
 }
 
 /* ===== RÉSULTATS RECHERCHE PRODUIT ===== */
@@ -417,9 +412,7 @@ main {
     background: #fff5ee;
 }
 
-/* ============================= */
-/*     TAB BAR NATIVE CAPACITOR  */
-/* ============================= */
+/* ===== TAB BAR NATIVE CAPACITOR ===== */
 #yuumi-tab-bar {
     display: none;
 }
@@ -435,7 +428,7 @@ main {
     left: 0;
     right: 0;
     background: white;
-    border-top: 0.5px solid rgba(0,0,0,0.12);
+    border-top: 0.5px solid rgba(0, 0, 0, 0.12);
     z-index: 9999;
     padding-bottom: env(safe-area-inset-bottom);
     justify-content: space-around;
@@ -483,7 +476,6 @@ main {
 </style>
 </head>
 
-<!-- ✅ MODIF 1 — data-user-authenticated pour biometric.js -->
 <body data-user-authenticated="{{ user.is_authenticated|yesno:'true,false' }}">
 
 <!-- ===== PULL TO REFRESH CAPACITOR ===== -->
@@ -509,7 +501,7 @@ main {
         justify-content: center;
         z-index: 99999;
         transition: top 0.2s ease;
-        box-shadow: 0 4px 12px rgba(255,139,56,0.4);
+        box-shadow: 0 4px 12px rgba(255, 139, 56, 0.4);
     `;
     indicator.innerHTML = `<svg style="width:22px;fill:white;" viewBox="0 0 512 512"><path d="M105.1 202.6c7.7-21.8 20.2-42.3 37.8-59.8 62.5-62.5 163.8-62.5 226.3 0L386.3 160 352 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l111.5 0c0 0 .1 0 .1 0 8.8 0 16.7-3.6 22.5-9.3 5.8-5.8 9.4-13.8 9.4-22.7l0-112c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 35.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5zM39 289.3c-5 1.5-9.8 4.2-13.7 8.2-3.9 3.9-6.7 8.8-8.1 14L.4 426.1C-4 443.2 6.4 460.5 23.5 464.9s34.4-6 38.8-23.1l10.1-38.2c7.7 21.8 20.2 42.3 37.8 59.8 87.5 87.5 229.3 87.5 316.8 0 24.4-24.4 42.1-53.1 52.9-83.7 5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8-62.5 62.5-163.8 62.5-226.3 0-12.5-12.5-22.2-26.8-29.1-42.1l35.1 9.3c17.1 4.5 34.4-5.8 38.9-23s-5.8-34.4-23-38.9L39 289.3z"/></svg>`;
     document.body.appendChild(indicator);
@@ -534,7 +526,6 @@ main {
         const delta = e.changedTouches[0].clientY - startY;
         indicator.style.top = '-60px';
         pulling = false;
-
         if (delta > 80) {
             if (window.Capacitor?.Plugins?.Haptics) {
                 Capacitor.Plugins.Haptics.impact({ style: "MEDIUM" });
@@ -567,64 +558,64 @@ main {
                     <li class="menu-supercats">
                         {% if menu_departement and menu_ville %}
                             <a href="#" class="supercats-toggle">
-                                Chercher un commerce <svg class="chevron" style="width: 16px; margin-left: 3px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                                Chercher un commerce
+                                <svg class="chevron" style="width:16px;margin-left:3px;fill:var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
                             </a>
                         {% else %}
                             <a class="disabled-link">Chercher un commerce</a>
                         {% endif %}
-<div id="supercats-dropdown" class="supercats-container">
-    {% if menu_supercategories %}
-        {% for supercat, cats in menu_supercategories.items %}
-        <div class="supercat-block">
-            <div class="supercat-header">
-                <span>{{ supercat }}</span>
-                <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
-            </div>
-            <ul class="subcats-list">
-                {# --- Catégories intermédiaires en premier --- #}
-                {% for item in cats.items %}
-                    {% if item.type != "direct" %}
-                    <li class="li-cat-inter">
-                        <div class="menu-cat-intermediaire">
-                            <span>{{ item.name }}</span>
-                            <svg class="chevron" style="width: 12px; fill: #ff8b38;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+
+                        <div id="supercats-dropdown" class="supercats-container">
+                            {% if menu_supercategories %}
+                                {% for supercat, cats in menu_supercategories.items %}
+                                <div class="supercat-block">
+                                    <div class="supercat-header">
+                                        <span>{{ supercat }}</span>
+                                        <svg class="chevron" style="width:12px;fill:var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                                    </div>
+                                    <ul class="subcats-list">
+                                        {% for item in cats.items %}
+                                            {% if item.type != "direct" %}
+                                            <li class="li-cat-inter">
+                                                <div class="menu-cat-intermediaire">
+                                                    <span>{{ item.name }}</span>
+                                                    <svg class="chevron" style="width:12px;fill:#ff8b38;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                                                </div>
+                                                <ul class="subcats-list">
+                                                    {% for cat in item.cats %}
+                                                    <li>
+                                                        {% if menu_ville %}
+                                                            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">{{ cat }}</a>
+                                                        {% else %}
+                                                            <span style="color:#aaa;">{{ cat }}</span>
+                                                        {% endif %}
+                                                    </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                        {% for item in cats.items %}
+                                            {% if item.type == "direct" %}
+                                            <li>
+                                                {% if menu_ville %}
+                                                    <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
+                                                        {% if item.obj.icon_perso %}
+                                                            <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
+                                                        {% endif %}
+                                                        {{ item.obj }}
+                                                    </a>
+                                                {% else %}
+                                                    <span style="color:#aaa;">{{ item.obj }}</span>
+                                                {% endif %}
+                                            </li>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                                {% endfor %}
+                            {% endif %}
                         </div>
-                        <ul class="subcats-list">
-                            {% for cat in item.cats %}
-                            <li>
-                                {% if menu_ville %}
-                                    <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode cat.slug %}">{{ cat }}</a>
-                                {% else %}
-                                    <span style="color:#aaa;">{{ cat }}</span>
-                                {% endif %}
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </li>
-                    {% endif %}
-                {% endfor %}
-                {# --- Catégories directes en dessous --- #}
-                {% for item in cats.items %}
-                    {% if item.type == "direct" %}
-                    <li>
-                        {% if menu_ville %}
-                            <a href="{% url 'by_category' menu_departement|urlencode menu_ville|urlencode item.obj.slug %}">
-                                {% if item.obj.icon_perso %}
-                                    <img class="menu-icone-categorie" src="{{ item.obj.icon_perso.url }}" alt="{{ item.obj }}" width="25"> -
-                                {% endif %}
-                                {{ item.obj }}
-                            </a>
-                        {% else %}
-                            <span style="color:#aaa;">{{ item.obj }}</span>
-                        {% endif %}
-                    </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
-        {% endfor %}
-    {% endif %}
-</div>
                     </li>
 
                     <!-- CHERCHER UN PRODUIT -->
@@ -636,7 +627,6 @@ main {
                         {% else %}
                             <a class="disabled-link">Chercher un produit</a>
                         {% endif %}
-
                         <div id="search-product-container">
                             <input type="text" id="search-product-input" placeholder="Tapez un nom de produit...">
                             <ul id="search-product-results"></ul>
@@ -657,19 +647,20 @@ main {
 
                     <li><a href="{{ carte_url }}">Carte des commerces</a></li>
                     <li><a href="{% url 'notre_projet' %}">Notre projet</a></li>
-
                     <li>
                         <a href="{% if user.is_authenticated %}{% url 'account' %}{% else %}{% url 'login' %}{% endif %}">
                             Mon compte
                         </a>
                     </li>
-
                     <li><a href="{% url 'contact' %}">Contact</a></li>
 
                     {% if menu_departement and menu_ville %}
                     <li class="header-ville-nav">
                         <div class="header-bouton-changerville-desktop-container">
-                            <span class="header-bouton-changerville-span-nomville"><svg style="fill: var(--orange); width: 16px; margin-right: 5px; margin-bottom: 10px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>{{ menu_ville }}</span>
+                            <span class="header-bouton-changerville-span-nomville">
+                                <svg style="fill:var(--orange);width:16px;margin-right:5px;margin-bottom:10px;" viewBox="0 0 384 512"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
+                                {{ menu_ville }}
+                            </span>
                             <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
                         </div>
                     </li>
@@ -678,18 +669,27 @@ main {
                 </ul>
             </div>
 
-            <!-- ICONES -->
+            <!-- ICONES HEADER -->
             <div>
                 <ul class="li-icones-header">
-                    <li><a href="{% url 'my-favorites' %}"><svg viewBox="0 0 512 512"><path d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg></a></li>
-
+                    <li>
+                        <a href="{% url 'my-favorites' %}">
+                            <svg viewBox="0 0 512 512"><path d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+                        </a>
+                    </li>
                     {% if menu_departement and menu_ville %}
-                        <li><a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}">
-                            <svg viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg></a></li>
+                        <li>
+                            <a href="#" class="search-product-toggle" data-url="{% url 'search-product' %}">
+                                <svg viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+                            </a>
+                        </li>
                     {% else %}
-                        <li><a class="disabled-link-svg"><svg viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg></a></li>
+                        <li>
+                            <a class="disabled-link-svg">
+                                <svg viewBox="0 0 512 512"><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376C296.3 401.1 253.9 416 208 416 93.1 416 0 322.9 0 208S93.1 0 208 0 416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
+                            </a>
+                        </li>
                     {% endif %}
-
                     <li>
                         {% if user.is_authenticated %}
                             <a href="{% url 'account' %}">
@@ -710,7 +710,7 @@ main {
 </header>
 
 <!-- ============================= -->
-<!--             CONTENT           -->
+<!--            CONTENT            -->
 <!-- ============================= -->
 <main>
     {% if messages %}
@@ -723,27 +723,25 @@ main {
         {% endfor %}
     </div>
     {% endif %}
-
     {% block content %}{% endblock %}
 </main>
 
 <!-- ============================= -->
-<!--          MODALS SUGGESTIONS   -->
+<!--       MODALS SUGGESTIONS      -->
 <!-- ============================= -->
-
 <template id="tpl-modal-nouveau">
 <div class="modal fade" id="suggestNewModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border-radius:14px; border: 2px solid #0a5bb4; margin-top:60px">
-            <div class="modal-header" style="background:#0a5bb4; border-radius:12px 12px 0 0;">
+        <div class="modal-content" style="border-radius:14px;border:2px solid #0a5bb4;margin-top:60px;">
+            <div class="modal-header" style="background:#0a5bb4;border-radius:12px 12px 0 0;">
                 <h5 class="modal-title" style="color:white;">
-                   <svg style="width: 16px;" viewBox="0 0 512 512"><path d="M30.7 72.3C37.6 48.4 59.5 32 84.4 32l344 0c24.9 0 46.8 16.4 53.8 40.3l23.4 80.2c12.8 43.7-20.1 87.5-65.6 87.5-26.3 0-49.4-14.9-60.8-37.1-11.6 21.9-34.6 37.1-61.4 37.1-26.6 0-49.7-15-61.3-37-11.6 22-34.7 37-61.3 37-26.8 0-49.8-15.1-61.4-37.1-11.4 22.1-34.5 37.1-60.8 37.1-45.6 0-78.4-43.7-65.6-87.5L30.7 72.3zM96.4 352l320 0 0-66.4c7.6 1.6 15.5 2.4 23.5 2.4 14.3 0 28-2.6 40.5-7.2l0 151.2c0 26.5-21.5 48-48 48l-352 0c-26.5 0-48-21.5-48-48l0-151.2c12.5 4.6 26.1 7.2 40.5 7.2 8.1 0 15.9-.8 23.5-2.4l0 66.4z"/></svg>
+                    <svg style="width:16px;" viewBox="0 0 512 512"><path d="M30.7 72.3C37.6 48.4 59.5 32 84.4 32l344 0c24.9 0 46.8 16.4 53.8 40.3l23.4 80.2c12.8 43.7-20.1 87.5-65.6 87.5-26.3 0-49.4-14.9-60.8-37.1-11.6 21.9-34.6 37.1-61.4 37.1-26.6 0-49.7-15-61.3-37-11.6 22-34.7 37-61.3 37-26.8 0-49.8-15.1-61.4-37.1-11.4 22.1-34.5 37.1-60.8 37.1-45.6 0-78.4-43.7-65.6-87.5L30.7 72.3zM96.4 352l320 0 0-66.4c7.6 1.6 15.5 2.4 23.5 2.4 14.3 0 28-2.6 40.5-7.2l0 151.2c0 26.5-21.5 48-48 48l-352 0c-26.5 0-48-21.5-48-48l0-151.2c12.5 4.6 26.1 7.2 40.5 7.2 8.1 0 15.9-.8 23.5-2.4l0 66.4z"/></svg>
                     Suggérer un nouveau commerce
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p style="color:#888; font-size:0.9rem; margin-bottom:16px;">Tous les champs sont optionnels, remplissez ce que vous savez !</p>
+                <p style="color:#888;font-size:0.9rem;margin-bottom:16px;">Tous les champs sont optionnels, remplissez ce que vous savez !</p>
                 <form id="suggest-new-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrfmiddlewaretoken" value="">
                     <div class="mb-3"><label class="form-label">Nom du commerce</label><input type="text" name="nom" class="form-control" placeholder="Ex : Boulangerie Dupont"></div>
@@ -775,14 +773,14 @@ main {
                     <div class="mb-3"><label class="form-label">Photo</label><input type="file" name="photo" class="form-control"></div>
                     <div class="mb-3"><label class="form-label">Produits Suggérés</label><textarea name="produits_suggeres" class="form-control" rows="3"></textarea></div>
                 </form>
-                <div id="suggest-new-success" style="display:none; text-align:center; padding:20px;">
-                    <svg style="width: 16px; fill: #0a5bb4" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zM374 145.7c-10.7-7.8-25.7-5.4-33.5 5.3L221.1 315.2 169 263.1c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l72 72c5 5 11.8 7.5 18.8 7s13.4-4.1 17.5-9.8L379.3 179.2c7.8-10.7 5.4-25.7-5.3-33.5z"/></svg>
-                    <p style="margin-top:12px; font-weight:600;">Merci pour votre suggestion !</p>
+                <div id="suggest-new-success" style="display:none;text-align:center;padding:20px;">
+                    <svg style="width:16px;fill:#0a5bb4" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zM374 145.7c-10.7-7.8-25.7-5.4-33.5 5.3L221.1 315.2 169 263.1c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l72 72c5 5 11.8 7.5 18.8 7s13.4-4.1 17.5-9.8L379.3 179.2c7.8-10.7 5.4-25.7-5.3-33.5z"/></svg>
+                    <p style="margin-top:12px;font-weight:600;">Merci pour votre suggestion !</p>
                 </div>
             </div>
             <div class="modal-footer" id="suggest-new-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="suggest-new-submit" style="background:#0a5bb4; border-color:#0a5bb4;">Envoyer ma suggestion</button>
+                <button type="button" class="btn btn-primary" id="suggest-new-submit" style="background:#0a5bb4;border-color:#0a5bb4;">Envoyer ma suggestion</button>
             </div>
         </div>
     </div>
@@ -792,16 +790,16 @@ main {
 <template id="tpl-modal-modif">
 <div class="modal fade" id="suggestModifModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content" style="border-radius:14px; border: 2px solid #0a5bb4; margin-top:60px;">
-            <div class="modal-header" style="background:#0a5bb4; border-radius:12px 12px 0 0;">
+        <div class="modal-content" style="border-radius:14px;border:2px solid #0a5bb4;margin-top:60px;">
+            <div class="modal-header" style="background:#0a5bb4;border-radius:12px 12px 0 0;">
                 <h5 class="modal-title" style="color:white;">
-                   <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="rgb(255, 255, 255)" d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
+                    <svg style="width:16px;" viewBox="0 0 512 512"><path fill="rgb(255,255,255)" d="M36.4 353.2c4.1-14.6 11.8-27.9 22.6-38.7l181.2-181.2 33.9-33.9c16.6 16.6 51.3 51.3 104 104l33.9 33.9-33.9 33.9-181.2 181.2c-10.7 10.7-24.1 18.5-38.7 22.6L30.4 510.6c-8.3 2.3-17.3 0-23.4-6.2S-1.4 489.3 .9 481L36.4 353.2zm55.6-3.7c-4.4 4.7-7.6 10.4-9.3 16.6l-24.1 86.9 86.9-24.1c6.4-1.8 12.2-5.1 17-9.7L91.9 349.5zm354-146.1c-16.6-16.6-51.3-51.3-104-104L308 65.5C334.5 39 349.4 24.1 352.9 20.6 366.4 7 384.8-.6 404-.6S441.6 7 455.1 20.6l35.7 35.7C504.4 69.9 512 88.3 512 107.4s-7.6 37.6-21.2 51.1c-3.5 3.5-18.4 18.4-44.9 44.9z"/></svg>
                     Suggérer une modification pour ce commerce
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p style="color:#888; font-size:0.9rem; margin-bottom:16px;">Tous les champs sont optionnels, remplissez uniquement ce que vous souhaitez modifier !</p>
+                <p style="color:#888;font-size:0.9rem;margin-bottom:16px;">Tous les champs sont optionnels, remplissez uniquement ce que vous souhaitez modifier !</p>
                 <form id="suggest-modif-form" enctype="multipart/form-data">
                     <input type="hidden" name="csrfmiddlewaretoken" value="">
                     <div class="mb-3"><label class="form-label">Message</label><textarea name="message" class="form-control" rows="4" placeholder="Décrivez la modification..."></textarea></div>
@@ -828,14 +826,14 @@ main {
                     <div class="mb-3"><label class="form-label">Photo</label><input type="file" name="photo" class="form-control"></div>
                     <div class="mb-3"><label class="form-label">Produits Suggérés</label><textarea name="produits_suggeres" class="form-control" rows="3"></textarea></div>
                 </form>
-                <div id="suggest-modif-success" style="display:none; text-align:center; padding:20px;">
-                    <svg style="width: 16px; fill: #0a5bb4" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zM374 145.7c-10.7-7.8-25.7-5.4-33.5 5.3L221.1 315.2 169 263.1c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l72 72c5 5 11.8 7.5 18.8 7s13.4-4.1 17.5-9.8L379.3 179.2c7.8-10.7 5.4-25.7-5.3-33.5z"/></svg>
-                    <p style="margin-top:12px; font-weight:600;">Merci pour votre suggestion !</p>
+                <div id="suggest-modif-success" style="display:none;text-align:center;padding:20px;">
+                    <svg style="width:16px;fill:#0a5bb4" viewBox="0 0 512 512"><path d="M256 512a256 256 0 1 1 0-512 256 256 0 1 1 0 512zM374 145.7c-10.7-7.8-25.7-5.4-33.5 5.3L221.1 315.2 169 263.1c-9.4-9.4-24.6-9.4-33.9 0s-9.4 24.6 0 33.9l72 72c5 5 11.8 7.5 18.8 7s13.4-4.1 17.5-9.8L379.3 179.2c7.8-10.7 5.4-25.7-5.3-33.5z"/></svg>
+                    <p style="margin-top:12px;font-weight:600;">Merci pour votre suggestion !</p>
                 </div>
             </div>
             <div class="modal-footer" id="suggest-modif-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                <button type="button" class="btn btn-primary" id="suggest-modif-submit" style="background:#0a5bb4; border-color:#0a5bb4;">Envoyer ma suggestion</button>
+                <button type="button" class="btn btn-primary" id="suggest-modif-submit" style="background:#0a5bb4;border-color:#0a5bb4;">Envoyer ma suggestion</button>
             </div>
         </div>
     </div>
@@ -843,17 +841,16 @@ main {
 </template>
 
 <!-- ============================= -->
-<!--             FOOTER            -->
+<!--            FOOTER             -->
 <!-- ============================= -->
-
 <footer class="yuumi-footer">
     <div class="yuumi-footer-container">
         <div class="yuumi-footer-socials">
             <a href="https://www.facebook.com/Yuumi.France/" target="_blank" rel="noopener">
-                <img src="{% static 'images/facebook-yuumi.webp' %}" class="yuumi-footer-icon" alt="icône du lien vers la page facebook de yuumi" width="32" height="32">
+                <img src="{% static 'images/facebook-yuumi.webp' %}" class="yuumi-footer-icon" alt="Facebook Yuumi" width="32" height="32">
             </a>
             <a href="https://www.instagram.com/yuumi.france/" target="_blank" rel="noopener">
-                <img src="{% static 'images/instagram-yuumi.webp' %}" class="yuumi-footer-icon" alt="icône du lien vers la page instagram de yuumi" width="32" height="32">
+                <img src="{% static 'images/instagram-yuumi.webp' %}" class="yuumi-footer-icon" alt="Instagram Yuumi" width="32" height="32">
             </a>
         </div>
         <div class="yuumi-footer-links">
@@ -865,14 +862,12 @@ main {
             <span>|</span>
             <a href="{% url 'cgu' %}">CGU</a>
         </div>
-        <div class="yuumi-footer-copy">
-            © 2026 Yuumi S.A.S. | Tous droits réservés
-        </div>
+        <div class="yuumi-footer-copy">© 2026 Yuumi S.A.S. | Tous droits réservés</div>
     </div>
 </footer>
 
 <!-- ============================= -->
-<!--   MODALES MOBILE COMMERCE     -->
+<!--   MODALE MOBILE COMMERCE      -->
 <!-- ============================= -->
 <div class="mobile-modal" id="mobile-modal-commerce">
     <div class="mobile-modal-header">
@@ -885,7 +880,7 @@ main {
             <div class="supercat-block">
                 <div class="supercat-header">
                     <span>{{ supercat }}</span>
-                    <svg class="chevron" style="width: 12px; fill: var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                    <svg class="chevron" style="width:12px;fill:var(--orange);" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
                 </div>
                 <ul class="subcats-list">
                     {% for item in cats.items %}
@@ -893,7 +888,7 @@ main {
                         <li>
                             <div class="menu-cat-intermediaire">
                                 <span>{{ item.name }}</span>
-                                <svg class="chevron" style="width: 12px; fill: #ff8b38;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
+                                <svg class="chevron" style="width:12px;fill:#ff8b38;" viewBox="0 0 448 512"><path d="M201.4 406.6c12.5 12.5 32.8 12.5 45.3 0l192-192c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L224 338.7 54.6 169.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l192 192z"/></svg>
                             </div>
                             <ul class="subcats-list">
                                 {% for cat in item.cats %}
@@ -929,7 +924,7 @@ main {
             </div>
             {% endfor %}
         {% else %}
-            <p style="color:#aaa; text-align:center; margin-top:24px;">Choisissez une ville pour voir les catégories.</p>
+            <p style="color:#aaa;text-align:center;margin-top:24px;">Choisissez une ville pour voir les catégories.</p>
         {% endif %}
     </div>
 </div>
@@ -948,7 +943,7 @@ main {
                class="mobile-modal-search-input"
                placeholder="Tapez un nom de produit..."
                autocomplete="off">
-        <ul id="search-product-results-mobile" style="list-style:none; padding:0; margin-top:12px;"></ul>
+        <ul id="search-product-results-mobile" style="list-style:none;padding:0;margin-top:12px;"></ul>
     </div>
 </div>
 
@@ -957,41 +952,39 @@ main {
 <!-- ============================= -->
 <div id="yuumi-tab-bar">
 
-    <button class="tab-btn active" id="tab-menu" aria-label="Menu">
-        <i class="ti ti-menu-2" aria-hidden="true"></i>
-        <span>Menu</span>
-    </button>
+    <a class="tab-btn" href="/mes-favoris/" id="tab-favoris" aria-label="Favoris">
+        <i class="ti ti-heart" aria-hidden="true"></i>
+        <span>Favoris</span>
+    </a>
 
     <a class="tab-btn" id="tab-carte" href="#" aria-label="Carte">
         <i class="ti ti-map" aria-hidden="true"></i>
         <span>Carte</span>
     </a>
 
-    <button class="tab-btn" id="tab-recherche" aria-label="Recherche">
-        <i class="ti ti-search" aria-hidden="true"></i>
-        <span>Recherche</span>
+    <button class="tab-btn" id="tab-commerce" aria-label="Commerces">
+        <i class="ti ti-building-store" aria-hidden="true"></i>
+        <span>Commerces</span>
     </button>
 
-    <a class="tab-btn" href="/mes-favoris/" id="tab-favoris" aria-label="Favoris">
-        <i class="ti ti-heart" aria-hidden="true"></i>
-        <span>Favoris</span>
-    </a>
+    <button class="tab-btn" id="tab-recherche" aria-label="Produits">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <span>Produits</span>
+    </button>
 
-    <a class="tab-btn" href="/changer-de-ville/" id="tab-ville" aria-label="Ville">
-        <i class="ti ti-map-pin" aria-hidden="true"></i>
-        <span>Ville</span>
-    </a>
+    <button class="tab-btn active" id="tab-menu" aria-label="Menu">
+        <i class="ti ti-menu-2" aria-hidden="true"></i>
+        <span>Menu</span>
+    </button>
 
 </div>
 
 <!-- ============================= -->
-<!--             JS HEADER         -->
+<!--           JS HEADER           -->
 <!-- ============================= -->
 <script>
 
-/* ============================= */
-/*   GÉOLOC GLOBALE              */
-/* ============================= */
+/* ===== GÉOLOC GLOBALE ===== */
 if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(pos => {
         window._userLat = pos.coords.latitude;
@@ -1004,23 +997,21 @@ window._distanceStr = function(lat, lng) {
     const R = 6371;
     const dLat = (lat - window._userLat) * Math.PI / 180;
     const dLng = (lng - window._userLng) * Math.PI / 180;
-    const a = Math.sin(dLat/2) ** 2 +
+    const a = Math.sin(dLat / 2) ** 2 +
               Math.cos(window._userLat * Math.PI / 180) *
               Math.cos(lat * Math.PI / 180) *
-              Math.sin(dLng/2) ** 2;
-    const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+              Math.sin(dLng / 2) ** 2;
+    const km = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     const m = Math.round(km * 1000);
     return m < 500 ? `${m} m` : `${km.toFixed(1)} km`;
 };
 
-/* ============================= */
-/*   BUILDER RÉSULTAT PRODUIT    */
-/* ============================= */
+/* ===== BUILDER RÉSULTAT PRODUIT ===== */
 function buildResultItem(item) {
     const dist = item.lat && item.lng ? window._distanceStr(item.lat, item.lng) : '';
     return `
         <li style="list-style:none;">
-            <a href="${item.url}" style="margin-top:8px;display:flex;align-items:center;gap:12px;padding:10px 12px;text-decoration:none;border:2px solid #ff8b38;border-radius:10px;margin-bottom:6px;display:flex;">
+            <a href="${item.url}" style="margin-top:8px;display:flex;align-items:center;gap:12px;padding:10px 12px;text-decoration:none;border:2px solid #ff8b38;border-radius:10px;margin-bottom:6px;">
                 ${item.photo
                     ? `<img src="${item.photo}" style="width:92px;height:92px;border-radius:8px;object-fit:cover;flex-shrink:0;">`
                     : `<div style="width:52px;height:52px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:22px;">🛍️</div>`}
@@ -1041,9 +1032,7 @@ function buildResultItem(item) {
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* ============================= */
-    /*       MENU MOBILE             */
-    /* ============================= */
+    /* ===== MENU MOBILE ===== */
     const mobileBtn = document.getElementById("nav-mobile-btn");
     const headerContainer = document.getElementById("header-container-id");
     const overlay = document.getElementById("nav-overlay");
@@ -1067,9 +1056,11 @@ document.addEventListener("DOMContentLoaded", () => {
             headerContainer.classList.contains("open") ? closeMenu() : openMenu();
         });
     }
+
     if (overlay) {
         overlay.addEventListener("click", closeMenu);
     }
+
     document.addEventListener("keydown", e => {
         if (e.key === "Escape") {
             closeMenu();
@@ -1078,9 +1069,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    /* ============================= */
-    /*   SUPER-CATEGORIES DROPDOWN   */
-    /* ============================= */
+    /* ===== SUPERCATEGORIES DROPDOWN ===== */
     const btn = document.querySelector(".supercats-toggle");
     const dropdown = document.getElementById("supercats-dropdown");
     const btnChevron = btn?.querySelector(".chevron");
@@ -1119,9 +1108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    /* ============================= */
-    /*   MODALES MOBILE              */
-    /* ============================= */
+    /* ===== MODALES MOBILE ===== */
     const isMobile = () => window.innerWidth <= 767;
 
     function openMobileModal(id) {
@@ -1134,10 +1121,8 @@ document.addEventListener("DOMContentLoaded", () => {
         document.body.style.overflow = "";
     }
 
-    const modalCommerce = document.getElementById("mobile-modal-commerce");
     const closeCommerceBtn = document.getElementById("close-modal-commerce");
-
-    if (btn && modalCommerce) {
+    if (btn) {
         btn.addEventListener("click", e => {
             if (isMobile()) {
                 e.preventDefault();
@@ -1149,7 +1134,6 @@ document.addEventListener("DOMContentLoaded", () => {
         closeCommerceBtn.addEventListener("click", () => closeMobileModal("mobile-modal-commerce"));
     }
 
-    const modalProduit = document.getElementById("mobile-modal-produit");
     const closeProduitBtn = document.getElementById("close-modal-produit");
     const inputMobile = document.getElementById("search-product-input-mobile");
     const listMobile = document.getElementById("search-product-results-mobile");
@@ -1172,9 +1156,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    /* ============================= */
-    /*   RECHERCHE PRODUIT MOBILE    */
-    /* ============================= */
+    /* ===== RECHERCHE PRODUIT MOBILE ===== */
     if (inputMobile && listMobile) {
         let timerMobile = null;
         inputMobile.addEventListener("input", () => {
@@ -1192,14 +1174,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
                     const data = await resp.json();
                     listMobile.innerHTML = (data.results || []).map(item => buildResultItem(item)).join("");
-                } catch (err) { console.error("Erreur recherche produit mobile :", err); }
+                } catch (err) { console.error(err); }
             }, 250);
         });
     }
 
-    /* ============================= */
-    /*   RECHERCHE PRODUIT DESKTOP   */
-    /* ============================= */
+    /* ===== RECHERCHE PRODUIT DESKTOP ===== */
     const toggles = document.querySelectorAll(".search-product-toggle");
     const box = document.getElementById("search-product-container");
     const input = document.getElementById("search-product-input");
@@ -1230,45 +1210,51 @@ document.addEventListener("DOMContentLoaded", () => {
                     });
                     const data = await resp.json();
                     list.innerHTML = (data.results || []).map(item => buildResultItem(item)).join("");
-                } catch (err) { console.error("Erreur recherche produit :", err); }
+                } catch (err) { console.error(err); }
             }, 250);
         });
     }
 
-    /* ============================= */
-    /*   TAB BAR CAPACITOR           */
-    /* ============================= */
+    /* ===== TAB BAR CAPACITOR ===== */
     if (window.Capacitor && window.Capacitor.isNativePlatform()) {
         document.body.classList.add('capacitor-native');
 
-        const carteLink = document.getElementById('tab-carte');
         const dep = document.cookie.match(/yuumi_departement=([^;]+)/)?.[1] || 'Haute-Savoie';
-        carteLink.href = '/carte/' + encodeURIComponent(dep) + '/';
+        document.getElementById('tab-carte').href = '/carte/' + encodeURIComponent(dep) + '/';
 
         document.getElementById('tab-menu').addEventListener('click', () => {
             document.getElementById('nav-mobile-btn').click();
         });
 
+        document.getElementById('tab-commerce').addEventListener('click', () => {
+            openMobileModal('mobile-modal-commerce');
+        });
+
         document.getElementById('tab-recherche').addEventListener('click', () => {
             openMobileModal('mobile-modal-produit');
             setTimeout(() => {
-                const input = document.getElementById('search-product-input-mobile');
-                if (input) input.focus();
+                const inp = document.getElementById('search-product-input-mobile');
+                if (inp) inp.focus();
             }, 150);
         });
 
-        const path = window.location.pathname;
-        const tabMap = [
-            { id: 'tab-carte', match: '/carte/' },
-            { id: 'tab-favoris', match: '/mes-favoris/' },
-            { id: 'tab-ville', match: '/changer-de-ville/' },
-        ];
-
-        document.getElementById('tab-menu').classList.remove('active');
-        tabMap.forEach(({ id, match }) => {
-            if (path.includes(match)) {
-                document.getElementById(id).classList.add('active');
+        /* Masquer les doublons dans le menu ☰ */
+        const aHideTexts = ['Chercher un commerce', 'Chercher un produit', 'Carte des commerces'];
+        document.querySelectorAll('.li-onglets-header li').forEach(li => {
+            const a = li.querySelector('a');
+            if (a && aHideTexts.some(txt => a.textContent.trim().startsWith(txt))) {
+                li.style.display = 'none';
             }
+        });
+
+        /* Active state selon URL */
+        const path = window.location.pathname;
+        document.getElementById('tab-menu').classList.remove('active');
+        [
+            { id: 'tab-carte',    match: '/carte/' },
+            { id: 'tab-favoris',  match: '/mes-favoris/' },
+        ].forEach(({ id, match }) => {
+            if (path.includes(match)) document.getElementById(id).classList.add('active');
         });
     }
 
@@ -1288,7 +1274,7 @@ document.addEventListener("DOMContentLoaded", () => {
 {% endif %}
 
 <!-- ============================= -->
-<!--       JS SUGGESTIONS          -->
+<!--        JS SUGGESTIONS         -->
 <!-- ============================= -->
 <script>
 const CSRF_TOKEN = "{{ csrf_token }}";
@@ -1308,9 +1294,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const btn = e.target.closest('[data-bs-target="#suggestNewModal"]');
         if (!btn) return;
         e.preventDefault();
-        if (!document.getElementById("suggestNewModal")) {
-            injecterModal("tpl-modal-nouveau");
-        }
+        if (!document.getElementById("suggestNewModal")) injecterModal("tpl-modal-nouveau");
         const modal = new bootstrap.Modal(document.getElementById("suggestNewModal"));
         modal.show();
         document.getElementById("suggest-new-submit").addEventListener("click", async () => {
@@ -1330,9 +1314,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const btn = e.target.closest('[data-bs-target="#suggestModifModal"]');
         if (!btn) return;
         e.preventDefault();
-        if (!document.getElementById("suggestModifModal")) {
-            injecterModal("tpl-modal-modif");
-        }
+        if (!document.getElementById("suggestModifModal")) injecterModal("tpl-modal-modif");
         const storeId = btn.dataset.storeId || btn.onclick?.toString().match(/\d+/)?.[0];
         const modal = new bootstrap.Modal(document.getElementById("suggestModifModal"));
         modal.show();
@@ -1349,13 +1331,14 @@ document.addEventListener("DOMContentLoaded", () => {
             } catch (err) { console.error(err); }
         }, { once: true });
     });
+
 });
 </script>
 
 {% block extra_js %}{% endblock %}
 
 <!-- ===== ONBOARDING CAPACITOR ===== -->
-<div id="yuumi-onboarding" style="display:none; position:fixed; inset:0; z-index:99999; background:white; flex-direction:column;"></div>
+<div id="yuumi-onboarding" style="display:none;position:fixed;inset:0;z-index:99999;background:white;flex-direction:column;"></div>
 
 <script>
 (function() {
@@ -1386,7 +1369,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <div style="width:8px;height:8px;border-radius:50%;background:#ddd;" id="dot-1"></div>
                 <div style="width:8px;height:8px;border-radius:50%;background:#ddd;" id="dot-2"></div>
             </div>
-            <button id="ob-btn-next" style="width:100%;padding:16px;background:#ff8b38;color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(255,139,56,0.35);">Suivant →</button>
+            <button id="ob-btn-next" style="width:100%;padding:16px;background:#ff8b38;color:white;border:none;border-radius:14px;font-size:1.05rem;font-weight:700;cursor:pointer;">Suivant →</button>
             <button id="ob-btn-skip" style="width:100%;background:none;border:none;color:#aaa;font-size:0.9rem;cursor:pointer;padding:12px;font-family:inherit;margin-top:4px;">Passer l'introduction</button>
         </div>
     `;
@@ -1402,7 +1385,6 @@ document.addEventListener("DOMContentLoaded", () => {
         slide.style.flexDirection = 'column';
         slide.style.alignItems = 'center';
         slide.style.justifyContent = 'center';
-
         for (let j = 0; j < total; j++) {
             const dot = document.getElementById('dot-' + j);
             if (j === current) {
@@ -1415,7 +1397,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 dot.style.background = '#ddd';
             }
         }
-
         const btnNext = document.getElementById('ob-btn-next');
         const btnSkip = document.getElementById('ob-btn-skip');
         if (current === total - 1) {
@@ -1438,9 +1419,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById('ob-btn-next').addEventListener('click', () => {
         if (current < total - 1) {
             goTo(current + 1);
-            if (window.Capacitor?.Plugins?.Haptics) {
-                Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
-            }
+            if (window.Capacitor?.Plugins?.Haptics) Capacitor.Plugins.Haptics.impact({ style: 'LIGHT' });
         } else {
             finish();
         }
@@ -1477,7 +1456,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     border-radius: 16px;
                     padding: 16px 20px;
                     z-index: 99997;
-                    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
                     display: flex;
                     align-items: center;
                     gap: 14px;
@@ -1485,20 +1464,4 @@ document.addEventListener("DOMContentLoaded", () => {
                 banner.innerHTML = `
                     <div style="font-size:32px;">🔐</div>
                     <div style="flex:1;">
-                        <p style="margin:0;font-weight:700;font-size:0.95rem;color:#333;">Connexion rapide activée ✅</p>
-                        <p style="margin:2px 0 0;font-size:0.82rem;color:#888;">La prochaine fois, connectez-vous avec votre empreinte ou Face ID.</p>
-                    </div>
-                    <button id="yuumi-bio-confirm-close" style="background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;padding:0 4px;line-height:1;">✕</button>
-                `;
-                document.body.appendChild(banner);
-                document.getElementById('yuumi-bio-confirm-close').addEventListener('click', () => banner.remove());
-                setTimeout(() => banner.remove(), 5000);
-            }
-        });
-    }
-})();
-</script>
-<script src="{% static 'js/geoloc.js' %}"></script>
-<script src="{% static 'js/push.js' %}"></script>
-</body>
-</html>
+                        <p style="margin:0;
