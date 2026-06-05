@@ -613,3 +613,25 @@ class StoreSuggestion(models.Model):
         verbose_name = "Suggestion"
         verbose_name_plural = "Suggestions"
         ordering = ["-created_at"]
+# ===========================================================
+# 🔹 Tokens FCM (Push Notifications Firebase)
+# ===========================================================
+
+class FCMToken(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="fcm_tokens",
+        null=True,
+        blank=True,
+    )
+    token = models.TextField(unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Token FCM"
+        verbose_name_plural = "Tokens FCM"
+
+    def __str__(self):
+        return f"Token de {self.user} — {self.token[:20]}..."
