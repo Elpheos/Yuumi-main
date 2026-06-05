@@ -543,6 +543,7 @@ main {
 <script>
 (function() {
     if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+    if (window.location.pathname.includes('/carte/')) return;
 
     let startY = 0;
     let pulling = false;
