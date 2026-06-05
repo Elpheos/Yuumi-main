@@ -416,7 +416,9 @@ main {
 
 </style>
 </head>
-<body>
+
+<!-- ✅ MODIF 1 — data-user-authenticated pour biometric.js -->
+<body data-user-authenticated="{{ user.is_authenticated|yesno:'true,false' }}">
 
 <!-- ===== PULL TO REFRESH CAPACITOR ===== -->
 <script>
@@ -1310,6 +1312,57 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     document.getElementById('ob-btn-skip').addEventListener('click', finish);
+})();
+</script>
+
+<!-- ===== BIOMÉTRIE CAPACITOR ===== -->
+<!-- ✅ MODIF 2 — chargement de biometric.js -->
+<script src="{% static 'js/biometric.js' %}"></script>
+
+<!-- ✅ MODIF 3 — récupération du token après login réussi -->
+<script>
+(function() {
+    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+
+    const pendingUser = sessionStorage.getItem('yuumi_pending_bio_user');
+    const pendingPass = sessionStorage.getItem('yuumi_pending_bio_pass');
+
+    if (pendingUser && pendingPass) {
+        sessionStorage.removeItem('yuumi_pending_bio_user');
+        sessionStorage.removeItem('yuumi_pending_bio_pass');
+
+        YUUMI_BIOMETRIC.fetchAndSaveToken(pendingUser, pendingPass).then(ok => {
+            if (ok) {
+                const banner = document.createElement('div');
+                banner.style.cssText = `
+                    position: fixed;
+                    bottom: calc(24px + env(safe-area-inset-bottom));
+                    left: 16px;
+                    right: 16px;
+                    background: white;
+                    border: 2px solid #ff8b38;
+                    border-radius: 16px;
+                    padding: 16px 20px;
+                    z-index: 99997;
+                    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                    display: flex;
+                    align-items: center;
+                    gap: 14px;
+                `;
+                banner.innerHTML = `
+                    <div style="font-size:32px;">🔐</div>
+                    <div style="flex:1;">
+                        <p style="margin:0;font-weight:700;font-size:0.95rem;color:#333;">Connexion rapide activée ✅</p>
+                        <p style="margin:2px 0 0;font-size:0.82rem;color:#888;">La prochaine fois, connectez-vous avec votre empreinte ou Face ID.</p>
+                    </div>
+                    <button id="yuumi-bio-confirm-close" style="background:none;border:none;font-size:22px;color:#aaa;cursor:pointer;padding:0 4px;line-height:1;">✕</button>
+                `;
+                document.body.appendChild(banner);
+                document.getElementById('yuumi-bio-confirm-close').addEventListener('click', () => banner.remove());
+                setTimeout(() => banner.remove(), 5000);
+            }
+        });
+    }
 })();
 </script>
 
