@@ -788,3 +788,6 @@ def suggest_modif_store(request, store_id):
 
 def confidentialite(request):
     return render(request, "members/confidentialite.html")
+
+def apropos(request):
+    return render(request, 'members/apropos.html')" >> ~/yuumi/members/views.py
