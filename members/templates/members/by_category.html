@@ -491,7 +491,7 @@
         try {
             let coords;
             if (window.Capacitor && window.Capacitor.isNativePlatform()) {
-                const pos = await Capacitor.Plugins.Geolocation.getCurrentPosition();
+                const pos = await YUUMI_GEOLOC.getPosition();
                 coords = pos.coords;
             } else {
                 coords = await new Promise((resolve, reject) => {
