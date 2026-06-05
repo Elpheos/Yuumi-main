@@ -790,4 +790,4 @@ def confidentialite(request):
     return render(request, "members/confidentialite.html")
 
 def apropos(request):
-    return render(request, 'members/apropos.html')" >> ~/yuumi/members/views.py
+    return render(request, 'members/apropos.html')
