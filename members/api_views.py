@@ -116,3 +116,28 @@ def biometric_login(request):
             {'error': 'Erreur serveur.'},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR
         )
+
+
+# -------------------------------------------------------------------
+# 3. ENREGISTREMENT TOKEN FCM
+#    Appelé par l'app au lancement pour enregistrer le token push
+# -------------------------------------------------------------------
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_fcm_token(request):
+    """
+    POST /api/fcm-token/
+    Body : { "token": "..." }
+    """
+    token = request.data.get('token', '').strip()
+    if not token:
+        return Response({'error': 'Token requis.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    from .models import FCMToken
+    fcm, created = FCMToken.objects.update_or_create(
+        token=token,
+        defaults={'user': request.user if request.user.is_authenticated else None}
+    )
+
+    return Response({'success': True}, status=status.HTTP_200_OK)
