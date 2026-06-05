@@ -6,6 +6,7 @@ from pathlib import Path
 from datetime import timedelta
 import os
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # -------------------------------------------------------------------
@@ -330,3 +331,12 @@ CORS_ALLOWED_ORIGINS = [
 
 # L'app Capacitor n'envoie pas de cookies cross-origin, c'est OK
 CORS_ALLOW_CREDENTIALS = False
+
+import firebase_admin
+from firebase_admin import credentials
+
+
+_firebase_creds_path = BASE_DIR / 'firebase-credentials.json'
+if _firebase_creds_path.exists() and not firebase_admin._apps:
+    _cred = credentials.Certificate(str(_firebase_creds_path))
+    firebase_admin.initialize_app(_cred)
