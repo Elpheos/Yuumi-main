@@ -65,6 +65,7 @@ urlpatterns = [
     path("a-propos/", views.apropos, name="apropos"),
 
     path("api/fcm-token/", views_api.register_fcm_token, name="api-fcm-token"),
+    path("support/", views.support, name="support"),
 
 
     
