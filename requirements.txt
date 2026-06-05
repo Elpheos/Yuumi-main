@@ -40,3 +40,5 @@ django-cors-headers==4.6.0
 # CORS (si API utilisée)
 # ========================
 # django-cors-headers==4.6.0
+
+firebase-admin==7.4.0
