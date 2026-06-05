@@ -3,6 +3,7 @@ Django settings for Yuumi project.
 """
 
 from pathlib import Path
+from datetime import timedelta
 import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -66,6 +67,10 @@ INSTALLED_APPS = [
     "django_extensions",
     "django.contrib.sitemaps",
     'simple_history',
+
+    # ✅ NOUVEAU — API biométrie
+    'rest_framework',
+    'corsheaders',
 ]
 
 
@@ -74,6 +79,9 @@ INSTALLED_APPS = [
 # -------------------------------------------------------------------
 
 MIDDLEWARE = [
+    # ✅ NOUVEAU — CorsMiddleware doit être en premier
+    "corsheaders.middleware.CorsMiddleware",
+
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "cache_middleware.LowercaseURLMiddleware",
@@ -231,7 +239,8 @@ if not DEBUG:
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
     SECURE_SSL_REDIRECT = True
-    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # ← ajout
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 
 # -------------------------------------------------------------------
 # Logging
@@ -272,6 +281,52 @@ AUTHENTICATION_BACKENDS = [
 # -------------------------------------------------------------------
 # django-axes (protection brute force)
 # -------------------------------------------------------------------
-AXES_FAILURE_LIMIT = 5        # Nombre de tentatives avant blocage
-AXES_COOLOFF_TIME = 1000         # Durée du blocage en heures
-AXES_LOCKOUT_CALLABLE = None  # Page d'erreur par défaut
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = 1000
+AXES_LOCKOUT_CALLABLE = None
+
+
+# -------------------------------------------------------------------
+# ✅ NOUVEAU — Django REST Framework
+# -------------------------------------------------------------------
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+
+# -------------------------------------------------------------------
+# ✅ NOUVEAU — JWT (tokens biométrie)
+# -------------------------------------------------------------------
+
+SIMPLE_JWT = {
+    # Access token court (utilisé pour valider la biométrie)
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    # Refresh token long — stocké dans le Keychain natif de l'app
+    # 90 jours : l'utilisateur n'a pas à retaper son mot de passe pendant 3 mois
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=90),
+    'ROTATE_REFRESH_TOKENS': True,       # Nouveau refresh token à chaque usage
+    'BLACKLIST_AFTER_ROTATION': False,   # Pas de blacklist (pas de BDD extra)
+    'UPDATE_LAST_LOGIN': True,
+    'ALGORITHM': 'HS256',
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+
+# -------------------------------------------------------------------
+# ✅ NOUVEAU — CORS (autorise l'app Capacitor à appeler l'API)
+# -------------------------------------------------------------------
+
+CORS_ALLOWED_ORIGINS = [
+    "https://yuumi-shop.com",
+    "capacitor://localhost",   # Android Capacitor
+    "http://localhost",        # iOS Capacitor
+]
+
+# L'app Capacitor n'envoie pas de cookies cross-origin, c'est OK
+CORS_ALLOW_CREDENTIALS = False
