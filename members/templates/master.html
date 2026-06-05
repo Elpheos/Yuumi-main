@@ -26,6 +26,9 @@
     <!-- Global CSS -->
     <link rel="stylesheet" href="{% static 'css/myglobal.css' %}">
 
+    <!-- Tabler Icons (pour la tab bar) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
     {% block extra_head %}
     {% endblock %}
 
@@ -412,6 +415,69 @@ main {
 #search-product-results li a:hover,
 #search-product-results-mobile li a:hover {
     background: #fff5ee;
+}
+
+/* ============================= */
+/*     TAB BAR NATIVE CAPACITOR  */
+/* ============================= */
+#yuumi-tab-bar {
+    display: none;
+}
+
+.capacitor-native #nav-mobile-btn {
+    display: none !important;
+}
+
+.capacitor-native #yuumi-tab-bar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 0.5px solid rgba(0,0,0,0.12);
+    z-index: 9999;
+    padding-bottom: env(safe-area-inset-bottom);
+    justify-content: space-around;
+    align-items: center;
+}
+
+.capacitor-native main,
+.capacitor-native .page-container {
+    padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
+}
+
+.tab-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px 10px;
+    min-width: 56px;
+    color: #888;
+    text-decoration: none;
+    font-family: inherit;
+}
+
+.tab-btn span {
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
+}
+
+.tab-btn i {
+    font-size: 22px;
+    color: #888;
+}
+
+.tab-btn.active i,
+.tab-btn.active span {
+    color: #ff8b38;
+    font-weight: 500;
 }
 
 </style>
@@ -887,6 +953,38 @@ main {
 </div>
 
 <!-- ============================= -->
+<!--     TAB BAR NATIVE CAPACITOR  -->
+<!-- ============================= -->
+<div id="yuumi-tab-bar">
+
+    <button class="tab-btn active" id="tab-menu" aria-label="Menu">
+        <i class="ti ti-menu-2" aria-hidden="true"></i>
+        <span>Menu</span>
+    </button>
+
+    <a class="tab-btn" id="tab-carte" href="#" aria-label="Carte">
+        <i class="ti ti-map" aria-hidden="true"></i>
+        <span>Carte</span>
+    </a>
+
+    <button class="tab-btn" id="tab-recherche" aria-label="Recherche">
+        <i class="ti ti-search" aria-hidden="true"></i>
+        <span>Recherche</span>
+    </button>
+
+    <a class="tab-btn" href="/mes-favoris/" id="tab-favoris" aria-label="Favoris">
+        <i class="ti ti-heart" aria-hidden="true"></i>
+        <span>Favoris</span>
+    </a>
+
+    <a class="tab-btn" href="/changer-de-ville/" id="tab-ville" aria-label="Ville">
+        <i class="ti ti-map-pin" aria-hidden="true"></i>
+        <span>Ville</span>
+    </a>
+
+</div>
+
+<!-- ============================= -->
 <!--             JS HEADER         -->
 <!-- ============================= -->
 <script>
@@ -1137,6 +1235,43 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    /* ============================= */
+    /*   TAB BAR CAPACITOR           */
+    /* ============================= */
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        document.body.classList.add('capacitor-native');
+
+        const carteLink = document.getElementById('tab-carte');
+        const dep = document.cookie.match(/yuumi_departement=([^;]+)/)?.[1] || 'Haute-Savoie';
+        carteLink.href = '/carte/' + encodeURIComponent(dep) + '/';
+
+        document.getElementById('tab-menu').addEventListener('click', () => {
+            document.getElementById('nav-mobile-btn').click();
+        });
+
+        document.getElementById('tab-recherche').addEventListener('click', () => {
+            openMobileModal('mobile-modal-produit');
+            setTimeout(() => {
+                const input = document.getElementById('search-product-input-mobile');
+                if (input) input.focus();
+            }, 150);
+        });
+
+        const path = window.location.pathname;
+        const tabMap = [
+            { id: 'tab-carte', match: '/carte/' },
+            { id: 'tab-favoris', match: '/mes-favoris/' },
+            { id: 'tab-ville', match: '/changer-de-ville/' },
+        ];
+
+        document.getElementById('tab-menu').classList.remove('active');
+        tabMap.forEach(({ id, match }) => {
+            if (path.includes(match)) {
+                document.getElementById(id).classList.add('active');
+            }
+        });
+    }
+
 });
 </script>
 
@@ -1316,10 +1451,8 @@ document.addEventListener("DOMContentLoaded", () => {
 </script>
 
 <!-- ===== BIOMÉTRIE CAPACITOR ===== -->
-<!-- ✅ MODIF 2 — chargement de biometric.js -->
 <script src="{% static 'js/biometric.js' %}"></script>
 
-<!-- ✅ MODIF 3 — récupération du token après login réussi -->
 <script>
 (function() {
     if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
@@ -1336,7 +1469,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const banner = document.createElement('div');
                 banner.style.cssText = `
                     position: fixed;
-                    bottom: calc(24px + env(safe-area-inset-bottom));
+                    bottom: calc(80px + env(safe-area-inset-bottom));
                     left: 16px;
                     right: 16px;
                     background: white;
