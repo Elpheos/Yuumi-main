@@ -1,5 +1,4 @@
 # TestYuumi/urls.py
-
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -17,6 +16,9 @@ from members.sitemaps import (
     CategoriesVilleSitemap,
 )
 
+# ✅ NOUVEAU — API biométrie
+from members.api_views import biometric_token_obtain, biometric_login
+
 sitemaps = {
     "static":            StaticSitemap(),
     "villes":            CitySitemap(),
@@ -25,6 +27,7 @@ sitemaps = {
     "commerces":         StoreSitemap(),
     "categories_ville":  CategoriesVilleSitemap(),
 }
+
 # ───────────────────────────────────────────────────────────
 
 urlpatterns = [
@@ -32,6 +35,12 @@ urlpatterns = [
     path("", include("members.urls")),
     path("login/",  auth_views.LoginView.as_view(template_name="members/login.html"), name="login"),
     path("logout/", auth_views.LogoutView.as_view(next_page="/"), name="logout"),
+
+    # ✅ NOUVEAU — Endpoints API biométrie
+    # Étape 1 : login classique → obtenir le refresh token JWT
+    path("api/token/", biometric_token_obtain, name="api-token"),
+    # Étape 2 : login biométrique → échanger le token contre une session
+    path("api/biometric-login/", biometric_login, name="api-biometric-login"),
 
     # Sitemap Google
     path("sitemap.xml", sitemap, {"sitemaps": sitemaps}, name="sitemap"),
