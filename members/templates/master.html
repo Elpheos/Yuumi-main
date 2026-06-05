@@ -1010,6 +1010,11 @@ main {
 <div id="yuumi-bottom-sheet-overlay">
     <div id="yuumi-bottom-sheet">
         <div class="bottom-sheet-handle"></div>
+        <a href="{% url 'my-favorites' %}" class="bottom-sheet-link">
+            <i class="ti ti-heart" aria-hidden="true"></i>
+            Favoris
+            <i class="ti ti-chevron-right chevron-right" aria-hidden="true"></i>
+        </a>
         <a href="{% url 'changer_ville' %}" class="bottom-sheet-link">
             <i class="ti ti-map-pin" aria-hidden="true"></i>
             Changer de ville
@@ -1038,9 +1043,9 @@ main {
 <!-- ============================= -->
 <div id="yuumi-tab-bar">
 
-    <a class="tab-btn" href="/mes-favoris/" id="tab-favoris" aria-label="Favoris">
-        <i class="ti ti-heart" aria-hidden="true"></i>
-        <span>Favoris</span>
+    <a class="tab-btn active" id="tab-ville" href="/" aria-label="Ma ville">
+        <i class="ti ti-home" aria-hidden="true"></i>
+        <span>Ma ville</span>
     </a>
 
     <a class="tab-btn" id="tab-carte" href="#" aria-label="Carte">
@@ -1058,7 +1063,7 @@ main {
         <span>Produits</span>
     </button>
 
-    <button class="tab-btn active" id="tab-menu" aria-label="Menu">
+    <button class="tab-btn" id="tab-menu" aria-label="Menu">
         <i class="ti ti-menu-2" aria-hidden="true"></i>
         <span>Menu</span>
     </button>
@@ -1346,12 +1351,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         /* Active state selon URL */
         const path = window.location.pathname;
-        document.getElementById('tab-menu').classList.remove('active');
+        document.getElementById('tab-ville').classList.remove('active');
         [
             { id: 'tab-carte',    match: '/carte/' },
-            { id: 'tab-favoris',  match: '/mes-favoris/' },
+            { id: 'tab-ville',    match: '/' },
         ].forEach(({ id, match }) => {
-            if (path.includes(match)) document.getElementById(id).classList.add('active');
+            if (path === match || (match !== '/' && path.includes(match))) {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.getElementById(id).classList.add('active');
+            }
         });
     }
 
