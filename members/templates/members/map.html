@@ -807,7 +807,7 @@ async function initGeoMap() {
     try {
         let coords;
         if (window.Capacitor && window.Capacitor.isNativePlatform()) {
-            const pos = await Capacitor.Plugins.Geolocation.getCurrentPosition({
+            const pos = await YUUMI_GEOLOC.getPosition({
                 enableHighAccuracy: true,
                 timeout: 10000,
             });
