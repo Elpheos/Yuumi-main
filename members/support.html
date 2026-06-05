@@ -1,0 +1,327 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Support | Yuumi{% endblock %}
+
+{% block content %}
+<div class="page-container">
+<style>
+.support-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px auto;
+    padding: 0 5%;
+}
+
+.support-header {
+    background-color: #ff8b38;
+    color: white;
+    text-align: center;
+    padding: 30px 20px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 1000px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.support-header h1 {
+    margin: 0;
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.support-header p {
+    margin-top: 8px;
+    font-size: 15px;
+}
+
+.support-container {
+    background-color: #fff;
+    border: solid 5px #ff8b38;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+    max-width: 1000px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 35px;
+    padding: 50px 60px;
+    color: #000;
+    line-height: 1.8;
+    font-size: 17px;
+}
+
+.support-container h2 {
+    color: #ff8b38;
+    margin-top: 40px;
+    margin-bottom: 12px;
+    font-size: 22px;
+    border-left: 6px solid #ff8b38;
+    padding-left: 10px;
+}
+
+.support-container p {
+    margin-bottom: 18px;
+}
+
+.support-container ul {
+    list-style-type: disc;
+    margin: 15px 0 25px 45px;
+    line-height: 1.8;
+}
+
+.support-container li {
+    margin-bottom: 8px;
+}
+
+.support-container a {
+    color: #ff8b38;
+    text-decoration: underline;
+}
+
+/* Contact card */
+.support-contact-card {
+    background: #fff8f3;
+    border: 2px solid #ff8b38;
+    border-radius: 14px;
+    padding: 28px 32px;
+    text-align: center;
+    margin: 32px 0;
+}
+
+.support-contact-card h3 {
+    color: #ff8b38;
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+    border: none;
+    padding: 0;
+}
+
+.support-contact-card .support-email-btn {
+    display: inline-block;
+    background: #ff8b38;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1rem;
+    margin-top: 12px;
+    transition: background 0.2s;
+}
+
+.support-contact-card .support-email-btn:hover {
+    background: #e07a2a;
+    color: white;
+}
+
+/* FAQ */
+.support-faq-item {
+    border: 1px solid #eee;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.support-faq-question {
+    width: 100%;
+    background: white;
+    border: none;
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: inherit;
+    transition: background 0.15s;
+}
+
+.support-faq-question:hover {
+    background: #fff5ee;
+    color: #ff8b38;
+}
+
+.support-faq-question.open {
+    background: #fff5ee;
+    color: #ff8b38;
+}
+
+.support-faq-chevron {
+    font-size: 18px;
+    transition: transform 0.2s;
+}
+
+.support-faq-question.open .support-faq-chevron {
+    transform: rotate(180deg);
+}
+
+.support-faq-answer {
+    display: none;
+    padding: 0 20px 16px;
+    color: #555;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    background: #fff5ee;
+}
+
+.support-faq-answer.open {
+    display: block;
+}
+
+.support-footer {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.support-footer a {
+    background-color: #ff8b38;
+    color: #fff;
+    border: solid 3px #ff8b38;
+    border-radius: 8px;
+    padding: 12px 24px;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 15px;
+    transition: all 0.25s ease;
+}
+
+.support-footer a:hover {
+    background-color: #fff;
+    color: #ff8b38;
+}
+
+@media (max-width: 768px) {
+    .support-container {
+        padding: 25px 20px;
+        font-size: 16px;
+    }
+    .support-wrapper {
+        margin-top: 70px;
+    }
+}
+</style>
+
+<div class="support-wrapper">
+    <div class="support-header">
+        <h1>Support &amp; Aide</h1>
+        <p>Bienvenue sur la page de support de Yuumi — nous sommes là pour vous aider.</p>
+    </div>
+
+    <div class="support-container">
+
+        <!-- Contact direct -->
+        <div class="support-contact-card">
+            <h3>📬 Nous contacter</h3>
+            <p style="color:#666; margin:0;">Pour toute question, signalement ou problème technique, envoyez-nous un e-mail. Nous répondons généralement sous 24-48h.</p>
+            <a href="mailto:contact@yuumi-shop.com" class="support-email-btn">
+                ✉️ contact@yuumi-shop.com
+            </a>
+            <p style="color:#aaa; font-size:0.85rem; margin-top:12px; margin-bottom:0;">Téléphone : 06 21 35 76 23</p>
+        </div>
+
+        <!-- FAQ -->
+        <h2>Questions fréquentes</h2>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Comment créer un compte sur Yuumi ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Appuyez sur "Mon compte" puis "S'inscrire". Renseignez votre nom d'utilisateur, votre adresse e-mail et un mot de passe. La création de compte est gratuite.
+            </div>
+        </div>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Comment ajouter un commerce à mes favoris ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Sur la page d'un commerce, appuyez sur le bouton ❤️ "Ajouter aux favoris". Vous devez être connecté pour utiliser cette fonctionnalité. Retrouvez ensuite vos favoris dans "Mon compte → Mes favoris".
+            </div>
+        </div>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Comment me connecter avec mon empreinte digitale ou Face ID ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Lors de votre première connexion avec vos identifiants, l'application vous propose d'activer la reconnexion biométrique. Acceptez la proposition pour vous connecter rapidement les prochaines fois avec votre empreinte ou Face ID.
+            </div>
+        </div>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Comment signaler une information incorrecte sur un commerce ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Sur la page du commerce concerné, appuyez sur "Suggérer une modification" et décrivez l'erreur. Notre équipe vérifiera et mettra à jour les informations dans les meilleurs délais.
+            </div>
+        </div>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Je suis commerçant, comment revendiquer ma page ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Sur la page de votre commerce, appuyez sur "Prenez le contrôle de votre page". Vous devez être connecté. Notre équipe vous contactera après vérification pour valider la revendication.
+            </div>
+        </div>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Comment désactiver les notifications push ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Rendez-vous dans les Paramètres de votre téléphone → Applications → Yuumi → Notifications, et désactivez-les. Vous pouvez également les désactiver depuis les réglages de notifications de votre appareil.
+            </div>
+        </div>
+
+        <div class="support-faq-item">
+            <button class="support-faq-question" onclick="toggleFaq(this)">
+                Comment supprimer mon compte ?
+                <span class="support-faq-chevron">▾</span>
+            </button>
+            <div class="support-faq-answer">
+                Pour supprimer votre compte, contactez-nous par e-mail à <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a> en indiquant votre nom d'utilisateur. Nous traiterons votre demande sous 48h conformément au RGPD.
+            </div>
+        </div>
+
+        <!-- Liens utiles -->
+        <h2>Liens utiles</h2>
+        <ul>
+            <li><a href="{% url 'confidentialite' %}">Politique de confidentialité</a></li>
+            <li><a href="{% url 'cgu' %}">Conditions générales d'utilisation</a></li>
+            <li><a href="{% url 'cookies_policy' %}">Politique de cookies</a></li>
+            <li><a href="{% url 'mentions_legales' %}">Mentions légales</a></li>
+            <li><a href="{% url 'notre_projet' %}">Notre projet</a></li>
+        </ul>
+
+        <div class="support-footer">
+            <a href="{% url 'main' %}">Retour à l'accueil</a>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+function toggleFaq(btn) {
+    const answer = btn.nextElementSibling;
+    const isOpen = btn.classList.contains('open');
+    btn.classList.toggle('open', !isOpen);
+    answer.classList.toggle('open', !isOpen);
+}
+</script>
+
+{% endblock %}
