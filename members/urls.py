@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 from . import views
 from . import autocomplete
+from . import api_views as views_api
 
 urlpatterns = [
     path("", views.main, name="main"),
@@ -62,6 +63,8 @@ urlpatterns = [
     path("<str:departement>/<str:ville>/<slug:slug>/", views.store_details, name="store_details"),
     path("confidentialite/", views.confidentialite, name="confidentialite"),
     path("a-propos/", views.apropos, name="apropos"),
+
+    path("api/fcm-token/", views_api.register_fcm_token, name="api-fcm-token"),
 
 
     
