@@ -791,3 +791,6 @@ def confidentialite(request):
 
 def apropos(request):
     return render(request, 'members/apropos.html')
+
+def support(request):
+    return render(request, 'members/support.html')
