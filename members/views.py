@@ -794,3 +794,17 @@ def apropos(request):
 
 def support(request):
     return render(request, 'members/support.html')
+
+def supprimer_compte_public(request):
+    return render(request, 'members/supprimer_compte.html')
+
+
+@login_required
+def delete_account(request):
+    if request.method == 'POST':
+        user = request.user
+        from django.contrib.auth import logout
+        logout(request)
+        user.delete()
+        return redirect('main')
+    return redirect('account')
