@@ -67,6 +67,9 @@ urlpatterns = [
     path("api/fcm-token/", views_api.register_fcm_token, name="api-fcm-token"),
     path("support/", views.support, name="support"),
 
+    path("supprimer-mon-compte/", views.supprimer_compte_public, name="supprimer_compte"),
+    path("mon-compte/supprimer/", views.delete_account, name="delete_account"),
+
 
     
 ]
