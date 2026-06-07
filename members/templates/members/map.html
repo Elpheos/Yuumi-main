@@ -811,7 +811,7 @@ async function initGeoMap() {
                 enableHighAccuracy: true,
                 timeout: 10000,
             });
-            coords = pos.coords;
+            coords = pos;
         } else {
             coords = await new Promise((resolve, reject) => {
                 navigator.geolocation.getCurrentPosition(
