@@ -1,0 +1,112 @@
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Supprimer mon compte | Yuumi{% endblock %}
+
+{% block content %}
+<style>
+.supprimer-container {
+    max-width: 600px;
+    margin: 60px auto;
+    padding: 0 16px;
+    text-align: center;
+}
+.supprimer-card {
+    background: white;
+    border: 2px solid #ff8b38;
+    border-radius: 14px;
+    padding: 40px 32px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.supprimer-icon { font-size: 3rem; margin-bottom: 16px; }
+.supprimer-card h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ff8b38;
+    margin-bottom: 12px;
+}
+.supprimer-card p {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 16px;
+}
+.supprimer-liste {
+    text-align: left;
+    background: #fff5ee;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    color: #444;
+    line-height: 1.8;
+}
+.supprimer-btn-compte {
+    display: inline-block;
+    background: #e53935;
+    color: white;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    margin-bottom: 12px;
+}
+.supprimer-btn-email {
+    display: block;
+    color: #ff8b38;
+    font-size: 0.9rem;
+    text-decoration: none;
+    margin-top: 8px;
+}
+.supprimer-delai {
+    font-size: 0.82rem;
+    color: #aaa;
+    margin-top: 20px;
+}
+@media (max-width: 767px) {
+    .supprimer-container { margin-top: 80px; }
+}
+</style>
+
+<div class="supprimer-container">
+    <div class="supprimer-card">
+        <div class="supprimer-icon">🗑️</div>
+        <h1>Supprimer mon compte</h1>
+        <p>
+            Vous souhaitez supprimer votre compte Yuumi et toutes vos données personnelles ?
+            Cette action est <strong>irréversible</strong>.
+        </p>
+
+        <div class="supprimer-liste">
+            <strong>Ce qui sera supprimé :</strong><br>
+            ✓ Votre compte utilisateur<br>
+            ✓ Vos favoris et commerces masqués<br>
+            ✓ Votre adresse e-mail et mot de passe<br>
+            ✓ Vos tokens de connexion
+        </div>
+
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'delete_account' %}" onsubmit="return confirm('Êtes-vous sûr ? Cette action est irréversible.')">
+                {% csrf_token %}
+                <button type="submit" class="supprimer-btn-compte">
+                    Supprimer définitivement mon compte
+                </button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}?next={% url 'supprimer_compte' %}" class="supprimer-btn-compte">
+                Se connecter pour supprimer mon compte
+            </a>
+        {% endif %}
+
+        <a href="mailto:contact@yuumi-shop.com" class="supprimer-btn-email">
+            Ou envoyer une demande par e-mail : contact@yuumi-shop.com
+        </a>
+
+        <p class="supprimer-delai">
+            Délai de traitement : immédiat via le bouton ci-dessus.<br>
+            Par e-mail : sous 30 jours maximum.
+        </p>
+    </div>
+</div>
+{% endblock %}
