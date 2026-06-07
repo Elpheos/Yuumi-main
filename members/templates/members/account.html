@@ -1,8 +1,6 @@
 {% extends "master.html" %}
 {% load static %}
-
 {% block title %}Mon compte{% endblock %}
-
 {% block content %}
 <style>
 .account-container{
@@ -60,6 +58,90 @@
 .account-links button:hover {
     background: #ff7b1a;
 }
+.btn-danger-account {
+    display: inline-block;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: #e53935;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    transition: 0.2s;
+    text-decoration: none;
+}
+.btn-danger-account:hover {
+    background: #c62828;
+}
+
+/* ===== MODAL CONFIRMATION ===== */
+.confirm-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+}
+.confirm-overlay.open {
+    display: flex;
+}
+.confirm-modal {
+    background: white;
+    border-radius: 14px;
+    padding: 32px 28px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.confirm-modal h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #333;
+}
+.confirm-modal p {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+    line-height: 1.6;
+}
+.confirm-modal-buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+.confirm-cancel {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: 2px solid #ddd;
+    background: white;
+    color: #666;
+    font: inherit;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+.confirm-cancel:hover {
+    background: #f5f5f5;
+}
+.confirm-delete {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    background: #e53935;
+    color: white;
+    font: inherit;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+.confirm-delete:hover {
+    background: #c62828;
+}
+
 @media (max-width: 767px) {
     .account-container, .store-info-container {
         margin-top: 60px;
@@ -70,7 +152,6 @@
 
 <div class="account-container">
     <div class="account-card">
-
         <h2>Bonjour {{ user.username }}</h2>
         <p>Bienvenue sur votre espace personnel.</p>
 
@@ -92,7 +173,6 @@
             </ul>
         </div>
 
-        <!-- ✅ NOUVEAU — Lien À propos -->
         <div class="account-section">
             <h3>Application</h3>
             <ul class="account-links">
@@ -118,6 +198,38 @@
             </ul>
         </div>
 
+        <div class="account-section">
+            <h3>Mes données</h3>
+            <ul class="account-links">
+                <li>
+                    <button class="btn-danger-account" onclick="document.getElementById('confirmDeleteOverlay').classList.add('open')">
+                        🗑️ Supprimer mon compte
+                    </button>
+                </li>
+            </ul>
+        </div>
+
     </div>
 </div>
+
+<!-- Modal confirmation suppression -->
+<div class="confirm-overlay" id="confirmDeleteOverlay">
+    <div class="confirm-modal">
+        <h3>⚠️ Supprimer mon compte</h3>
+        <p>Êtes-vous sûr ? Cette action est <strong>irréversible</strong>.<br>
+        Votre compte, vos favoris et toutes vos données seront définitivement supprimés.</p>
+        <div class="confirm-modal-buttons">
+            <button class="confirm-cancel" onclick="document.getElementById('confirmDeleteOverlay').classList.remove('open')">
+                Annuler
+            </button>
+            <form method="post" action="{% url 'delete_account' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="confirm-delete">
+                    Oui, supprimer
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
