@@ -45,7 +45,6 @@
                             </button>
                         </div>
 
-                        
                     </div>
                 {% endfor %}
             </div>
@@ -88,14 +87,15 @@
                             </p>
 
                             <button class="my-unfavorite-btn unfavori-btn active" data-store-id="{{ store.id }}">
-    <svg style="width: 16px;" viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
-        <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
-    </svg>
-    <span>Retirer des commerces masqués</span>
-</button>
+                                <svg style="width: 16px;" viewBox="0 0 200 200">
+                                    <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
+                                    <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
+                                </svg>
+                                <span>Retirer des commerces masqués</span>
+                            </button>
 
-                    </div></div>
+                        </div>
+                    </div>
                 {% endfor %}
             </div>
         {% else %}
@@ -109,30 +109,22 @@
 
 {% block extra_js %}
 <style>
-/* ============================
-   YUUMI – PAGE MES FAVORIS
-   ============================ */
-
 .my-favorite-main {
     max-width: 1000px;
     margin: 30px auto;
     padding: 0 16px;
 }
-
 .my-favorite-title {
     font-size: 4rem;
     margin-bottom: 6px;
     font-weight: 600;
     text-align: left;
 }
-
 .my-favorite-user {
     font-size: 2rem;
     color: black;
     margin-bottom: 24px;
 }
-
-/* Liste en grille */
 .my-favorite-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -140,8 +132,6 @@
     max-width: 1000px;
     margin: 0 auto;
 }
-
-/* Carte sobre */
 .my-favorite-card {
     border: 1px solid #e5e5e5;
     border-radius: 10px;
@@ -150,44 +140,34 @@
     display: flex;
     flex-direction: column;
 }
-
-/* Image limitée */
 .my-favorite-photo {
     height: 140px;
     background: #f4f4f4;
 }
-
 .my-favorite-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
-/* Infos */
 .my-favorite-info {
     padding: 14px;
     display: flex;
     flex-direction: column;
 }
-
 .my-favorite-name {
     font-size: 1rem;
     margin: 0;
     font-weight: 600;
 }
-
 .my-favorite-name a {
     color: #222;
     text-decoration: none;
 }
-
 .my-favorite-meta {
     font-size: 0.85rem;
     color: #666;
     margin: 6px 0 12px;
 }
-
-/* Bouton discret */
 .my-favorite-btn {
     margin-top: auto;
     background: none;
@@ -201,69 +181,29 @@
     gap: 6px;
     color: #ff8b38;
 }
-
 .my-favorite-btn.active {
     border-color: #ff8b38;
     color: #ff8b38;
 }
-
-.my-favorite-btn:hover {
-    background: #fafafa;
-}
-
-/* Vide */
+.my-favorite-btn:hover { background: #fafafa; }
 .my-favorite-empty {
     text-align: center;
     font-size: 0.95rem;
     color: #666;
     margin-top: 40px;
 }
-
-/* ============================
-   RESPONSIVE MOBILE
-   ============================ */
 @media (max-width: 767px) {
-    .my-favorite-main {
-        margin-top: 80px; /* compense la navbar fixe */
-        padding: 0 12px;
-    }
-
-    .my-favorite-title {
-        font-size: 2rem; /* 4rem → trop grand sur mobile */
-    }
-
-    .my-favorite-user {
-        font-size: 1rem; /* 2rem → trop grand sur mobile */
-        margin-bottom: 16px;
-    }
-
-    .my-favorite-list {
-        grid-template-columns: repeat(2, 1fr); /* 2 colonnes sur mobile */
-        gap: 12px;
-    }
-
-    .my-favorite-photo {
-        height: 110px;
-    }
-
-    .my-favorite-info {
-        padding: 10px;
-    }
-
-    .my-favorite-name {
-        font-size: 0.9rem;
-    }
-
-    .my-favorite-btn {
-        font-size: 0.78rem;
-        padding: 6px 10px;
-    }
+    .my-favorite-main { margin-top: 80px; padding: 0 12px; }
+    .my-favorite-title { font-size: 2rem; }
+    .my-favorite-user { font-size: 1rem; margin-bottom: 16px; }
+    .my-favorite-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .my-favorite-photo { height: 110px; }
+    .my-favorite-info { padding: 10px; }
+    .my-favorite-name { font-size: 0.9rem; }
+    .my-favorite-btn { font-size: 0.78rem; padding: 6px 10px; }
 }
-
 @media (max-width: 400px) {
-    .my-favorite-list {
-        grid-template-columns: 1fr; /* 1 colonne sur très petits écrans */
-    }
+    .my-favorite-list { grid-template-columns: 1fr; }
 }
 </style>
 
@@ -313,61 +253,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 });
 
-    // ===== CACHE OFFLINE FAVORIS =====
+// ===== CACHE OFFLINE FAVORIS =====
 const FAVORIS_DATA = {{ favoris_json|safe }};
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
     if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
 
-    // Sauvegarde en localStorage si connecté
+    // Sauvegarde via Capacitor Preferences si connecté
     if (navigator.onLine && FAVORIS_DATA.length > 0) {
-        localStorage.setItem('yuumi_favoris_cache', JSON.stringify(FAVORIS_DATA));
-        localStorage.setItem('yuumi_favoris_cache_date', new Date().toISOString());
-    }
-
-    // Affiche le cache si offline et pas de favoris chargés
-    if (!navigator.onLine) {
-        const cache = localStorage.getItem('yuumi_favoris_cache');
-        if (!cache) return;
-
-        const favoris = JSON.parse(cache);
-        const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
-        const joursLabels = { lundi: 'Lundi', mardi: 'Mardi', mercredi: 'Mercredi', jeudi: 'Jeudi', vendredi: 'Vendredi', samedi: 'Samedi', dimanche: 'Dimanche' };
-
-        const list = document.createElement('div');
-        list.className = 'my-favorite-list';
-        list.innerHTML = favoris.map(f => {
-            const horairesHtml = jours.map(jour => {
-                const h = f.horaires[jour];
-                const matin = h.matin || '';
-                const apresmidi = h.apresmidi || '';
-                const texte = [matin, apresmidi].filter(Boolean).join(' / ') || 'Fermé';
-                return `<tr><td><b>${joursLabels[jour]} :</b></td><td>${texte}</td></tr>`;
-            }).join('');
-
-            return `
-                <div class="my-favorite-card" style="flex-direction:column;">
-                    ${f.photo ? `<div class="my-favorite-photo"><a href="${f.url}"><img src="${f.photo}" alt="${f.nom}"></a></div>` : ''}
-                    <div class="my-favorite-info">
-                        <h2 class="my-favorite-name"><a href="${f.url}">${f.nom}</a></h2>
-                        <p class="my-favorite-meta">${f.ville}${f.categorie ? ' | ' + f.categorie : ''}</p>
-                        ${f.adresse ? `<p style="font-size:0.82rem;color:#888;">📍 ${f.adresse}</p>` : ''}
-                        ${f.phone ? `<p style="font-size:0.82rem;color:#888;">📞 ${f.phone}</p>` : ''}
-                        <details style="margin-top:8px;">
-                            <summary style="font-size:0.85rem;color:#ff8b38;font-weight:600;cursor:pointer;">🕐 Horaires</summary>
-                            <table style="font-size:0.8rem;margin-top:6px;width:100%;">${horairesHtml}</table>
-                        </details>
-                        <p style="font-size:0.72rem;color:#aaa;font-style:italic;margin-top:8px;">📵 Mode hors ligne</p>
-                    </div>
-                </div>`;
-        }).join('');
-
-        const section = document.querySelector('.my-favorite-section');
-        if (section) {
-            const empty = section.querySelector('.my-favorite-empty');
-            const existingList = section.querySelector('.my-favorite-list');
-            if (empty) empty.replaceWith(list);
-            else if (existingList) existingList.replaceWith(list);
+        try {
+            await Capacitor.Plugins.Preferences.set({
+                key: 'yuumi_favoris_cache',
+                value: JSON.stringify(FAVORIS_DATA)
+            });
+        } catch(e) {
+            console.log('Preferences error:', e);
         }
     }
 });
