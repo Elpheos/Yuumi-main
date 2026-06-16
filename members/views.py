@@ -474,11 +474,39 @@ def toggle_favoris(request, store_id):
 
 @login_required
 def my_favorites(request):
-    favoris = request.user.favoris.all()
+    favoris = request.user.favoris.all().select_related('categorie')
     unfavoris = request.user.unfavoris.all()
+
+    jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+    
+    favoris_json = []
+    for store in favoris:
+        horaires = {}
+        for jour in jours:
+            mo = getattr(store, f'{jour}_matin_ouverture', None)
+            mf = getattr(store, f'{jour}_matin_fermeture', None)
+            ao = getattr(store, f'{jour}_apresmidi_ouverture', None)
+            af = getattr(store, f'{jour}_apresmidi_fermeture', None)
+            horaires[jour] = {
+                'matin': f"{mo.strftime('%H:%M')} - {mf.strftime('%H:%M')}" if mo and mf else None,
+                'apresmidi': f"{ao.strftime('%H:%M')} - {af.strftime('%H:%M')}" if ao and af else None,
+            }
+        favoris_json.append({
+            'id': store.id,
+            'nom': store.nom,
+            'url': store.get_absolute_url(),
+            'photo': store.photo_small.url if store.photo_small else (store.photo.url if store.photo else None),
+            'adresse': store.addressemaps or '',
+            'phone': store.phone or '',
+            'ville': store.ville,
+            'categorie': store.categorie.name if store.categorie else '',
+            'horaires': horaires,
+        })
+
     return render(request, "members/my_favorites.html", {
         "favoris": favoris,
         "unfavoris": unfavoris,
+        "favoris_json": favoris_json,
     })
 
 
