@@ -312,5 +312,64 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
+
+    // ===== CACHE OFFLINE FAVORIS =====
+const FAVORIS_DATA = {{ favoris_json|safe }};
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
+
+    // Sauvegarde en localStorage si connecté
+    if (navigator.onLine && FAVORIS_DATA.length > 0) {
+        localStorage.setItem('yuumi_favoris_cache', JSON.stringify(FAVORIS_DATA));
+        localStorage.setItem('yuumi_favoris_cache_date', new Date().toISOString());
+    }
+
+    // Affiche le cache si offline et pas de favoris chargés
+    if (!navigator.onLine) {
+        const cache = localStorage.getItem('yuumi_favoris_cache');
+        if (!cache) return;
+
+        const favoris = JSON.parse(cache);
+        const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+        const joursLabels = { lundi: 'Lundi', mardi: 'Mardi', mercredi: 'Mercredi', jeudi: 'Jeudi', vendredi: 'Vendredi', samedi: 'Samedi', dimanche: 'Dimanche' };
+
+        const list = document.createElement('div');
+        list.className = 'my-favorite-list';
+        list.innerHTML = favoris.map(f => {
+            const horairesHtml = jours.map(jour => {
+                const h = f.horaires[jour];
+                const matin = h.matin || '';
+                const apresmidi = h.apresmidi || '';
+                const texte = [matin, apresmidi].filter(Boolean).join(' / ') || 'Fermé';
+                return `<tr><td><b>${joursLabels[jour]} :</b></td><td>${texte}</td></tr>`;
+            }).join('');
+
+            return `
+                <div class="my-favorite-card" style="flex-direction:column;">
+                    ${f.photo ? `<div class="my-favorite-photo"><a href="${f.url}"><img src="${f.photo}" alt="${f.nom}"></a></div>` : ''}
+                    <div class="my-favorite-info">
+                        <h2 class="my-favorite-name"><a href="${f.url}">${f.nom}</a></h2>
+                        <p class="my-favorite-meta">${f.ville}${f.categorie ? ' | ' + f.categorie : ''}</p>
+                        ${f.adresse ? `<p style="font-size:0.82rem;color:#888;">📍 ${f.adresse}</p>` : ''}
+                        ${f.phone ? `<p style="font-size:0.82rem;color:#888;">📞 ${f.phone}</p>` : ''}
+                        <details style="margin-top:8px;">
+                            <summary style="font-size:0.85rem;color:#ff8b38;font-weight:600;cursor:pointer;">🕐 Horaires</summary>
+                            <table style="font-size:0.8rem;margin-top:6px;width:100%;">${horairesHtml}</table>
+                        </details>
+                        <p style="font-size:0.72rem;color:#aaa;font-style:italic;margin-top:8px;">📵 Mode hors ligne</p>
+                    </div>
+                </div>`;
+        }).join('');
+
+        const section = document.querySelector('.my-favorite-section');
+        if (section) {
+            const empty = section.querySelector('.my-favorite-empty');
+            const existingList = section.querySelector('.my-favorite-list');
+            if (empty) empty.replaceWith(list);
+            else if (existingList) existingList.replaceWith(list);
+        }
+    }
+});
 </script>
 {% endblock %}
