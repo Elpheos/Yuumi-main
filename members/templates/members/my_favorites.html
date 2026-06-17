@@ -252,24 +252,5 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 });
-
-// ===== CACHE OFFLINE FAVORIS =====
-const FAVORIS_DATA = {{ favoris_json|safe }};
-
-document.addEventListener("DOMContentLoaded", async () => {
-    if (!window.Capacitor || !window.Capacitor.isNativePlatform()) return;
-
-    // Sauvegarde via Capacitor Preferences si connecté
-    if (navigator.onLine && FAVORIS_DATA.length > 0) {
-        try {
-            await Capacitor.Plugins.Preferences.set({
-                key: 'yuumi_favoris_cache',
-                value: JSON.stringify(FAVORIS_DATA)
-            });
-        } catch(e) {
-            console.log('Preferences error:', e);
-        }
-    }
-});
 </script>
 {% endblock %}
