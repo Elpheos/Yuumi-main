@@ -74,6 +74,14 @@
     background: #c62828;
 }
 
+/* ===== SECTION LEGALE — visible uniquement en app mobile ===== */
+.account-section-legal {
+    display: none;
+}
+.capacitor-native .account-section-legal {
+    display: block;
+}
+
 /* ===== MODAL CONFIRMATION ===== */
 .confirm-overlay {
     display: none;
@@ -179,6 +187,27 @@
                 <li>
                     <a href="{% url 'apropos' %}">
                         ℹ️ À propos de Yuumi
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <div class="account-section account-section-legal">
+            <h3>Legal</h3>
+            <ul class="account-links">
+                <li>
+                    <a href="{% url 'confidentialite' %}">
+                        Politique de confidentialite
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'cgu' %}">
+                        Conditions generales d'utilisation
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'mentions_legales' %}">
+                        Mentions legales
                     </a>
                 </li>
             </ul>
