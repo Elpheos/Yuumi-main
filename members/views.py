@@ -799,7 +799,9 @@ def supprimer_compte_public(request):
     return render(request, 'members/supprimer_compte.html')
     
 def testyuumi2(request):
-    return render(request, 'members/test-yuumi2.html')
+    response = render(request, 'members/test-yuumi2.html')
+    response["X-Robots-Tag"] = "noindex, nofollow"
+    return response
 
 @login_required
 def delete_account(request):
