@@ -69,6 +69,7 @@ urlpatterns = [
 
     path("supprimer-mon-compte/", views.supprimer_compte_public, name="supprimer_compte"),
     path("mon-compte/supprimer/", views.delete_account, name="delete_account"),
+    path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
 
 
     
