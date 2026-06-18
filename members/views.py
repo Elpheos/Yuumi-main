@@ -798,7 +798,7 @@ def support(request):
 def supprimer_compte_public(request):
     return render(request, 'members/supprimer_compte.html')
     
-def testyuumi2(request);
+def testyuumi2(request):
     return render(request, 'members/test-yuumi2.html')
 
 @login_required
