@@ -14,6 +14,79 @@
             padding: 0;
         }
 
+        .home2-hero {
+            width: 100%;
+            padding: 90px 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f7fbff 100%);
+        }
+
+        .home2-hero-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .home2-hero-content {
+        
+        }
+        
+        .home2-hero-title-content {
+            display: flex;
+            align-items: center;
+        }
+        
+        .home2-hero-title-img {
+            height: 20rem;
+            width: auto;
+        }
+        
+        .home2-hero-title {
+            margin: 0 0 24px;
+            color: #ff8b38;
+            font-size: clamp(2.3rem, 5vw, 4.4rem);
+            line-height: 1.05;
+            font-weight: 800;
+        }
+        
+        .home2-hero-intro {
+            margin: 0 0 18px;
+            color: #fff;
+            font-size: 1.8rem;
+            line-height: 1.65;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            background:#ff8b38;
+        }
+        
+        .home2-hero-text {
+            margin: 0 0 34px;
+            color: #374151;
+            font-size: 1.05rem;
+            line-height: 1.75;
+        }
+        
+        .home2-hero-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 26px;
+            color: #ffffff;
+            background-color: #ff8b38;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .home2-hero-button:hover {
+            background-color: #f17820;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 139, 56, 0.28);
+        }
+
+        
+     /*=========================================FONCTIONS*/
         .home2-function-container {
             width: 80%;
             height: 70dvh;
@@ -269,6 +342,32 @@
     </style>
 </head>
 
+<!----------------------------------------------------------------Introduction du site-->
+<section class="home2-hero" aria-label="Introduction du site">
+    <div class="home2-hero-container">
+        <div class="home2-hero-content">
+            <div class="home2-hero-title-content">
+                <img class="home2-hero-title-img" src="https://yuumi-shop.com/static/images/logo.8fc797a77b68.webp">
+                <h1 class="home2-hero-title">Yuumi — Spécialiste de l’aide aux commerces</h1>
+            </div>
+            <p class="home2-hero-intro">
+                Aujourd’hui, développer un commerce ne dépend plus uniquement de l’emplacement, de la qualité des produits ou du bouche-à-oreille. 
+                La visibilité en ligne, les outils numériques, l’image de marque et la capacité à se démarquer sont devenus des éléments essentiels 
+                pour rester compétitif.
+            </p>
+
+            <p class="home2-hero-text">
+                Yuumi accompagne les commerces dans leur développement en les aidant à mieux exploiter les outils numériques, à renforcer leur présence 
+                et à s’adapter aux nouvelles habitudes de consommation. Face à la montée des sites de vente en ligne et à une concurrence de plus en plus 
+                digitale, il devient indispensable pour les commerces locaux de structurer leur communication, leur visibilité et leurs solutions de vente.
+            </p>
+
+            <a href="#solutions" class="home2-hero-button">Découvrir nos solutions</a>
+        </div>
+    </div>
+</section>
+
+<!----------------------------------------------------------------Fonctionnalités-->
 <div class="home2-function-container">
 <!----------------------------------------------------------------INTRO-->
     <div class="home2-function-introduction-container">
