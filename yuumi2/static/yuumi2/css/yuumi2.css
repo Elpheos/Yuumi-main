@@ -32,8 +32,9 @@ font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 a {
-text-decoration: none;
-color: inherit;
+	text-decoration: none;
+	color: inherit;
+	cursor: pointer;
 }
 
 /*===================================================================*/
