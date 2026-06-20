@@ -416,9 +416,6 @@
                     </a>
                     <p class="distance-commerce"></p>
                 </div>
-            {% empty %}
-                <p style="text-align:center;">Aucun commerce trouvé pour cette catégorie à {{ ville|title }}.</p>
-            {% endfor %}
         </div>
 
         {% if page_obj.paginator.num_pages > 1 %}
