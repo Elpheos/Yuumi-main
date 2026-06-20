@@ -19,6 +19,7 @@ from django.core.mail import send_mail
 from django.templatetags.static import static
 from django.utils import timezone
 from datetime import timedelta
+from django.db.models import Q
 from .models import PageView
 import json
 
@@ -200,6 +201,67 @@ def get_opening_status(store):
     }
 
 
+def build_open_now_filter():
+    """
+    Construit un objet Q() Django qui filtre les Store ouverts à l'instant présent,
+    en se basant sur le jour de la semaine réel et l'heure courante (fuseau Europe/Paris).
+
+    Gère le cas des commerces dont les horaires chevauchent minuit (ex: bar ouvert
+    22h-2h) : un tel commerce est considéré "ouvert" soit parce qu'on est dans son
+    créneau d'aujourd'hui qui déborde sur demain, soit parce qu'on est encore dans
+    son créneau d'hier qui a débordé jusqu'à maintenant.
+
+    Doit rester cohérent avec get_opening_status (vue détail), même si l'implémentation
+    diffère par nécessité : ici on compare des champs entre eux via F() pour que tout
+    se passe en SQL, alors que get_opening_status travaille en Python sur un store
+    déjà chargé.
+    """
+    from django.db.models import F
+
+    jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+    now = datetime.now(tz=ZoneInfo('Europe/Paris'))
+    today_idx = now.weekday()
+    yesterday_idx = (today_idx - 1) % 7
+    current_time = now.time().replace(second=0, microsecond=0)
+
+    today = jours[today_idx]
+    yesterday = jours[yesterday_idx]
+
+    q = Q()
+
+    for periode in ["matin", "apresmidi"]:
+        o_field = f"{today}_{periode}_ouverture"
+        f_field = f"{today}_{periode}_fermeture"
+
+        # Créneau normal d'aujourd'hui : ouverture <= maintenant <= fermeture,
+        # et fermeture après ouverture (pas de chevauchement de minuit)
+        q |= Q(**{
+            f"{o_field}__lte": current_time,
+            f"{f_field}__gte": current_time,
+            f"{f_field}__gt": F(o_field),
+        })
+
+        # Créneau d'aujourd'hui qui chevauche minuit (fermeture <= ouverture, ex: 22h-2h)
+        # et on est déjà dans ce créneau (après l'heure d'ouverture)
+        q |= Q(**{
+            f"{f_field}__lte": F(o_field),
+            f"{o_field}__lte": current_time,
+        })
+
+    for periode in ["matin", "apresmidi"]:
+        o_field = f"{yesterday}_{periode}_ouverture"
+        f_field = f"{yesterday}_{periode}_fermeture"
+
+        # Créneau d'hier qui chevauchait minuit et court encore ce matin
+        # (ex: ouvert hier 22h, ferme aujourd'hui 2h, et il est 1h du matin)
+        q |= Q(**{
+            f"{f_field}__lte": F(o_field),
+            f"{f_field}__gte": current_time,
+        })
+
+    return q
+
+
 def sort_key(text):
     return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()
 
@@ -299,13 +361,20 @@ def by_category(request, departement, ville, category):
         categorie__slug=category,
     ).exclude(id__in=unfavori_ids).select_related("categorie")  # ← NOUVEAU
 
+    open_now = request.GET.get("ouvert") == "1"
+    if open_now:
+        commerces_qs = commerces_qs.filter(build_open_now_filter())
+
     paginator = Paginator(commerces_qs, 20)
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
     message = None
     if not commerces_qs.exists():
-        message = "Aucun commerce trouvé pour cette catégorie."
+        if open_now:
+            message = "Aucun commerce ouvert en ce moment pour cette catégorie."
+        else:
+            message = "Aucun commerce trouvé pour cette catégorie."
 
     readable_category = category.replace("-", " ").capitalize()
 
@@ -316,6 +385,7 @@ def by_category(request, departement, ville, category):
         "commerces": page_obj,
         "page_obj": page_obj,
         "message": message,
+        "open_now": open_now,
     })
 
 
