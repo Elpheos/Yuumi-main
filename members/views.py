@@ -74,6 +74,132 @@ def is_open_now(store):
     return None
 
 
+def get_opening_status(store):
+    """
+    Version enrichie de is_open_now, pensée pour le badge "Ouvert / Fermé"
+    de la fiche commerce.
+
+    Contrairement à is_open_now (qui renvoie juste True / False / None),
+    celle-ci renvoie un dict avec le libellé prêt à afficher et la
+    prochaine transition ("ferme à 19h", "ouvre demain à 9h", etc.).
+
+    Ne remplace pas is_open_now : les deux coexistent pour ne rien casser
+    si is_open_now est utilisée ailleurs dans le projet (ex: by_category,
+    map_view, etc.). Si ce n'est pas le cas, is_open_now pourra être
+    supprimée plus tard au profit de celle-ci.
+
+    Retourne :
+        {
+            "is_open": True / False / None,   # None = horaires non communiqués
+            "label": "Ouvert en ce moment" / "Fermé en ce moment" / "Horaires non communiqués",
+            "next_change": "ferme à 19h" / "ouvre à 14h" / "ouvre demain à 9h" / None,
+        }
+    """
+    jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche']
+    now = datetime.now(tz=ZoneInfo('Europe/Paris'))
+    today_idx = now.weekday()
+    current_time = now.time().replace(second=0, microsecond=0)
+
+    def format_heure(t):
+        return t.strftime('%Hh%M').replace('h00', 'h')
+
+    def get_creneaux(jour_idx):
+        """Renvoie les créneaux (ouverture, fermeture) du jour donné (matin + après-midi)."""
+        jour = jours[jour_idx % 7]
+        mo = getattr(store, f'{jour}_matin_ouverture', None)
+        mf = getattr(store, f'{jour}_matin_fermeture', None)
+        ao = getattr(store, f'{jour}_apresmidi_ouverture', None)
+        af = getattr(store, f'{jour}_apresmidi_fermeture', None)
+
+        creneaux = []
+        if mo and mf:
+            creneaux.append((mo, mf))
+        if ao and af:
+            creneaux.append((ao, af))
+        return creneaux
+
+    # 1. Aucune donnée d'horaires sur toute la semaine -> on ne dit pas "Fermé",
+    #    on dit que l'info n'a jamais été renseignée.
+    has_any_data = any(get_creneaux(i) for i in range(7))
+    if not has_any_data:
+        return {
+            "is_open": None,
+            "label": "Horaires non communiqués",
+            "next_change": None,
+        }
+
+    creneaux_today = get_creneaux(today_idx)
+    creneaux_yesterday = get_creneaux(today_idx - 1)
+
+    is_open = False
+    closing_time = None
+
+    # Créneau d'aujourd'hui en cours
+    for (o, f) in creneaux_today:
+        if f > o:
+            if o <= current_time <= f:
+                is_open = True
+                closing_time = f
+                break
+        else:
+            # créneau qui chevauche minuit (rare, ex: bar ouvert 22h-2h)
+            if current_time >= o:
+                is_open = True
+                closing_time = f
+                break
+
+    # Créneau d'hier qui chevauche minuit et court encore
+    if not is_open:
+        for (o, f) in creneaux_yesterday:
+            if f <= o and current_time <= f:
+                is_open = True
+                closing_time = f
+                break
+
+    if is_open:
+        next_change = f"ferme à {format_heure(closing_time)}" if closing_time else None
+        return {
+            "is_open": True,
+            "label": "Ouvert en ce moment",
+            "next_change": next_change,
+        }
+
+    # Fermé : chercher la prochaine ouverture (reste de la journée, puis jours suivants)
+    next_opening = None
+    next_opening_day_offset = None
+
+    for (o, f) in creneaux_today:
+        if o > current_time:
+            next_opening = o
+            next_opening_day_offset = 0
+            break
+
+    if next_opening is None:
+        for offset in range(1, 8):
+            creneaux = get_creneaux(today_idx + offset)
+            if creneaux:
+                next_opening = creneaux[0][0]
+                next_opening_day_offset = offset
+                break
+
+    next_change = None
+    if next_opening is not None:
+        heure = format_heure(next_opening)
+        if next_opening_day_offset == 0:
+            next_change = f"ouvre à {heure}"
+        elif next_opening_day_offset == 1:
+            next_change = f"ouvre demain à {heure}"
+        else:
+            jour_label = jours[(today_idx + next_opening_day_offset) % 7]
+            next_change = f"ouvre {jour_label} à {heure}"
+
+    return {
+        "is_open": False,
+        "label": "Fermé en ce moment",
+        "next_change": next_change,
+    }
+
+
 def sort_key(text):
     return unicodedata.normalize("NFD", text.lower()).encode("ascii", "ignore").decode()
 
@@ -262,6 +388,7 @@ def store_details(request, departement, ville, slug):
         is_unfavorite = store in request.user.unfavoris.all()
 
     est_ouvert = is_open_now(store)
+    opening_status = get_opening_status(store)  # ← NOUVEAU : badge enrichi (label + prochaine transition)
 
     families_with_rows = []
     for family in store.families.all():
@@ -292,6 +419,7 @@ def store_details(request, departement, ville, slug):
         "is_favorite": is_favorite,
         "is_unfavorite": is_unfavorite,
         "est_ouvert": est_ouvert,
+        "opening_status": opening_status,  # ← NOUVEAU
         "families_with_rows": families_with_rows,
         "opening_hours": opening_hours
     })
