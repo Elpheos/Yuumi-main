@@ -367,6 +367,22 @@ def stores(request, departement, ville):
     })
 
 
+def haversine_km(lat1, lng1, lat2, lng2):
+    """
+    Distance à vol d'oiseau entre deux points GPS, en km (formule haversine,
+    approximation sphérique de la Terre — largement suffisante à l'échelle
+    d'une ville). Calcul en Python pur, pas de SQL : utilisé pour filtrer une
+    liste de Store déjà chargée depuis la base.
+    """
+    import math
+    R = 6371.0
+    lat1_r, lng1_r, lat2_r, lng2_r = map(math.radians, [lat1, lng1, lat2, lng2])
+    dlat = lat2_r - lat1_r
+    dlng = lng2_r - lng1_r
+    a = math.sin(dlat / 2) ** 2 + math.cos(lat1_r) * math.cos(lat2_r) * math.sin(dlng / 2) ** 2
+    return R * 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+
 def by_category(request, departement, ville, category):
     unfavori_ids = get_unfavori_ids(request)  # ← NOUVEAU
     commerces_qs = Store.objects.filter(
@@ -379,18 +395,59 @@ def by_category(request, departement, ville, category):
     if open_now:
         commerces_qs = commerces_qs.filter(build_open_now_filter())
 
+    # Filtre distance : nécessite la position utilisateur (lat/lng), transmise par
+    # le JS une fois la géolocalisation obtenue (voir le script de la page catégorie).
+    # Calcul en Python pur (haversine_km) sur les commerces déjà filtrés par catégorie
+    # et "ouvert maintenant" — pas de SQL exotique, le nombre de commerces par
+    # catégorie/ville reste assez restreint pour que ça reste rapide.
+    user_lat = request.GET.get("lat")
+    user_lng = request.GET.get("lng")
+    distance_km = request.GET.get("distance")
+    distance_active = False
+
+    if user_lat and user_lng and distance_km:
+        try:
+            user_lat = float(user_lat)
+            user_lng = float(user_lng)
+            max_km = float(distance_km)
+            if max_km < 15:  # 15 = valeur par défaut du slider = "pas de filtre"
+                distance_active = True
+                kept_ids = []
+                for store in commerces_qs:
+                    if store.latitude is None or store.longitude is None:
+                        continue
+                    km = haversine_km(user_lat, user_lng, store.latitude, store.longitude)
+                    if km <= max_km:
+                        kept_ids.append(store.id)
+                commerces_qs = commerces_qs.filter(id__in=kept_ids)
+        except (TypeError, ValueError):
+            pass  # paramètres invalides : on ignore le filtre distance plutôt que de planter
+
     paginator = Paginator(commerces_qs, 20)
     page_number = request.GET.get("page", 1)
     page_obj = paginator.get_page(page_number)
 
     message = None
     if not commerces_qs.exists():
-        if open_now:
+        if open_now and distance_active:
+            message = "Aucun commerce ouvert en ce moment dans ce rayon pour cette catégorie."
+        elif open_now:
             message = "Aucun commerce ouvert en ce moment pour cette catégorie."
+        elif distance_active:
+            message = "Aucun commerce dans ce rayon pour cette catégorie."
         else:
             message = "Aucun commerce trouvé pour cette catégorie."
 
     readable_category = category.replace("-", " ").capitalize()
+
+    # Construit le suffixe de query string à ajouter à tous les liens de pagination
+    # (ouvert + lat/lng/distance si actifs), pour ne pas répéter cette logique
+    # dans le template à chaque lien.
+    extra_params = ""
+    if open_now:
+        extra_params += "&ouvert=1"
+    if distance_active:
+        extra_params += f"&lat={user_lat}&lng={user_lng}&distance={distance_km}"
 
     return render(request, "members/by_category.html", {
         "ville": ville,
@@ -400,6 +457,11 @@ def by_category(request, departement, ville, category):
         "page_obj": page_obj,
         "message": message,
         "open_now": open_now,
+        "distance_active": distance_active,
+        "current_distance": distance_km if distance_active else None,
+        "user_lat": user_lat if distance_active else None,
+        "user_lng": user_lng if distance_active else None,
+        "extra_params": extra_params,
     })
 
 
