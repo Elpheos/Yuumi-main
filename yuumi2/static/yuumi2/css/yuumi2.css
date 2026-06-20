@@ -25,3 +25,12 @@ body {
 main {
     flex: 1;
 }
+
+h1, h2, h3, h4, h5, a, p, table{
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+a {
+text-decoration: none;
+color: inherit;
+}
