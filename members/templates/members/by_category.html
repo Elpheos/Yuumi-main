@@ -485,6 +485,30 @@
         return (!isNaN(d) && d >= 0.1 && d <= 15) ? d : 15;
     }
 
+    // Le toggle "Ouvert maintenant" est rendu côté serveur avec une URL simple
+    // (?ouvert=1 ou ?page=1). On la complète ici avec les paramètres déjà présents
+    // dans l'URL actuelle (notamment "distance") pour que cliquer sur le toggle
+    // ne réinitialise pas le filtre de distance choisi par l'utilisateur.
+    function fixOpenNowToggleLink() {
+        const toggle = document.getElementById('open-now-toggle');
+        if (!toggle) return;
+
+        const currentParams = new URLSearchParams(window.location.search);
+        const toggleUrl = new URL(toggle.href, window.location.origin);
+        const toggleParams = toggleUrl.searchParams;
+
+        // On reporte tous les paramètres actuels sauf "page" (on revient toujours
+        // à la page 1 quand on change ce filtre) et "ouvert" (déjà fixé par le lien).
+        currentParams.forEach((value, key) => {
+            if (key === 'page' || key === 'ouvert') return;
+            toggleParams.set(key, value);
+        });
+
+        toggle.href = toggleUrl.toString();
+    }
+
+    fixOpenNowToggleLink();
+
     // Préserve TOUS les paramètres déjà présents dans l'URL (notamment "ouvert")
     // et met juste à jour "distance" — pour que le filtre "Ouvert maintenant"
     // ne soit jamais perdu quand on bouge le slider de distance.
