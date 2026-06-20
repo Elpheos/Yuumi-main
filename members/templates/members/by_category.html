@@ -486,28 +486,26 @@
     }
 
     // Le toggle "Ouvert maintenant" est rendu côté serveur avec une URL simple
-    // (?ouvert=1 ou ?page=1). On la complète ici avec les paramètres déjà présents
-    // dans l'URL actuelle (notamment "distance") pour que cliquer sur le toggle
-    // ne réinitialise pas le filtre de distance choisi par l'utilisateur.
+    // (?ouvert=1 ou ?page=1). Le slider de distance ne touche JAMAIS l'URL au repos
+    // (il filtre uniquement en JS, côté client) — il n'écrit "distance" dans l'URL
+    // que sur les liens de pagination, après une interaction. Donc pour ne pas perdre
+    // le filtre de distance en cliquant sur ce toggle, on doit lire la valeur ACTUELLE
+    // du slider au moment du clic (pas l'URL, qui ne l'a jamais au repos) et l'ajouter
+    // nous-mêmes.
     function fixOpenNowToggleLink() {
         const toggle = document.getElementById('open-now-toggle');
         if (!toggle) return;
 
-        const currentParams = new URLSearchParams(window.location.search);
-        const toggleUrl = new URL(toggle.href, window.location.origin);
-        const toggleParams = toggleUrl.searchParams;
-
-        // On reporte tous les paramètres actuels sauf "page" (on revient toujours
-        // à la page 1 quand on change ce filtre) et "ouvert" (déjà fixé par le lien).
-        currentParams.forEach((value, key) => {
-            if (key === 'page' || key === 'ouvert') return;
-            toggleParams.set(key, value);
+        toggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const url = new URL(toggle.href, window.location.origin);
+            const currentDistance = parseFloat(slider.value);
+            if (!isNaN(currentDistance) && currentDistance < 15) {
+                url.searchParams.set('distance', currentDistance);
+            }
+            window.location.href = url.toString();
         });
-
-        toggle.href = toggleUrl.toString();
     }
-
-    fixOpenNowToggleLink();
 
     // Préserve TOUS les paramètres déjà présents dans l'URL (notamment "ouvert")
     // et met juste à jour "distance" — pour que le filtre "Ouvert maintenant"
@@ -534,6 +532,8 @@
     const savedDistance = getDistanceFromURL();
     slider.value = savedDistance;
     input.value = savedDistance;
+
+    fixOpenNowToggleLink();
 
     let userLat = null;
     let userLng = null;
