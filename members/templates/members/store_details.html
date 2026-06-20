@@ -168,12 +168,6 @@
                     </div>
                     {% endif %}
 
-                    {# ===== BADGE OUVERT / FERMÉ =====
-                       Affiché pour TOUT commerce (revendiqué ou non) — sorti du bloc
-                       "Vous êtes le propriétaire ?" où il était auparavant piégé.
-                       Utilise opening_status (dict fourni par get_opening_status côté vue),
-                       qui distingue Ouvert / Fermé / Horaires non communiqués et ajoute
-                       la prochaine transition ("ferme à 19h", "ouvre demain à 9h", etc.). #}
                     {% if opening_status.is_open is not None %}
                         {% if opening_status.is_open %}
                             <span class="badge-statut badge-ouvert">
@@ -193,8 +187,6 @@
                             {{ opening_status.label }}
                         </span>
                     {% endif %}
-                    {# ===== FIN BADGE OUVERT / FERMÉ ===== #}
-
                     {% if not store.owner or store.owner.is_superuser %}
                     <div class="store-revendiquer-container" style="padding:8px 16px 12px;">
                         <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
