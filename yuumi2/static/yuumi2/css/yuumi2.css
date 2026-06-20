@@ -1,5 +1,27 @@
+:root {
+	--orange: #ff8b38;
+	--orange-c: #d37531;
+	--bleu: #0a5bb4;
+	--bleu-c: #c5d8f5;
+}
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+html, body {
+    height: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    overflow-x: hidden;
+	padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+}
+
+main {
+    flex: 1;
 }
