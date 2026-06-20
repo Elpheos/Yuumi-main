@@ -147,6 +147,10 @@
             font-style: italic;
         }
 
+        .home2-objectifs-card-right-details-container {
+            display: flex;
+        }
+
         .home2-objectifs-card-right-subtitle {
 
         }
@@ -170,6 +174,14 @@
 
         .home2-objectifs-card-right-icon {
             height: 1rem;
+        }
+
+        .home2-objectifs-card-right-button {
+            background: var(--orange);
+            color: white;
+            font-weight: bold;
+            padding: .5rem;
+            cursor: pointer;
         }
         
      /*=========================================FONCTIONS*/
@@ -470,20 +482,23 @@
                 de l'activité, nouvelles technologies... Face à cela, les commerçants sont contraints de sacrifier certains leviers pour garantir un travail efficace sur les autres. C'est ce qui mécanisme qui 
                 crée un décalage entre résultat et potentiel réel du commerce.</p>
                 <p class="home2-objectifs-card-right-conclusion">Ensemble, identifions et développons ces leviers qui peuvent encore faire la différence</p>
-                <ul class="home2-objectifs-card-right-ul">
-                    <li>
-                        <svg class="home2-objectifs-card-right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(0, 152, 23)" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 329.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"/></svg>
-                        Développer les leviers sous exploités
-                    </li>
-                    <li>
-                        <svg class="home2-objectifs-card-right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(0, 152, 23)" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 329.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"/></svg>
-                        Trouver de nouvelles idées
-                    </li>
-                    <li>
-                        <svg class="home2-objectifs-card-right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(0, 152, 23)" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 329.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"/></svg>
-                        Transformer son travail en résultat
-                    </li>
-                </ul>
+                <div class="home2-objectifs-card-right-details-container">
+                    <ul class="home2-objectifs-card-right-ul">
+                        <li>
+                            <svg class="home2-objectifs-card-right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(0, 152, 23)" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 329.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"/></svg>
+                            Développer les leviers sous exploités
+                        </li>
+                        <li>
+                            <svg class="home2-objectifs-card-right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(0, 152, 23)" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 329.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"/></svg>
+                            Trouver de nouvelles idées
+                        </li>
+                        <li>
+                            <svg class="home2-objectifs-card-right-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(0, 152, 23)" d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 109.3 329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160zm160 352l-160-160c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 329.4 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3z"/></svg>
+                            Transformer son travail en résultat
+                        </li>
+                    </ul>
+                    <a class="home2-objectifs-card-right-button">En savoir plus</a>
+                </div>
             </div>
         </div>
 
