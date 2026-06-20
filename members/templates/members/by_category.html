@@ -108,15 +108,17 @@
 .category-header-left { flex: 1; }
 
 /* ===== FILTRE OUVERT MAINTENANT ===== */
-.open-now-filter-wrapper {
-    margin: 10px 0 0 0;
+.open-now-filter-row {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
 }
 
 .open-now-filter-btn {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 8px 16px;
+    padding: 7px 14px;
     border-radius: 999px;
     border: 1.5px solid #6fcf97;
     background: #e8f8ee;
@@ -125,6 +127,7 @@
     font-size: 0.85rem;
     text-decoration: none;
     transition: background 0.15s, color 0.15s;
+    white-space: nowrap;
 }
 
 .open-now-filter-btn .filter-dot {
@@ -169,6 +172,13 @@
     color: #ff8b38;
     width: 100%;
     text-align: right;
+}
+
+.filters-separator {
+    width: 100%;
+    height: 1px;
+    background: #ffd4b0;
+    margin: 2px 0;
 }
 
 .distance-slider-row {
@@ -344,8 +354,10 @@
                     Découvrez les {{ category|lower }} à {{ ville|title }}. 
                     Retrouvez leurs horaires, adresses et informations pratiques pour chacun de ces commerces locaux.
                 </p>
+            </div>
 
-                <div class="open-now-filter-wrapper">
+            <div class="distance-slider-wrapper" id="distance-slider-wrapper">
+                <div class="open-now-filter-row">
                     {% if open_now %}
                         <a href="?page=1" class="open-now-filter-btn active" id="open-now-toggle">
                             <span class="filter-dot"></span>
@@ -358,9 +370,9 @@
                         </a>
                     {% endif %}
                 </div>
-            </div>
 
-            <div class="distance-slider-wrapper" id="distance-slider-wrapper">
+                <div class="filters-separator"></div>
+
                 <div class="distance-slider-title">Filtrer par distance</div>
                 <div class="distance-no-geo" id="distance-no-geo">Activez la géolocalisation pour filtrer</div>
                 <div id="distance-slider-controls" style="display:none; flex-direction:column; gap:8px; width:100%;">
