@@ -1,9 +1,716 @@
 {% extends "yuumi2/master2.html" %}
 {% load static %}
 {% block content %}
-<section>
-    <h1 class="test">L'aide aux commerces, par des gens qui connaissent le terrain.</h1>
-    <img src="{% static 'yuumi2/images/logo-yuumi-pro.png' %}" alt="Yuumi Pro" style="max-width:200px;margin-bottom:32px;">
-    <p>Page Yuumi Pro en construction.</p>
+<head>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .home2-pagecontainer {
+            background: #0a5bb4;
+            padding-top: 3rem;
+        }
+
+        .home2-hero {
+            width: 100%;
+        }
+
+        .home2-hero-container {
+            margin: 0 auto;
+            background: white;
+            width: 80%;
+            padding: 1rem 3rem;
+            border-radius: 20px;
+        }
+        
+        .home2-hero-content {
+        
+        }
+        
+        .home2-hero-title-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .home2-hero-title-img {
+            height: 15rem;
+            width: auto;
+        }
+
+        .home2-hero-title-container {
+        
+        }
+        
+        .home2-hero-title {
+            color: #ff8b38;
+            font-size: 2.5rem;
+            line-height: 1.05;
+            font-weight: 800;
+        }
+        
+        .home2-hero-intro {
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 3px 8px 8px 3px;
+            background: #ff8b3820;
+            border-left: solid 6px #ff8b38;
+        }
+        
+        .home2-hero-text {
+            margin: 0 0 34px;
+            color: #374151;
+            font-size: 1.05rem;
+            line-height: 1.75;
+        }
+        
+        .home2-hero-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 26px;
+            color: #ffffff;
+            background-color: #ff8b38;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .home2-hero-button:hover {
+            background-color: #f17820;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 139, 56, 0.28);
+        }
+
+    /*=========================================OBJECTIFS*/
+        .home2-objectifs-container {
+            width: 80%;
+            margin: 2rem auto;
+        }
+
+        .home2-objectifs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 1.5rem 2rem;
+        }
+
+        .home2-objectifs-card {
+            background: #ff8b38;
+            text-align: center;
+            padding: .5rem 1rem; 
+            border-right: solid #db7a35 6px;
+            border-bottom: solid #db7a35 3px;
+            border-top: solid #db7a35 3px;
+            box-shadow: #00000025 3px 5px 10px 5px;
+            border-radius: 8px;
+        }
+
+        .home2-objectifs-card-title {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: .5rem;
+        }
+
+        .home2-objectifs-card-icon {
+            height: 4rem;
+            margin-bottom: .5rem;
+        }
+
+        .home2-objectifs-card-text {
+            color: white;
+            font-size: 1rem;
+            margin: 0;
+        }
+        
+     /*=========================================FONCTIONS*/
+        .home2-function-container {
+            width: 80%;
+            height: 70dvh;
+            border: solid 3px #ff8b38;
+            border-radius: 16px;
+            margin: 3rem auto;
+            position: relative;
+            overflow: hidden;
+            background: #ff8b38;
+        }
+
+        /*----------------------------------------INTRODUCTION*/
+        .home2-function-introduction-container {
+            max-width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 1rem 5rem;
+            position: absolute;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.25);
+            box-sizing: border-box;
+        }
+
+        .home2-function-introduction-content {
+            margin: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 1rem;
+            height: 75%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .home2-function-introduction-title {
+            font-size: 3rem;
+            color: #ff8b38;
+        }
+
+        .home2-function-introduction-text {
+            color: black;
+            font-size: 2rem;
+        }
+
+        .home2-function-introduction-button {
+            background: #0a5bb4;
+            color: white;
+            padding: 0.5rem;
+            border: none;
+            margin: auto;
+            margin-bottom: 1rem;
+            font-size: 2.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .home2-function-introduction-container-cleared {
+            display: none
+        }
+
+        /*----------------------------------------PHASE 1*/
+        .home2-function-phase1-container {
+            max-width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+            padding: 1rem 5rem;
+            filter: blur(10px);
+            align-items: center;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .home2-function-phase1-container-active {
+            pointer-events: all;
+            filter: none;
+        }
+
+        .home2-function-phase1-container-inactive {
+            display: none;
+        }
+
+        .home2-function-phase1-title {
+            font-size: 3rem;
+            color: #0a5bb4;
+        }
+
+        .home2-function-phase1-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .home2-function-card {
+            height: 50%;
+        }
+
+        .home2-function-card-button {
+            background: transparent;
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            box-shadow: #00000020 0px 3px 10px 5px;
+        }
+
+        .home-2-function-card-upperpart {
+            background-color: #0a5bb4;
+            border-radius: 8px 8px 8px 8px;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .home-2-function-card-upperpart-p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        /*----------------------------------------PHASE A1*/
+        .home2-function-phasea1-container {
+            display: none;
+            max-width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 1rem 5rem;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .home2-function-phasea1-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .home2-function-phasea1-container-active {
+            display: flex;
+        }
+
+        .home2-function-phasea1-title {
+            font-size: 3rem;
+        }
+
+        /*----------------------------------------PHASE AA*/
+        .home2-function-phaseaa-container {
+            display: none;
+            max-width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 1rem 5rem;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .home2-function-phaseaa-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .home2-function-phaseaa-container-active {
+            display: flex;
+        }
+
+        .home2-function-phaseaa-title {
+            font-size: 3rem;
+        }
+
+        /*----------------------------------------PHASE B1*/
+        .home2-function-phaseb1-container {
+            display: none;
+            max-width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 1rem 5rem;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .home2-function-phaseb1-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .home2-function-phaseb1-container-active {
+            display: flex;
+        }
+
+        .home2-function-phaseb1-title {
+            font-size: 3rem;
+        }
+
+         /*----------------------------------------PHASE BA*/
+        .home2-function-phaseba-container {
+            display: none;
+            max-width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 1rem 5rem;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .home2-function-phaseba-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5rem;
+            flex: 1;
+            align-items: center;
+        }
+
+        .home2-function-phaseba-container-active {
+            display: flex;
+        }
+
+        .home2-function-phaseba-title {
+            font-size: 3rem;
+        }
+
+        /*----------------------------------------PHASE C1*/
+        .home2-function-phasec1-container {
+            display: none;
+            max-width: 100%;
+            height: 100%;
+            text-align: center;
+            padding: 1rem 5rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 5rem;
+            align-items: center;
+        }
+
+        .home2-function-phasec1-container-active {
+            display: grid;
+        }
+
+    </style>
+</head>
+
+<div class="home2-pagecontainer">
+<!----------------------------------------------------------------Introduction du site-->
+<section class="home2-hero" aria-label="Introduction du site">
+    <div class="home2-hero-container">
+        <div class="home2-hero-content">
+            <div class="home2-hero-title-content">
+                <img class="home2-hero-title-img" src="{% static "images/Yuumi - Entreprise d'aide aux commerces.png"%}">
+                <div class="home2-hero-title-container">
+                    <h1 class="home2-hero-title">Yuumi — Spécialiste de l’aide aux commerces</h1>
+                     <p class="home2-hero-intro">
+                    Yuumi est une entreprise spécialisée dans l’aide au développement des commerces. Nous accompagnons les commerçants dans l’amélioration de leur visibilité, de leurs outils 
+                    et de leur stratégie afin de les aider à s’adapter à un marché de plus en plus exigeant, entre baisse du pouvoir d’achat, concurrence accrue et développement de la vente en ligne.
+                    </p> 
+                </div>
+               
+            </div>
+            <p class="home2-hero-text">
+                Dans notre vision, les commerces ont une place essentielle à défendre. Ils incarnent un savoir-faire, une expertise et un conseil client que les grandes plateformes ne peuvent remplacer. 
+                Yuumi a donc pour ambition d'aider ces commerces à évoluer pour renforcer leur présence et mieux faire face aux nouvelles habitudes de consommation incarnées par l'essor du low-cost et 
+                de la vente en ligne.
+            </p>
+
+            <a href="#solutions" class="home2-hero-button">Découvrir nos solutions</a>
+        </div>
+    </div>
 </section>
+
+ <!----------------------------------------------------------------Objectifs-->
+<section class="home2-objectifs-container" aria-label="Les objectifs de Yuumi">
+    <div class="home2-objectifs-grid">
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Optimiser votre commerce</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="rgb(255, 255, 255)" d="M384 160c-17.7 0-32-14.3-32-32s14.3-32 32-32l160 0c17.7 0 32 14.3 32 32l0 160c0 17.7-14.3 32-32 32s-32-14.3-32-32l0-82.7-169.4 169.4c-12.5 12.5-32.8 12.5-45.3 0L192 269.3 54.6 406.6c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3l160-160c12.5-12.5 32.8-12.5 45.3 0L320 306.7 466.7 160 384 160z"/></svg>
+            <p class="home2-objectifs-card-text">Augmenter votre nombre de clients, étendez votre activité, de nombreuses options sont disponibles pour exploiter le plein potentiel de votre commerce.</p>
+        </div>
+
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Offrir des outils innovants</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="rgb(255, 255, 255)" d="M292.9 384c7.3-22.3 21.9-42.5 38.4-59.9 32.7-34.4 52.7-80.9 52.7-132.1 0-106-86-192-192-192S0 86 0 192c0 51.2 20 97.7 52.7 132.1 16.5 17.4 31.2 37.6 38.4 59.9l201.7 0zM288 432l-192 0 0 16c0 44.2 35.8 80 80 80l32 0c44.2 0 80-35.8 80-80l0-16zM184 112c-39.8 0-72 32.2-72 72 0 13.3-10.7 24-24 24s-24-10.7-24-24c0-66.3 53.7-120 120-120 13.3 0 24 10.7 24 24s-10.7 24-24 24z"/></svg>
+            <p class="home2-objectifs-card-text">Permettre l'accès à des services normalement spécialisés à moindre coût ou bénéficier des systèmes développés directement par Yuumi.</p>
+        </div>
+
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Aider les commerces en difficulté</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="rgb(255, 255, 255)" d="M279.6 31C265.5 11.5 242.9 0 218.9 0 177.5 0 144 33.5 144 74.9l0 2.4c0 64.4 82 133.4 122.2 163.3 13 9.7 30.5 9.7 43.5 0 40.2-30 122.2-98.9 122.2-163.3l0-2.4c0-41.4-33.5-74.9-74.9-74.9-24 0-46.6 11.5-60.7 31L288 42.7 279.6 31zM109.3 341.5L66.7 384 32 384c-17.7 0-32 14.3-32 32l0 64c0 17.7 14.3 32 32 32l320.5 0c29 0 57.3-9.3 80.7-26.5l126.6-93.3c17.8-13.1 21.6-38.1 8.5-55.9s-38.1-21.6-55.9-8.5L392.6 416 280 416c-13.3 0-24-10.7-24-24s10.7-24 24-24l72 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-152.2 0c-33.9 0-66.5 13.5-90.5 37.5z"/></svg>            
+            <p class="home2-objectifs-card-text">Faites un point avec l'un de nos conseillers et essayons ensemble d'améliorer la situation.</p>
+        </div>
+
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Offrir un interlocuteur de confiance</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(255, 255, 255)" d="M224 248a120 120 0 1 1 0-240 120 120 0 1 1 0 240zm-30.5 56l61 0c9.7 0 17.5 7.8 17.5 17.5 0 4.2-1.5 8.2-4.2 11.4l-27.4 32 31 115.1 .6 0 34.6-138.5c2.2-8.7 11.1-14 19.5-10.8 61.9 23.6 105.9 83.6 105.9 153.8 0 15.1-12.3 27.4-27.4 27.4L43.4 512c-15.1 0-27.4-12.3-27.4-27.4 0-70.2 44-130.2 105.9-153.8 8.4-3.2 17.3 2.1 19.5 10.8l34.6 138.5 .6 0 31-115.1-27.4-32c-2.7-3.2-4.2-7.2-4.2-11.4 0-9.7 7.8-17.5 17.5-17.5z"/></svg>
+            <p class="home2-objectifs-card-text">Pemettre d'échanger avec des professionnels qui sauront réellement vous orienter vers la meilleure solution pour vous.</p>
+        </div>
+
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Accompagner vos envies de développement</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="rgb(255, 255, 255)" d="M0 80C0 53.5 21.5 32 48 32l96 0c26.5 0 48 21.5 48 48l0 16 128 0 0-16c0-26.5 21.5-48 48-48l96 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-16-128 0 0 16c0 7.3-1.7 14.3-4.6 20.5l68.6 91.5 80 0c26.5 0 48 21.5 48 48l0 96c0 26.5-21.5 48-48 48l-96 0c-26.5 0-48-21.5-48-48l0-96c0-7.3 1.7-14.3 4.6-20.5L128 224 48 224c-26.5 0-48-21.5-48-48L0 80z"/></svg>            
+                <p class="home2-objectifs-card-text">Vous aider à exploiter votre créativité pour exploiter le plein potentiel de votre commerce.</p>
+        </div>
+
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Centraliser vos services</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="rgb(255, 255, 255)" d="M464 256a208 208 0 1 1 -416 0 208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0 256 256 0 1 0 -512 0zM232 120l0 136c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2 280 120c0-13.3-10.7-24-24-24s-24 10.7-24 24z"/></svg>            
+            <p class="home2-objectifs-card-text">Organiser tous vos services au même endroit pour bénéficier d'une organisation simplifiée et de tarifs avantageux.</p>
+        </div>
+
+        <div class="home2-objectifs-card">
+            <p class="home2-objectifs-card-title">Vous aider à vous lancer</p>
+            <svg class="home2-objectifs-card-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path fill="rgb(255, 255, 255)" d="M268.9 85.2L152.3 214.8c-4.6 5.1-4.4 13 .5 17.9 30.5 30.5 80 30.5 110.5 0l31.8-31.8c4.2-4.2 9.5-6.5 14.9-6.9 6.8-.6 13.8 1.7 19 6.9L505.6 376 576 320 576 32 464 96 440.2 80.1C424.4 69.6 405.9 64 386.9 64l-70.4 0c-1.1 0-2.3 0-3.4 .1-16.9 .9-32.8 8.5-44.2 21.1zM116.6 182.7L223.4 64 183.8 64c-25.5 0-49.9 10.1-67.9 28.1L112 96 0 32 0 320 156.4 450.3c23 19.2 52 29.7 81.9 29.7l15.7 0-7-7c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l41 41 9 0c19.1 0 37.8-4.3 54.8-12.3L359 441c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l32 32 17.5-17.5c8.9-8.9 11.5-21.8 7.6-33.1l-137.9-136.8-14.9 14.9c-49.3 49.3-129.1 49.3-178.4 0-23-23-23.9-59.9-2.2-84z"/></svg>
+            <p class="home2-objectifs-card-text">Accédez aux informations utiles et échangez avec nos conseiller pour démarrer votre activité en tout sérénité.</p>
+        </div>
+
+    </div>
+</section>
+
+<!----------------------------------------------------------------Fonctionnalités-->
+<div class="home2-function-container">
+<!----------------------------------------------------------------INTRO-->
+    <div class="home2-function-introduction-container">
+        <div class="home2-function-introduction-content">
+            <p class="home2-function-introduction-title">Laissez vous guider</p>
+            <p class="home2-function-introduction-text">Pour vous aider à trouver plus rapidement ce que vous cherchez, Yuumi a mis en place un système pour vous faire gagner du temps.</p>
+            <button class="home2-function-introduction-button" onclick="clearIntro()">Commencer</button>
+        </div>
+        
+    </div>
+
+<!----------------------------------------------------------------PHASE 1-->
+    <div class="home2-function-phase1-container">
+        <p class="home2-function-phase1-title">À propos de votre recherche...</p>
+
+        <div class="home2-function-phase1-grid">
+            <div class="home2-function-card">
+                <button class="home2-function-card-button" onclick="p1toa1()">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Je cherche un service précis</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="home2-function-card">
+                <button class="home2-function-card-button" onclick="p1tob1()">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Je cherche des informations à propos d'un service</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="home2-function-card">
+                <button class="home2-function-card-button" onclick="p1toc1()">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">J'ai des difficultés avec mon commerce</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+<!----------------------------------------------------------------PHASE A1-->
+    <div class="home2-function-phasea1-container">
+        <p class="home2-function-phasea1-title">Quel type de services recherchez-vous ?</p>
+
+        <div class="home2-function-phasea1-grid">
+            <div class="home2-function-card">
+            <button class="home2-function-card-button" onclick="p1toaa()">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">Services web & développement</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">Communication et image</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">Choix 3</p>
+                </div>
+            </button>
+        </div>
+        </div>
+    </div>
+
+<!----------------------------------------------------------------PHASE AA-->
+    <div class="home2-function-phaseaa-container">
+        <p class="home2-function-phaseaa-title">Quel service numérique vous intéresse ?</p>
+        <div class="home2-function-phaseaa-grid">
+            <div class="home2-function-card">
+                <button class="home2-function-card-button">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Création, modification et optimisation de sites web</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="home2-function-card">
+                <button class="home2-function-card-button">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">SEO</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="home2-function-card">
+                <button class="home2-function-card-button">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Développement d'applications</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+<!----------------------------------------------------------------PHASE B1-->
+    <div class="home2-function-phaseb1-container">
+        <p class="home2-function-phaseb1-title">À quelle catégorie appartient le service qui vous intéresse ?</p>
+        <div class="home2-function-phaseb1-grid">
+            <div class="home2-function-card">
+                <button class="home2-function-card-button" onclick="pb1toba()">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Services web & développement</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="home2-function-card">
+                <button class="home2-function-card-button">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Communication et image</p>
+                    </div>
+                </button>
+            </div>
+
+            <div class="home2-function-card">
+                <button class="home2-function-card-button">
+                    <div class="home-2-function-card-upperpart">
+                        <p class="home-2-function-card-upperpart-p">Choix 3</p>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+<!----------------------------------------------------------------PHASE BA-->
+<div class="home2-function-phaseba-container">
+    <p class="home2-function-phaseba-title">Sur quel service numérique désirez-vous plus d'informations ?</p>    
+    <div class="home2-function-phaseba-grid">
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">Création, modification et optimisation de sites web</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">SEO</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">Développement d'applications</p>
+                </div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!----------------------------------------------------------------PHASE C1-->
+    <div class="home2-function-phasec1-container">
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">Je pense savoir d'où vient le problème</p>
+                </div>
+            </button>
+        </div>
+
+        <div class="home2-function-card">
+            <button class="home2-function-card-button">
+                <div class="home-2-function-card-upperpart">
+                    <p class="home-2-function-card-upperpart-p">J'ai besoin d'aide pour identifier le problème</p>
+                </div>
+            </button>
+        </div>
+    </div>
+
+<!----------------------------------------------------------------FIN DIV FONCTIONS-->
+</div>
+</div>
+
+
+<!--INTRO -> 1-->
+<script>
+    
+    function clearIntro() {
+        const introMenu = document.querySelector('.home2-function-introduction-container');
+        const phase1Menu = document.querySelector('.home2-function-phase1-container');
+
+        introMenu.classList.add('home2-function-introduction-container-cleared');
+        phase1Menu.classList.add('home2-function-phase1-container-active');
+    }
+</script>
+
+<!--1 -> A1-->
+<script>
+    function p1toa1() {
+        const phase1Menu = document.querySelector('.home2-function-phase1-container');
+        const phasea1Menu = document.querySelector('.home2-function-phasea1-container');
+
+        phase1Menu.classList.add('home2-function-phase1-container-inactive');
+        phasea1Menu.classList.add('home2-function-phasea1-container-active');
+    }
+</script>
+
+<!--A1 -> AA-->
+<script>
+    function p1toaa() {
+        const phasea1Menu = document.querySelector('.home2-function-phasea1-container');
+        const phaseaaMenu = document.querySelector('.home2-function-phaseaa-container');
+
+        phasea1Menu.classList.remove('home2-function-phasea1-container-active')
+        phaseaaMenu.classList.add('home2-function-phaseaa-container-active');
+    }
+</script>
+
+<!--1 -> B1-->
+<script>
+    function p1tob1() {
+        const phase1Menu = document.querySelector('.home2-function-phase1-container');
+        const phaseb1Menu = document.querySelector('.home2-function-phaseb1-container');
+
+        phase1Menu.classList.add('home2-function-phase1-container-inactive');
+        phaseb1Menu.classList.add('home2-function-phaseb1-container-active');
+    }
+</script>
+
+<!--B1 -> BA-->
+<script>
+    function pb1toba() {
+        const phaseb1Menu = document.querySelector('.home2-function-phaseb1-container');
+        const phasebaMenu = document.querySelector('.home2-function-phaseba-container');
+
+        phaseb1Menu.classList.remove('home2-function-phaseb1-container-active');
+        phasebaMenu.classList.add('home2-function-phaseba-container-active');
+    }
+</script>
+
+<!--1 -> C1-->
+<script>
+    function p1toc1() {
+        const phase1Menu = document.querySelector('.home2-function-phase1-container');
+        const phasec1Menu = document.querySelector('.home2-function-phasec1-container');
+
+        phase1Menu.classList.add('home2-function-phase1-container-inactive');
+        phasec1Menu.classList.add('home2-function-phasec1-container-active');
+    }
+</script>
+</div>
 {% endblock %}
