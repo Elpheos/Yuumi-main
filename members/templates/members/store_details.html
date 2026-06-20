@@ -168,6 +168,33 @@
                     </div>
                     {% endif %}
 
+                    {# ===== BADGE OUVERT / FERMÉ =====
+                       Affiché pour TOUT commerce (revendiqué ou non) — sorti du bloc
+                       "Vous êtes le propriétaire ?" où il était auparavant piégé.
+                       Utilise opening_status (dict fourni par get_opening_status côté vue),
+                       qui distingue Ouvert / Fermé / Horaires non communiqués et ajoute
+                       la prochaine transition ("ferme à 19h", "ouvre demain à 9h", etc.). #}
+                    {% if opening_status.is_open is not None %}
+                        {% if opening_status.is_open %}
+                            <span class="badge-statut badge-ouvert">
+                                <span class="badge-dot"></span>
+                                {{ opening_status.label }}{% if opening_status.next_change %} · {{ opening_status.next_change }}{% endif %}
+                            </span>
+                        {% else %}
+                            <span class="badge-statut badge-ferme">
+                                <span class="badge-dot"></span>
+                                {{ opening_status.label }}{% if opening_status.next_change %} · {{ opening_status.next_change }}{% endif %}
+                            </span>
+                        {% endif %}
+                        <small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances - Les horaires peuvent être erronés</small>
+                    {% else %}
+                        <span class="badge-statut badge-inconnu">
+                            <span class="badge-dot"></span>
+                            {{ opening_status.label }}
+                        </span>
+                    {% endif %}
+                    {# ===== FIN BADGE OUVERT / FERMÉ ===== #}
+
                     {% if not store.owner or store.owner.is_superuser %}
                     <div class="store-revendiquer-container" style="padding:8px 16px 12px;">
                         <p class="store-revendiquer-p">Vous êtes le propriétaire ?</p>
@@ -179,15 +206,6 @@
                             Prenez le contrôle de votre page
                         </button>
                     </div>
-
-                    {% if est_ouvert is not None %}
-                        {% if est_ouvert %}
-                            <span class="badge-statut badge-ouvert"><span class="badge-dot"></span> Ouvert en ce moment</span>
-                        {% else %}
-                            <span class="badge-statut badge-ferme"><span class="badge-dot"></span> Fermé en ce moment</span>
-                        {% endif %}
-                    {% endif %}
-                    {% if est_ouvert is not None %}<small class="texte-badge-commerce">Peut varier les jours fériés et pendant les vacances - Les horaires peuvent être erronés</small>{% endif %}
                     {% endif %}
 
                     <hr class="hr-page-commerce" />
@@ -798,10 +816,12 @@ document.addEventListener("DOMContentLoaded", () => {
 .badge-statut { display:inline-flex; align-items:center; gap:6px; font-size:0.82rem; font-weight:700; padding:4px 12px; border-radius:99px; margin-bottom:10px; letter-spacing:0.02em; }
 .badge-ouvert { background:#e8f8ee; color:#1a7a3c; border:1.5px solid #6fcf97; }
 .badge-ferme { background:#fdf0f0; color:#b52b2b; border:1.5px solid #e57373; }
+.badge-inconnu { background:#f4f4f4; color:#777; border:1.5px solid #ddd; }
 .badge-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
 .texte-badge-commerce { color:#888; font-size:0.74rem; text-align:center; margin-bottom:10px; display:block; }
 .badge-ouvert .badge-dot { background:#27ae60; }
 .badge-ferme .badge-dot { background:#e53935; }
+.badge-inconnu .badge-dot { background:#aaa; }
 .store-revendiquer-container { display:flex; gap:5px; align-items:center; flex-wrap:wrap; justify-content:center; }
 .store-revendiquer-b { color:var(--orange); border:none; background-color:initial; font-size:0.8rem; font-weight:bold; }
 .store-revendiquer-p { margin-bottom:0; font-size:0.75rem; }
