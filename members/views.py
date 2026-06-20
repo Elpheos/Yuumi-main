@@ -211,6 +211,12 @@ def build_open_now_filter():
     créneau d'aujourd'hui qui déborde sur demain, soit parce qu'on est encore dans
     son créneau d'hier qui a débordé jusqu'à maintenant.
 
+    IMPORTANT : chaque condition exige explicitement que les deux champs comparés
+    soient non-NULL (isnull=False). Sans ça, un commerce qui n'a renseigné AUCUN
+    horaire peut remonter par erreur dans certains cas limites où une comparaison
+    impliquant NULL ne se comporte pas comme on l'attend sur tous les moteurs SQL.
+    Un commerce sans horaires ne doit JAMAIS apparaître comme "ouvert".
+
     Doit rester cohérent avec get_opening_status (vue détail), même si l'implémentation
     diffère par nécessité : ici on compare des champs entre eux via F() pour que tout
     se passe en SQL, alors que get_opening_status travaille en Python sur un store
@@ -234,8 +240,12 @@ def build_open_now_filter():
         f_field = f"{today}_{periode}_fermeture"
 
         # Créneau normal d'aujourd'hui : ouverture <= maintenant <= fermeture,
-        # et fermeture après ouverture (pas de chevauchement de minuit)
+        # et fermeture après ouverture (pas de chevauchement de minuit).
+        # isnull=False sur les deux champs : un créneau partiellement vide
+        # (ex: ouverture renseignée mais pas fermeture) ne doit pas matcher.
         q |= Q(**{
+            f"{o_field}__isnull": False,
+            f"{f_field}__isnull": False,
             f"{o_field}__lte": current_time,
             f"{f_field}__gte": current_time,
             f"{f_field}__gt": F(o_field),
@@ -244,6 +254,8 @@ def build_open_now_filter():
         # Créneau d'aujourd'hui qui chevauche minuit (fermeture <= ouverture, ex: 22h-2h)
         # et on est déjà dans ce créneau (après l'heure d'ouverture)
         q |= Q(**{
+            f"{o_field}__isnull": False,
+            f"{f_field}__isnull": False,
             f"{f_field}__lte": F(o_field),
             f"{o_field}__lte": current_time,
         })
@@ -255,6 +267,8 @@ def build_open_now_filter():
         # Créneau d'hier qui chevauchait minuit et court encore ce matin
         # (ex: ouvert hier 22h, ferme aujourd'hui 2h, et il est 1h du matin)
         q |= Q(**{
+            f"{o_field}__isnull": False,
+            f"{f_field}__isnull": False,
             f"{f_field}__lte": F(o_field),
             f"{f_field}__gte": current_time,
         })
