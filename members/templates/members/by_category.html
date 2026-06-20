@@ -359,12 +359,12 @@
             <div class="distance-slider-wrapper" id="distance-slider-wrapper">
                 <div class="open-now-filter-row">
                     {% if open_now %}
-                        <a href="?page=1" class="open-now-filter-btn active" id="open-now-toggle">
+                        <a href="?page=1{% if distance_active %}&lat={{ user_lat }}&lng={{ user_lng }}&distance={{ current_distance }}{% endif %}" class="open-now-filter-btn active" id="open-now-toggle">
                             <span class="filter-dot"></span>
                             Ouvert maintenant ✕
                         </a>
                     {% else %}
-                        <a href="?ouvert=1" class="open-now-filter-btn" id="open-now-toggle">
+                        <a href="?ouvert=1{% if distance_active %}&lat={{ user_lat }}&lng={{ user_lng }}&distance={{ current_distance }}{% endif %}" class="open-now-filter-btn" id="open-now-toggle">
                             <span class="filter-dot"></span>
                             Ouvert maintenant
                         </a>
@@ -398,10 +398,6 @@
             {% endif %}
         </p>
 
-        <p class="distance-no-result" id="distance-no-result">
-            Aucun commerce dans ce rayon. Élargissez le filtre.
-        </p>
-
         <div class="derniers-arrivants-grid-container">
             {% for commerce in commerces %}
                 <div class="derniers-arrivants-grid-commerces"
@@ -428,8 +424,8 @@
         {% if page_obj.paginator.num_pages > 1 %}
         <div class="pagination-container" id="pagination-container">
             {% if page_obj.has_previous %}
-                <a href="?page=1{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn" title="Première page">«</a>
-                <a href="?page={{ page_obj.previous_page_number }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn">‹</a>
+                <a href="?page=1{{ extra_params }}" class="pagination-btn" title="Première page">«</a>
+                <a href="?page={{ page_obj.previous_page_number }}{{ extra_params }}" class="pagination-btn">‹</a>
             {% else %}
                 <span class="pagination-btn disabled">«</span>
                 <span class="pagination-btn disabled">‹</span>
@@ -439,13 +435,13 @@
                 {% if num == page_obj.number %}
                     <span class="pagination-btn active">{{ num }}</span>
                 {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
-                    <a href="?page={{ num }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn">{{ num }}</a>
+                    <a href="?page={{ num }}{{ extra_params }}" class="pagination-btn">{{ num }}</a>
                 {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn">›</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn" title="Dernière page">»</a>
+                <a href="?page={{ page_obj.next_page_number }}{{ extra_params }}" class="pagination-btn">›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{{ extra_params }}" class="pagination-btn" title="Dernière page">»</a>
             {% else %}
                 <span class="pagination-btn disabled">›</span>
                 <span class="pagination-btn disabled">»</span>
@@ -479,72 +475,63 @@
             : `${km.toFixed(1)} km de vous`;
     }
 
-    function getDistanceFromURL() {
-        const params = new URLSearchParams(window.location.search);
-        const d = parseFloat(params.get('distance'));
-        return (!isNaN(d) && d >= 0.1 && d <= 15) ? d : 15;
-    }
+    // Construit une URL qui conserve "ouvert" et ajoute/retire lat, lng, distance,
+    // puis recharge la page. Utilisé à la fois par le slider de distance et par le
+    // toggle "Ouvert maintenant", pour que les deux filtres ne s'écrasent jamais
+    // l'un l'autre — tout est désormais filtré côté serveur (views.py), donc la
+    // pagination affichée est toujours exacte.
+    function buildFilteredUrl({ openNow, lat, lng, distance }) {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('page'); // on revient toujours à la page 1 quand un filtre change
 
-    // Le toggle "Ouvert maintenant" est rendu côté serveur avec une URL simple
-    // (?ouvert=1 ou ?page=1). Le slider de distance ne touche JAMAIS l'URL au repos
-    // (il filtre uniquement en JS, côté client) — il n'écrit "distance" dans l'URL
-    // que sur les liens de pagination, après une interaction. Donc pour ne pas perdre
-    // le filtre de distance en cliquant sur ce toggle, on doit lire la valeur ACTUELLE
-    // du slider au moment du clic (pas l'URL, qui ne l'a jamais au repos) et l'ajouter
-    // nous-mêmes.
-    function fixOpenNowToggleLink() {
-        const toggle = document.getElementById('open-now-toggle');
-        if (!toggle) return;
+        if (openNow) {
+            url.searchParams.set('ouvert', '1');
+        } else {
+            url.searchParams.delete('ouvert');
+        }
 
-        toggle.addEventListener('click', (e) => {
-            e.preventDefault();
-            const url = new URL(toggle.href, window.location.origin);
-            const currentDistance = parseFloat(slider.value);
-            if (!isNaN(currentDistance) && currentDistance < 15) {
-                url.searchParams.set('distance', currentDistance);
-            }
-            window.location.href = url.toString();
-        });
-    }
+        if (lat != null && lng != null && distance != null && distance < 15) {
+            url.searchParams.set('lat', lat);
+            url.searchParams.set('lng', lng);
+            url.searchParams.set('distance', distance);
+        } else {
+            url.searchParams.delete('lat');
+            url.searchParams.delete('lng');
+            url.searchParams.delete('distance');
+        }
 
-    // Préserve TOUS les paramètres déjà présents dans l'URL (notamment "ouvert")
-    // et met juste à jour "distance" — pour que le filtre "Ouvert maintenant"
-    // ne soit jamais perdu quand on bouge le slider de distance.
-    function updatePaginationLinks(distanceVal) {
-        document.querySelectorAll('#pagination-container a.pagination-btn').forEach(a => {
-            const url = new URL(a.href, window.location.origin);
-            url.searchParams.set('distance', distanceVal);
-            a.href = url.toString();
-        });
+        return url.toString();
     }
 
     const slider = document.getElementById('distance-slider');
     const input = document.getElementById('distance-input');
     const sliderControls = document.getElementById('distance-slider-controls');
     const noGeo = document.getElementById('distance-no-geo');
-    const noResult = document.getElementById('distance-no-result');
-    const paginationInfo = document.getElementById('pagination-info');
-    const totalCards = {{ page_obj.paginator.count }};
-    const currentPage = {{ page_obj.number }};
-    const totalPages = {{ page_obj.paginator.num_pages }};
     const cards = document.querySelectorAll('.derniers-arrivants-grid-commerces[data-lat]');
+    const openNowToggle = document.getElementById('open-now-toggle');
+    const isOpenNowActive = openNowToggle ? openNowToggle.classList.contains('active') : false;
 
-    const savedDistance = getDistanceFromURL();
-    slider.value = savedDistance;
-    input.value = savedDistance;
-
-    fixOpenNowToggleLink();
+    // Valeur du slider au chargement : reprend ?distance= si déjà présent dans
+    // l'URL (cas où on vient de cliquer sur le toggle Ouvert maintenant alors que
+    // le filtre distance était actif), sinon 15 (= pas de filtre).
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialDistance = parseFloat(urlParams.get('distance'));
+    const startDistance = (!isNaN(initialDistance) && initialDistance >= 0.1 && initialDistance <= 15)
+        ? initialDistance : 15;
+    slider.value = startDistance;
+    input.value = startDistance;
 
     let userLat = null;
     let userLng = null;
 
+    // Affichage cosmétique de la distance sur chaque carte — ne filtre rien,
+    // c'est juste pour que l'utilisateur voie "à 1.2 km de vous" sous chaque commerce.
     function attachDistances() {
         cards.forEach(card => {
             const lat = parseFloat(card.dataset.lat);
             const lng = parseFloat(card.dataset.lng);
-            if (isNaN(lat) || isNaN(lng)) { card.dataset.km = ''; return; }
+            if (isNaN(lat) || isNaN(lng)) return;
             const km = distanceKm(userLat, userLng, lat, lng);
-            card.dataset.km = km;
             const el = card.querySelector('.distance-commerce');
             if (el) {
                 el.innerHTML = `<img src="/static/images/Yuumi-pin-localisation.png" style="width:1.2rem;height:1.2rem;object-fit:contain;vertical-align:middle;"> à ${formatDistance(km)}`;
@@ -552,35 +539,38 @@
         });
     }
 
-    function applyFilter() {
-        if (userLat === null) return;
+    // Recharge la page avec le filtre distance choisi. Appelé seulement au
+    // relâchement du slider (événement "change"), pas à chaque pixel glissé
+    // (événement "input") — sinon on rechargerait la page en continu pendant
+    // que l'utilisateur fait glisser le curseur.
+    function applyDistanceFilter() {
         const maxKm = parseFloat(slider.value);
-        updatePaginationLinks(maxKm);
-
-        let visible = 0;
-        cards.forEach(card => {
-            const km = parseFloat(card.dataset.km);
-            if (isNaN(km) || km <= maxKm) {
-                card.style.display = '';
-                visible++;
-            } else {
-                card.style.display = 'none';
-            }
+        window.location.href = buildFilteredUrl({
+            openNow: isOpenNowActive,
+            lat: userLat,
+            lng: userLng,
+            distance: maxKm,
         });
-
-        noResult.style.display = visible === 0 ? 'block' : 'none';
-
-        const filterActive = maxKm < 15;
-        if (filterActive) {
-            const s = visible > 1 ? 's' : '';
-            paginationInfo.textContent = `${visible} commerce${s} visible${s} sur cette page (filtre : ${maxKm % 1 === 0 ? maxKm : maxKm.toFixed(1)} km)`;
-        } else {
-            const s = totalCards > 1 ? 's' : '';
-            let text = `${totalCards} commerce${s}`;
-            if (totalPages > 1) text += ` — page ${currentPage} / ${totalPages}`;
-            paginationInfo.textContent = text;
-        }
     }
+
+    // Le toggle "Ouvert maintenant" doit conserver le filtre distance actif
+    // (lat/lng/distance) au lieu de le perdre — voir buildFilteredUrl ci-dessus.
+    function fixOpenNowToggleLink() {
+        if (!openNowToggle) return;
+
+        openNowToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            const togglingTo = !isOpenNowActive;
+            window.location.href = buildFilteredUrl({
+                openNow: togglingTo,
+                lat: userLat,
+                lng: userLng,
+                distance: parseFloat(slider.value),
+            });
+        });
+    }
+
+    fixOpenNowToggleLink();
 
     async function initGeoDistance() {
         try {
@@ -604,19 +594,20 @@
             sliderControls.style.display = 'flex';
 
             attachDistances();
-            applyFilter();
 
+            // "input" : feedback visuel immédiat du chiffre pendant qu'on glisse.
+            // "change" : déclenche le rechargement, seulement au relâchement.
             slider.addEventListener('input', () => {
                 input.value = slider.value;
-                applyFilter();
             });
+            slider.addEventListener('change', applyDistanceFilter);
 
-            input.addEventListener('input', () => {
+            input.addEventListener('change', () => {
                 let val = parseFloat(input.value);
                 if (isNaN(val)) return;
                 val = Math.min(15, Math.max(0.1, val));
                 slider.value = val;
-                applyFilter();
+                applyDistanceFilter();
             });
 
         } catch (e) {
