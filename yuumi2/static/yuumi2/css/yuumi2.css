@@ -35,3 +35,85 @@ a {
 text-decoration: none;
 color: inherit;
 }
+
+/*===================================================================*/
+/*==========================HOME PAGE================================*/
+/*===================================================================*/
+/*--------------------------Page hero--------------------------------*/
+.home2-pagecontainer {
+            background: #0a5bb4;
+            padding-top: 3rem;
+        }
+
+        .home2-hero {
+            width: 100%;
+        }
+
+        .home2-hero-container {
+            margin: 0 auto;
+            background: white;
+            width: 80%;
+            padding: 1rem 3rem;
+            border-radius: 20px;
+        }
+        
+        .home2-hero-content {
+        
+        }
+        
+        .home2-hero-title-content {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .home2-hero-title-img {
+            height: 15rem;
+            width: auto;
+        }
+
+        .home2-hero-title-container {
+        
+        }
+        
+        .home2-hero-title {
+            color: #ff8b38;
+            font-size: 2.5rem;
+            line-height: 1.05;
+            font-weight: 800;
+        }
+        
+        .home2-hero-intro {
+            font-size: 1.2rem;
+            padding: 0.5rem 1rem;
+            border-radius: 3px 8px 8px 3px;
+            background: #ff8b3820;
+            border-left: solid 6px #ff8b38;
+        }
+        
+        .home2-hero-text {
+            margin: 0 0 34px;
+            color: #374151;
+            font-size: 1.05rem;
+            line-height: 1.75;
+        }
+        
+        .home2-hero-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 26px;
+            color: #ffffff;
+            background-color: #ff8b38;
+            border-radius: 999px;
+            font-size: 1rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        .home2-hero-button:hover {
+            background-color: #f17820;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(255, 139, 56, 0.28);
+        }
