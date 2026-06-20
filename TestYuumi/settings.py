@@ -72,6 +72,8 @@ INSTALLED_APPS = [
     # ✅ NOUVEAU — API biométrie
     'rest_framework',
     'corsheaders',
+
+    "yuumi2",
 ]
 
 
