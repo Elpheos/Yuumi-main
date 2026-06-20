@@ -23,6 +23,23 @@
             padding: .2rem .5rem;
             border-radius: 8px;
         }
+        
+        .home2-objectifs-title-decoration1 {
+            display: flex;
+            flex: 1;
+            border-bottom: 5px solid #ff8b38;
+            transform: translateY(calc(-25% - .7rem));
+            margin: 0 .5rem;
+            position: relative;
+        }
+
+        .home2-objectifs-title-decoration1::before {
+            position: absolute;
+            content: '';
+            bottom: .1rem;
+            width: 100%;
+            border-bottom: 5px solid #ff8b38;
+        }
 
         .home2-objectifs-title-decoration {
             display: flex;
@@ -500,6 +517,7 @@
  <!----------------------------------------------------------------Objectifs-->
 <section class="home2-objectifs-container" aria-label="Les objectifs de Yuumi">
     <div class="home2-objectifs-title-container">
+        <div class="home2-objectifs-title-decoration1"></div>
         <h2 class="home2-objectifs-title">Nos objectifs</h2>
         <div class="home2-objectifs-title-decoration"></div>
     </div>
