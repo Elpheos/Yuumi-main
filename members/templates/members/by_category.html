@@ -107,6 +107,48 @@
 
 .category-header-left { flex: 1; }
 
+/* ===== FILTRE OUVERT MAINTENANT ===== */
+.open-now-filter-wrapper {
+    margin: 10px 0 0 0;
+}
+
+.open-now-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    border: 1.5px solid #6fcf97;
+    background: #e8f8ee;
+    color: #1a7a3c;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: background 0.15s, color 0.15s;
+}
+
+.open-now-filter-btn .filter-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #27ae60;
+    flex-shrink: 0;
+}
+
+.open-now-filter-btn:hover {
+    background: #d5f0df;
+}
+
+.open-now-filter-btn.active {
+    background: #27ae60;
+    color: white;
+    border-color: #27ae60;
+}
+
+.open-now-filter-btn.active .filter-dot {
+    background: white;
+}
+
 /* ===== SLIDER PC ===== */
 .distance-slider-wrapper {
     display: flex;
@@ -302,6 +344,20 @@
                     Découvrez les {{ category|lower }} à {{ ville|title }}. 
                     Retrouvez leurs horaires, adresses et informations pratiques pour chacun de ces commerces locaux.
                 </p>
+
+                <div class="open-now-filter-wrapper">
+                    {% if open_now %}
+                        <a href="?page=1" class="open-now-filter-btn active" id="open-now-toggle">
+                            <span class="filter-dot"></span>
+                            Ouvert maintenant ✕
+                        </a>
+                    {% else %}
+                        <a href="?ouvert=1" class="open-now-filter-btn" id="open-now-toggle">
+                            <span class="filter-dot"></span>
+                            Ouvert maintenant
+                        </a>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="distance-slider-wrapper" id="distance-slider-wrapper">
@@ -360,8 +416,8 @@
         {% if page_obj.paginator.num_pages > 1 %}
         <div class="pagination-container" id="pagination-container">
             {% if page_obj.has_previous %}
-                <a href="?page=1" class="pagination-btn" title="Première page">«</a>
-                <a href="?page={{ page_obj.previous_page_number }}" class="pagination-btn">‹</a>
+                <a href="?page=1{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn" title="Première page">«</a>
+                <a href="?page={{ page_obj.previous_page_number }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn">‹</a>
             {% else %}
                 <span class="pagination-btn disabled">«</span>
                 <span class="pagination-btn disabled">‹</span>
@@ -371,13 +427,13 @@
                 {% if num == page_obj.number %}
                     <span class="pagination-btn active">{{ num }}</span>
                 {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
-                    <a href="?page={{ num }}" class="pagination-btn">{{ num }}</a>
+                    <a href="?page={{ num }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn">{{ num }}</a>
                 {% endif %}
             {% endfor %}
 
             {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}" class="pagination-btn">›</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}" class="pagination-btn" title="Dernière page">»</a>
+                <a href="?page={{ page_obj.next_page_number }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn">›</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}{% if open_now %}&ouvert=1{% endif %}" class="pagination-btn" title="Dernière page">»</a>
             {% else %}
                 <span class="pagination-btn disabled">›</span>
                 <span class="pagination-btn disabled">»</span>
@@ -417,9 +473,12 @@
         return (!isNaN(d) && d >= 0.1 && d <= 15) ? d : 15;
     }
 
+    // Préserve TOUS les paramètres déjà présents dans l'URL (notamment "ouvert")
+    // et met juste à jour "distance" — pour que le filtre "Ouvert maintenant"
+    // ne soit jamais perdu quand on bouge le slider de distance.
     function updatePaginationLinks(distanceVal) {
         document.querySelectorAll('#pagination-container a.pagination-btn').forEach(a => {
-            const url = new URL(a.href);
+            const url = new URL(a.href, window.location.origin);
             url.searchParams.set('distance', distanceVal);
             a.href = url.toString();
         });
