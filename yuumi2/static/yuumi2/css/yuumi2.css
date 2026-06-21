@@ -352,7 +352,7 @@ button {
         }
 
 /*--------------------------Fonction--------------------------------*/
-		home2-function-supercontainer {
+		.home2-function-supercontainer {
 			position: sticky;
 			top: 0;
 			left: 0;
