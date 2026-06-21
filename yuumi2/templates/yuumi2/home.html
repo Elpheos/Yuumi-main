@@ -12,7 +12,11 @@
 			height: 100dvh;
 			width: 100dvw;
 			background: #00000050;
-		}      
+		}
+
+		.home2-function-supercontainer-active {
+			display: block;
+		}
 
 		.home2-function-container {
             width: 80%;
@@ -27,8 +31,8 @@
         }
 
 		.home2-function-container-active {
-			display: block;
-		}
+            display: block;
+        }
 
         /*----------------------------------------INTRODUCTION*/
         .home2-function-introduction-container {
@@ -701,8 +705,10 @@ Accompagner projets de développement
 <script>
     function startF() {
         const fBlock = document.querySelector('.home2-function-supercontainer');
+		const fContentBlock = document.querySelector('.home2-function-container');
 
-        fBlock.classList.add('home2-function-container-active');
+        fBlock.classList.add('home2-function-supercontainer-active');
+		fContentBlock.classList.add('home2-function-container-active');
     }
 </script>
 <!--INTRO -> 1-->
