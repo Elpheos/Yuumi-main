@@ -38,16 +38,23 @@
         }
 
 		.home2-function-container-exit {
-			position: absolute;	
-			right: -1rem;
-			top: 1-rem;
-			width: 3rem;
-			height: 3rem;
-			border-radius: 50%;
-			background: #fff;
-			border: solid var(--orange) 2px;
-			font-size: 2rem;
-			z-index: 2;
+			position: absolute;
+    		top: 1rem;
+    		right: 1rem;
+  		 	z-index: 2;
+ 		   	width: 38px;
+ 		   	height: 38px;
+ 		  	border: none;
+ 			border-radius: 50%;
+ 		   	background: #f1f1f1;
+ 		   	color: #333;
+ 		   	font-size: 1.4rem;
+			transition: background 0.15s ease, transform 0.15s ease;
+		}
+
+		 .home2-function-container-exit:hover {
+    		background: #e2e2e2;
+    		transform: scale(1.05);
 		}
 
 		.home2-function-content {
@@ -56,49 +63,62 @@
 
         /*----------------------------------------INTRODUCTION*/
         .home2-function-introduction-container {
-            max-width: 100%;
-            height: 100%;
-            text-align: center;
-            padding: 1rem 5rem;
             position: absolute;
-            z-index: 1;
-            display: flex;
-            align-items: center;
-            background-color: rgba(0, 0, 0, 0.25);
-            box-sizing: border-box;
+    		inset: 0;
+   		 	z-index: 1;
+  		  	display: flex;
+  		  	justify-content: center;
+   		 	align-items: center;
+  		  	padding: 3rem;
+   		 	text-align: center;
+   		 	box-sizing: border-box;
         }
 
         .home2-function-introduction-content {
-            margin: auto;
-            background: white;
-            border-radius: 8px;
-            padding: 1rem;
-            height: 75%;
-            display: flex;
-            flex-direction: column;
+            width: min(650px, 100%);
+    		background: white;
+    		border-radius: 16px;
+    		padding: 3rem 2.5rem;
+    		box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+    		display: flex;
+    		flex-direction: column;
+    		align-items: center;
+    		gap: 1.5rem;
+    		box-sizing: border-box;
         }
 
         .home2-function-introduction-title {
-            font-size: 3rem;
-            color: #ff8b38;
+            margin: 0;
+			font-size: 3rem;
+			font-weight: 800;
+			color: var(--orange);
         }
 
         .home2-function-introduction-text {
-            color: black;
-            font-size: 2rem;
+            color: #222;
+            font-size: 1.6rem;
+			margin: 0;
+   	 		max-width: 560px;
+			line-height: 1.5;
         }
 
         .home2-function-introduction-button {
-            background: #0a5bb4;
-            color: white;
-            padding: 0.5rem;
-            border: none;
-            margin: auto;
-            margin-bottom: 1rem;
-            font-size: 2.5rem;
-            border-radius: 8px;
-            cursor: pointer;
+            margin-top: 1rem;
+    		background: #0a5bb4;
+    		color: white;
+    		padding: 0.8rem 2rem;
+    		border: none;
+    		font-size: clamp(1.2rem, 2vw, 1.8rem);
+    		font-weight: 700;
+    		border-radius: 10px;
+    		cursor: pointer;
+   		 	transition: background 0.15s ease, transform 0.15s ease;
         }
+
+		button.home2-function-introduction-button:hover {
+    		background: #084a91;
+    		transform: translateY(-2px);
+		}
 
         .home2-function-introduction-container-cleared {
             display: none
