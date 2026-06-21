@@ -565,71 +565,26 @@ Accompagner projets de développement
     }
 </script>
 
-<!--INTRO -> 1-->
+<!-- Intro -->
 <script>
-    
-    function clearIntro() {
-        const introMenu = document.querySelector('.home2-function-introduction-container');
-        const phase1Menu = document.querySelector('.home2-function-phase1-container');
+	function renderIntro() {
+		const container = document.querySelector('.home2-function-content');
 
-        introMenu.classList.add('home2-function-introduction-container-cleared');
-        phase1Menu.classList.add('home2-function-phase1-container-active');
-    }
+		container.innerHTML = '
+				<div class="home2-function-introduction-container-generated">
+                <div class="home2-function-introduction-content">
+                    <p class="home2-function-introduction-title">Laissez-vous guider</p>
+                    <p class="home2-function-introduction-text">
+                        Pour vous aider à trouver plus rapidement ce que vous cherchez, Yuumi a mis en place un système pour vous faire gagner du temps.
+                    </p>
+                    <button class="home2-function-introduction-button">
+                        Commencer
+                    </button>
+                </div>
+            </div>
+			';
+	}
 </script>
 
-<!--1 -> A1-->
-<script>
-    function p1toa1() {
-        const phase1Menu = document.querySelector('.home2-function-phase1-container');
-        const phasea1Menu = document.querySelector('.home2-function-phasea1-container');
 
-        phase1Menu.classList.add('home2-function-phase1-container-inactive');
-        phasea1Menu.classList.add('home2-function-phasea1-container-active');
-    }
-</script>
-
-<!--A1 -> AA-->
-<script>
-    function p1toaa() {
-        const phasea1Menu = document.querySelector('.home2-function-phasea1-container');
-        const phaseaaMenu = document.querySelector('.home2-function-phaseaa-container');
-
-        phasea1Menu.classList.remove('home2-function-phasea1-container-active')
-        phaseaaMenu.classList.add('home2-function-phaseaa-container-active');
-    }
-</script>
-
-<!--1 -> B1-->
-<script>
-    function p1tob1() {
-        const phase1Menu = document.querySelector('.home2-function-phase1-container');
-        const phaseb1Menu = document.querySelector('.home2-function-phaseb1-container');
-
-        phase1Menu.classList.add('home2-function-phase1-container-inactive');
-        phaseb1Menu.classList.add('home2-function-phaseb1-container-active');
-    }
-</script>
-
-<!--B1 -> BA-->
-<script>
-    function pb1toba() {
-        const phaseb1Menu = document.querySelector('.home2-function-phaseb1-container');
-        const phasebaMenu = document.querySelector('.home2-function-phaseba-container');
-
-        phaseb1Menu.classList.remove('home2-function-phaseb1-container-active');
-        phasebaMenu.classList.add('home2-function-phaseba-container-active');
-    }
-</script>
-
-<!--1 -> C1-->
-<script>
-    function p1toc1() {
-        const phase1Menu = document.querySelector('.home2-function-phase1-container');
-        const phasec1Menu = document.querySelector('.home2-function-phasec1-container');
-
-        phase1Menu.classList.add('home2-function-phase1-container-inactive');
-        phasec1Menu.classList.add('home2-function-phasec1-container-active');
-    }
-</script>
-</div>
 {% endblock %}
