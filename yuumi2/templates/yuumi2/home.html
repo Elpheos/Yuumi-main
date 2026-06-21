@@ -514,10 +514,55 @@ Accompagner projets de développement
 
 				<div class="home2-function-grid-3">
 					<div class="home2-function-card">
-						<button class="home2-function-card-button"">
+						<button class="home2-function-card-button" onclick="renderServicePrecisWeb()">
 							<div class="home-2-function-card-upperpart">
 								<p class="home-2-function-card-upperpart-p">Services Web & développement</p>
 								<p class="home2-function-card-upperpart-subp">Gestion de sites web, développement d'application, SEO, cybersécurité...</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Communication & image</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Optimisation de l'activité</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Lancement d'activité</p>
+							</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		`
+	}
+
+	function renderServicePrecisWeb() {
+		const container = document.querySelector('.home2-function-content');
+
+		container.innerHTML = `
+							<div class="home2-function-phase-container">
+				<p class="home2-function-phase-title">Sélectionnez la catégorie qui vous intéresse</p>
+
+				<div class="home2-function-grid-3">
+					<div class="home2-function-card">
+						<button class="home2-function-card-button"">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Gestion de sites web</p>
+								<p class="home2-function-card-upperpart-subp">Création, modification, entretien...</p>
 							</div>
 						</button>
 					</div>
