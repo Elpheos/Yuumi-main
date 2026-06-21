@@ -29,6 +29,10 @@ from .models import (
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
+from .ai_agent.access import can_use_ai_agent, register_ai_usage, is_premium_user
+from .ai_agent.client import understand_intent, extract_search_params, recommend_stores
+from .ai_agent.search import find_matching_stores, apply_open_now_filter
+
 
 def is_open_now(store):
     now = datetime.now(tz=ZoneInfo('Europe/Paris'))
@@ -1086,3 +1090,101 @@ def delete_account(request):
         user.delete()
         return redirect('main')
     return redirect('account')
+
+@login_required
+def ai_search_agent(request):
+    """
+    Point d'entree complet de l'agent IA premium.
+
+    La ville/departement sont TOUJOURS envoyes explicitement par le
+    frontend (confirmes par l'utilisateur avant l'envoi, pre-remplis
+    depuis le cookie cote frontend mais jamais devines cote serveur).
+
+    Enchaine : verification acces -> comprehension intention -> extraction
+    parametres -> recherche en base -> recommandation finale.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    if not can_use_ai_agent(request.user):
+        if not is_premium_user(request.user):
+            return JsonResponse(
+                {"error": "Cette fonctionnalité est réservée aux comptes Premium."},
+                status=403,
+            )
+        return JsonResponse({
+            "fallback_to_tree": True,
+            "message": (
+                "Vous avez atteint votre quota de recherches IA pour aujourd'hui. "
+                "Utilisez le guide par questions pour continuer votre recherche."
+            ),
+        })
+
+    user_query = request.POST.get("query", "").strip()
+    departement = request.POST.get("departement", "").strip()
+    ville = request.POST.get("ville", "").strip()
+
+    if not user_query:
+        return JsonResponse({"error": "Requête vide."}, status=400)
+
+    if not departement or not ville:
+        return JsonResponse({
+            "error": "Ville non précisée. Veuillez confirmer une ville avant de rechercher.",
+        }, status=400)
+
+    intent_text = understand_intent(user_query)
+    if intent_text is None:
+        return JsonResponse({
+            "fallback_to_tree": True,
+            "message": "La recherche intelligente est temporairement indisponible.",
+        })
+
+    params = extract_search_params(user_query, intent_text)
+    if params is None:
+        return JsonResponse({
+            "fallback_to_tree": True,
+            "message": "La recherche intelligente est temporairement indisponible.",
+        })
+
+    commerces = find_matching_stores(params.get("categories", []), departement, ville)
+    commerces_filtres = apply_open_now_filter(commerces, params.get("ouvert_maintenant", False))
+
+    if not commerces_filtres:
+        register_ai_usage(request.user)
+        return JsonResponse({
+            "fallback_to_tree": False,
+            "message": "Aucun commerce ne correspond à votre recherche dans cette ville pour le moment.",
+            "recommandations": [],
+        })
+
+    recommandations_brutes = recommend_stores(user_query, commerces_filtres)
+    if recommandations_brutes is None:
+        return JsonResponse({
+            "fallback_to_tree": True,
+            "message": "La recherche intelligente est temporairement indisponible.",
+        })
+
+    # Vérification de sécurité : on ne fait JAMAIS confiance aveuglément
+    # aux ID renvoyés par l'IA, même si le JSON Schema garantit le format.
+    # Il garantit le FORMAT, pas le CONTENU.
+    ids_valides = {store.id for store in commerces_filtres}
+    recommandations_finales = []
+    for reco in recommandations_brutes:
+        if reco.get("id") in ids_valides:
+            store = next(s for s in commerces_filtres if s.id == reco["id"])
+            recommandations_finales.append({
+                "id": store.id,
+                "nom": store.nom,
+                "slug": store.slug,
+                "ville": store.ville,
+                "departement": store.departement,
+                "url": store.get_absolute_url(),
+                "raison": reco.get("raison", ""),
+            })
+
+    register_ai_usage(request.user)
+
+    return JsonResponse({
+        "fallback_to_tree": False,
+        "recommandations": recommandations_finales,
+    })
