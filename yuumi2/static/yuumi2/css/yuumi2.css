@@ -361,7 +361,12 @@ button {
             position: relative;
             overflow: hidden;
             background: #ff8b38;
+			display: none;
         }
+
+		.home2-function-container-active {
+			display: block;
+		}
 
         /*----------------------------------------INTRODUCTION*/
         .home2-function-introduction-container {
