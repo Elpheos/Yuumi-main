@@ -579,12 +579,49 @@ Accompagner projets de développement
                     <p class="home2-function-introduction-text">
                         Pour vous aider à trouver plus rapidement ce que vous cherchez, Yuumi a mis en place un système pour vous faire gagner du temps.
                     </p>
-                    <button class="home2-function-introduction-button">
+                    <button class="home2-function-introduction-button" onclick="renderPhase1()">
                         Commencer
                     </button>
                 </div>
             </div>
 			`;
+	}
+
+	function renderPhase1() {
+		const container = document.querySelector('.home2-function-content');
+
+		container.innerHTML = `
+								<div class="home2-function-phase1-container">
+				<p class="home2-function-phase1-title">À propos de votre recherche...</p>
+
+				<div class="home2-function-phase1-grid">
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Je cherche un service précis</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Je cherche des informations à propos d'un service</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">J'ai des difficultés avec mon commerce</p>
+							</div>
+						</button>
+					</div>
+				</div>
+			</div>
+
+		`;
 	}
 </script>
 
