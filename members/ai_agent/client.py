@@ -143,19 +143,17 @@ def extract_search_params(user_query, intent_text):
 
 def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
     """
-    stores_list : liste Python de Store (resultat de la fusion
-    categories + produits, voir combine_store_querysets).
+    stores_list : liste Python de Store (fusion categories + produits).
 
     store_ids_par_produit : ensemble des ID de Store trouves via une
-    correspondance produit EXACTE (table Product), pas juste une
-    categorie generale. Permet de signaler explicitement a l'IA "ce
-    commerce vend reellement ce produit precis" - sans ce marqueur,
-    l'IA ne peut juger que sur la description generale du commerce,
-    qui peut etre trop vague pour confirmer un produit specifique
-    meme quand on sait avec certitude qu'il existe en base.
+    correspondance produit EXACTE (table Product). Marque ces commerces
+    comme vendant reellement le produit recherche.
+
+    Renvoie un dict {message_intro, commerces_recommandes} ou None en cas
+    d'echec. message_intro est la "bulle" affichee avant la liste.
     """
     if not stores_list:
-        return []
+        return {"message_intro": "", "commerces_recommandes": []}
 
     store_ids_par_produit = store_ids_par_produit or set()
 
@@ -182,17 +180,30 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
                     "Tu es l'assistant de recherche de Yuumi. Voici une liste de "
                     "commerces REELS disponibles, avec leur description :\n\n"
                     + commerces_avec_id + "\n\n"
-                    "Recommande jusqu'a 10 commerces parmi CETTE LISTE UNIQUEMENT, "
-                    "en utilisant leur ID EXACT tel que donne ci-dessus. "
+                    "Tu dois produire deux choses :\n\n"
+                    "1) message_intro : un court texte (1 a 3 phrases) affiche "
+                    "AVANT la liste. Commence de facon accueillante, puis reste "
+                    "factuel. REGLE IMPORTANTE : si la requete de l'utilisateur "
+                    "contient un critere que tu ne peux PAS verifier depuis les "
+                    "descriptions ci-dessus (par exemple 'haut de gamme', 'pas "
+                    "cher', 'romantique', 'chaleureux', 'le meilleur'...), ne le "
+                    "valide JAMAIS comme un fait : signale-le honnetement dans "
+                    "l'intro comme un point a confirmer sur place (ex: 'le "
+                    "positionnement haut de gamme reste a confirmer directement "
+                    "aupres du commerce'). Si la requete est neutre et sans "
+                    "critere invraisemblable a verifier, reste simplement "
+                    "accueillant et direct, sans ajouter de reserve inutile.\n\n"
+                    "2) commerces_recommandes : recommande jusqu'a 10 commerces "
+                    "parmi CETTE LISTE UNIQUEMENT, en utilisant leur ID EXACT. "
                     "Si un commerce est marque [CE COMMERCE VEND REELLEMENT UN "
                     "PRODUIT CORRESPONDANT A LA RECHERCHE], cela signifie qu'il "
                     "vend vraiment ce qui est recherche, meme si sa description "
-                    "generale ne le precise pas explicitement - tu peux et dois "
-                    "le recommander en priorite dans ce cas. "
-                    "Pour les autres commerces (sans ce marqueur), base-toi "
-                    "UNIQUEMENT sur leur description pour juger de la pertinence "
-                    "- ne jamais ajouter de details que tu ne peux pas verifier. "
-                    "Ne jamais inventer un ID qui n'est pas dans cette liste."
+                    "generale ne le precise pas - recommande-le en priorite. "
+                    "Pour chaque commerce, donne une raison COURTE et FACTUELLE, "
+                    "basee UNIQUEMENT sur sa description - ne repete pas un "
+                    "qualificatif non verifiable (comme 'haut de gamme') dans la "
+                    "raison, et n'invente aucun detail. Ne jamais inventer un ID "
+                    "qui n'est pas dans cette liste."
                 )},
                 {"role": "user", "content": user_query},
             ],
@@ -201,7 +212,10 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
         )
         content = response.choices[0].message.content
         result = json.loads(content)
-        return result.get("commerces_recommandes", [])
+        return {
+            "message_intro": result.get("message_intro", ""),
+            "commerces_recommandes": result.get("commerces_recommandes", []),
+        }
 
     except Exception as e:
         logger.error(f"recommend_stores a echoue : {e}")
