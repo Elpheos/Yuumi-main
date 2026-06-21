@@ -307,7 +307,7 @@
     </div">
     <div class="home2-decision-choice-container">
         <p class="home2-decision-choice-subtitle">Utilisez la fonctionnalité Yuumi pour vous orienter directement vers les informations pertinentes pour vous</p>
-        <button class="home2-decision-band-button">J'utilise la fonctionnalité</button>
+        <button class="home2-decision-band-button" onlick="startF()">J'utilise la fonctionnalité</button>
         <p class="home2-decision-choice-subtitle2">Explorer nos services:</p>
         <a class="home2-decision-band-a">Découvrir notre catalogue</a>
     </div>
@@ -507,6 +507,15 @@
 Interlocuteur
 Accompagner projets de développement
 
+
+<!--DÉBUT DE LA FONCTION-->
+<script>
+    function startF() {
+        const fBlock = doocument.querySelector('.home2-function-container');
+
+        fBlock.classList.add('home2-function-container-active');
+    }
+</script>
 <!--INTRO -> 1-->
 <script>
     
