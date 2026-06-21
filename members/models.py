@@ -635,3 +635,43 @@ class FCMToken(models.Model):
 
     def __str__(self):
         return f"Token de {self.user} — {self.token[:20]}..."
+
+
+# ===========================================================
+# 🔹 Premium utilisateur
+# ===========================================================
+
+class UserPremium(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE,
+        related_name="premium",
+    )
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Coupe-circuit manuel : permet de désactiver le premium "
+                   "sans toucher à la date d'expiration (ex: litige paiement).",
+    )
+    started_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Laisser vide pour un premium sans date d'expiration "
+                   "(ex: compte de test, accès offert manuellement).",
+    )
+
+    class Meta:
+        verbose_name = "Statut Premium"
+        verbose_name_plural = "Statuts Premium"
+
+    def __str__(self):
+        return f"Premium — {self.user.username}"
+
+    @property
+    def is_valid(self):
+        if not self.is_active:
+            return False
+        if self.expires_at is None:
+            return True
+        from django.utils import timezone
+        return timezone.now() < self.expires_at
