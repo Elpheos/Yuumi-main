@@ -25,6 +25,7 @@ from .models import (
     StoreSuggestion,
     CategorieIntermediaire,
     UserPremium,
+    AIUsageLog,
 )
 
 from .forms import StoreForm
@@ -301,3 +302,9 @@ class UserPremiumAdmin(admin.ModelAdmin):
     list_display = ("user", "is_active", "started_at", "expires_at")
     list_filter = ("is_active",)
     search_fields = ("user__username", "user__email")
+
+@admin.register(AIUsageLog)
+class AIUsageLogAdmin(admin.ModelAdmin):
+    list_display = ("user", "date", "request_count")
+    list_filter = ("date",)
+    search_fields = ("user__username",)
