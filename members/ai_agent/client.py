@@ -188,27 +188,22 @@ def extract_search_params(user_query, intent_text):
         return None
 
 
-def recommend_stores(user_query, stores_queryset):
-    """
-    Appel 2b : recoit une liste de VRAIS commerces (un queryset Django) et
-    choisit parmi eux, en renvoyant uniquement des ID exacts.
+# Dans members/ai_agent/client.py, remplacer uniquement recommend_stores
+# par cette version - le reste du fichier ne change pas.
 
-    stores_queryset : un queryset de Store, deja filtre par categorie/ville
-    par le code appelant (voir search.py) - cette fonction ne fait aucune
-    recherche en base elle-meme, elle ne fait que demander a l'IA de choisir
-    parmi ce qu'on lui donne.
-
-    Renvoie une liste de dicts {"id": int, "raison": str}, ou None en cas
-    d'echec. Le code appelant doit ensuite verifier que chaque ID existe
-    reellement (au cas tres rare ou l'IA en inventerait un malgre la
-    consigne - le JSON Schema garantit le FORMAT, pas le CONTENU).
+def recommend_stores(user_query, stores_list):
     """
-    if not stores_queryset:
+    stores_list est maintenant une LISTE Python de Store (pas un queryset),
+    car elle peut venir de la fusion categories + produits.
+    """
+    if not stores_list:
         return []
 
     commerces_avec_id = "\n".join(
-        f"- ID {store.id} : {store.nom} ({store.categorie.name if store.categorie else 'Sans categorie'})"
-        for store in stores_queryset
+        f"- ID {store.id} : {store.nom} "
+        f"({store.categorie.name if store.categorie else 'Sans categorie'}) "
+        f"- {store.descriptionpetite or 'Pas de description disponible.'}"
+        for store in stores_list
     )
 
     try:
@@ -219,11 +214,17 @@ def recommend_stores(user_query, stores_queryset):
             messages=[
                 {"role": "system", "content": (
                     "Tu es l'assistant de recherche de Yuumi. Voici une liste de "
-                    "commerces REELS disponibles :\n\n" + commerces_avec_id + "\n\n"
-                    "Recommande 2 a 3 commerces parmi CETTE LISTE UNIQUEMENT, en "
-                    "utilisant leur ID EXACT tel que donne ci-dessus. Donne une "
-                    "raison courte pour chaque recommandation. Ne jamais inventer "
-                    "un ID qui n'est pas dans cette liste."
+                    "commerces REELS disponibles, avec leur description :\n\n"
+                    + commerces_avec_id + "\n\n"
+                    "Recommande jusqu'a 10 commerces parmi CETTE LISTE UNIQUEMENT, "
+                    "en utilisant leur ID EXACT tel que donne ci-dessus. "
+                    "Donne une raison courte pour chaque recommandation, en te "
+                    "basant UNIQUEMENT sur les informations fournies ci-dessus "
+                    "(nom, categorie, description). Ne jamais ajouter de details "
+                    "que tu ne peux pas verifier a partir de ces informations - "
+                    "si la description ne mentionne pas un produit ou service, "
+                    "ne l'invente pas. Ne jamais inventer un ID qui n'est pas "
+                    "dans cette liste."
                 )},
                 {"role": "user", "content": user_query},
             ],
