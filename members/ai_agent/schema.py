@@ -16,6 +16,19 @@ PARAMETER_SCHEMA = [
         "filter_lookup": "categorie__slug__in",
     },
     {
+        "field": "idees_produits",
+        "type": "list[str]",
+        "description": (
+            "Idees de produits ou articles generiques pertinents pour la requete "
+            "(ex: 'bouquet de roses', 'chocolat', 'bijou'). Ce sont des pistes de "
+            "recherche, PAS une garantie qu'ils existent chez un commercant Yuumi - "
+            "elles seront verifiees ensuite. Laisser vide si la requete ne porte pas "
+            "sur un produit precis (ex: simple recherche de categorie de commerce)."
+        ),
+        "required": False,
+        "filter_lookup": None,  # vérifié en base à part, pas un filtre direct sur Store
+    },
+    {
         "field": "ouvert_maintenant",
         "type": "bool",
         "description": (
