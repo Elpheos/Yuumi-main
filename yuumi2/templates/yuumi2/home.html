@@ -20,7 +20,7 @@
             font-weight: bold;
         }
 
-        .home2-decision-band-button {
+        .home2-decision-band-a {
             background: var(--bleu);
             padding: 1rem 2rem;
             border-radius: 8px;
@@ -35,6 +35,18 @@
             color: white;
             font-size: 2rem;
             font-weight: bold;
+        }
+
+        .home2-decision-choice-container {
+            display: flex;
+        }
+
+        .home2-decision-choice1 {
+            width: 50%;
+        }
+
+        .home2-decision-choice2 {
+            width: 50%;
         }
      
 
@@ -240,8 +252,16 @@
 
 <!----------------------------------------------------------------Bande de décision-->
 <section class="home2-decision-band" aria-label="Découvrez nos services ou apprenez-en plus sur notre entreprise">
-    <p class="home2-decision-band-pretitle">Envie de passer aux choses sérieuses ?</p>
-    <a class="home2-decision-band-button"><h2 class="home2-decision-band-title">Découvrez notre catalogue de services</h2></a>
+    <div>
+        <p class="home2-decision-band-pretitle">Vous voulez en savoir plus ?</p>
+    </div">
+    <div class="home2-decision-choice-container">
+        <p>Utilisez la fonctionnalité Yuumi pour vous orienter directement vers les informations pertinentes pour vous</p>
+        <button>J'utilise la fonctionnalité</button>
+
+        <p>Sinon, accédez à tous nos services ici:</p>
+        <a home2-decision-band-a>Découvrir notre catalogue</a>
+    </div>
 </section>
 
 <!----------------------------------------------------------------Fonctionnalités-->
