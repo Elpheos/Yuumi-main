@@ -319,84 +319,144 @@
 </section>
 
 <!----------------------------------------------------------------Fonctionnalités-->
-<div class="home2-function-container">
-<!----------------------------------------------------------------INTRO-->
-    <div class="home2-function-introduction-container">
-        <div class="home2-function-introduction-content">
-            <p class="home2-function-introduction-title">Laissez vous guider</p>
-            <p class="home2-function-introduction-text">Pour vous aider à trouver plus rapidement ce que vous cherchez, Yuumi a mis en place un système pour vous faire gagner du temps.</p>
-            <button class="home2-function-introduction-button" onclick="clearIntro()">Commencer</button>
+<div class="home2-function-supercontainer">    
+    <div class="home2-function-container">
+    <!----------------------------------------------------------------INTRO-->
+        <div class="home2-function-introduction-container">
+            <div class="home2-function-introduction-content">
+                <p class="home2-function-introduction-title">Laissez vous guider</p>
+                <p class="home2-function-introduction-text">Pour vous aider à trouver plus rapidement ce que vous cherchez, Yuumi a mis en place un système pour vous faire gagner du temps.</p>
+                <button class="home2-function-introduction-button" onclick="clearIntro()">Commencer</button>
+            </div>
+            
         </div>
-        
-    </div>
-
-<!----------------------------------------------------------------PHASE 1-->
-    <div class="home2-function-phase1-container">
-        <p class="home2-function-phase1-title">À propos de votre recherche...</p>
-
-        <div class="home2-function-phase1-grid">
-            <div class="home2-function-card">
-                <button class="home2-function-card-button" onclick="p1toa1()">
+    
+    <!----------------------------------------------------------------PHASE 1-->
+        <div class="home2-function-phase1-container">
+            <p class="home2-function-phase1-title">À propos de votre recherche...</p>
+    
+            <div class="home2-function-phase1-grid">
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button" onclick="p1toa1()">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Je cherche un service précis</p>
+                        </div>
+                    </button>
+                </div>
+    
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button" onclick="p1tob1()">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Je cherche des informations à propos d'un service</p>
+                        </div>
+                    </button>
+                </div>
+    
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button" onclick="p1toc1()">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">J'ai des difficultés avec mon commerce</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    
+    
+    <!----------------------------------------------------------------PHASE A1-->
+        <div class="home2-function-phasea1-container">
+            <p class="home2-function-phasea1-title">Quel type de services recherchez-vous ?</p>
+    
+            <div class="home2-function-phasea1-grid">
+                <div class="home2-function-card">
+                <button class="home2-function-card-button" onclick="p1toaa()">
                     <div class="home-2-function-card-upperpart">
-                        <p class="home-2-function-card-upperpart-p">Je cherche un service précis</p>
+                        <p class="home-2-function-card-upperpart-p">Services web & développement</p>
                     </div>
                 </button>
             </div>
-
+    
             <div class="home2-function-card">
-                <button class="home2-function-card-button" onclick="p1tob1()">
+                <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
-                        <p class="home-2-function-card-upperpart-p">Je cherche des informations à propos d'un service</p>
+                        <p class="home-2-function-card-upperpart-p">Communication et image</p>
                     </div>
                 </button>
             </div>
-
+    
             <div class="home2-function-card">
-                <button class="home2-function-card-button" onclick="p1toc1()">
+                <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
-                        <p class="home-2-function-card-upperpart-p">J'ai des difficultés avec mon commerce</p>
+                        <p class="home-2-function-card-upperpart-p">Choix 3</p>
                     </div>
                 </button>
             </div>
+            </div>
         </div>
-    </div>
-
-
-<!----------------------------------------------------------------PHASE A1-->
-    <div class="home2-function-phasea1-container">
-        <p class="home2-function-phasea1-title">Quel type de services recherchez-vous ?</p>
-
-        <div class="home2-function-phasea1-grid">
-            <div class="home2-function-card">
-            <button class="home2-function-card-button" onclick="p1toaa()">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">Services web & développement</p>
+    
+    <!----------------------------------------------------------------PHASE AA-->
+        <div class="home2-function-phaseaa-container">
+            <p class="home2-function-phaseaa-title">Quel service numérique vous intéresse ?</p>
+            <div class="home2-function-phaseaa-grid">
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Création, modification et optimisation de sites web</p>
+                        </div>
+                    </button>
                 </div>
-            </button>
-        </div>
-
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">Communication et image</p>
+    
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">SEO</p>
+                        </div>
+                    </button>
                 </div>
-            </button>
-        </div>
-
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">Choix 3</p>
+    
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Développement d'applications</p>
+                        </div>
+                    </button>
                 </div>
-            </button>
+            </div>
         </div>
+    
+    <!----------------------------------------------------------------PHASE B1-->
+        <div class="home2-function-phaseb1-container">
+            <p class="home2-function-phaseb1-title">À quelle catégorie appartient le service qui vous intéresse ?</p>
+            <div class="home2-function-phaseb1-grid">
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button" onclick="pb1toba()">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Services web & développement</p>
+                        </div>
+                    </button>
+                </div>
+    
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Communication et image</p>
+                        </div>
+                    </button>
+                </div>
+    
+                <div class="home2-function-card">
+                    <button class="home2-function-card-button">
+                        <div class="home-2-function-card-upperpart">
+                            <p class="home-2-function-card-upperpart-p">Choix 3</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
         </div>
-    </div>
-
-<!----------------------------------------------------------------PHASE AA-->
-    <div class="home2-function-phaseaa-container">
-        <p class="home2-function-phaseaa-title">Quel service numérique vous intéresse ?</p>
-        <div class="home2-function-phaseaa-grid">
+    <!----------------------------------------------------------------PHASE BA-->
+    <div class="home2-function-phaseba-container">
+        <p class="home2-function-phaseba-title">Sur quel service numérique désirez-vous plus d'informations ?</p>    
+        <div class="home2-function-phaseba-grid">
             <div class="home2-function-card">
                 <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
@@ -404,7 +464,7 @@
                     </div>
                 </button>
             </div>
-
+    
             <div class="home2-function-card">
                 <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
@@ -412,7 +472,7 @@
                     </div>
                 </button>
             </div>
-
+    
             <div class="home2-function-card">
                 <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
@@ -422,87 +482,43 @@
             </div>
         </div>
     </div>
-
-<!----------------------------------------------------------------PHASE B1-->
-    <div class="home2-function-phaseb1-container">
-        <p class="home2-function-phaseb1-title">À quelle catégorie appartient le service qui vous intéresse ?</p>
-        <div class="home2-function-phaseb1-grid">
-            <div class="home2-function-card">
-                <button class="home2-function-card-button" onclick="pb1toba()">
-                    <div class="home-2-function-card-upperpart">
-                        <p class="home-2-function-card-upperpart-p">Services web & développement</p>
-                    </div>
-                </button>
-            </div>
-
+    
+    <!----------------------------------------------------------------PHASE C1-->
+        <div class="home2-function-phasec1-container">
             <div class="home2-function-card">
                 <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
-                        <p class="home-2-function-card-upperpart-p">Communication et image</p>
+                        <p class="home-2-function-card-upperpart-p">Je pense savoir d'où vient le problème</p>
                     </div>
                 </button>
             </div>
-
+    
             <div class="home2-function-card">
                 <button class="home2-function-card-button">
                     <div class="home-2-function-card-upperpart">
-                        <p class="home-2-function-card-upperpart-p">Choix 3</p>
+                        <p class="home-2-function-card-upperpart-p">J'ai besoin d'aide pour identifier le problème</p>
                     </div>
                 </button>
             </div>
         </div>
-    </div>
-<!----------------------------------------------------------------PHASE BA-->
-<div class="home2-function-phaseba-container">
-    <p class="home2-function-phaseba-title">Sur quel service numérique désirez-vous plus d'informations ?</p>    
-    <div class="home2-function-phaseba-grid">
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">Création, modification et optimisation de sites web</p>
-                </div>
-            </button>
-        </div>
-
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">SEO</p>
-                </div>
-            </button>
-        </div>
-
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">Développement d'applications</p>
-                </div>
-            </button>
-        </div>
+    
+    <!----------------------------------------------------------------FIN DIV FONCTIONS-->
     </div>
 </div>
 
-<!----------------------------------------------------------------PHASE C1-->
-    <div class="home2-function-phasec1-container">
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">Je pense savoir d'où vient le problème</p>
-                </div>
-            </button>
-        </div>
 
-        <div class="home2-function-card">
-            <button class="home2-function-card-button">
-                <div class="home-2-function-card-upperpart">
-                    <p class="home-2-function-card-upperpart-p">J'ai besoin d'aide pour identifier le problème</p>
-                </div>
-            </button>
-        </div>
-    </div>
 
-<!----------------------------------------------------------------FIN DIV FONCTIONS-->
-</div>
+
+
+
+
+
+
+
+
+
+
+
 </div>
 Interlocuteur
 Accompagner projets de développement
@@ -511,7 +527,7 @@ Accompagner projets de développement
 <!--DÉBUT DE LA FONCTION-->
 <script>
     function startF() {
-        const fBlock = document.querySelector('.home2-function-container');
+        const fBlock = document.querySelector('.home2-function-supercontainer');
 
         fBlock.classList.add('home2-function-container-active');
     }
