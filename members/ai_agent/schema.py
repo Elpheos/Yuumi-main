@@ -89,3 +89,58 @@ def build_json_schema():
             },
         },
     }
+
+# A ajouter dans members/ai_agent/schema.py, a la suite du fichier existant.
+# Ce schema est different de build_json_schema() : il sert pour l'ETAPE FINALE
+# (choisir des commerces reels parmi une liste fournie), pas pour l'extraction
+# d'intention initiale.
+
+def build_recommendation_schema():
+    """
+    Schema JSON pour l'appel final : l'IA recoit une liste de vrais commerces
+    (avec leur ID Django exact) et doit choisir parmi eux, en renvoyant
+    uniquement des ID - jamais un nom ou un slug retape a la main, qui
+    pourrait etre legerement deforme.
+
+    L'ID etant un entier recopie depuis la liste fournie, il ne peut pas
+    etre "approximativement juste" comme un texte libre - soit c'est le bon
+    ID, soit la recherche en base ne trouvera rien, ce qui est detectable
+    et filtrable cote code.
+    """
+    return {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "yuumi_recommandation",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "commerces_recommandes": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "description": (
+                                        "ID exact du commerce, recopie depuis "
+                                        "la liste fournie - jamais invente."
+                                    ),
+                                },
+                                "raison": {
+                                    "type": "string",
+                                    "description": (
+                                        "Courte explication de pourquoi ce "
+                                        "commerce correspond a la demande."
+                                    ),
+                                },
+                            },
+                            "required": ["id", "raison"],
+                            "additionalProperties": False,
+                        },
+                    },
+                },
+                "required": ["commerces_recommandes"],
+                "additionalProperties": False,
+            },
+        },
+    }
