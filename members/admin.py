@@ -24,6 +24,7 @@ from .models import (
     Click,
     StoreSuggestion,
     CategorieIntermediaire,
+    UserPremium,
 )
 
 from .forms import StoreForm
@@ -294,3 +295,9 @@ class CityCategoryHighlightAdmin(admin.ModelAdmin):
 class StoreSuggestionAdmin(SimpleHistoryAdmin, admin.ModelAdmin):
     list_display = ("type_suggestion", "nom", "ville", "statut", "created_at", "store")
     list_filter = ("statut", "type_suggestion")
+
+@admin.register(UserPremium)
+class UserPremiumAdmin(admin.ModelAdmin):
+    list_display = ("user", "is_active", "started_at", "expires_at")
+    list_filter = ("is_active",)
+    search_fields = ("user__username", "user__email")
