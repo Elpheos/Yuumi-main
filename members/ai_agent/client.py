@@ -1,19 +1,4 @@
 # members/ai_agent/client.py
-#
-# Architecture validee manuellement dans le shell, maintenant transformee
-# en vrai code reutilisable :
-#
-#   1. understand_intent()    -> Appel 1 : agent avec web_search, repond en
-#                                 texte libre. Comprend l'intention generale.
-#   2. extract_search_params() -> Appel 2a : chat.complete() classique avec
-#                                 JSON Schema strict. Transforme le texte
-#                                 libre en categories/parametres garantis.
-#   3. recommend_stores()      -> Appel 2b : chat.complete() avec JSON Schema
-#                                 strict, recoit une liste de VRAIS commerces
-#                                 (avec leur ID) et choisit parmi eux.
-#
-# Entre les etapes 2 et 3, c'est members/ai_agent/search.py (a part) qui va
-# chercher les vrais commerces en base - aucune IA n'intervient a cette etape.
 
 import os
 import json
@@ -25,8 +10,6 @@ logger = logging.getLogger(__name__)
 
 MISTRAL_MODEL = "mistral-small-latest"
 
-# Cet agent est cree une seule fois et reutilise - pas besoin d'en recreer un
-# a chaque requete. Son ID est stocke ici une fois cree (voir note plus bas).
 _INTENT_AGENT_ID = os.environ.get("MISTRAL_INTENT_AGENT_ID")
 
 _INTENT_AGENT_INSTRUCTIONS = (
@@ -42,11 +25,6 @@ _INTENT_AGENT_INSTRUCTIONS = (
 
 
 def _get_client():
-    """
-    Cree un client Mistral. Fonction separee pour pouvoir la simuler
-    facilement dans des tests plus tard, et pour centraliser la lecture
-    de la cle API a un seul endroit.
-    """
     from mistralai.client import Mistral
 
     api_key = os.environ.get("MISTRAL_API_KEY")
@@ -56,13 +34,6 @@ def _get_client():
 
 
 def _get_or_create_intent_agent(client):
-    """
-    Recupere l'agent de comprehension d'intention, ou le cree s'il n'existe
-    pas encore. En pratique, une fois cree, son ID devrait etre stocke dans
-    MISTRAL_INTENT_AGENT_ID (variable d'environnement) pour ne pas en
-    recreer un nouveau a chaque redemarrage du serveur Django - chaque
-    agent cree reste indefiniment dans le compte Mistral.
-    """
     global _INTENT_AGENT_ID
 
     if _INTENT_AGENT_ID:
@@ -85,10 +56,6 @@ def _get_or_create_intent_agent(client):
 
 
 def get_categories_block():
-    """
-    Reconstruit la liste des categories reelles depuis la base de donnees,
-    A CHAQUE APPEL - jamais une liste figee en dur dans le code.
-    """
     from members.models import Category
 
     categories = (
@@ -106,10 +73,6 @@ def get_categories_block():
 
 
 def build_system_prompt():
-    """
-    Genere le prompt systeme pour l'appel d'extraction (etape 2a), a partir
-    du schema de parametres et de la liste de categories reelles.
-    """
     categories_block = get_categories_block()
 
     parametres_block = "\n".join(
@@ -135,11 +98,6 @@ Regles strictes :
 
 
 def understand_intent(user_query):
-    """
-    Appel 1 : agent avec web_search, repond en texte libre.
-
-    Renvoie le texte de la reponse (str), ou None en cas d'echec.
-    """
     try:
         client = _get_client()
         agent_id = _get_or_create_intent_agent(client)
@@ -149,9 +107,6 @@ def understand_intent(user_query):
             inputs=user_query,
         )
 
-        # outputs peut contenir un ToolExecutionEntry (si web_search a ete
-        # declenche) suivi d'un MessageOutputEntry - on veut toujours le
-        # DERNIER element, qui est la reponse finale du modele.
         return response.outputs[-1].content
 
     except Exception as e:
@@ -160,12 +115,10 @@ def understand_intent(user_query):
 
 
 def extract_search_params(user_query, intent_text):
-    """
-    Appel 2a : transforme le texte libre de l'appel 1 en JSON structure
-    garanti (categories, ouvert_maintenant, rayon_km, idees_produits).
+    if intent_text is None:
+        logger.error("extract_search_params : intent_text est None, appel annule.")
+        return None
 
-    Renvoie un dict Python, ou None en cas d'echec.
-    """
     try:
         client = _get_client()
 
@@ -188,23 +141,36 @@ def extract_search_params(user_query, intent_text):
         return None
 
 
-# Dans members/ai_agent/client.py, remplacer uniquement recommend_stores
-# par cette version - le reste du fichier ne change pas.
-
-def recommend_stores(user_query, stores_list):
+def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
     """
-    stores_list est maintenant une LISTE Python de Store (pas un queryset),
-    car elle peut venir de la fusion categories + produits.
+    stores_list : liste Python de Store (resultat de la fusion
+    categories + produits, voir combine_store_querysets).
+
+    store_ids_par_produit : ensemble des ID de Store trouves via une
+    correspondance produit EXACTE (table Product), pas juste une
+    categorie generale. Permet de signaler explicitement a l'IA "ce
+    commerce vend reellement ce produit precis" - sans ce marqueur,
+    l'IA ne peut juger que sur la description generale du commerce,
+    qui peut etre trop vague pour confirmer un produit specifique
+    meme quand on sait avec certitude qu'il existe en base.
     """
     if not stores_list:
         return []
 
-    commerces_avec_id = "\n".join(
-        f"- ID {store.id} : {store.nom} "
-        f"({store.categorie.name if store.categorie else 'Sans categorie'}) "
-        f"- {store.descriptionpetite or 'Pas de description disponible.'}"
-        for store in stores_list
-    )
+    store_ids_par_produit = store_ids_par_produit or set()
+
+    lignes = []
+    for store in stores_list:
+        confirmation = ""
+        if store.id in store_ids_par_produit:
+            confirmation = " [CE COMMERCE VEND REELLEMENT UN PRODUIT CORRESPONDANT A LA RECHERCHE]"
+        lignes.append(
+            f"- ID {store.id} : {store.nom} "
+            f"({store.categorie.name if store.categorie else 'Sans categorie'}) "
+            f"- {store.descriptionpetite or 'Pas de description disponible.'}"
+            f"{confirmation}"
+        )
+    commerces_avec_id = "\n".join(lignes)
 
     try:
         client = _get_client()
@@ -218,13 +184,15 @@ def recommend_stores(user_query, stores_list):
                     + commerces_avec_id + "\n\n"
                     "Recommande jusqu'a 10 commerces parmi CETTE LISTE UNIQUEMENT, "
                     "en utilisant leur ID EXACT tel que donne ci-dessus. "
-                    "Donne une raison courte pour chaque recommandation, en te "
-                    "basant UNIQUEMENT sur les informations fournies ci-dessus "
-                    "(nom, categorie, description). Ne jamais ajouter de details "
-                    "que tu ne peux pas verifier a partir de ces informations - "
-                    "si la description ne mentionne pas un produit ou service, "
-                    "ne l'invente pas. Ne jamais inventer un ID qui n'est pas "
-                    "dans cette liste."
+                    "Si un commerce est marque [CE COMMERCE VEND REELLEMENT UN "
+                    "PRODUIT CORRESPONDANT A LA RECHERCHE], cela signifie qu'il "
+                    "vend vraiment ce qui est recherche, meme si sa description "
+                    "generale ne le precise pas explicitement - tu peux et dois "
+                    "le recommander en priorite dans ce cas. "
+                    "Pour les autres commerces (sans ce marqueur), base-toi "
+                    "UNIQUEMENT sur leur description pour juger de la pertinence "
+                    "- ne jamais ajouter de details que tu ne peux pas verifier. "
+                    "Ne jamais inventer un ID qui n'est pas dans cette liste."
                 )},
                 {"role": "user", "content": user_query},
             ],
