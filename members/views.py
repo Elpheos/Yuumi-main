@@ -1076,8 +1076,12 @@ def support(request):
 def supprimer_compte_public(request):
     return render(request, 'members/supprimer_compte.html')
     
+@login_required
 def testyuumi2(request):
-    response = render(request, 'members/test-yuumi2.html')
+    response = render(request, 'members/test-yuumi2.html', {
+        "departement_cookie": request.COOKIES.get("yuumi_departement", ""),
+        "ville_cookie": request.COOKIES.get("yuumi_ville", ""),
+    })
     response["X-Robots-Tag"] = "noindex, nofollow"
     return response
 
