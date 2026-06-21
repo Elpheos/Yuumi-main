@@ -97,15 +97,13 @@ def build_json_schema():
 
 def build_recommendation_schema():
     """
-    Schema JSON pour l'appel final : l'IA recoit une liste de vrais commerces
-    (avec leur ID Django exact) et doit choisir parmi eux, en renvoyant
-    uniquement des ID - jamais un nom ou un slug retape a la main, qui
-    pourrait etre legerement deforme.
+    Schema de la reponse finale de recommandation.
 
-    L'ID etant un entier recopie depuis la liste fournie, il ne peut pas
-    etre "approximativement juste" comme un texte libre - soit c'est le bon
-    ID, soit la recherche en base ne trouvera rien, ce qui est detectable
-    et filtrable cote code.
+    message_intro : petit texte d'introduction (la "bulle") affiche AVANT
+        la liste des commerces. Contextualise la recherche, et signale
+        honnetement quand un critere demande (haut de gamme, pas cher,
+        romantique...) ne peut pas etre verifie depuis nos donnees.
+    commerces_recommandes : la liste des commerces choisis, par ID exact.
     """
     return {
         "type": "json_schema",
@@ -114,32 +112,33 @@ def build_recommendation_schema():
             "schema": {
                 "type": "object",
                 "properties": {
+                    "message_intro": {
+                        "type": "string",
+                        "description": (
+                            "Court texte d'introduction (1 a 3 phrases) affiche "
+                            "avant la liste. Accueillant, puis factuel. Si la "
+                            "requete contient un critere NON verifiable depuis "
+                            "les descriptions (haut de gamme, pas cher, "
+                            "romantique, etc.), le signaler honnetement ici "
+                            "plutot que de l'affirmer. Si la requete est neutre, "
+                            "rester simplement accueillant et direct, sans "
+                            "reserve inutile."
+                        ),
+                    },
                     "commerces_recommandes": {
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {
-                                "id": {
-                                    "type": "integer",
-                                    "description": (
-                                        "ID exact du commerce, recopie depuis "
-                                        "la liste fournie - jamais invente."
-                                    ),
-                                },
-                                "raison": {
-                                    "type": "string",
-                                    "description": (
-                                        "Courte explication de pourquoi ce "
-                                        "commerce correspond a la demande."
-                                    ),
-                                },
+                                "id": {"type": "integer"},
+                                "raison": {"type": "string"},
                             },
                             "required": ["id", "raison"],
                             "additionalProperties": False,
                         },
                     },
                 },
-                "required": ["commerces_recommandes"],
+                "required": ["message_intro", "commerces_recommandes"],
                 "additionalProperties": False,
             },
         },
