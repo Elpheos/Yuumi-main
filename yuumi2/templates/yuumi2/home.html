@@ -172,6 +172,14 @@
 		/*------------------------------------------GRIDS*/
 		.home2-function-grid-3 {
             display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem 5rem;
+            align-items: center;
+			margin: auto;
+        }
+		
+		.home2-function-grid-3 {
+            display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             gap: 2rem 5rem;
             align-items: center;
@@ -559,7 +567,7 @@ Accompagner projets de développement
 
 				<div class="home2-function-grid-3">
 					<div class="home2-function-card">
-						<button class="home2-function-card-button"">
+						<button class="home2-function-card-button" onclick="renderServicePrecisWeb()" >
 							<div class="home-2-function-card-upperpart">
 								<p class="home-2-function-card-upperpart-p">Gestion de sites web</p>
 								<p class="home2-function-card-upperpart-subp">Création, modification, entretien, performance...</p>
@@ -581,6 +589,34 @@ Accompagner projets de développement
 							<div class="home-2-function-card-upperpart">
 								<p class="home-2-function-card-upperpart-p">Optimisation du SEO</p>
 								<p class="home2-function-card-upperpart-subp">Amélioration du référencement sur les moteurs de recherche</p>
+							</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		`
+	}
+
+	function renderServicePrecisWebSites() {
+		const container = document.querySelector('.home2-function-content');
+
+		container.innerHTML = `
+							<div class="home2-function-phase-container">
+				<p class="home2-function-phase-title">Sélectionnez la catégorie qui vous intéresse</p>
+
+				<div class="home2-function-grid-2">
+					<div class="home2-function-card">
+						<button class="home2-function-card-button" onclick="">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Nouveau site web</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Site web déjà en place</p>
 							</div>
 						</button>
 					</div>
