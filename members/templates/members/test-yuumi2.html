@@ -60,6 +60,16 @@
     font-size: 0.9rem;
     margin-top: 6px;
 }
+.agent-ia-bulle {
+    background: #fff5ee;
+    border-left: 4px solid #ff8b38;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    color: #444;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
 .agent-ia-loading {
     text-align: center;
     color: #888;
@@ -131,12 +141,16 @@ document.getElementById('agent-ia-submit').addEventListener('click', async () =>
         } else if (data.fallback_to_tree) {
             resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
         } else if (data.recommandations && data.recommandations.length > 0) {
-            resultatsDiv.innerHTML = data.recommandations.map(r => `
+            const bulle = data.message_intro
+                ? `<div class="agent-ia-bulle">${data.message_intro}</div>`
+                : '';
+            const cartes = data.recommandations.map(r => `
                 <div class="agent-ia-resultat-card">
                     <a href="${r.url}">${r.nom}</a>
                     <p class="agent-ia-resultat-raison">${r.raison}</p>
                 </div>
             `).join('');
+            resultatsDiv.innerHTML = bulle + cartes;
         } else {
             resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message || "Aucun résultat trouvé."}</p>`;
         }
