@@ -11,29 +11,41 @@
 			left: 0;
 			height: 100dvh;
 			width: 100dvw;
-			background: #00000050;
+			background: #878383bd;
 			display: none;
 		}
 
 		.home2-function-supercontainer-active {
-			display: block;
+			display: flex;
 		}
 
 		.home2-function-container {
-            width: 80%;
+            width: 60%;
             height: 70dvh;
             border: solid 3px #ff8b38;
             border-radius: 16px;
-            margin: 3rem auto;
+            margin: auto auto;
             position: relative;
             overflow: hidden;
             background: #ff8b38;
 			display: none;
+			position: relative;
         }
 
 		.home2-function-container-active {
             display: block;
         }
+
+		.home2-function-container-exit {
+			position: absolute;	
+			right: -1rem;
+			top: 1-rem;
+			width: 3rem;
+			height: 3rem;
+			border-radius: 50%;
+			background: #fff;
+			border: solid var(--orange) 2px;
+		}
 
         /*----------------------------------------INTRODUCTION*/
         .home2-function-introduction-container {
@@ -499,6 +511,7 @@
 <!----------------------------------------------------------------Fonctionnalités-->
 <div class="home2-function-supercontainer">    
     <div class="home2-function-container">
+		<button class="home2-function-container-exit" onclick="exitF()">x</button>
     <!----------------------------------------------------------------INTRO-->
         <div class="home2-function-introduction-container">
             <div class="home2-function-introduction-content">
@@ -712,6 +725,16 @@ Accompagner projets de développement
 		fContentBlock.classList.add('home2-function-container-active');
     }
 </script>
+
+<!-- EXIT LA FONCTION-->
+<script>
+    function exitF() {
+        const fBlock = document.querySelector('.home2-function-supercontainer');
+
+        fBlock.classList.remove('home2-function-supercontainer-active');
+    }
+</script>
+
 <!--INTRO -> 1-->
 <script>
     
