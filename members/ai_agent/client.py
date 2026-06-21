@@ -67,6 +67,9 @@ def call_mistral_extraction(user_query):
     Appelle l'API Mistral pour traduire une requete en langage libre vers
     le JSON structure defini par schema.py.
 
+    L'IA a acces a l'outil web_search, qu'elle utilise seulement si elle
+    juge en avoir besoin (info recente ou changeante) - pas systematiquement.
+
     Renvoie un dict Python en cas de succes, ou None en cas d'echec.
     """
     import requests
@@ -85,6 +88,8 @@ def call_mistral_extraction(user_query):
             {"role": "user", "content": user_query},
         ],
         "response_format": build_json_schema(),
+        "tools": [{"type": "web_search"}],
+        "tool_choice": "auto",
         "temperature": 0,
         "max_tokens": 300,
     }
@@ -99,7 +104,7 @@ def call_mistral_extraction(user_query):
             MISTRAL_API_URL,
             headers=headers,
             json=payload,
-            timeout=10,
+            timeout=20,
         )
         response.raise_for_status()
     except requests.RequestException as e:
