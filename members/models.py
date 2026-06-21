@@ -675,3 +675,25 @@ class UserPremium(models.Model):
             return True
         from django.utils import timezone
         return timezone.now() < self.expires_at
+
+
+# ===========================================================
+# 🔹 Suivi d'usage de l'agent IA
+# ===========================================================
+
+class AIUsageLog(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="ai_usage_logs",
+    )
+    date = models.DateField()
+    request_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Usage agent IA"
+        verbose_name_plural = "Usages agent IA"
+        unique_together = ("user", "date")
+
+    def __str__(self):
+        return f"{self.user.username} — {self.date} ({self.request_count} requêtes)"
