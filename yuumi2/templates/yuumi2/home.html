@@ -6,7 +6,7 @@
     /*======================================DECISION BAND*/
         .home2-decision-band {
             background: var(--orange);
-            padding: 2rem 0;
+            padding: 2rem 0 0;
             margin-top: 3rem;
             min-height: 30dvh;
             display: flex;
@@ -50,7 +50,7 @@
             width: 100%;
             height: 3px;
             background-color: var(--bleu);
-            margin: .5rem 0;
+            margin-top: 2.5rem;
         }
 
         .home2-decision-choice-subtitle2 {
@@ -78,8 +78,25 @@
         }
 
         .home2-decision-band-continue {
-            background: var(--orange-c);
+            background: linear-gradient(180deg, var(--orange), #bb6527);
             width: 100%;
+            padding: .5rem 0 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .home2-decision-band-title2 {
+            color: white;
+            text-align: center;
+            font-size: 1.1rem;
+            margin-top: 3rem;
+        }
+
+        .home2-decision-band-title2-decoration {
+            color: white;
+            text-align: center;
+            font-size: .8rem;
+            margin-top: .3rem;
         }
      
 
@@ -296,8 +313,8 @@
     </div>
     <div class="home2-decision-band-separator"></div>
     <div class="home2-decision-band-continue">
-        <p>Ou continuez à vous informer sur Yuumi</p>
-        <p>▼</p>
+        <p class="home2-decision-band-title2">Ou continuez à vous informer sur Yuumi</p>
+        <p class="home2-decision-band-title2-decoration">▼</p>
     </div>
 </section>
 
