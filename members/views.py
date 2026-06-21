@@ -1106,7 +1106,7 @@ def ai_search_agent(request):
 
     Enchaine : verification acces -> comprehension intention -> extraction
     parametres -> recherche en base (categories + produits) -> fusion ->
-    recommandation finale.
+    recommandation finale (avec bulle d'intro).
     """
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -1165,16 +1165,20 @@ def ai_search_agent(request):
         register_ai_usage(request.user)
         return JsonResponse({
             "fallback_to_tree": False,
+            "message_intro": "",
             "message": "Aucun commerce ne correspond à votre recherche dans cette ville pour le moment.",
             "recommandations": [],
         })
 
-    recommandations_brutes = recommend_stores(user_query, commerces_filtres, ids_par_produit)
-    if recommandations_brutes is None:
+    resultat_reco = recommend_stores(user_query, commerces_filtres, ids_par_produit)
+    if resultat_reco is None:
         return JsonResponse({
             "fallback_to_tree": True,
             "message": "La recherche intelligente est temporairement indisponible.",
         })
+
+    message_intro = resultat_reco.get("message_intro", "")
+    recommandations_brutes = resultat_reco.get("commerces_recommandes", [])
 
     # Verification de securite : on ne fait JAMAIS confiance aveuglement
     # aux ID renvoyes par l'IA, meme si le JSON Schema garantit le format.
@@ -1198,5 +1202,6 @@ def ai_search_agent(request):
 
     return JsonResponse({
         "fallback_to_tree": False,
+        "message_intro": message_intro,
         "recommandations": recommandations_finales,
     })
