@@ -38,6 +38,7 @@
             box-shadow: #00000020 0px 3px 10px 5px;
             text-align: center;
             margin: auto;
+            margin-top: 1rem;
             display: block;
             border: none;
             font-size: 2rem;
@@ -45,8 +46,35 @@
             font-weight: bold;
         }
 
+        .home2-decision-band-separator {
+            width: 100%;
+            height: 3px;
+            background-color: var(--bleu);
+            margin: .5rem 0;
+        }
+
+        .home2-decision-choice-subtitle2 {
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 3rem;
+            font-size: 1.2rem;
+        }
+
         .home2-decision-band-a {
-            
+            background: var(--bleu);
+            padding: .5rem 1rem;
+            border-radius: 8px;
+            box-shadow: #00000020 0px 3px 10px 5px;
+            text-align: center;
+            margin: auto;
+            display: block;
+            border: none;
+            font-size: 1.5rem;
+            color: white;
+            font-weight: bold;
+            margin-top: .3rem;
+            width: fit-content;
         }
      
 
@@ -258,8 +286,8 @@
     <div class="home2-decision-choice-container">
         <p class="home2-decision-choice-subtitle">Utilisez la fonctionnalité Yuumi pour vous orienter directement vers les informations pertinentes pour vous</p>
         <button class="home2-decision-band-button">J'utilise la fonctionnalité</button>
-
-        <p>Sinon, accédez à tous nos services ici:</p>
+        <div class="home2-decision-band-separator"></div>
+        <p class="home2-decision-choice-subtitle2">Sinon, accédez à tous nos services ici:</p>
         <a class="home2-decision-band-a">Découvrir notre catalogue</a>
     </div>
 </section>
