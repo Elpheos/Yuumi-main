@@ -352,7 +352,14 @@ button {
         }
 
 /*--------------------------Fonction--------------------------------*/
-        .home2-function-container {
+		home2-function-supercontainer {
+			position: sticky;
+			top: 0;
+			left: 0;
+			background: #00000050;
+		}      
+
+		.home2-function-container {
             width: 80%;
             height: 70dvh;
             border: solid 3px #ff8b38;
