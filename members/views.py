@@ -1099,13 +1099,6 @@ def delete_account(request):
 def ai_search_agent(request):
     """
     Point d'entree complet de l'agent IA premium.
-
-    La ville/departement sont TOUJOURS envoyes explicitement par le
-    frontend (confirmes par l'utilisateur avant l'envoi, pre-remplis
-    depuis le cookie cote frontend mais jamais devines cote serveur).
-
-    Enchaine : verification acces -> comprehension intention -> extraction
-    parametres -> recherche en base -> recommandation finale.
     """
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -1150,8 +1143,13 @@ def ai_search_agent(request):
             "message": "La recherche intelligente est temporairement indisponible.",
         })
 
-    commerces = find_matching_stores(params.get("categories", []), departement, ville)
-    commerces_filtres = apply_open_now_filter(commerces, params.get("ouvert_maintenant", False))
+    from .ai_agent.search import find_stores_by_product, combine_store_querysets
+
+    commerces_par_categorie = find_matching_stores(params.get("categories", []), departement, ville)
+    commerces_par_produit = find_stores_by_product(params.get("idees_produits", []), departement, ville)
+
+    commerces_combines = combine_store_querysets(commerces_par_categorie, commerces_par_produit)
+    commerces_filtres = apply_open_now_filter(commerces_combines, params.get("ouvert_maintenant", False))
 
     if not commerces_filtres:
         register_ai_usage(request.user)
@@ -1168,9 +1166,6 @@ def ai_search_agent(request):
             "message": "La recherche intelligente est temporairement indisponible.",
         })
 
-    # Vérification de sécurité : on ne fait JAMAIS confiance aveuglément
-    # aux ID renvoyés par l'IA, même si le JSON Schema garantit le format.
-    # Il garantit le FORMAT, pas le CONTENU.
     ids_valides = {store.id for store in commerces_filtres}
     recommandations_finales = []
     for reco in recommandations_brutes:
