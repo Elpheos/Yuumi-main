@@ -186,6 +186,88 @@
 			margin: auto;
         }
 
+		/*-----------------------------OFFRES SITES WEB*/
+		.home2-function-newwebsite-1 {
+        background: #fff;
+        border-radius: 8px;
+        padding: .5rem 0 1rem;
+        width: 80%;
+        margin: auto;
+        box-shadow: #00000020 0px 3px 10px 5px;
+    }
+
+    .home2-function-newwebsite-title-1 {
+        font-size: 2rem;
+        margin-bottom: .5rem
+    }
+
+    .home2-function-newwebsite-2 {
+        background: #fff;
+        border: solid #ff8b38 6px;
+        border-radius: 8px;
+        padding: .5rem 0 1rem;
+        width: 80%;
+        margin: auto;
+        box-shadow: #ff8b38bf 0px 0px 8px 6px;
+    }
+
+    .home2-function-newwebsite-title-2 {
+        font-size: 2rem;
+        margin-bottom: .5rem;
+    }
+
+    .home2-function-newwebsite-img {
+        width: 65%;
+        height: 30dvh;
+        object-fit: cover;
+    }
+
+    .home2-function-newwebsite-p {
+        max-width: 65%;
+        margin: auto;
+        font-size: 1.2rem;
+        line-height: 1.5;
+        letter-spacing: .25px;
+    }
+
+    .home2-function-avantages-supercontainer {
+        display: flex;
+        margin-top: 1rem;
+    }
+
+    .home2-function-avantages-container {
+        width: 50%;
+    }
+
+    .home2-function-disavantages-container {
+        width: 50%;
+    }
+
+    .home2-function-avantages-ul {
+        list-style: none;
+        font-size: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+    }
+
+    .home2-function-avantages-ul li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .home2-function-avantages-ul-icon-check {
+        height: 1rem;
+        margin-right: .3rem;
+        margin-bottom: 3px;
+    }
+
+    .home2-function-avantages-ul-icon-x {
+        height: 1rem;
+        margin-right: .3rem;
+    }
+
      
 
     </style>
@@ -630,25 +712,116 @@ Accompagner projets de développement
 
 		container.innerHTML = `
 							<div class="home2-function-phase-container">
-				<p class="home2-function-phase-title">Découvrez nos offres</p>
+								<p class="home2-title">Découvrez nos offres de création de sites web</p>
+        <div class="home2-function-grid-2">
+            <div class="home2-function-newwebsite-1">
+                <h3 class="home2-function-newwebsite-title-1">Création classique</h3>
+                <img class="home2-function-newwebsite-img" src="https://www.codeur.com/blog/wp-content/uploads/2021/01/creation-site.jpg">
+                <p class="home2-function-newwebsite-p">Développement classique de sites internet. Construction sur-mesure d'un site internet adapté à votre activité, nous collaborons ensemble
+                    à chaque étape du développement pour garantir votre totale satisfaction. </p>
+                <hr>
+                <div class="home2-function-avantages-supercontainer">
+                    <div class="home2-function-avantages-container">
+                        <ul class="home2-function-avantages-ul">
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="home2-function-disavantages-container">
+                        <ul class="home2-function-avantages-ul">
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
 
-				<div class="home2-function-grid-2">
-					<div class="home2-function-card">
-						<button class="home2-function-card-button" onclick="">
-							<div class="home-2-function-card-upperpart">
-								<p class="home-2-function-card-upperpart-p">Nouveau site web</p>
-							</div>
-						</button>
-					</div>
-
-					<div class="home2-function-card">
-						<button class="home2-function-card-button">
-							<div class="home-2-function-card-upperpart">
-								<p class="home-2-function-card-upperpart-p">Site web déjà en place</p>
-							</div>
-						</button>
-					</div>
-				</div>
+            <div class="home2-function-newwebsite-2">
+                <h3 class="home2-function-newwebsite-title-2">Location de site</h3>
+                <img class="home2-function-newwebsite-img" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqPelIJxmL51Y3muf7raldWVVDNfWPCFbH5CyHTfQoPxTtPeznYkAed2lp&s=10">
+                <p class="home2-function-newwebsite-p">Développement classique de sites internet. Construction sur-mesure d'un site internet adapté à votre activité, nous collaborons ensemble
+                    à chaque étape du développement pour garantir votre totale satisfaction. </p>
+                <hr>
+                <div class="home2-function-avantages-supercontainer">
+                    <div class="home2-function-avantages-container">
+                        <ul class="home2-function-avantages-ul">
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-check" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="rgb(38, 137, 42)" d="M434.8 70.1c14.3 10.4 17.5 30.4 7.1 44.7l-256 352c-5.5 7.6-14 12.3-23.4 13.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l101.5 101.5 234-321.7c10.4-14.3 30.4-17.5 44.7-7.1z"/></svg>
+                                Aucun coût en temps
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="home2-function-disavantages-container">
+                        <ul class="home2-function-avantages-ul">
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                            <li>
+                                <svg class="home2-function-avantages-ul-icon-x" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="#e32020" d="M55.1 73.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L147.2 256 9.9 393.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192.5 301.3 329.9 438.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.8 256 375.1 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192.5 210.7 55.1 73.4z"/></svg>
+                                Investissement conséquent
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
 			</div>
 		`
 	}
