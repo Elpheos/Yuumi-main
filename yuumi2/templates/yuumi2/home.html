@@ -175,10 +175,15 @@
 
 		.home2-function-retour-container {
 			margin: auto;
+			position: absolute;
+    		bottom: 0;
+    		left: 50%;
+    		transform: translate(-50%, 0);
 		}
 
 		.home2-function-retour {
-			
+			padding: .5rem;
+   	 		margin-bottom: 1rem;
 		}
 
 		/*------------------------------------------GRIDS*/
@@ -756,7 +761,7 @@ Accompagner projets de développement
 			</div>
 
 			<div class="home2-function-retour-container">
-				<button class="home2-function-retour" onclick="renderPhase1">Revenir en arrière</button>
+				<button class="home2-function-retour" onclick="renderPhase1()">Revenir en arrière</button>
 			</div>
 		`
 	}
