@@ -95,6 +95,21 @@
     color: #888;
     padding: 20px;
 }
+.agent-ia-clarif-btn {
+    background: white;
+    border: 2px solid #ff8b38;
+    color: #ff8b38;
+    padding: 8px 16px;
+    border-radius: 100px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+.agent-ia-clarif-btn:hover {
+    background: #ff8b38;
+    color: white;
+}
 
 /* ===== ANIMATION LAPIN ===== */
 .agent-ia-lapin-container {
@@ -212,6 +227,25 @@ if (!window._agentIaInitialized) {
                 resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.error}</p>`;
             } else if (data.fallback_to_tree) {
                 resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
+            } else if (data.besoin_clarification) {
+                let html = `<p class="agent-ia-intro-message">${data.message}</p>`;
+                data.questions_clarification.forEach(q => {
+                    html += `<p style="font-weight:600;margin-bottom:8px;">${q.question}</p>`;
+                    html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">`;
+                    html += q.options.map(opt => `
+                        <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}">${opt}</button>
+                    `).join('');
+                    html += `</div>`;
+                });
+                resultatsDiv.innerHTML = html;
+
+                resultatsDiv.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const queryInput = document.getElementById('agent-ia-query');
+                        queryInput.value = query + ' - ' + btn.dataset.reponse;
+                        document.getElementById('agent-ia-submit').click();
+                    });
+                });
             } else {
                 let html = '';
 
