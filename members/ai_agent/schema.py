@@ -239,9 +239,11 @@ def build_recommendation_schema():
                                 "justification": {
                                     "type": "string",
                                     "description": (
-                                        "Courte explication affichee a l'utilisateur (la bulle). "
-                                        "Si confiance=deduit, le dire explicitement "
-                                        "(ex: 'a confirmer', 'generalement')."
+                                        "Explication affichee a l'utilisateur (la bulle), "
+                                        "qui relie la demande precise de l'utilisateur au "
+                                        "commerce - jamais une simple reformulation de sa "
+                                        "fiche descriptive. Si confiance=deduit, le dire "
+                                        "explicitement (ex: 'a confirmer', 'generalement')."
                                     ),
                                 },
                             },
