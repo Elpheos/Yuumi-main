@@ -82,9 +82,25 @@ def build_json_schema():
             **json_type,
             "description": param["description"],
         }
-        if param["required"]:
+        # categories n'est PAS ajoute aux champs requis ici - voir plus bas,
+        # ou il est rendu requis sauf en cas de hors_sujet. Les autres
+        # parametres optionnels (idees_produits, ouvert_maintenant, rayon_km)
+        # restent vraiment optionnels dans tous les cas.
+        if param["required"] and param["field"] != "categories":
             required_fields.append(param["field"])
 
+    properties["hors_sujet"] = {
+        "type": "boolean",
+        "description": (
+            "True si la requete n'a AUCUN rapport avec la recherche de "
+            "commerces ou produits locaux (ex: mots isoles sans sens "
+            "commercial, insultes, questions techniques sans rapport, "
+            "demandes absurdes). False pour toute demande qui a un sens "
+            "commercial meme tres vague (ex: 'un truc', 'j'ai besoin "
+            "d'aide' restent False si une interpretation commerciale est "
+            "plausible - seul un contenu clairement sans rapport est True)."
+        ),
+    }
     properties["besoin_clarification"] = {
         "type": "boolean",
         "description": (
@@ -119,6 +135,7 @@ def build_json_schema():
             "besoin_clarification=true. Liste vide sinon."
         ),
     }
+    required_fields.append("hors_sujet")
     required_fields.append("besoin_clarification")
     required_fields.append("questions_clarification")
 
