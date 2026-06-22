@@ -94,7 +94,7 @@ class SearchLayerTests(TestCase):
         # Le nom du PRODUIT ne contient pas "foie gras", mais la FAMILLE oui.
         # C'est l'elargissement du match (point 1).
         s = make_store("Maison Martin", self.cat_charcuterie)
-        add_product(s, "Terrine du chef", family_nom="Foies gras & terrines")
+        add_product(s, "Terrine du chef", family_nom="Foie gras & terrines")
         res = list(find_stores_by_product(["foie gras"], DEPT, VILLE))
         self.assertIn(s, res)
 
