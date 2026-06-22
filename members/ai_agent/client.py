@@ -10,6 +10,17 @@ logger = logging.getLogger(__name__)
 
 MISTRAL_MODEL = "mistral-small-latest"
 
+# Timeout explicite sur chaque appel reseau Mistral, en millisecondes.
+# Sans cela, Gunicorn (3 workers seulement, voir gunicorn.conf.py) peut se
+# retrouver avec un worker bloque indefiniment si l'API Mistral repond
+# lentement - un probleme distinct du rate limit 429 deja gere par
+# ailleurs. Une requete IA bloquee trop longtemps sature rapidement la
+# capacite du serveur pour TOUS les visiteurs du site, pas seulement
+# pour l'agent IA. 20s est un compromis : assez long pour laisser une
+# vraie reponse arriver, assez court pour ne jamais approcher le timeout
+# de 30s configure cote Gunicorn (voir gunicorn.conf.py, "timeout: 30").
+MISTRAL_REQUEST_TIMEOUT_MS = 20_000
+
 _INTENT_AGENT_ID = os.environ.get("MISTRAL_INTENT_AGENT_ID")
 
 _INTENT_AGENT_INSTRUCTIONS = (
@@ -214,6 +225,7 @@ def understand_intent(user_query):
         response = client.beta.conversations.start(
             agent_id=agent_id,
             inputs=user_query,
+            timeout_ms=MISTRAL_REQUEST_TIMEOUT_MS,
         )
 
         content = response.outputs[-1].content
@@ -266,6 +278,7 @@ def _understand_intent_fallback(client, user_query):
                 {"role": "system", "content": _INTENT_FALLBACK_INSTRUCTIONS},
                 {"role": "user", "content": user_query},
             ],
+            timeout_ms=MISTRAL_REQUEST_TIMEOUT_MS,
         )
         texte = response.choices[0].message.content
         if isinstance(texte, str) and texte.strip():
@@ -302,6 +315,7 @@ def extract_search_params(user_query, intent_text):
             ],
             response_format=build_json_schema(),
             temperature=0,
+            timeout_ms=MISTRAL_REQUEST_TIMEOUT_MS,
         )
         content = response.choices[0].message.content
         result = json.loads(content)
@@ -398,6 +412,17 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
         "candidats fournis. Si aucun candidat ne couvre une idee, n'invente "
         "pas de commerce - mentionne juste que tu n'as pas trouve "
         "d'etablissement correspondant dans la liste.\n"
+        "5. REGLE ABSOLUE SUR LES EXCLUSIONS EXPLICITES : si la demande de "
+        "l'utilisateur exclut explicitement un type de produit ou de "
+        "commerce (ex: 'sans vetements', 'pas de chocolat', 'en evitant "
+        "les bijoux'), tu DOIS exclure TOUT candidat dont l'activite "
+        "principale correspond a ce qui est exclu - meme si ce candidat "
+        "propose aussi d'autres types d'articles en marge. Ne contourne "
+        "JAMAIS une exclusion explicite en arguant qu'un commerce exclu "
+        "'propose aussi' autre chose : si l'utilisateur a dit d'eviter les "
+        "vetements, un magasin de vetements ne doit JAMAIS apparaitre dans "
+        "les resultats, peu importe les accessoires qu'il vend egalement. "
+        "Cette regle prime sur toute autre consideration de pertinence.\n"
         "Ne jamais inventer un ID qui n'est pas dans la liste des candidats."
     )
 
@@ -413,6 +438,7 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
             ],
             response_format=build_recommendation_schema(),
             temperature=0.2,
+            timeout_ms=MISTRAL_REQUEST_TIMEOUT_MS,
         )
         content = response.choices[0].message.content
         return json.loads(content)
