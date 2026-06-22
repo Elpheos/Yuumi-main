@@ -19,6 +19,10 @@
 			display: flex;
 		}
 
+		.home2-bg-blue {
+			background: var(--bleu);
+		}
+
 		.home2-function-container {
             width: 100%;
         }
@@ -709,10 +713,13 @@ Accompagner projets de développement
 
 	function renderServicePrecisWebSitesNouveau() {
 		const container = document.querySelector('.home2-function-content');
+		const containerBg = docuement.querySelector('.home2-function-supercontainer');
+
+		containerBg.classListe.add('home2-bg-blue');
 
 		container.innerHTML = `
 							<div class="home2-function-phase-container">
-								<p class="home2-title">Découvrez nos offres de création de sites web</p>
+								<p class="home2-function-phase-title">Découvrez nos offres de création de sites web</p>
         <div class="home2-function-grid-2">
             <div class="home2-function-newwebsite-1">
                 <h3 class="home2-function-newwebsite-title-1">Création classique</h3>
