@@ -112,8 +112,13 @@ Categories reellement disponibles sur Yuumi (tu ne peux choisir QUE parmi celles
 
 Regles strictes :
 - Ne remplis un parametre optionnel QUE si l'utilisateur l'exprime clairement, explicitement ou implicitement. Ne jamais inventer une valeur par defaut.
-- Le champ "categories" doit toujours contenir au moins une categorie pertinente parmi la liste ci-dessus.
+- Le champ "categories" doit toujours contenir au moins une categorie pertinente parmi la liste ci-dessus, SAUF si hors_sujet=true (dans ce cas, laisse categories vide).
 - Si la requete est ambigue et peut correspondre a plusieurs categories, inclus-les toutes plutot que d'en choisir une seule arbitrairement.
+
+Hors-sujet :
+- Si la requete n'a AUCUN rapport plausible avec la recherche de commerces ou produits locaux (mots isoles sans sens commercial, insultes, contenu absurde ou inapproprie, questions techniques sans rapport), mets hors_sujet=true, categories=[], idees_produits=[], besoin_clarification=false, questions_clarification=[].
+- Si une interpretation commerciale raisonnable est possible, meme vague (ex: "un truc pour la maison", "j'ai besoin d'aide"), mets hors_sujet=false et traite normalement (clarification si besoin).
+- Ne force JAMAIS une interpretation commerciale artificielle sur un mot ou une phrase qui n'a clairement aucun rapport avec un commerce ou un produit - dans le doute sur un contenu clairement absurde ou inapproprie, prefere hors_sujet=true plutot que d'inventer des categories sans rapport reel.
 
 Clarification :
 - Si la demande est trop generale pour produire des idees_produits utiles (typiquement une demande de cadeau ou d'occasion sans destinataire, sans contexte, sans budget - ex: "un cadeau", "une idee de sortie"), mets besoin_clarification=true et propose 1 a 2 questions courtes avec des options cliquables.
