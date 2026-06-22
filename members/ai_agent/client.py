@@ -114,6 +114,11 @@ Regles strictes :
 - Ne remplis un parametre optionnel QUE si l'utilisateur l'exprime clairement, explicitement ou implicitement. Ne jamais inventer une valeur par defaut.
 - Le champ "categories" doit toujours contenir au moins une categorie pertinente parmi la liste ci-dessus.
 - Si la requete est ambigue et peut correspondre a plusieurs categories, inclus-les toutes plutot que d'en choisir une seule arbitrairement.
+
+Clarification :
+- Si la demande est trop generale pour produire des idees_produits utiles (typiquement une demande de cadeau ou d'occasion sans destinataire, sans contexte, sans budget - ex: "un cadeau", "une idee de sortie"), mets besoin_clarification=true et propose 1 a 2 questions courtes avec des options cliquables (ex: question "Pour qui ?" avec options ["Conjoint(e)", "Ami(e)", "Parent", "Collegue"]).
+- Si la demande contient deja assez de contexte pour chercher directement (ex: "foie gras", "un restaurant ouvert maintenant", "un cadeau pour ma mere qui aime le jardinage"), mets besoin_clarification=false et questions_clarification=[].
+- Une demande de type produit_precis ou commerce_precis n'a presque jamais besoin de clarification - c'est surtout les demandes tres ouvertes ("besoin"/cadeau sans contexte) qui en ont besoin.
 """
 
 
