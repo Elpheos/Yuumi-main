@@ -270,8 +270,21 @@ if (!window._agentIaInitialized) {
 
                 validerBtn.addEventListener('click', () => {
                     const queryInput = document.getElementById('agent-ia-query');
-                    const reponsesTexte = Object.values(reponses).join(' - ');
-                    queryInput.value = query + ' - ' + reponsesTexte;
+
+                    // Les reponses "Je ne sais pas" / "Surprends-moi" ne sont pas
+                    // de vraies contraintes a transmettre - on les retire pour
+                    // laisser l'IA decider seule sur ce point, plutot que de
+                    // coller litteralement "Je ne sais pas" dans la requete.
+                    const reponsesUtiles = Object.values(reponses).filter(r => {
+                        const r_lower = r.toLowerCase();
+                        return !r_lower.includes('je ne sais pas') && !r_lower.includes('surprends-moi') && !r_lower.includes('peu importe');
+                    });
+
+                    const reponsesTexte = reponsesUtiles.length > 0
+                        ? query + ' - ' + reponsesUtiles.join(' - ')
+                        : query;
+
+                    queryInput.value = reponsesTexte;
                     document.getElementById('agent-ia-submit').click();
                 });
 
