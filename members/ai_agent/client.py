@@ -23,6 +23,22 @@ _INTENT_AGENT_INSTRUCTIONS = (
     "idees de produits ou cadeaux pertinentes. Reponds de facon concise."
 )
 
+# Variante du prompt utilisee uniquement pour le fallback sans outil (voir
+# understand_intent) - retire toute mention de web_search, puisque l'appel
+# de repli n'a justement plus cet outil a sa disposition. Sans ce
+# changement, le modele pourrait essayer d'expliquer qu'il "aurait du"
+# chercher sur le web, ce qui n'apporte rien a l'etape suivante
+# (extract_search_params) et peut meme la perturber.
+_INTENT_FALLBACK_INSTRUCTIONS = (
+    "Tu travailles pour Yuumi, un annuaire de commerces locaux francais. "
+    "Ton role est UNIQUEMENT de comprendre l'intention de recherche de "
+    "l'utilisateur a partir de tes connaissances generales. "
+    "Ne recommande JAMAIS de sites externes, de concurrents, ou de liens "
+    "vers d'autres plateformes. Concentre-toi uniquement sur la nature de "
+    "la demande : quel type de commerce, quelles contraintes, quelles "
+    "idees de produits ou cadeaux pertinentes. Reponds de facon concise."
+)
+
 
 def _get_client():
     """
@@ -64,6 +80,32 @@ def _get_or_create_intent_agent(client):
         f"a chaque redemarrage."
     )
     return _INTENT_AGENT_ID
+
+
+def _is_web_search_quota_error(exception):
+    """
+    Detecte si une exception correspond specifiquement a un rate limit ou
+    quota depasse sur l'outil web_search (par opposition a une erreur
+    d'authentification, un probleme reseau, ou un rate limit general sur
+    l'API elle-meme).
+
+    Observe en prod (tier gratuit Mistral) : "API error occurred: Status
+    429. Body: {"detail":"web_search rate limit reached."}" - un message
+    DIFFERENT du rate limit generique de l'API ("Rate limit exceeded" /
+    "Requests rate limit exceeded" sans mention de web_search), ce qui
+    suggere un quota separe et plus restrictif specifique a cet outil,
+    notamment en tier gratuit.
+
+    Volontairement restrictif (cherche "429" ET "web_search" ensemble) :
+    un 429 generique sur l'API (vrai rate limit de compte) ne doit PAS
+    declencher le fallback sans outil, puisque l'appel de repli passerait
+    de toute facon par la meme API et echouerait probablement aussi - dans
+    ce cas, mieux vaut laisser l'erreur remonter normalement et activer
+    fallback_to_tree cote views.py, plutot que de masquer un vrai
+    probleme de quota global par une fausse reussite partielle.
+    """
+    message = str(exception).lower()
+    return "429" in message and "web_search" in message
 
 
 def get_categories_block():
@@ -150,8 +192,21 @@ def understand_intent(user_query):
     de validation - d'ou l'extraction systematique du texte ici, qui
     ignore les chunks de reference et ne garde que le texte lisible.
 
-    Renvoie None en cas d'echec.
+    FALLBACK SANS OUTIL : le tier gratuit Mistral impose un quota distinct
+    et tres restrictif sur l'outil web_search (observe en prod : 429 avec
+    le detail "web_search rate limit reached", different du rate limit
+    generique de l'API). Plutot que de faire echouer toute la recherche
+    pour une requete qui, le plus souvent, n'avait meme pas besoin d'une
+    recherche web (ex: "armurerie" ne necessite aucune info recente ou
+    changeante), on retente une fois SANS l'agent/l'outil, via un simple
+    chat.complete. Ce fallback ne se declenche QUE si l'erreur identifiee
+    concerne specifiquement web_search (voir _is_web_search_quota_error) -
+    un vrai probleme de cle API, reseau, ou rate limit general sur l'API
+    elle-meme continue de faire echouer la fonction normalement.
+
+    Renvoie None en cas d'echec (y compris si le fallback lui-meme echoue).
     """
+    client = None
     try:
         client = _get_client()
         agent_id = _get_or_create_intent_agent(client)
@@ -177,7 +232,48 @@ def understand_intent(user_query):
         return texte_complet.strip() if texte_complet.strip() else None
 
     except Exception as e:
+        if _is_web_search_quota_error(e):
+            logger.warning(
+                f"understand_intent : quota web_search atteint, "
+                f"retentative sans outil. Erreur originale : {e}"
+            )
+            return _understand_intent_fallback(client, user_query)
+
         logger.error(f"understand_intent a echoue : {e}")
+        return None
+
+
+def _understand_intent_fallback(client, user_query):
+    """
+    Retentative de understand_intent SANS l'agent ni l'outil web_search,
+    via un simple appel chat.complete. Voir le commentaire FALLBACK SANS
+    OUTIL dans understand_intent pour le contexte complet.
+
+    client peut etre None si _get_client() avait elle-meme echoue avant
+    d'atteindre le bloc try - dans ce cas on en recree un proprement
+    plutot que de planter sur un None.
+
+    Renvoie une str (texte libre, comme l'appel normal), ou None si meme
+    ce fallback echoue.
+    """
+    try:
+        if client is None:
+            client = _get_client()
+
+        response = client.chat.complete(
+            model=MISTRAL_MODEL,
+            messages=[
+                {"role": "system", "content": _INTENT_FALLBACK_INSTRUCTIONS},
+                {"role": "user", "content": user_query},
+            ],
+        )
+        texte = response.choices[0].message.content
+        if isinstance(texte, str) and texte.strip():
+            return texte.strip()
+        return None
+
+    except Exception as e:
+        logger.error(f"understand_intent (fallback sans web_search) a echoue : {e}")
         return None
 
 
