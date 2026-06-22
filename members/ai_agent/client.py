@@ -337,7 +337,8 @@ def extract_search_params(user_query, intent_text):
         return None
 
 
-def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
+def recommend_stores(user_query, stores_list, store_ids_par_produit=None,
+                     produit_sans_match_confirme=False):
     """
     Appel 2b : implementation de la methode formalisee (voir documents
     "Methode assistant yuumi" / "Prompt assistant yuumi").
@@ -456,6 +457,32 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
         "sur toute autre consideration de pertinence.\n"
         "Ne jamais inventer un ID qui n'est pas dans la liste des candidats."
     )
+
+    # Demande de produit precis SANS aucun vendeur confirme en base :
+    # on autorise la deduction par categorie, mais on impose a l'IA d'etre
+    # honnete (aucune correspondance exacte) et de ne garder que les commerces
+    # dont l'activite rend le produit plausible - sinon un specialiste du miel
+    # ressortirait pour du foie gras (bug Famille Mary).
+    if produit_sans_match_confirme:
+        system_prompt += (
+            "\n\nCAS PARTICULIER - PRODUIT PRECIS SANS CORRESPONDANCE EXACTE :\n"
+            "L'utilisateur demande un produit precis, mais AUCUN candidat n'est "
+            "marque [CONFIRME] : aucun commerce ne liste ce produit en base. "
+            "Tu DOIS alors :\n"
+            "- Le DIRE clairement dans 'message' : qu'aucun commerce ne reference "
+            "explicitement ce produit, et que ce qui suit sont des pistes a "
+            "confirmer aupres du commerce.\n"
+            "- Ne retenir QUE les candidats dont l'ACTIVITE PRINCIPALE rend ce "
+            "produit plausible comme offre normale (ex: une charcuterie ou un "
+            "traiteur pour du foie gras). ECARTE tout commerce seulement vaguement "
+            "lie, meme s'il est dans la liste (ex: un specialiste du miel pour du "
+            "foie gras) - mieux vaut une piste vide qu'une suggestion hors-sujet.\n"
+            "- Mettre confiance='deduit' pour chacun, et le redire dans la "
+            "justification ('aucun commerce ne le liste explicitement', "
+            "'a confirmer directement aupres du commerce').\n"
+            "- Si aucun candidat ne passe ce filtre de plausibilite, mettre "
+            "aucun_resultat=true, pistes=[], et un message honnete."
+        )
 
     try:
         client = _get_client()
