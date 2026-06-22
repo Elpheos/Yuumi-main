@@ -185,15 +185,24 @@ def build_recommendation_schema():
     """
     Schema JSON pour l'appel final de recommandation, conforme a la
     methode formalisee : classification d'intention (produit_precis /
-    commerce_precis / besoin / hors_sujet), resultats avec confiance
-    (confirme / deduit) et justification - ces deux derniers champs
-    alimentent directement la bulle affichee a l'utilisateur cote
-    frontend (texte = justification, couleur = confiance).
+    commerce_precis / besoin / hors_sujet), resultats organises en
+    PISTES (un angle/une approche chacune) plutot qu'une liste plate.
 
-    Utilise par recommend_stores() - etape finale, apres que la recherche
-    en base (search.py) a deja fourni les VRAIS candidats. Le modele ne
-    choisit et justifie que parmi ce qu'on lui donne, il ne peut jamais
-    citer un commerce absent de la liste de candidats.
+    POURQUOI DES PISTES, PAS UNE LISTE PLATE (changement important) :
+    Pour une demande ouverte type "cadeau de Noel pour un parent, surprenez-
+    moi", il n'existe PAS une seule bonne reponse - le modele etait avant
+    force par le schema lui-meme a presenter ses choix comme un consensus
+    unique ("voici LA selection"), alors que la nature de la demande
+    appelle plusieurs angles distincts (deco / gourmand / experience /
+    artisanal...). Forcer le modele a nommer chaque piste l'empeche de
+    noyer des suggestions tres differentes dans un seul bloc indifferencie,
+    et donne au frontend une structure naturelle pour les afficher
+    separement (ex: en sections) plutot qu'en une seule liste plate.
+
+    Chaque piste contient son propre groupe de commerces avec confiance/
+    justification - le modele ne choisit et justifie que parmi ce qu'on
+    lui donne, il ne peut jamais citer un commerce absent de la liste de
+    candidats, peu importe la piste.
     """
     return {
         "type": "json_schema",
@@ -216,47 +225,81 @@ def build_recommendation_schema():
                         "type": "string",
                         "description": "Phrase d'introduction courte adressee a l'utilisateur.",
                     },
-                    "resultats": {
+                    "pistes": {
                         "type": "array",
+                        "description": (
+                            "Groupes de resultats par angle/approche distincte. Pour "
+                            "une demande precise (produit_precis, commerce_precis), "
+                            "UNE SEULE piste suffit generalement (pas besoin de "
+                            "fragmenter artificiellement). Pour une demande ouverte "
+                            "(besoin), proposer 2 a 4 pistes RELLEMENT distinctes "
+                            "(ex: 'Cote gourmand', 'Cote deco', 'Une experience a "
+                            "vivre') plutot qu'une seule liste qui mélange tout - "
+                            "ne jamais inventer une piste qui n'a pas de candidat "
+                            "reel a y mettre."
+                        ),
                         "items": {
                             "type": "object",
                             "properties": {
-                                "id": {
-                                    "type": "integer",
-                                    "description": "ID exact du commerce, recopie depuis la liste fournie.",
-                                },
-                                "confiance": {
-                                    "type": "string",
-                                    "enum": ["confirme", "deduit"],
-                                    "description": (
-                                        "confirme : ce commerce propose explicitement le produit/"
-                                        "service demande (marque CONFIRME dans la liste, ou "
-                                        "mentionne dans sa description). "
-                                        "deduit : ce type de commerce en propose generalement, "
-                                        "mais ce n'est pas confirme par les donnees fournies."
-                                    ),
-                                },
-                                "justification": {
+                                "angle": {
                                     "type": "string",
                                     "description": (
-                                        "Explication affichee a l'utilisateur (la bulle), "
-                                        "qui relie la demande precise de l'utilisateur au "
-                                        "commerce - jamais une simple reformulation de sa "
-                                        "fiche descriptive. Si confiance=deduit, le dire "
-                                        "explicitement (ex: 'a confirmer', 'generalement')."
+                                        "Nom court de l'angle/approche (ex: 'Cote "
+                                        "gourmand', 'Une experience a vivre', 'Le "
+                                        "choix le plus sur'). Pour une demande "
+                                        "precise avec une seule piste, peut etre "
+                                        "neutre (ex: 'Notre selection')."
                                     ),
+                                },
+                                "resultats": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "description": "ID exact du commerce, recopie depuis la liste fournie.",
+                                            },
+                                            "confiance": {
+                                                "type": "string",
+                                                "enum": ["confirme", "deduit"],
+                                                "description": (
+                                                    "confirme : UNIQUEMENT si ce commerce est "
+                                                    "marque [CONFIRME] dans la liste fournie - "
+                                                    "jamais sur la seule base d'une description "
+                                                    "qui semble explicite. "
+                                                    "deduit : tous les autres cas, y compris "
+                                                    "quand la description semble tres pertinente."
+                                                ),
+                                            },
+                                            "justification": {
+                                                "type": "string",
+                                                "description": (
+                                                    "Explication affichee a l'utilisateur (la "
+                                                    "bulle), qui relie la demande precise de "
+                                                    "l'utilisateur au commerce - jamais une "
+                                                    "simple reformulation de sa fiche "
+                                                    "descriptive. Si confiance=deduit, le dire "
+                                                    "explicitement (ex: 'a confirmer', "
+                                                    "'generalement')."
+                                                ),
+                                            },
+                                        },
+                                        "required": ["id", "confiance", "justification"],
+                                        "additionalProperties": False,
+                                    },
                                 },
                             },
-                            "required": ["id", "confiance", "justification"],
+                            "required": ["angle", "resultats"],
                             "additionalProperties": False,
                         },
                     },
                     "aucun_resultat": {
                         "type": "boolean",
-                        "description": "True si aucun candidat ne correspond a la demande.",
+                        "description": "True si aucun candidat ne correspond a la demande, dans aucune piste.",
                     },
                 },
-                "required": ["intention", "message", "resultats", "aucun_resultat"],
+                "required": ["intention", "message", "pistes", "aucun_resultat"],
                 "additionalProperties": False,
             },
         },
