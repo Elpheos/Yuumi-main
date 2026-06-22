@@ -44,31 +44,46 @@
     background: #ddd;
     cursor: not-allowed;
 }
+.agent-ia-intro-message {
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 16px;
+}
 .agent-ia-resultat-card {
     border: 1px solid #eee;
     border-radius: 10px;
     padding: 16px;
     margin-bottom: 12px;
+    position: relative;
 }
 .agent-ia-resultat-card a {
     font-weight: 700;
     color: #ff8b38;
     text-decoration: none;
 }
+.agent-ia-badge {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 100px;
+    margin-left: 10px;
+    vertical-align: middle;
+}
+.agent-ia-badge-confirme {
+    background: #e8f8ee;
+    color: #1a7a3c;
+    border: 1px solid #6fcf97;
+}
+.agent-ia-badge-deduit {
+    background: #fff4e5;
+    color: #b36b00;
+    border: 1px solid #ffb84d;
+}
 .agent-ia-resultat-raison {
     color: #666;
     font-size: 0.9rem;
     margin-top: 6px;
-}
-.agent-ia-bulle {
-    background: #fff5ee;
-    border-left: 4px solid #ff8b38;
-    border-radius: 8px;
-    padding: 14px 16px;
-    margin-bottom: 20px;
-    color: #444;
-    font-size: 0.95rem;
-    line-height: 1.5;
 }
 .agent-ia-loading {
     text-align: center;
@@ -93,7 +108,7 @@
         </button>
     </div>
 
-    <input type="text" id="agent-ia-query" class="agent-ia-input" placeholder="Ex: un restaurant ouvert maintenant, un cadeau pour la Saint Valentin...">
+    <input type="text" id="agent-ia-query" class="agent-ia-input" placeholder="Ex: un restaurant ouvert maintenant, un cadeau pour la Saint Valentin, du foie gras...">
     <button type="button" class="agent-ia-button" id="agent-ia-submit">Rechercher</button>
 
     <div id="agent-ia-resultats" style="margin-top: 24px;"></div>
@@ -125,6 +140,13 @@ document.getElementById('agent-ia-submit').addEventListener('click', async () =>
         return match ? match[2] : null;
     }
 
+    function badgeHtml(confiance) {
+        if (confiance === 'confirme') {
+            return '<span class="agent-ia-badge agent-ia-badge-confirme">Confirmé</span>';
+        }
+        return '<span class="agent-ia-badge agent-ia-badge-deduit">À vérifier</span>';
+    }
+
     try {
         const response = await fetch("{% url 'ai_search_agent' %}", {
             method: 'POST',
@@ -140,19 +162,26 @@ document.getElementById('agent-ia-submit').addEventListener('click', async () =>
             resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.error}</p>`;
         } else if (data.fallback_to_tree) {
             resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
-        } else if (data.recommandations && data.recommandations.length > 0) {
-            const bulle = data.message_intro
-                ? `<div class="agent-ia-bulle">${data.message_intro}</div>`
-                : '';
-            const cartes = data.recommandations.map(r => `
-                <div class="agent-ia-resultat-card">
-                    <a href="${r.url}">${r.nom}</a>
-                    <p class="agent-ia-resultat-raison">${r.raison}</p>
-                </div>
-            `).join('');
-            resultatsDiv.innerHTML = bulle + cartes;
         } else {
-            resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message || "Aucun résultat trouvé."}</p>`;
+            let html = '';
+
+            if (data.message) {
+                html += `<p class="agent-ia-intro-message">${data.message}</p>`;
+            }
+
+            if (data.resultats && data.resultats.length > 0) {
+                html += data.resultats.map(r => `
+                    <div class="agent-ia-resultat-card">
+                        <a href="${r.url}">${r.nom}</a>
+                        ${badgeHtml(r.confiance)}
+                        <p class="agent-ia-resultat-raison">${r.justification}</p>
+                    </div>
+                `).join('');
+            } else if (!data.message) {
+                html += '<p class="agent-ia-message">Aucun résultat trouvé.</p>';
+            }
+
+            resultatsDiv.innerHTML = html;
         }
     } catch (e) {
         resultatsDiv.innerHTML = '<p class="agent-ia-message">Une erreur est survenue.</p>';
