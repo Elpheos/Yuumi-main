@@ -3,6 +3,7 @@
 import os
 import json
 import logging
+import unicodedata
 
 from .schema import PARAMETER_SCHEMA, build_json_schema, build_recommendation_schema
 
@@ -195,26 +196,39 @@ Clarification :
 # la latence en plus : on le saute et extract_search_params analyse la requete
 # brute. Liste volontairement courte et facile a etendre/ajuster.
 #
+# Les signaux sont ecrits SANS accent : la requete est elle-meme normalisee
+# (accents retires) avant comparaison, donc "meteo" matche "météo", et
+# "evenement" matche aussi bien "événement" que "évènement" (les deux
+# orthographes francaises).
+#
 # NB : les notions purement temporelles type "maintenant", "ce soir",
 # "aujourd'hui" ne sont PAS ici - elles sont gerees par le parametre
 # ouvert_maintenant, pas par une recherche web.
 _WEB_SEARCH_SIGNAUX = (
-    "meteo", "météo", "pluie", "neige", "soleil", "canicule", "orage",
-    "tendance", "tendances", "a la mode", "à la mode", "en ce moment",
-    "populaire en ce moment", "festival", "evenement", "événement",
-    "concert", "actualite", "actualité", "marche de noel", "marché de noël",
-    "saison", "saisonnier",
+    "meteo", "pluie", "neige", "soleil", "canicule", "orage",
+    "tendance", "a la mode", "en ce moment", "populaire en ce moment",
+    "festival", "evenement", "concert", "actualite",
+    "marche de noel", "saison", "saisonnier",
 )
+
+
+def _sans_accents(texte):
+    """Minuscule + suppression des accents/diacritiques (NFD, drop des marques)."""
+    return "".join(
+        c for c in unicodedata.normalize("NFD", texte)
+        if unicodedata.category(c) != "Mn"
+    ).lower()
 
 
 def needs_web_search(user_query):
     """
     True si la requete contient un signal suggerant qu'une info web recente est
-    utile. Heuristique simple (sous-chaines, insensible a la casse) : on prefere
-    rater quelques cas a la marge (le pipeline marche tres bien sans web) plutot
-    que de payer un appel agent supplementaire sur chaque recherche.
+    utile. Heuristique simple (sous-chaines, insensible a la casse ET aux
+    accents) : on prefere rater quelques cas a la marge (le pipeline marche
+    tres bien sans web) plutot que de payer un appel agent supplementaire sur
+    chaque recherche.
     """
-    q = (user_query or "").lower()
+    q = _sans_accents(user_query or "")
     return any(signal in q for signal in _WEB_SEARCH_SIGNAUX)
 
 
