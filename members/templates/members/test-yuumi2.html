@@ -110,6 +110,10 @@
     background: #ff8b38;
     color: white;
 }
+.agent-ia-clarif-btn-active {
+    background: #ff8b38 !important;
+    color: white !important;
+}
 
 /* ===== ANIMATION LAPIN ===== */
 .agent-ia-lapin-container {
@@ -225,62 +229,52 @@ if (!window._agentIaInitialized) {
 
             if (data.error) {
                 resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.error}</p>`;
+
             } else if (data.fallback_to_tree) {
                 resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
+
             } else if (data.besoin_clarification) {
                 let html = `<p class="agent-ia-intro-message">${data.message}</p>`;
-                data.questions_clarification.forEach(q => {
+
+                data.questions_clarification.forEach((q, qIndex) => {
                     html += `<p style="font-weight:600;margin-bottom:8px;">${q.question}</p>`;
-                    html += `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">`;
+                    html += `<div class="agent-ia-clarif-group" data-question-index="${qIndex}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">`;
                     html += q.options.map(opt => `
                         <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}">${opt}</button>
                     `).join('');
                     html += `</div>`;
                 });
+
+                html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider" disabled>Valider mes réponses</button>`;
+
                 resultatsDiv.innerHTML = html;
 
-               } else if (data.besoin_clarification) {
-    let html = `<p class="agent-ia-intro-message">${data.message}</p>`;
+                const reponses = {};
+                const totalQuestions = data.questions_clarification.length;
+                const validerBtn = document.getElementById('agent-ia-clarif-valider');
 
-    data.questions_clarification.forEach((q, qIndex) => {
-        html += `<p style="font-weight:600;margin-bottom:8px;">${q.question}</p>`;
-        html += `<div class="agent-ia-clarif-group" data-question-index="${qIndex}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">`;
-        html += q.options.map(opt => `
-            <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}">${opt}</button>
-        `).join('');
-        html += `</div>`;
-    });
+                resultatsDiv.querySelectorAll('.agent-ia-clarif-group').forEach(group => {
+                    const qIndex = group.dataset.questionIndex;
+                    group.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => b.classList.remove('agent-ia-clarif-btn-active'));
+                            btn.classList.add('agent-ia-clarif-btn-active');
+                            reponses[qIndex] = btn.dataset.reponse;
 
-    html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider" disabled>Valider mes réponses</button>`;
+                            if (Object.keys(reponses).length === totalQuestions) {
+                                validerBtn.disabled = false;
+                            }
+                        });
+                    });
+                });
 
-    resultatsDiv.innerHTML = html;
+                validerBtn.addEventListener('click', () => {
+                    const queryInput = document.getElementById('agent-ia-query');
+                    const reponsesTexte = Object.values(reponses).join(' - ');
+                    queryInput.value = query + ' - ' + reponsesTexte;
+                    document.getElementById('agent-ia-submit').click();
+                });
 
-    const reponses = {};
-    const totalQuestions = data.questions_clarification.length;
-    const validerBtn = document.getElementById('agent-ia-clarif-valider');
-
-    resultatsDiv.querySelectorAll('.agent-ia-clarif-group').forEach(group => {
-        const qIndex = group.dataset.questionIndex;
-        group.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => b.classList.remove('agent-ia-clarif-btn-active'));
-                btn.classList.add('agent-ia-clarif-btn-active');
-                reponses[qIndex] = btn.dataset.reponse;
-
-                if (Object.keys(reponses).length === totalQuestions) {
-                    validerBtn.disabled = false;
-                }
-            });
-        });
-    });
-
-    validerBtn.addEventListener('click', () => {
-        const queryInput = document.getElementById('agent-ia-query');
-        const reponsesTexte = Object.values(reponses).join(' - ');
-        queryInput.value = query + ' - ' + reponsesTexte;
-        document.getElementById('agent-ia-submit').click();
-    });
-}
             } else {
                 let html = '';
 
