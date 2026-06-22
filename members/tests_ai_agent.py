@@ -164,7 +164,8 @@ class WebHeuristicTests(TestCase):
 # =====================================================================
 class ViewOrchestrationTests(TestCase):
     @staticmethod
-    def _fake_recommend(user_query, stores, ids_par_produit=None, produit_sans_match_confirme=False):
+    def _fake_recommend(user_query, stores, ids_par_produit=None,
+                        produit_sans_match_confirme=False, ouvert_maintenant=False):
         ids_par_produit = ids_par_produit or set()
         return {
             "intention": "produit_precis",
@@ -332,6 +333,8 @@ class ViewOrchestrationTests(TestCase):
         self._post("un resto ouvert maintenant")
         self._post("un resto ouvert maintenant")
         self.assertEqual(self.m_recommend.call_count, 2)   # recalcule a chaque fois
+        # Le contexte open-now est bien transmis a recommend_stores.
+        self.assertTrue(self.m_recommend.call_args.kwargs["ouvert_maintenant"])
 
 
 # =====================================================================
@@ -373,3 +376,17 @@ class PromptWiringTests(TestCase):
                 "foie gras", [], set(), produit_sans_match_confirme=False
             )
         self.assertNotIn("CAS PARTICULIER", self._system_prompt())
+
+    def test_contexte_open_now_present_quand_flag(self):
+        from members.ai_agent import client as client_mod
+        with patch.object(client_mod, "_get_client", self._fake_client):
+            client_mod.recommend_stores(
+                "resto ouvert", [], set(), ouvert_maintenant=True
+            )
+        self.assertIn("OUVERT MAINTENANT", self._system_prompt())
+
+    def test_contexte_open_now_absent_par_defaut(self):
+        from members.ai_agent import client as client_mod
+        with patch.object(client_mod, "_get_client", self._fake_client):
+            client_mod.recommend_stores("resto", [], set())
+        self.assertNotIn("OUVERT MAINTENANT", self._system_prompt())
