@@ -164,6 +164,7 @@ def extract_search_params(user_query, intent_text):
 
         response = client.chat.complete(
             model=MISTRAL_MODEL,
+            prompt_cache_key="yuumi-extract-search-params",
             messages=[
                 {"role": "system", "content": build_system_prompt()},
                 {"role": "user", "content": user_query},
@@ -264,6 +265,7 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
 
         response = client.chat.complete(
             model=MISTRAL_MODEL,
+            prompt_cache_key="yuumi-recommend-stores",
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query},
