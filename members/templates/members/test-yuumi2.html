@@ -114,6 +114,19 @@
     background: #ff8b38 !important;
     color: white !important;
 }
+.agent-ia-clarif-autre-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #ff8b38;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    margin-top: 8px;
+    box-sizing: border-box;
+    display: none;
+}
+.agent-ia-clarif-autre-input.agent-ia-visible {
+    display: block;
+}
 
 /* ===== ANIMATION LAPIN ===== */
 .agent-ia-lapin-container {
@@ -167,6 +180,25 @@
 <script>
 if (!window._agentIaInitialized) {
     window._agentIaInitialized = true;
+
+    // Mots-cles (en minuscules, sans accent) qui designent une option de
+    // sortie/saisie libre. Une option de sortie reste exclusive dans son
+    // groupe (cliquer sur "Surprends-moi" deselectionne les autres boutons
+    // normaux, et inversement) - "Italienne ou Surprends-moi" n'a pas de
+    // sens. Une option "Autre" ouvre un champ texte et se comporte comme
+    // une selection normale (cumulable avec les boutons classiques).
+    const MOTS_SORTIE = ['je ne sais pas', 'surprends-moi', 'surprends moi', 'peu importe'];
+    const MOTS_AUTRE = ['autre', 'autres'];
+
+    function estOptionSortie(texte) {
+        const t = texte.toLowerCase();
+        return MOTS_SORTIE.some(m => t.includes(m));
+    }
+
+    function estOptionAutre(texte) {
+        const t = texte.toLowerCase().trim();
+        return MOTS_AUTRE.includes(t);
+    }
 
     document.getElementById('agent-ia-submit').addEventListener('click', async () => {
         const query = document.getElementById('agent-ia-query').value.trim();
@@ -233,79 +265,169 @@ if (!window._agentIaInitialized) {
             } else if (data.fallback_to_tree) {
                 resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
 
+            } else if (data.hors_sujet || data.categorie_absente) {
+                // Deux cas distincts cote backend (voir ai_search_agent dans
+                // views.py), mais le meme traitement cote frontend : un
+                // message simple, sans carte resultat, sans bouton clarification.
+                // Le message lui-meme differe deja selon le cas (recadrage vs
+                // invitation a suggerer l'ajout), donc pas besoin de le
+                // dupliquer ici.
+                resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
+
             } else if (data.besoin_clarification) {
                 let html = `<p class="agent-ia-intro-message">${data.message}</p>`;
 
                 data.questions_clarification.forEach((q, qIndex) => {
                     html += `<p style="font-weight:600;margin-bottom:8px;">${q.question}</p>`;
                     html += `<div class="agent-ia-clarif-group" data-question-index="${qIndex}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">`;
-                    html += q.options.map(opt => `
-                        <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}">${opt}</button>
+                    html += q.options.map((opt, optIndex) => `
+                        <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}" data-opt-index="${optIndex}">${opt}</button>
                     `).join('');
                     html += `</div>`;
-                    html += `<input type="text" class="agent-ia-clarif-texte" data-question-index="${qIndex}" placeholder="Ou précisez ici en quelques mots..." style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;margin-bottom:16px;box-sizing:border-box;">`;
+                    html += `<input type="text" class="agent-ia-clarif-autre-input" data-question-index="${qIndex}" placeholder="Précisez...">`;
+                    html += `<div style="margin-bottom:16px;"></div>`;
                 });
 
-                html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider">Valider mes réponses</button>`;
+                html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider" disabled>Valider mes réponses</button>`;
 
                 resultatsDiv.innerHTML = html;
 
-                // reponsesParQuestion[qIndex] = Set des boutons selectionnes
-                // (multi-choix autorise sur toutes les questions - chaque
-                // bouton clique bascule son propre etat, sans desactiver
-                // les autres boutons de la meme question).
-                const reponsesParQuestion = {};
+                // reponses[qIndex] est un Set de chaines (multi-selection).
+                // La valeur du champ "Autre" (si rempli) y est ajoutee/retiree
+                // dynamiquement, au meme titre qu'un bouton.
+                const reponses = {};
+                const totalQuestions = data.questions_clarification.length;
                 const validerBtn = document.getElementById('agent-ia-clarif-valider');
+
+                function maj_validation() {
+                    const toutesRemplies = Object.keys(reponses).length === totalQuestions
+                        && Object.values(reponses).every(set => set.size > 0);
+                    validerBtn.disabled = !toutesRemplies;
+                }
 
                 resultatsDiv.querySelectorAll('.agent-ia-clarif-group').forEach(group => {
                     const qIndex = group.dataset.questionIndex;
-                    reponsesParQuestion[qIndex] = new Set();
+                    if (!reponses[qIndex]) reponses[qIndex] = new Set();
+
+                    const autreInput = resultatsDiv.querySelector(
+                        `.agent-ia-clarif-autre-input[data-question-index="${qIndex}"]`
+                    );
 
                     group.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
+                        const texte = btn.dataset.reponse;
+                        const sortie = estOptionSortie(texte);
+                        const autre = estOptionAutre(texte);
+
                         btn.addEventListener('click', () => {
-                            btn.classList.toggle('agent-ia-clarif-btn-active');
-                            if (btn.classList.contains('agent-ia-clarif-btn-active')) {
-                                reponsesParQuestion[qIndex].add(btn.dataset.reponse);
+                            const set = reponses[qIndex];
+                            const dejaActif = btn.classList.contains('agent-ia-clarif-btn-active');
+
+                            if (sortie) {
+                                // Option de sortie : exclusive. La selectionner
+                                // efface tout le reste (boutons + "Autre"), et
+                                // la deselectionner ne fait que la retirer.
+                                if (dejaActif) {
+                                    btn.classList.remove('agent-ia-clarif-btn-active');
+                                    set.delete(texte);
+                                } else {
+                                    group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => {
+                                        b.classList.remove('agent-ia-clarif-btn-active');
+                                        set.delete(b.dataset.reponse);
+                                    });
+                                    if (autreInput) {
+                                        autreInput.classList.remove('agent-ia-visible');
+                                        autreInput.value = '';
+                                    }
+                                    btn.classList.add('agent-ia-clarif-btn-active');
+                                    set.add(texte);
+                                }
                             } else {
-                                reponsesParQuestion[qIndex].delete(btn.dataset.reponse);
+                                // Option normale (y compris "Autre") : toggle
+                                // independant, cumulable avec d'autres options
+                                // normales. Selectionner une option normale
+                                // desactive une eventuelle option de sortie
+                                // active dans le meme groupe.
+                                group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => {
+                                    if (estOptionSortie(b.dataset.reponse)) {
+                                        b.classList.remove('agent-ia-clarif-btn-active');
+                                        set.delete(b.dataset.reponse);
+                                    }
+                                });
+
+                                if (dejaActif) {
+                                    btn.classList.remove('agent-ia-clarif-btn-active');
+                                    set.delete(texte);
+                                    if (autre && autreInput) {
+                                        autreInput.classList.remove('agent-ia-visible');
+                                        autreInput.value = '';
+                                    }
+                                } else {
+                                    btn.classList.add('agent-ia-clarif-btn-active');
+                                    if (autre) {
+                                        set.add('Autre'); // placeholder, remplace au saisie
+                                        if (autreInput) autreInput.classList.add('agent-ia-visible');
+                                    } else {
+                                        set.add(texte);
+                                    }
+                                }
                             }
+
+                            maj_validation();
                         });
                     });
+
+                    if (autreInput) {
+                        autreInput.addEventListener('input', () => {
+                            const set = reponses[qIndex];
+                            set.delete('Autre');
+                            // Retire toute ancienne valeur de texte libre
+                            // precedemment ajoutee, avant d'ajouter la nouvelle.
+                            if (autreInput.dataset.derniereValeur) {
+                                set.delete(autreInput.dataset.derniereValeur);
+                            }
+                            const val = autreInput.value.trim();
+                            if (val) {
+                                set.add(val);
+                                autreInput.dataset.derniereValeur = val;
+                            } else {
+                                delete autreInput.dataset.derniereValeur;
+                            }
+                            maj_validation();
+                        });
+                    }
                 });
 
                 validerBtn.addEventListener('click', () => {
                     const queryInput = document.getElementById('agent-ia-query');
 
-                    const estSignalSortie = (r) => {
-                        const r_lower = r.toLowerCase();
-                        return r_lower.includes('je ne sais pas') || r_lower.includes('surprends-moi') || r_lower.includes('peu importe');
-                    };
-
-                    let segments = [];
+                    // Les reponses "Je ne sais pas" / "Surprends-moi" sont transmises
+                    // de facon EXPLICITE comme un signal positif ("ne pas demander
+                    // plus de precisions"), plutot que d'etre retirees silencieusement -
+                    // sinon l'IA ne sait pas que l'utilisateur a deja choisi de ne pas
+                    // preciser, et redemande une autre question en boucle.
                     let aUnSignalSortie = false;
+                    const segmentsParQuestion = [];
 
-                    data.questions_clarification.forEach((q, qIndex) => {
-                        const boutonsChoisis = Array.from(reponsesParQuestion[qIndex] || []);
-                        const texteLibre = resultatsDiv.querySelector(`.agent-ia-clarif-texte[data-question-index="${qIndex}"]`).value.trim();
-
-                        const boutonsUtiles = boutonsChoisis.filter(r => !estSignalSortie(r));
-                        if (boutonsChoisis.some(estSignalSortie)) {
-                            aUnSignalSortie = true;
-                        }
-
-                        // Plusieurs boutons choisis sur la meme question = une
-                        // alternative ("ou"), pas une contrainte cumulative.
-                        if (boutonsUtiles.length > 0) {
-                            segments.push(boutonsUtiles.join(' ou '));
-                        }
-                        if (texteLibre) {
-                            segments.push(texteLibre);
-                        }
-                    });
+                    Object.keys(reponses)
+                        .sort((a, b) => Number(a) - Number(b))
+                        .forEach(qIndex => {
+                            const valeurs = Array.from(reponses[qIndex]).filter(v => v !== 'Autre');
+                            if (valeurs.some(estOptionSortie)) {
+                                aUnSignalSortie = true;
+                            }
+                            const valeursUtiles = valeurs.filter(v => !estOptionSortie(v));
+                            if (valeursUtiles.length > 0) {
+                                // Plusieurs valeurs cochees sur une meme question
+                                // = alternatives, jointes par " ou " (voir
+                                // build_system_prompt dans client.py qui
+                                // interprete ce format).
+                                segmentsParQuestion.push(valeursUtiles.join(' ou '));
+                            }
+                        });
 
                     let queryFinale = query;
-                    if (segments.length > 0) {
-                        queryFinale += ' - ' + segments.join(' - ');
+                    if (segmentsParQuestion.length > 0) {
+                        queryFinale += ' - ' + segmentsParQuestion.join(' - ');
                     }
                     if (aUnSignalSortie) {
                         queryFinale += ' - cherche directement, ne me redemande pas de precisions';
