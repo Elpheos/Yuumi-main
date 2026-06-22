@@ -137,7 +137,16 @@ def understand_intent(user_query):
     l'intention generale, peut chercher sur le web si besoin (infos
     changeantes), mais ne connait jamais la base Yuumi elle-meme.
 
-    Renvoie le texte de la reponse (str), ou None en cas d'echec.
+    Renvoie le texte de la reponse (str), TOUJOURS une vraie chaine de
+    caracteres - jamais une liste d'objets. Quand web_search est utilise
+    avec des citations, Mistral renvoie le contenu comme une LISTE de
+    chunks (TextChunk, ToolReferenceChunk, ...) plutot qu'une simple
+    chaine. Si on transmet cette liste brute a l'etape suivante
+    (extract_search_params), l'API la rejette avec une cascade d'erreurs
+    de validation - d'ou l'extraction systematique du texte ici, qui
+    ignore les chunks de reference et ne garde que le texte lisible.
+
+    Renvoie None en cas d'echec.
     """
     try:
         client = _get_client()
@@ -148,7 +157,20 @@ def understand_intent(user_query):
             inputs=user_query,
         )
 
-        return response.outputs[-1].content
+        content = response.outputs[-1].content
+
+        if isinstance(content, str):
+            return content
+
+        # content est une liste de chunks (TextChunk, ToolReferenceChunk,
+        # etc.) - on ne garde que le texte des TextChunk, dans l'ordre.
+        texte_complet = ""
+        for chunk in content:
+            chunk_type = getattr(chunk, "type", None)
+            if chunk_type == "text":
+                texte_complet += getattr(chunk, "text", "")
+
+        return texte_complet.strip() if texte_complet.strip() else None
 
     except Exception as e:
         logger.error(f"understand_intent a echoue : {e}")
