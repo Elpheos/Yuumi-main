@@ -238,31 +238,36 @@ if (!window._agentIaInitialized) {
 
                 data.questions_clarification.forEach((q, qIndex) => {
                     html += `<p style="font-weight:600;margin-bottom:8px;">${q.question}</p>`;
-                    html += `<div class="agent-ia-clarif-group" data-question-index="${qIndex}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">`;
+                    html += `<div class="agent-ia-clarif-group" data-question-index="${qIndex}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">`;
                     html += q.options.map(opt => `
                         <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}">${opt}</button>
                     `).join('');
                     html += `</div>`;
+                    html += `<input type="text" class="agent-ia-clarif-texte" data-question-index="${qIndex}" placeholder="Ou précisez ici en quelques mots..." style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;margin-bottom:16px;box-sizing:border-box;">`;
                 });
 
-                html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider" disabled>Valider mes réponses</button>`;
+                html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider">Valider mes réponses</button>`;
 
                 resultatsDiv.innerHTML = html;
 
-                const reponses = {};
-                const totalQuestions = data.questions_clarification.length;
+                // reponsesParQuestion[qIndex] = Set des boutons selectionnes
+                // (multi-choix autorise sur toutes les questions - chaque
+                // bouton clique bascule son propre etat, sans desactiver
+                // les autres boutons de la meme question).
+                const reponsesParQuestion = {};
                 const validerBtn = document.getElementById('agent-ia-clarif-valider');
 
                 resultatsDiv.querySelectorAll('.agent-ia-clarif-group').forEach(group => {
                     const qIndex = group.dataset.questionIndex;
+                    reponsesParQuestion[qIndex] = new Set();
+
                     group.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
                         btn.addEventListener('click', () => {
-                            group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => b.classList.remove('agent-ia-clarif-btn-active'));
-                            btn.classList.add('agent-ia-clarif-btn-active');
-                            reponses[qIndex] = btn.dataset.reponse;
-
-                            if (Object.keys(reponses).length === totalQuestions) {
-                                validerBtn.disabled = false;
+                            btn.classList.toggle('agent-ia-clarif-btn-active');
+                            if (btn.classList.contains('agent-ia-clarif-btn-active')) {
+                                reponsesParQuestion[qIndex].add(btn.dataset.reponse);
+                            } else {
+                                reponsesParQuestion[qIndex].delete(btn.dataset.reponse);
                             }
                         });
                     });
@@ -271,22 +276,36 @@ if (!window._agentIaInitialized) {
                 validerBtn.addEventListener('click', () => {
                     const queryInput = document.getElementById('agent-ia-query');
 
-                    // Les reponses "Je ne sais pas" / "Surprends-moi" sont transmises
-                    // de facon EXPLICITE comme un signal positif ("ne pas demander
-                    // plus de precisions"), plutot que d'etre retirees silencieusement -
-                    // sinon l'IA ne sait pas que l'utilisateur a deja choisi de ne pas
-                    // preciser, et redemande une autre question en boucle.
                     const estSignalSortie = (r) => {
                         const r_lower = r.toLowerCase();
                         return r_lower.includes('je ne sais pas') || r_lower.includes('surprends-moi') || r_lower.includes('peu importe');
                     };
 
-                    const aUnSignalSortie = Object.values(reponses).some(estSignalSortie);
-                    const reponsesUtiles = Object.values(reponses).filter(r => !estSignalSortie(r));
+                    let segments = [];
+                    let aUnSignalSortie = false;
+
+                    data.questions_clarification.forEach((q, qIndex) => {
+                        const boutonsChoisis = Array.from(reponsesParQuestion[qIndex] || []);
+                        const texteLibre = resultatsDiv.querySelector(`.agent-ia-clarif-texte[data-question-index="${qIndex}"]`).value.trim();
+
+                        const boutonsUtiles = boutonsChoisis.filter(r => !estSignalSortie(r));
+                        if (boutonsChoisis.some(estSignalSortie)) {
+                            aUnSignalSortie = true;
+                        }
+
+                        // Plusieurs boutons choisis sur la meme question = une
+                        // alternative ("ou"), pas une contrainte cumulative.
+                        if (boutonsUtiles.length > 0) {
+                            segments.push(boutonsUtiles.join(' ou '));
+                        }
+                        if (texteLibre) {
+                            segments.push(texteLibre);
+                        }
+                    });
 
                     let queryFinale = query;
-                    if (reponsesUtiles.length > 0) {
-                        queryFinale += ' - ' + reponsesUtiles.join(' - ');
+                    if (segments.length > 0) {
+                        queryFinale += ' - ' + segments.join(' - ');
                     }
                     if (aUnSignalSortie) {
                         queryFinale += ' - cherche directement, ne me redemande pas de precisions';
