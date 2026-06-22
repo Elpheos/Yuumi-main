@@ -116,9 +116,11 @@ Regles strictes :
 - Si la requete est ambigue et peut correspondre a plusieurs categories, inclus-les toutes plutot que d'en choisir une seule arbitrairement.
 
 Clarification :
-- Si la demande est trop generale pour produire des idees_produits utiles (typiquement une demande de cadeau ou d'occasion sans destinataire, sans contexte, sans budget - ex: "un cadeau", "une idee de sortie"), mets besoin_clarification=true et propose 1 a 2 questions courtes avec des options cliquables (ex: question "Pour qui ?" avec options ["Conjoint(e)", "Ami(e)", "Parent", "Collegue"]).
+- Si la demande est trop generale pour produire des idees_produits utiles (typiquement une demande de cadeau ou d'occasion sans destinataire, sans contexte, sans budget - ex: "un cadeau", "une idee de sortie"), mets besoin_clarification=true et propose 1 a 2 questions courtes avec des options cliquables.
+- REGLE GENERALE OBLIGATOIRE : pour CHAQUE question de clarification, la derniere option doit TOUJOURS etre une option de sortie du type "Je ne sais pas" ou "Surprends-moi" - peu importe le sujet de la question (type de produit, centre d'interet, occasion, budget, ou autre). Cette regle s'applique systematiquement, sans exception, car l'utilisateur qui pose une question generale ne sait souvent pas lui-meme repondre a une question precise - il doit toujours pouvoir avancer sans etre bloque.
+- Les questions peuvent porter aussi bien sur le contexte de la situation (pour qui, quelle occasion, quel budget) que sur une preference de nature du produit (quel type de cadeau, quel style) - tant que l'option de sortie est presente, les deux types de questions sont valides.
+- Exemples de bonnes questions, toujours avec l'option de sortie en derniere position : "Pour qui ?" (options: Conjoint(e), Ami(e), Parent, Collegue, Enfant, Je ne sais pas), "Quel type de cadeau ?" (options: Bijou, Livre, Experience, Objet deco, Surprends-moi), "Quel budget approximatif ?" (options: Moins de 20e, 20-50e, 50-100e, Peu importe).
 - Si la demande contient deja assez de contexte pour chercher directement (ex: "foie gras", "un restaurant ouvert maintenant", "un cadeau pour ma mere qui aime le jardinage"), mets besoin_clarification=false et questions_clarification=[].
-- Une demande de type produit_precis ou commerce_precis n'a presque jamais besoin de clarification - c'est surtout les demandes tres ouvertes ("besoin"/cadeau sans contexte) qui en ont besoin.
 """
 
 
