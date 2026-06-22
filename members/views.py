@@ -1170,6 +1170,27 @@ def ai_search_agent(request):
             "aucun_resultat": True,
         })
 
+    # Categorie absente detectee des l'extraction - cas DIFFERENT de
+    # hors_sujet : la demande a un vrai sens commercial (ex: "armurerie"),
+    # mais aucune categorie Yuumi ne la couvre. On s'arrete ici aussi
+    # (pas de recherche en base ni d'appel a recommend_stores, puisque
+    # categories est garanti vide par le garde-fou cote code dans
+    # extract_search_params), avec un message different qui invite a
+    # suggerer l'ajout plutot qu'un simple recadrage de la demande.
+    if params.get("categorie_absente"):
+        register_ai_usage(request.user)
+        return JsonResponse({
+            "fallback_to_tree": False,
+            "besoin_clarification": False,
+            "categorie_absente": True,
+            "message": (
+                "Ce type de commerce n'est pas encore référencé sur Yuumi "
+                "pour le moment. N'hésitez pas à nous suggérer son ajout !"
+            ),
+            "resultats": [],
+            "aucun_resultat": True,
+        })
+
     # Si l'IA juge la demande trop vague pour produire des idees de
     # produits utiles, on s'arrete ici et on renvoie les questions de
     # clarification au frontend - pas de recherche en base avec des
