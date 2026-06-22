@@ -1,7 +1,7 @@
 # members/ai_agent/schema.py
 #
-# C'EST ICI, ET UNIQUEMENT ICI, QU'IL FAUT AJOUTER UN NOUVEAU PARAMÈTRE
-# quand tu ajoutes une nouvelle métadonnée à Store plus tard.
+# C'EST ICI, ET UNIQUEMENT ICI, QU'IL FAUT AJOUTER UN NOUVEAU PARAMETRE
+# quand tu ajoutes une nouvelle metadonnee a Store plus tard.
 
 PARAMETER_SCHEMA = [
     {
@@ -26,7 +26,7 @@ PARAMETER_SCHEMA = [
             "sur un produit precis (ex: simple recherche de categorie de commerce)."
         ),
         "required": False,
-        "filter_lookup": None,  # vérifié en base à part, pas un filtre direct sur Store
+        "filter_lookup": None,
     },
     {
         "field": "ouvert_maintenant",
@@ -57,6 +57,9 @@ def build_json_schema():
     """
     Construit le schema JSON (format attendu par l'API Mistral en mode
     Custom Structured Outputs) a partir de PARAMETER_SCHEMA.
+
+    Utilise par extract_search_params() - etape de comprehension de
+    l'intention generale (categories + parametres de filtre).
     """
     type_mapping = {
         "list[str]": {"type": "array", "items": {"type": "string"}},
@@ -90,20 +93,20 @@ def build_json_schema():
         },
     }
 
-# A ajouter dans members/ai_agent/schema.py, a la suite du fichier existant.
-# Ce schema est different de build_json_schema() : il sert pour l'ETAPE FINALE
-# (choisir des commerces reels parmi une liste fournie), pas pour l'extraction
-# d'intention initiale.
 
 def build_recommendation_schema():
     """
-    Schema de la reponse finale de recommandation.
+    Schema JSON pour l'appel final de recommandation, conforme a la
+    methode formalisee : classification d'intention (produit_precis /
+    commerce_precis / besoin / hors_sujet), resultats avec confiance
+    (confirme / deduit) et justification - ces deux derniers champs
+    alimentent directement la bulle affichee a l'utilisateur cote
+    frontend (texte = justification, couleur = confiance).
 
-    message_intro : petit texte d'introduction (la "bulle") affiche AVANT
-        la liste des commerces. Contextualise la recherche, et signale
-        honnetement quand un critere demande (haut de gamme, pas cher,
-        romantique...) ne peut pas etre verifie depuis nos donnees.
-    commerces_recommandes : la liste des commerces choisis, par ID exact.
+    Utilise par recommend_stores() - etape finale, apres que la recherche
+    en base (search.py) a deja fourni les VRAIS candidats. Le modele ne
+    choisit et justifie que parmi ce qu'on lui donne, il ne peut jamais
+    citer un commerce absent de la liste de candidats.
     """
     return {
         "type": "json_schema",
@@ -112,33 +115,59 @@ def build_recommendation_schema():
             "schema": {
                 "type": "object",
                 "properties": {
-                    "message_intro": {
+                    "intention": {
                         "type": "string",
+                        "enum": ["produit_precis", "commerce_precis", "besoin", "hors_sujet"],
                         "description": (
-                            "Court texte d'introduction (1 a 3 phrases) affiche "
-                            "avant la liste. Accueillant, puis factuel. Si la "
-                            "requete contient un critere NON verifiable depuis "
-                            "les descriptions (haut de gamme, pas cher, "
-                            "romantique, etc.), le signaler honnetement ici "
-                            "plutot que de l'affirmer. Si la requete est neutre, "
-                            "rester simplement accueillant et direct, sans "
-                            "reserve inutile."
+                            "Classification de la demande : produit_precis (objet "
+                            "nomme), commerce_precis (type d'etablissement nomme), "
+                            "besoin (demande ouverte type cadeau/occasion), "
+                            "hors_sujet (sans rapport avec les commerces locaux)."
                         ),
                     },
-                    "commerces_recommandes": {
+                    "message": {
+                        "type": "string",
+                        "description": "Phrase d'introduction courte adressee a l'utilisateur.",
+                    },
+                    "resultats": {
                         "type": "array",
                         "items": {
                             "type": "object",
                             "properties": {
-                                "id": {"type": "integer"},
-                                "raison": {"type": "string"},
+                                "id": {
+                                    "type": "integer",
+                                    "description": "ID exact du commerce, recopie depuis la liste fournie.",
+                                },
+                                "confiance": {
+                                    "type": "string",
+                                    "enum": ["confirme", "deduit"],
+                                    "description": (
+                                        "confirme : ce commerce propose explicitement le produit/"
+                                        "service demande (marque CONFIRME dans la liste, ou "
+                                        "mentionne dans sa description). "
+                                        "deduit : ce type de commerce en propose generalement, "
+                                        "mais ce n'est pas confirme par les donnees fournies."
+                                    ),
+                                },
+                                "justification": {
+                                    "type": "string",
+                                    "description": (
+                                        "Courte explication affichee a l'utilisateur (la bulle). "
+                                        "Si confiance=deduit, le dire explicitement "
+                                        "(ex: 'a confirmer', 'generalement')."
+                                    ),
+                                },
                             },
-                            "required": ["id", "raison"],
+                            "required": ["id", "confiance", "justification"],
                             "additionalProperties": False,
                         },
                     },
+                    "aucun_resultat": {
+                        "type": "boolean",
+                        "description": "True si aucun candidat ne correspond a la demande.",
+                    },
                 },
-                "required": ["message_intro", "commerces_recommandes"],
+                "required": ["intention", "message", "resultats", "aucun_resultat"],
                 "additionalProperties": False,
             },
         },
