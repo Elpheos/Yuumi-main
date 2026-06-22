@@ -1106,7 +1106,8 @@ def ai_search_agent(request):
 
     Enchaine : verification acces -> comprehension intention -> extraction
     parametres -> recherche en base (categories + produits) -> fusion ->
-    recommandation finale (avec bulle d'intro).
+    recommandation finale conforme a la methode formalisee (intention,
+    confiance confirme/deduit, justification par resultat).
     """
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -1161,47 +1162,44 @@ def ai_search_agent(request):
     commerces_combines = combine_store_querysets(commerces_par_categorie, commerces_par_produit)
     commerces_filtres = apply_open_now_filter(commerces_combines, params.get("ouvert_maintenant", False))
 
-    if not commerces_filtres:
-        register_ai_usage(request.user)
-        return JsonResponse({
-            "fallback_to_tree": False,
-            "message_intro": "",
-            "message": "Aucun commerce ne correspond à votre recherche dans cette ville pour le moment.",
-            "recommandations": [],
-        })
+    # On appelle TOUJOURS recommend_stores, meme avec une liste vide -
+    # c'est l'IA elle-meme qui gere ce cas (intention=hors_sujet ou
+    # aucun_resultat=true), conformement a la methode formalisee, plutot
+    # qu'un court-circuit cote code qui empecherait la classification
+    # d'intention de se faire.
+    resultat_ia = recommend_stores(user_query, commerces_filtres, ids_par_produit)
 
-    resultat_reco = recommend_stores(user_query, commerces_filtres, ids_par_produit)
-    if resultat_reco is None:
+    if resultat_ia is None:
         return JsonResponse({
             "fallback_to_tree": True,
             "message": "La recherche intelligente est temporairement indisponible.",
         })
 
-    message_intro = resultat_reco.get("message_intro", "")
-    recommandations_brutes = resultat_reco.get("commerces_recommandes", [])
-
     # Verification de securite : on ne fait JAMAIS confiance aveuglement
     # aux ID renvoyes par l'IA, meme si le JSON Schema garantit le format.
     # Il garantit le FORMAT, pas le CONTENU.
     ids_valides = {store.id for store in commerces_filtres}
-    recommandations_finales = []
-    for reco in recommandations_brutes:
+    resultats_valides = []
+    for reco in resultat_ia.get("resultats", []):
         if reco.get("id") in ids_valides:
             store = next(s for s in commerces_filtres if s.id == reco["id"])
-            recommandations_finales.append({
+            resultats_valides.append({
                 "id": store.id,
                 "nom": store.nom,
                 "slug": store.slug,
                 "ville": store.ville,
                 "departement": store.departement,
                 "url": store.get_absolute_url(),
-                "raison": reco.get("raison", ""),
+                "confiance": reco.get("confiance", "deduit"),
+                "justification": reco.get("justification", ""),
             })
 
     register_ai_usage(request.user)
 
     return JsonResponse({
         "fallback_to_tree": False,
-        "message_intro": message_intro,
-        "recommandations": recommandations_finales,
+        "intention": resultat_ia.get("intention", ""),
+        "message": resultat_ia.get("message", ""),
+        "resultats": resultats_valides,
+        "aucun_resultat": len(resultats_valides) == 0,
     })
