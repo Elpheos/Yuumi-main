@@ -1211,7 +1211,21 @@ def ai_search_agent(request):
 
     ids_par_produit = set(commerces_par_produit.values_list("id", flat=True))
 
-    commerces_combines = combine_store_querysets(commerces_par_categorie, commerces_par_produit)
+    # Une demande de produit precis (idees_produits non vide) ne doit PAS etre
+    # nourrie par le filet "categorie", qui ratisse des commerces vaguement lies
+    # que l'IA presenterait ensuite comme "peut-etre disponible" (bug Famille Mary
+    # / foie gras). Trois cas :
+    demande_produit_precis = bool(params.get("idees_produits"))
+    produit_sans_match_confirme = demande_produit_precis and not ids_par_produit
+
+    if demande_produit_precis and ids_par_produit:
+        # De vrais vendeurs existent -> on n'envoie QU'EUX (tous [CONFIRME]).
+        commerces_combines = combine_store_querysets(commerces_par_produit)
+    else:
+        # Aucun vendeur confirme, OU demande non-produit : on garde le filet
+        # categorie. Produit EN PREMIER pour ne jamais tronquer un match confirme
+        # sous le plafond MAX_CANDIDATES_TO_LLM.
+        commerces_combines = combine_store_querysets(commerces_par_produit, commerces_par_categorie)
     commerces_filtres = apply_open_now_filter(commerces_combines, params.get("ouvert_maintenant", False))
 
     # On appelle TOUJOURS recommend_stores, meme avec une liste vide -
@@ -1219,7 +1233,12 @@ def ai_search_agent(request):
     # aucun_resultat=true), conformement a la methode formalisee, plutot
     # qu'un court-circuit cote code qui empecherait la classification
     # d'intention de se faire.
-    resultat_ia = recommend_stores(user_query, commerces_filtres, ids_par_produit)
+    resultat_ia = recommend_stores(
+        user_query,
+        commerces_filtres,
+        ids_par_produit,
+        produit_sans_match_confirme=produit_sans_match_confirme,
+    )
 
     if resultat_ia is None:
         return JsonResponse({
