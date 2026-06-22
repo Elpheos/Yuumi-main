@@ -537,7 +537,9 @@ Accompagner projets de développement
 <script>
     function exitF() {
         const fBlock = document.querySelector('.home2-function-supercontainer');
+		const containerBg = document.querySelector('.home2-function-supercontainer');
 
+		containerBg.classList.remove('home2-bg-blue');
         fBlock.classList.remove('home2-function-supercontainer-active');
     }
 </script>
