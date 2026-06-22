@@ -239,13 +239,48 @@ if (!window._agentIaInitialized) {
                 });
                 resultatsDiv.innerHTML = html;
 
-                resultatsDiv.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const queryInput = document.getElementById('agent-ia-query');
-                        queryInput.value = query + ' - ' + btn.dataset.reponse;
-                        document.getElementById('agent-ia-submit').click();
-                    });
-                });
+               } else if (data.besoin_clarification) {
+    let html = `<p class="agent-ia-intro-message">${data.message}</p>`;
+
+    data.questions_clarification.forEach((q, qIndex) => {
+        html += `<p style="font-weight:600;margin-bottom:8px;">${q.question}</p>`;
+        html += `<div class="agent-ia-clarif-group" data-question-index="${qIndex}" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">`;
+        html += q.options.map(opt => `
+            <button type="button" class="agent-ia-clarif-btn" data-reponse="${opt}">${opt}</button>
+        `).join('');
+        html += `</div>`;
+    });
+
+    html += `<button type="button" class="agent-ia-button" id="agent-ia-clarif-valider" disabled>Valider mes réponses</button>`;
+
+    resultatsDiv.innerHTML = html;
+
+    const reponses = {};
+    const totalQuestions = data.questions_clarification.length;
+    const validerBtn = document.getElementById('agent-ia-clarif-valider');
+
+    resultatsDiv.querySelectorAll('.agent-ia-clarif-group').forEach(group => {
+        const qIndex = group.dataset.questionIndex;
+        group.querySelectorAll('.agent-ia-clarif-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => b.classList.remove('agent-ia-clarif-btn-active'));
+                btn.classList.add('agent-ia-clarif-btn-active');
+                reponses[qIndex] = btn.dataset.reponse;
+
+                if (Object.keys(reponses).length === totalQuestions) {
+                    validerBtn.disabled = false;
+                }
+            });
+        });
+    });
+
+    validerBtn.addEventListener('click', () => {
+        const queryInput = document.getElementById('agent-ia-query');
+        const reponsesTexte = Object.values(reponses).join(' - ');
+        queryInput.value = query + ' - ' + reponsesTexte;
+        document.getElementById('agent-ia-submit').click();
+    });
+}
             } else {
                 let html = '';
 
