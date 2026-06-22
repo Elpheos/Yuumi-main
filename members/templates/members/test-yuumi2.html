@@ -88,12 +88,41 @@
 .agent-ia-loading {
     text-align: center;
     color: #888;
-    padding: 20px;
+    padding: 4px 0 20px;
 }
 .agent-ia-message {
     text-align: center;
     color: #888;
     padding: 20px;
+}
+
+/* ===== ANIMATION LAPIN ===== */
+.agent-ia-lapin-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+.agent-ia-lapin-svg {
+    width: 80px;
+    height: 80px;
+}
+.agent-ia-lapin-patte {
+    transform-origin: 62px 40px;
+    animation: lapin-gratte 1.2s ease-in-out infinite;
+}
+@keyframes lapin-gratte {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-25deg); }
+    50% { transform: rotate(5deg); }
+    75% { transform: rotate(-15deg); }
+}
+.agent-ia-lapin-oreille-gauche {
+    animation: lapin-oreille 1.2s ease-in-out infinite;
+    transform-origin: 35px 20px;
+}
+@keyframes lapin-oreille {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-8deg); }
 }
 </style>
 
@@ -136,7 +165,25 @@ if (!window._agentIaInitialized) {
         }
 
         submitBtn.disabled = true;
-        resultatsDiv.innerHTML = '<p class="agent-ia-loading">Recherche en cours...</p>';
+        resultatsDiv.innerHTML = `
+            <div class="agent-ia-lapin-container">
+                <svg class="agent-ia-lapin-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse class="agent-ia-lapin-oreille-gauche" cx="35" cy="18" rx="6" ry="16" fill="#ff8b38"/>
+                    <ellipse cx="65" cy="18" rx="6" ry="16" fill="#ff8b38"/>
+                    <ellipse cx="35" cy="20" rx="3" ry="10" fill="#ffd4b0"/>
+                    <ellipse cx="65" cy="20" rx="3" ry="10" fill="#ffd4b0"/>
+                    <circle cx="50" cy="55" r="32" fill="#ffb066"/>
+                    <circle cx="40" cy="48" r="4" fill="#333"/>
+                    <circle cx="60" cy="48" r="4" fill="#333"/>
+                    <ellipse cx="50" cy="58" rx="4" ry="3" fill="#333"/>
+                    <path d="M 42 65 Q 50 70 58 65" stroke="#333" stroke-width="2" fill="none" stroke-linecap="round"/>
+                    <g class="agent-ia-lapin-patte">
+                        <ellipse cx="62" cy="40" rx="6" ry="10" fill="#ffb066"/>
+                    </g>
+                </svg>
+            </div>
+            <p class="agent-ia-loading">Recherche en cours...</p>
+        `;
 
         function getCookie(name) {
             const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
@@ -173,7 +220,11 @@ if (!window._agentIaInitialized) {
                 }
 
                 if (data.resultats && data.resultats.length > 0) {
-                    html += data.resultats.map(r => `
+                    const confirmes = data.resultats.filter(r => r.confiance === 'confirme');
+                    const deduits = data.resultats.filter(r => r.confiance !== 'confirme');
+                    const resultatsOrdonnes = [...confirmes, ...deduits];
+
+                    html += resultatsOrdonnes.map(r => `
                         <div class="agent-ia-resultat-card">
                             <a href="${r.url}">${r.nom}</a>
                             ${badgeHtml(r.confiance)}
