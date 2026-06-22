@@ -1292,6 +1292,7 @@ def ai_search_agent(request):
         commerces_filtres,
         ids_par_produit,
         produit_sans_match_confirme=produit_sans_match_confirme,
+        ouvert_maintenant=ouvert,
     )
 
     if resultat_ia is None:
