@@ -1104,10 +1104,10 @@ def ai_search_agent(request):
     frontend (confirmes par l'utilisateur avant l'envoi, pre-remplis
     depuis le cookie cote frontend mais jamais devines cote serveur).
 
-    Enchaine : verification acces -> comprehension intention -> extraction
-    parametres -> recherche en base (categories + produits) -> fusion ->
-    recommandation finale conforme a la methode formalisee (intention,
-    confiance confirme/deduit, justification par resultat).
+    Enchaine : verification acces -> cache -> (option) comprehension web ->
+    extraction parametres -> recherche en base par tiers de preuve (catalogue
+    / description / categorie) -> recommandation finale (intention, confiance
+    confirme/deduit, justification par resultat).
     """
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -1138,12 +1138,44 @@ def ai_search_agent(request):
             "error": "Ville non précisée. Veuillez confirmer une ville avant de rechercher.",
         }, status=400)
 
-    intent_text = understand_intent(user_query)
-    if intent_text is None:
-        return JsonResponse({
-            "fallback_to_tree": True,
-            "message": "La recherche intelligente est temporairement indisponible.",
-        })
+    # -----------------------------------------------------------------
+    # CACHE : meme (query, ville, departement) -> meme reponse, sans relancer
+    # les 2-3 appels LLM. Un hit ne consomme PAS de quota (reponse gratuite a
+    # servir). On ne met en cache que les reponses NON temporelles : une
+    # recherche "ouvert maintenant" depend de l'heure et n'est jamais cachee
+    # (voir cache.set plus bas). NB : un backend de cache PARTAGE entre les
+    # workers Gunicorn est necessaire pour que ce soit efficace (voir reglage
+    # CACHES dans settings).
+    # -----------------------------------------------------------------
+    import hashlib
+    from django.core.cache import cache
+
+    cache_key = "yuumi_ai:" + hashlib.sha256(
+        f"{user_query.lower()}|{departement.lower()}|{ville.lower()}".encode("utf-8")
+    ).hexdigest()
+
+    reponse_cache = cache.get(cache_key)
+    if reponse_cache is not None:
+        return JsonResponse(reponse_cache)
+
+    # -----------------------------------------------------------------
+    # ETAPE 1 : comprehension d'intention.
+    # On ne paie l'agent web (understand_intent) QUE si la requete depend d'une
+    # info externe et changeante (meteo, tendance, evenement). Sinon on saute
+    # cet appel et extract_search_params analyse la requete brute : un appel LLM
+    # de moins, moins de latence, moins de quota Mistral consomme.
+    # -----------------------------------------------------------------
+    from .ai_agent.client import needs_web_search
+
+    if needs_web_search(user_query):
+        intent_text = understand_intent(user_query)
+        if intent_text is None:
+            return JsonResponse({
+                "fallback_to_tree": True,
+                "message": "La recherche intelligente est temporairement indisponible.",
+            })
+    else:
+        intent_text = None  # extract_search_params gere le cas None.
 
     params = extract_search_params(user_query, intent_text)
     if params is None:
@@ -1152,9 +1184,7 @@ def ai_search_agent(request):
             "message": "La recherche intelligente est temporairement indisponible.",
         })
 
-    # Hors-sujet detecte des l'extraction - on s'arrete ici, pas de
-    # recherche en base ni d'appel a recommend_stores pour une demande
-    # qui n'a aucun rapport avec les commerces locaux.
+    # Hors-sujet detecte des l'extraction - on s'arrete ici.
     if params.get("hors_sujet"):
         register_ai_usage(request.user)
         return JsonResponse({
@@ -1170,13 +1200,8 @@ def ai_search_agent(request):
             "aucun_resultat": True,
         })
 
-    # Categorie absente detectee des l'extraction - cas DIFFERENT de
-    # hors_sujet : la demande a un vrai sens commercial (ex: "armurerie"),
-    # mais aucune categorie Yuumi ne la couvre. On s'arrete ici aussi
-    # (pas de recherche en base ni d'appel a recommend_stores, puisque
-    # categories est garanti vide par le garde-fou cote code dans
-    # extract_search_params), avec un message different qui invite a
-    # suggerer l'ajout plutot qu'un simple recadrage de la demande.
+    # Categorie absente : la demande a un vrai sens commercial mais aucune
+    # categorie Yuumi ne la couvre.
     if params.get("categorie_absente"):
         register_ai_usage(request.user)
         return JsonResponse({
@@ -1191,11 +1216,7 @@ def ai_search_agent(request):
             "aucun_resultat": True,
         })
 
-    # Si l'IA juge la demande trop vague pour produire des idees de
-    # produits utiles, on s'arrete ici et on renvoie les questions de
-    # clarification au frontend - pas de recherche en base avec des
-    # criteres pauvres, qui produirait un bruit inutile (cf. test "un
-    # cadeau" sans aucun contexte).
+    # Demande trop vague : on renvoie des questions de clarification.
     if params.get("besoin_clarification"):
         return JsonResponse({
             "fallback_to_tree": False,
@@ -1204,35 +1225,68 @@ def ai_search_agent(request):
             "message": "Pouvez-vous préciser votre demande ?",
         })
 
-    from .ai_agent.search import find_stores_by_product, combine_store_querysets
+    # -----------------------------------------------------------------
+    # ETAPE 2 : recherche en base, par TIERS DE PREUVE.
+    #   - catalogue (Product/ProductFamily) -> preuve forte  -> [CONFIRME]
+    #   - description (fiche du commerce)    -> preuve directe -> deduit
+    #   - categorie                          -> filet large    -> deduit
+    # Le filtre "ouvert maintenant" est applique EN SQL dans chaque recherche,
+    # AVANT le plafond de candidats (sinon on plafonnait a 30 puis filtrait,
+    # d'ou des "aucun resultat" a tort).
+    # -----------------------------------------------------------------
+    from .ai_agent.search import (
+        find_stores_by_product,
+        find_stores_by_description,
+        combine_store_querysets,
+    )
 
-    commerces_par_categorie = find_matching_stores(params.get("categories", []), departement, ville)
-    commerces_par_produit = find_stores_by_product(params.get("idees_produits", []), departement, ville)
+    ouvert = bool(params.get("ouvert_maintenant", False))
+    categories = params.get("categories", [])
+    idees_produits = params.get("idees_produits", [])
 
+    commerces_par_categorie = find_matching_stores(
+        categories, departement, ville, ouvert_maintenant=ouvert
+    )
+    commerces_par_produit = find_stores_by_product(
+        idees_produits, departement, ville, ouvert_maintenant=ouvert
+    )
+    commerces_par_desc = find_stores_by_description(
+        idees_produits, departement, ville, ouvert_maintenant=ouvert
+    )
+
+    # Seul le catalogue donne le marqueur [CONFIRME].
     ids_par_produit = set(commerces_par_produit.values_list("id", flat=True))
 
-    # Une demande de produit precis (idees_produits non vide) ne doit PAS etre
-    # nourrie par le filet "categorie", qui ratisse des commerces vaguement lies
-    # que l'IA presenterait ensuite comme "peut-etre disponible" (bug Famille Mary
-    # / foie gras). Trois cas :
-    demande_produit_precis = bool(params.get("idees_produits"))
-    produit_sans_match_confirme = demande_produit_precis and not ids_par_produit
+    demande_produit_precis = bool(idees_produits)
 
-    if demande_produit_precis and ids_par_produit:
-        # De vrais vendeurs existent -> on n'envoie QU'EUX (tous [CONFIRME]).
-        commerces_combines = combine_store_querysets(commerces_par_produit)
+    if demande_produit_precis:
+        # Preuve directe = au moins un commerce trouve par catalogue OU par
+        # description. Dans ce cas on n'utilise PAS le filet "categorie", qui
+        # ferait remonter des commerces vaguement lies (bug Famille Mary).
+        preuve_directe = bool(ids_par_produit) or commerces_par_desc.exists()
+        if preuve_directe:
+            commerces_filtres = combine_store_querysets(
+                commerces_par_produit, commerces_par_desc
+            )
+            # Il existe une preuve directe (catalogue et/ou description) : le
+            # flux normal confirme/deduit suffit. Les commerces "description
+            # seule" ne sont pas [CONFIRME] -> l'IA les presentera en deduit,
+            # en s'appuyant sur la fiche. Pas besoin du message "aucune
+            # correspondance exacte".
+            produit_sans_match_confirme = False
+        else:
+            # Aucune preuve directe -> on retombe sur le filet categorie, mais
+            # l'IA devra l'annoncer honnetement et ne garder que le plausible.
+            commerces_filtres = combine_store_querysets(commerces_par_categorie)
+            produit_sans_match_confirme = True
     else:
-        # Aucun vendeur confirme, OU demande non-produit : on garde le filet
-        # categorie. Produit EN PREMIER pour ne jamais tronquer un match confirme
-        # sous le plafond MAX_CANDIDATES_TO_LLM.
-        commerces_combines = combine_store_querysets(commerces_par_produit, commerces_par_categorie)
-    commerces_filtres = apply_open_now_filter(commerces_combines, params.get("ouvert_maintenant", False))
+        # Demande de type categorie / besoin : produit (confirme) d'abord,
+        # puis categorie, pour ne jamais tronquer un match confirme.
+        commerces_filtres = combine_store_querysets(
+            commerces_par_produit, commerces_par_categorie
+        )
+        produit_sans_match_confirme = False
 
-    # On appelle TOUJOURS recommend_stores, meme avec une liste vide -
-    # c'est l'IA elle-meme qui gere ce cas (intention=hors_sujet ou
-    # aucun_resultat=true), conformement a la methode formalisee, plutot
-    # qu'un court-circuit cote code qui empecherait la classification
-    # d'intention de se faire.
     resultat_ia = recommend_stores(
         user_query,
         commerces_filtres,
@@ -1247,9 +1301,8 @@ def ai_search_agent(request):
         })
 
     # Verification de securite : on ne fait JAMAIS confiance aveuglement
-    # aux ID renvoyes par l'IA, meme si le JSON Schema garantit le format.
-    # Il garantit le FORMAT, pas le CONTENU. Applique a chaque resultat,
-    # quelle que soit la piste dans laquelle il se trouve.
+    # aux ID renvoyes par l'IA. Le JSON Schema garantit le FORMAT, pas le
+    # CONTENU. Applique a chaque resultat, quelle que soit la piste.
     ids_valides = {store.id for store in commerces_filtres}
     pistes_valides = []
     for piste in resultat_ia.get("pistes", []):
@@ -1267,10 +1320,6 @@ def ai_search_agent(request):
                     "confiance": reco.get("confiance", "deduit"),
                     "justification": reco.get("justification", ""),
                 })
-        # Une piste qui n'a plus aucun resultat valide apres filtrage
-        # (ex: l'IA n'avait cite que des ID invalides dans cette piste)
-        # est retiree entierement, plutot que d'afficher une section
-        # vide cote frontend.
         if resultats_valides:
             pistes_valides.append({
                 "angle": piste.get("angle", ""),
@@ -1279,11 +1328,19 @@ def ai_search_agent(request):
 
     register_ai_usage(request.user)
 
-    return JsonResponse({
+    payload = {
         "fallback_to_tree": False,
         "besoin_clarification": False,
         "intention": resultat_ia.get("intention", ""),
         "message": resultat_ia.get("message", ""),
         "pistes": pistes_valides,
         "aucun_resultat": len(pistes_valides) == 0,
-    })
+    }
+
+    # Mise en cache : uniquement les reponses NON temporelles. Une recherche
+    # "ouvert maintenant" depend de l'heure -> jamais mise en cache. TTL 6h,
+    # a ajuster selon la frequence de mise a jour de ton catalogue.
+    if not ouvert:
+        cache.set(cache_key, payload, 60 * 60 * 6)
+
+    return JsonResponse(payload)
