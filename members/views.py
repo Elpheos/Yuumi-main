@@ -1152,6 +1152,19 @@ def ai_search_agent(request):
             "message": "La recherche intelligente est temporairement indisponible.",
         })
 
+    # Si l'IA juge la demande trop vague pour produire des idees de
+    # produits utiles, on s'arrete ici et on renvoie les questions de
+    # clarification au frontend - pas de recherche en base avec des
+    # criteres pauvres, qui produirait un bruit inutile (cf. test "un
+    # cadeau" sans aucun contexte).
+    if params.get("besoin_clarification"):
+        return JsonResponse({
+            "fallback_to_tree": False,
+            "besoin_clarification": True,
+            "questions_clarification": params.get("questions_clarification", []),
+            "message": "Pouvez-vous préciser votre demande ?",
+        })
+
     from .ai_agent.search import find_stores_by_product, combine_store_querysets
 
     commerces_par_categorie = find_matching_stores(params.get("categories", []), departement, ville)
@@ -1198,6 +1211,7 @@ def ai_search_agent(request):
 
     return JsonResponse({
         "fallback_to_tree": False,
+        "besoin_clarification": False,
         "intention": resultat_ia.get("intention", ""),
         "message": resultat_ia.get("message", ""),
         "resultats": resultats_valides,
