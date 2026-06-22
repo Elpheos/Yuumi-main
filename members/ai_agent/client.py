@@ -357,8 +357,11 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
     leur attribuer confiance="confirme" meme si leur description
     generale ne mentionne pas explicitement le produit.
 
-    Renvoie un dict {intention, message, resultats, aucun_resultat},
-    ou None en cas d'echec technique (reseau, JSON invalide).
+    Renvoie un dict {intention, message, pistes, aucun_resultat}, ou None
+    en cas d'echec technique (reseau, JSON invalide). Chaque piste est un
+    dict {angle, resultats} - voir build_recommendation_schema dans
+    schema.py pour le detail complet et le raisonnement derriere cette
+    structure en pistes plutot qu'une liste plate.
     """
     store_ids_par_produit = store_ids_par_produit or set()
 
@@ -390,11 +393,23 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
         "1. Classe l'intention : produit_precis, commerce_precis, besoin, "
         "ou hors_sujet.\n"
         "   - hors_sujet (sans rapport avec produits/commerces locaux) -> "
-        "resultats vide, message de recadrage poli vers la mission de Yuumi.\n"
-        "2. Selectionne parmi les candidats ceux qui repondent a la demande, "
-        "les plus pertinents d'abord. Pas de limite arbitraire de nombre - "
-        "recommande tout ce qui est reellement pertinent parmi les candidats.\n"
-        "3. Pour chaque resultat :\n"
+        "pistes vide, message de recadrage poli vers la mission de Yuumi.\n"
+        "2. Organise ta reponse en PISTES (un angle/une approche distincte "
+        "chacune), pas en une seule liste plate :\n"
+        "   - Pour une demande PRECISE (produit_precis, commerce_precis : "
+        "ex: 'foie gras', 'un fleuriste'), UNE SEULE piste suffit - ne "
+        "fragmente pas artificiellement, nomme-la simplement 'Notre "
+        "selection'.\n"
+        "   - Pour une demande OUVERTE (besoin : ex: 'un cadeau', "
+        "'surprenez-moi'), resiste a la tentation de produire UNE seule "
+        "reponse consensuelle. Une demande ouverte n'a PAS une seule bonne "
+        "reponse - propose 2 a 4 pistes REELLEMENT distinctes qui "
+        "couvrent des angles differents (ex: 'Cote gourmand', 'Cote deco', "
+        "'Une experience a vivre', 'Le choix le plus sur'). Chaque piste "
+        "doit avoir un nom clair qui annonce son angle, et ne contenir que "
+        "des candidats reellement pertinents pour cet angle - n'invente "
+        "jamais une piste vide juste pour faire du nombre.\n"
+        "3. Pour chaque resultat, dans n'importe quelle piste :\n"
         "   - confiance='confirme' si et SEULEMENT si le candidat est "
         "explicitement marque [CONFIRME] dans la liste ci-dessus - ce "
         "marqueur signifie qu'une recherche en base de donnees a deja "
@@ -423,21 +438,22 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
         "formulation qui semble assuree.\n"
         "4. Pour une demande 'besoin' (cadeau, occasion) : tu peux t'appuyer "
         "sur tes connaissances pour identifier des types de produits "
-        "pertinents, MAIS les commerces cites doivent toujours venir des "
-        "candidats fournis. Si aucun candidat ne couvre une idee, n'invente "
-        "pas de commerce - mentionne juste que tu n'as pas trouve "
-        "d'etablissement correspondant dans la liste.\n"
+        "pertinents par piste, MAIS les commerces cites doivent toujours "
+        "venir des candidats fournis. Si aucun candidat ne couvre une idee "
+        "d'angle, ne cree pas cette piste plutot que d'y mettre un candidat "
+        "qui ne correspond pas vraiment.\n"
         "5. REGLE ABSOLUE SUR LES EXCLUSIONS EXPLICITES : si la demande de "
         "l'utilisateur exclut explicitement un type de produit ou de "
         "commerce (ex: 'sans vetements', 'pas de chocolat', 'en evitant "
         "les bijoux'), tu DOIS exclure TOUT candidat dont l'activite "
         "principale correspond a ce qui est exclu - meme si ce candidat "
-        "propose aussi d'autres types d'articles en marge. Ne contourne "
-        "JAMAIS une exclusion explicite en arguant qu'un commerce exclu "
-        "'propose aussi' autre chose : si l'utilisateur a dit d'eviter les "
-        "vetements, un magasin de vetements ne doit JAMAIS apparaitre dans "
-        "les resultats, peu importe les accessoires qu'il vend egalement. "
-        "Cette regle prime sur toute autre consideration de pertinence.\n"
+        "propose aussi d'autres types d'articles en marge, et meme dans "
+        "une piste differente. Ne contourne JAMAIS une exclusion explicite "
+        "en arguant qu'un commerce exclu 'propose aussi' autre chose : si "
+        "l'utilisateur a dit d'eviter les vetements, un magasin de "
+        "vetements ne doit JAMAIS apparaitre, dans aucune piste, peu "
+        "importe les accessoires qu'il vend egalement. Cette regle prime "
+        "sur toute autre consideration de pertinence.\n"
         "Ne jamais inventer un ID qui n'est pas dans la liste des candidats."
     )
 
