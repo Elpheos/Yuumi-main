@@ -1166,7 +1166,7 @@ def ai_search_agent(request):
                 "a trouver des commerces et produits locaux. Pouvez-vous "
                 "reformuler votre demande dans ce sens ?"
             ),
-            "resultats": [],
+            "pistes": [],
             "aucun_resultat": True,
         })
 
@@ -1187,7 +1187,7 @@ def ai_search_agent(request):
                 "Ce type de commerce n'est pas encore référencé sur Yuumi "
                 "pour le moment. N'hésitez pas à nous suggérer son ajout !"
             ),
-            "resultats": [],
+            "pistes": [],
             "aucun_resultat": True,
         })
 
@@ -1229,21 +1229,33 @@ def ai_search_agent(request):
 
     # Verification de securite : on ne fait JAMAIS confiance aveuglement
     # aux ID renvoyes par l'IA, meme si le JSON Schema garantit le format.
-    # Il garantit le FORMAT, pas le CONTENU.
+    # Il garantit le FORMAT, pas le CONTENU. Applique a chaque resultat,
+    # quelle que soit la piste dans laquelle il se trouve.
     ids_valides = {store.id for store in commerces_filtres}
-    resultats_valides = []
-    for reco in resultat_ia.get("resultats", []):
-        if reco.get("id") in ids_valides:
-            store = next(s for s in commerces_filtres if s.id == reco["id"])
-            resultats_valides.append({
-                "id": store.id,
-                "nom": store.nom,
-                "slug": store.slug,
-                "ville": store.ville,
-                "departement": store.departement,
-                "url": store.get_absolute_url(),
-                "confiance": reco.get("confiance", "deduit"),
-                "justification": reco.get("justification", ""),
+    pistes_valides = []
+    for piste in resultat_ia.get("pistes", []):
+        resultats_valides = []
+        for reco in piste.get("resultats", []):
+            if reco.get("id") in ids_valides:
+                store = next(s for s in commerces_filtres if s.id == reco["id"])
+                resultats_valides.append({
+                    "id": store.id,
+                    "nom": store.nom,
+                    "slug": store.slug,
+                    "ville": store.ville,
+                    "departement": store.departement,
+                    "url": store.get_absolute_url(),
+                    "confiance": reco.get("confiance", "deduit"),
+                    "justification": reco.get("justification", ""),
+                })
+        # Une piste qui n'a plus aucun resultat valide apres filtrage
+        # (ex: l'IA n'avait cite que des ID invalides dans cette piste)
+        # est retiree entierement, plutot que d'afficher une section
+        # vide cote frontend.
+        if resultats_valides:
+            pistes_valides.append({
+                "angle": piste.get("angle", ""),
+                "resultats": resultats_valides,
             })
 
     register_ai_usage(request.user)
@@ -1253,6 +1265,6 @@ def ai_search_agent(request):
         "besoin_clarification": False,
         "intention": resultat_ia.get("intention", ""),
         "message": resultat_ia.get("message", ""),
-        "resultats": resultats_valides,
-        "aucun_resultat": len(resultats_valides) == 0,
+        "pistes": pistes_valides,
+        "aucun_resultat": len(pistes_valides) == 0,
     })
