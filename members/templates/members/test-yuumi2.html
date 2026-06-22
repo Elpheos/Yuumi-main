@@ -56,6 +56,17 @@
     margin-bottom: 12px;
     position: relative;
 }
+.agent-ia-piste-titre {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #333;
+    margin: 24px 0 12px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid #ffe0c2;
+}
+.agent-ia-piste-titre:first-of-type {
+    margin-top: 8px;
+}
 .agent-ia-resultat-card a {
     font-weight: 700;
     color: #ff8b38;
@@ -444,18 +455,34 @@ if (!window._agentIaInitialized) {
                     html += `<p class="agent-ia-intro-message">${data.message}</p>`;
                 }
 
-                if (data.resultats && data.resultats.length > 0) {
-                    const confirmes = data.resultats.filter(r => r.confiance === 'confirme');
-                    const deduits = data.resultats.filter(r => r.confiance !== 'confirme');
-                    const resultatsOrdonnes = [...confirmes, ...deduits];
+                if (data.pistes && data.pistes.length > 0) {
+                    // Une seule piste sans nom particulier (cas des demandes
+                    // precises type produit_precis/commerce_precis) : pas
+                    // besoin d'afficher un titre de section, ca alourdirait
+                    // l'affichage pour rien. Plusieurs pistes (demande
+                    // ouverte type "besoin") : chaque angle devient une
+                    // section visuellement separee, pour que l'utilisateur
+                    // comprenne que ce sont des directions differentes, pas
+                    // une seule liste fourre-tout.
+                    const afficherTitres = data.pistes.length > 1;
 
-                    html += resultatsOrdonnes.map(r => `
-                        <div class="agent-ia-resultat-card">
-                            <a href="${r.url}">${r.nom}</a>
-                            ${badgeHtml(r.confiance)}
-                            <p class="agent-ia-resultat-raison">${r.justification}</p>
-                        </div>
-                    `).join('');
+                    data.pistes.forEach(piste => {
+                        if (afficherTitres && piste.angle) {
+                            html += `<h3 class="agent-ia-piste-titre">${piste.angle}</h3>`;
+                        }
+
+                        const confirmes = piste.resultats.filter(r => r.confiance === 'confirme');
+                        const deduits = piste.resultats.filter(r => r.confiance !== 'confirme');
+                        const resultatsOrdonnes = [...confirmes, ...deduits];
+
+                        html += resultatsOrdonnes.map(r => `
+                            <div class="agent-ia-resultat-card">
+                                <a href="${r.url}">${r.nom}</a>
+                                ${badgeHtml(r.confiance)}
+                                <p class="agent-ia-resultat-raison">${r.justification}</p>
+                            </div>
+                        `).join('');
+                    });
                 } else if (!data.message) {
                     html += '<p class="agent-ia-message">Aucun résultat trouvé.</p>';
                 }
