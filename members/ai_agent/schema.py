@@ -56,10 +56,15 @@ PARAMETER_SCHEMA = [
 def build_json_schema():
     """
     Construit le schema JSON (format attendu par l'API Mistral en mode
-    Custom Structured Outputs) a partir de PARAMETER_SCHEMA.
+    Custom Structured Outputs) a partir de PARAMETER_SCHEMA, plus deux
+    champs fixes (besoin_clarification, questions_clarification) qui
+    permettent a l'IA de signaler elle-meme qu'une demande est trop vague
+    pour produire des idees_produits utiles (ex: "un cadeau" sans
+    precision de destinataire/occasion/budget).
 
-    Utilise par extract_search_params() - etape de comprehension de
-    l'intention generale (categories + parametres de filtre).
+    Quand besoin_clarification=true, le frontend affiche des boutons de
+    reponse rapide (pas de saisie texte) bases sur questions_clarification,
+    plutot que de lancer une recherche avec des criteres trop pauvres.
     """
     type_mapping = {
         "list[str]": {"type": "array", "items": {"type": "string"}},
@@ -79,6 +84,43 @@ def build_json_schema():
         }
         if param["required"]:
             required_fields.append(param["field"])
+
+    properties["besoin_clarification"] = {
+        "type": "boolean",
+        "description": (
+            "True UNIQUEMENT si la demande est trop generale pour produire "
+            "des idees_produits utiles (ex: 'un cadeau' sans destinataire, "
+            "occasion ou budget). False si la demande est deja assez "
+            "precise pour chercher directement (ex: 'foie gras', 'un "
+            "restaurant ouvert maintenant', 'un cadeau pour ma mere qui "
+            "aime le jardinage')."
+        ),
+    }
+    properties["questions_clarification"] = {
+        "type": "array",
+        "items": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "Question courte affichee a l'utilisateur (ex: 'Pour qui ?').",
+                },
+                "options": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "2 a 4 options courtes cliquables (ex: ['Conjoint(e)', 'Ami(e)', 'Parent', 'Collegue']).",
+                },
+            },
+            "required": ["question", "options"],
+            "additionalProperties": False,
+        },
+        "description": (
+            "1 a 2 questions de clarification avec options, UNIQUEMENT si "
+            "besoin_clarification=true. Liste vide sinon."
+        ),
+    }
+    required_fields.append("besoin_clarification")
+    required_fields.append("questions_clarification")
 
     return {
         "type": "json_schema",
