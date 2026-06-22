@@ -399,7 +399,7 @@ def extract_search_params(user_query, intent_text=None):
 
 
 def recommend_stores(user_query, stores_list, store_ids_par_produit=None,
-                     produit_sans_match_confirme=False):
+                     produit_sans_match_confirme=False, ouvert_maintenant=False):
     """
     Appel 2b : implementation de la methode formalisee (voir documents
     "Methode assistant yuumi" / "Prompt assistant yuumi").
@@ -435,11 +435,12 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None,
             confirmation = ""
             if store.id in store_ids_par_produit:
                 confirmation = " [CONFIRME : vend reellement un produit correspondant a la recherche]"
+            ouvert_tag = " [OUVERT ACTUELLEMENT]" if ouvert_maintenant else ""
             lignes.append(
                 f"- ID {store.id} : {store.nom} "
                 f"({store.categorie.name if store.categorie else 'Sans categorie'}) "
                 f"- {store.descriptionpetite or 'Pas de description disponible.'}"
-                f"{confirmation}"
+                f"{confirmation}{ouvert_tag}"
             )
         commerces_avec_id = "\n".join(lignes)
 
@@ -448,8 +449,10 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None,
         "produits et des commerces locaux.\n\n"
         "Tu ne peux citer QUE les commerces presents dans la liste candidats "
         "fournie ci-dessous. Tu n'inventes jamais un commerce, une adresse "
-        "ou la disponibilite d'un produit. Si aucun candidat ne convient, "
-        "dis-le.\n\n"
+        "ou la disponibilite d'un produit. Tu n'inventes JAMAIS non plus une "
+        "information absente de la fiche : horaire precis, politique de "
+        "reservation, prix, ou service particulier. Si aucun candidat ne "
+        "convient, dis-le.\n\n"
         f"Candidats (seuls commerces autorises) :\n{commerces_avec_id}\n\n"
         "Pour chaque demande :\n"
         "1. Classe l'intention : produit_precis, commerce_precis, besoin, "
@@ -543,6 +546,22 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None,
             "'a confirmer directement aupres du commerce').\n"
             "- Si aucun candidat ne passe ce filtre de plausibilite, mettre "
             "aucun_resultat=true, pistes=[], et un message honnete."
+        )
+
+    # Requete "ouvert maintenant" : les candidats portent tous
+    # [OUVERT ACTUELLEMENT] (filtres en SQL en amont). On l'explicite a l'IA
+    # pour qu'elle puisse le dire au lieu d'INVENTER des horaires (bug observe :
+    # justifications type "ouvert en soiree", "sans reservation").
+    if ouvert_maintenant:
+        system_prompt += (
+            "\n\nCONTEXTE 'OUVERT MAINTENANT' :\n"
+            "L'utilisateur veut un commerce ouvert a l'instant. Tous les "
+            "candidats ci-dessus portent [OUVERT ACTUELLEMENT] : ils ont ete "
+            "filtres comme reellement ouverts en ce moment. Tu peux donc "
+            "l'affirmer ('ouvert actuellement'), mais tu n'inventes JAMAIS "
+            "d'horaire precis ('ouvert en soiree', 'jusqu'a 22h') ni de detail "
+            "non fourni (reservation, prix, services) - tu ne disposes pas de "
+            "ces informations."
         )
 
     try:
