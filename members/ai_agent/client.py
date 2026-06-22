@@ -115,12 +115,13 @@ Regles strictes :
 - Le champ "categories" doit toujours contenir au moins une categorie pertinente parmi la liste ci-dessus, SAUF si hors_sujet=true (dans ce cas, laisse categories vide).
 - Si la requete est ambigue et peut correspondre a plusieurs categories, inclus-les toutes plutot que d'en choisir une seule arbitrairement.
 
-Hors-sujet :
-- Si la requete n'a AUCUN rapport plausible avec la recherche de commerces ou produits locaux REELLEMENT DISPONIBLES SUR YUUMI (mots isoles sans sens commercial, insultes, contenu absurde, OU demande d'un type de commerce qui n'existe dans AUCUNE des categories listees ci-dessus), mets hors_sujet=true.
-- REGLE ABSOLUE ET NON NEGOCIABLE : si hors_sujet=true, alors categories DOIT etre une liste vide [] - JAMAIS une categorie approximative ou la moins mauvaise possible. Remplir categories avec quoi que ce soit alors que hors_sujet=true est une erreur grave qui n'est JAMAIS acceptable, meme si une categorie semble vaguement liee. Il n'existe AUCUNE exception a cette regle.
-- Exemple concret : une demande d'armurerie n'a pas de categorie correspondante sur Yuumi -> hors_sujet=true ET categories=[] (jamais "telephonie" ou une autre categorie sans rapport reel, meme par defaut).
-- Si une interpretation commerciale raisonnable est possible PARMI LES CATEGORIES REELLEMENT LISTEES ci-dessus, meme vague (ex: "un truc pour la maison" peut correspondre a plusieurs categories maison/decoration listees), mets hors_sujet=false et remplis categories normalement.
-- Ne force JAMAIS une categorie qui n'a pas de rapport reel et direct avec la demande juste pour eviter de mettre categories=[] - une liste vide est TOUJOURS preferable a une categorie inventee ou approximative.
+Hors-sujet et categorie absente (deux cas DIFFERENTS, ne jamais les confondre) :
+- hors_sujet=true : UNIQUEMENT si la demande n'a AUCUN sens commercial, meme en theorie (mots isoles sans signification, insultes, contenu absurde). Dans ce cas, categories=[] et categorie_absente=false.
+- categorie_absente=true : si la demande decrit un VRAI type de commerce ou produit qui a du sens, mais qu'AUCUNE des categories listees ci-dessus ne correspond reellement (ex: "armurerie", "magasin de drones", alors qu'aucune categorie Yuumi ne couvre cela). Dans ce cas, hors_sujet=false et categories=[].
+- REGLE ABSOLUE ET NON NEGOCIABLE : que ce soit hors_sujet=true OU categorie_absente=true, categories DOIT TOUJOURS etre une liste vide [] - JAMAIS une categorie approximative ou la moins mauvaise possible. Il n'existe AUCUNE exception.
+- Exemple : "armurerie" -> hors_sujet=false, categorie_absente=true, categories=[] (la demande a un sens commercial reel, mais Yuumi ne reference pas ce type de commerce).
+- Exemple : "pipi" -> hors_sujet=true, categorie_absente=false, categories=[] (aucun sens commercial).
+- Si une categorie reelle correspond, hors_sujet=false ET categorie_absente=false, et categories est rempli normalement.
 
 Clarification :
 - Si la demande est trop generale pour produire des idees_produits utiles (typiquement une demande de cadeau ou d'occasion sans destinataire, sans contexte, sans budget - ex: "un cadeau", "une idee de sortie"), mets besoin_clarification=true et propose 1 a 2 questions courtes avec des options cliquables.
@@ -129,6 +130,7 @@ Clarification :
 - Exemples de bonnes questions, toujours avec l'option de sortie en derniere position : "Pour qui ?" (options: Conjoint(e), Ami(e), Parent, Collegue, Enfant, Je ne sais pas), "Quel type de cadeau ?" (options: Bijou, Livre, Experience, Objet deco, Surprends-moi), "Quel budget approximatif ?" (options: Moins de 20e, 20-50e, 50-100e, Peu importe).
 - REGLE ANTI-BOUCLE OBLIGATOIRE : si le message de l'utilisateur contient deja une indication explicite du type "surprends-moi", "je ne sais pas", "peu importe", ou une formulation equivalente signalant qu'il ne veut plus etre interroge sur un point precis, tu DOIS mettre besoin_clarification=false et chercher directement avec ce que tu sais deja - meme si l'information reste incomplete. Ne JAMAIS poser une nouvelle question de clarification apres un signal explicite de ce type, meme sur un sujet different de la question precedente. Dans ce cas, choisis toi-meme des idees_produits larges et variees a partir du peu de contexte disponible, plutot que de redemander.
 - Une demande qui a deja recu une reponse a une premiere serie de questions de clarification (visible si le message utilisateur contient deja des reponses, format "question - reponse - reponse") ne doit JAMAIS declencher une deuxieme serie de clarification - a ce stade, cherche directement avec le contexte disponible, meme partiel.
+- Si un segment de reponse contient le mot " ou " entre plusieurs valeurs (ex: "Bijou ou Livre"), cela signifie que l'utilisateur a selectionne plusieurs options comme des ALTERNATIVES valables, pas une contrainte cumulative - traite chaque valeur comme une piste independante a explorer (ex: produire des idees_produits couvrant a la fois les bijoux ET les livres, pas seulement l'intersection des deux).
 - Si la demande contient deja assez de contexte pour chercher directement (ex: "foie gras", "un restaurant ouvert maintenant", "un cadeau pour ma mere qui aime le jardinage"), mets besoin_clarification=false et questions_clarification=[].
 """
 
@@ -208,13 +210,14 @@ def extract_search_params(user_query, intent_text):
         content = response.choices[0].message.content
         result = json.loads(content)
 
-        # Garde-fou cote code, independant du prompt : si hors_sujet=true,
-        # on force categories=[] nous-memes, plutot que de faire confiance
-        # uniquement a l'instruction textuelle - un modele peut occasionnellement
-        # remplir categories par reflexe de formatage meme quand on lui dit de
-        # ne pas le faire (observe en test reel avec "armurerie" -> categories
-        # rempli avec 'telephonie' malgre hors_sujet=true).
-        if result.get("hors_sujet"):
+        # Garde-fou cote code, independant du prompt : si hors_sujet=true
+        # OU categorie_absente=true, on force categories=[] nous-memes,
+        # plutot que de faire confiance uniquement a l'instruction textuelle
+        # - un modele peut occasionnellement remplir categories par reflexe
+        # de formatage meme quand on lui dit de ne pas le faire (observe en
+        # test reel avec "armurerie" -> categories rempli avec 'telephonie'
+        # malgre hors_sujet=true avant l'ajout de ce garde-fou).
+        if result.get("hors_sujet") or result.get("categorie_absente"):
             result["categories"] = []
 
         return result
