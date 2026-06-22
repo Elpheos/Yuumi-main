@@ -116,9 +116,11 @@ Regles strictes :
 - Si la requete est ambigue et peut correspondre a plusieurs categories, inclus-les toutes plutot que d'en choisir une seule arbitrairement.
 
 Hors-sujet :
-- Si la requete n'a AUCUN rapport plausible avec la recherche de commerces ou produits locaux (mots isoles sans sens commercial, insultes, contenu absurde ou inapproprie, questions techniques sans rapport), mets hors_sujet=true, categories=[], idees_produits=[], besoin_clarification=false, questions_clarification=[].
-- Si une interpretation commerciale raisonnable est possible, meme vague (ex: "un truc pour la maison", "j'ai besoin d'aide"), mets hors_sujet=false et traite normalement (clarification si besoin).
-- Ne force JAMAIS une interpretation commerciale artificielle sur un mot ou une phrase qui n'a clairement aucun rapport avec un commerce ou un produit - dans le doute sur un contenu clairement absurde ou inapproprie, prefere hors_sujet=true plutot que d'inventer des categories sans rapport reel.
+- Si la requete n'a AUCUN rapport plausible avec la recherche de commerces ou produits locaux REELLEMENT DISPONIBLES SUR YUUMI (mots isoles sans sens commercial, insultes, contenu absurde, OU demande d'un type de commerce qui n'existe dans AUCUNE des categories listees ci-dessus), mets hors_sujet=true.
+- REGLE ABSOLUE ET NON NEGOCIABLE : si hors_sujet=true, alors categories DOIT etre une liste vide [] - JAMAIS une categorie approximative ou la moins mauvaise possible. Remplir categories avec quoi que ce soit alors que hors_sujet=true est une erreur grave qui n'est JAMAIS acceptable, meme si une categorie semble vaguement liee. Il n'existe AUCUNE exception a cette regle.
+- Exemple concret : une demande d'armurerie n'a pas de categorie correspondante sur Yuumi -> hors_sujet=true ET categories=[] (jamais "telephonie" ou une autre categorie sans rapport reel, meme par defaut).
+- Si une interpretation commerciale raisonnable est possible PARMI LES CATEGORIES REELLEMENT LISTEES ci-dessus, meme vague (ex: "un truc pour la maison" peut correspondre a plusieurs categories maison/decoration listees), mets hors_sujet=false et remplis categories normalement.
+- Ne force JAMAIS une categorie qui n'a pas de rapport reel et direct avec la demande juste pour eviter de mettre categories=[] - une liste vide est TOUJOURS preferable a une categorie inventee ou approximative.
 
 Clarification :
 - Si la demande est trop generale pour produire des idees_produits utiles (typiquement une demande de cadeau ou d'occasion sans destinataire, sans contexte, sans budget - ex: "un cadeau", "une idee de sortie"), mets besoin_clarification=true et propose 1 a 2 questions courtes avec des options cliquables.
@@ -204,7 +206,18 @@ def extract_search_params(user_query, intent_text):
             temperature=0,
         )
         content = response.choices[0].message.content
-        return json.loads(content)
+        result = json.loads(content)
+
+        # Garde-fou cote code, independant du prompt : si hors_sujet=true,
+        # on force categories=[] nous-memes, plutot que de faire confiance
+        # uniquement a l'instruction textuelle - un modele peut occasionnellement
+        # remplir categories par reflexe de formatage meme quand on lui dit de
+        # ne pas le faire (observe en test reel avec "armurerie" -> categories
+        # rempli avec 'telephonie' malgre hors_sujet=true).
+        if result.get("hors_sujet"):
+            result["categories"] = []
+
+        return result
 
     except Exception as e:
         logger.error(f"extract_search_params a echoue : {e}")
