@@ -606,6 +606,34 @@ Accompagner projets de développement
 
 				<div class="home2-function-grid-2">
 					<div class="home2-function-card">
+						<button class="home2-function-card-button" onclick="renderServicePrecisWebSitesNouveau()">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Nouveau site web</p>
+							</div>
+						</button>
+					</div>
+
+					<div class="home2-function-card">
+						<button class="home2-function-card-button">
+							<div class="home-2-function-card-upperpart">
+								<p class="home-2-function-card-upperpart-p">Site web déjà en place</p>
+							</div>
+						</button>
+					</div>
+				</div>
+			</div>
+		`
+	}
+
+	function renderServicePrecisWebSitesNouveau() {
+		const container = document.querySelector('.home2-function-content');
+
+		container.innerHTML = `
+							<div class="home2-function-phase-container">
+				<p class="home2-function-phase-title">Découvrez nos offres</p>
+
+				<div class="home2-function-grid-2">
+					<div class="home2-function-card">
 						<button class="home2-function-card-button" onclick="">
 							<div class="home-2-function-card-upperpart">
 								<p class="home-2-function-card-upperpart-p">Nouveau site web</p>
