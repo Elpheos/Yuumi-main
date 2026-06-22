@@ -1152,6 +1152,24 @@ def ai_search_agent(request):
             "message": "La recherche intelligente est temporairement indisponible.",
         })
 
+    # Hors-sujet detecte des l'extraction - on s'arrete ici, pas de
+    # recherche en base ni d'appel a recommend_stores pour une demande
+    # qui n'a aucun rapport avec les commerces locaux.
+    if params.get("hors_sujet"):
+        register_ai_usage(request.user)
+        return JsonResponse({
+            "fallback_to_tree": False,
+            "besoin_clarification": False,
+            "hors_sujet": True,
+            "message": (
+                "Je suis l'assistant de recherche de Yuumi, dedie a vous aider "
+                "a trouver des commerces et produits locaux. Pouvez-vous "
+                "reformuler votre demande dans ce sens ?"
+            ),
+            "resultats": [],
+            "aucun_resultat": True,
+        })
+
     # Si l'IA juge la demande trop vague pour produire des idees de
     # produits utiles, on s'arrete ici et on renvoie les questions de
     # clarification au frontend - pas de recherche en base avec des
