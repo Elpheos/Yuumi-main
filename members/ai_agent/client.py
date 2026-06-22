@@ -25,6 +25,11 @@ _INTENT_AGENT_INSTRUCTIONS = (
 
 
 def _get_client():
+    """
+    Cree un client Mistral. Fonction separee pour pouvoir la simuler
+    facilement dans des tests plus tard, et pour centraliser la lecture
+    de la cle API a un seul endroit.
+    """
     from mistralai.client import Mistral
 
     api_key = os.environ.get("MISTRAL_API_KEY")
@@ -34,6 +39,12 @@ def _get_client():
 
 
 def _get_or_create_intent_agent(client):
+    """
+    Recupere l'agent de comprehension d'intention, ou le cree s'il n'existe
+    pas encore. Une fois cree, son ID devrait etre stocke dans
+    MISTRAL_INTENT_AGENT_ID (variable d'environnement) pour ne pas en
+    recreer un nouveau a chaque redemarrage du serveur Django.
+    """
     global _INTENT_AGENT_ID
 
     if _INTENT_AGENT_ID:
@@ -56,6 +67,10 @@ def _get_or_create_intent_agent(client):
 
 
 def get_categories_block():
+    """
+    Reconstruit la liste des categories reelles depuis la base de donnees,
+    A CHAQUE APPEL - jamais une liste figee en dur dans le code.
+    """
     from members.models import Category
 
     categories = (
@@ -73,6 +88,11 @@ def get_categories_block():
 
 
 def build_system_prompt():
+    """
+    Genere le prompt systeme pour l'appel d'extraction (etape 2a : intention
+    generale -> categories + parametres de filtre), a partir du schema de
+    parametres et de la liste de categories reelles.
+    """
     categories_block = get_categories_block()
 
     parametres_block = "\n".join(
@@ -98,6 +118,13 @@ Regles strictes :
 
 
 def understand_intent(user_query):
+    """
+    Appel 1 : agent avec web_search, repond en texte libre. Comprend
+    l'intention generale, peut chercher sur le web si besoin (infos
+    changeantes), mais ne connait jamais la base Yuumi elle-meme.
+
+    Renvoie le texte de la reponse (str), ou None en cas d'echec.
+    """
     try:
         client = _get_client()
         agent_id = _get_or_create_intent_agent(client)
@@ -115,6 +142,12 @@ def understand_intent(user_query):
 
 
 def extract_search_params(user_query, intent_text):
+    """
+    Appel 2a : transforme le texte libre de l'appel 1 en JSON structure
+    garanti (categories, ouvert_maintenant, rayon_km, idees_produits).
+
+    Renvoie un dict Python, ou None en cas d'echec.
+    """
     if intent_text is None:
         logger.error("extract_search_params : intent_text est None, appel annule.")
         return None
@@ -143,32 +176,81 @@ def extract_search_params(user_query, intent_text):
 
 def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
     """
-    stores_list : liste Python de Store (fusion categories + produits).
+    Appel 2b : implementation de la methode formalisee (voir documents
+    "Methode assistant yuumi" / "Prompt assistant yuumi").
+
+    Classifie l'intention (produit_precis / commerce_precis / besoin /
+    hors_sujet), distingue confirme vs deduit pour chaque resultat, et
+    ne peut JAMAIS citer un commerce absent de stores_list - le modele
+    ne fait que choisir et justifier parmi ce qu'on lui fournit.
+
+    stores_list : liste Python de Store (resultat de la fusion
+    categories + produits, deja plafonnee a un nombre raisonnable de
+    candidats par search.py - voir MAX_CANDIDATES_TO_LLM).
 
     store_ids_par_produit : ensemble des ID de Store trouves via une
-    correspondance produit EXACTE (table Product). Marque ces commerces
-    comme vendant reellement le produit recherche.
+    correspondance produit EXACTE (table Product) - marque ces
+    commerces comme [CONFIRME] dans le prompt, ce qui autorise l'IA a
+    leur attribuer confiance="confirme" meme si leur description
+    generale ne mentionne pas explicitement le produit.
 
-    Renvoie un dict {message_intro, commerces_recommandes} ou None en cas
-    d'echec. message_intro est la "bulle" affichee avant la liste.
+    Renvoie un dict {intention, message, resultats, aucun_resultat},
+    ou None en cas d'echec technique (reseau, JSON invalide).
     """
-    if not stores_list:
-        return {"message_intro": "", "commerces_recommandes": []}
-
     store_ids_par_produit = store_ids_par_produit or set()
 
-    lignes = []
-    for store in stores_list:
-        confirmation = ""
-        if store.id in store_ids_par_produit:
-            confirmation = " [CE COMMERCE VEND REELLEMENT UN PRODUIT CORRESPONDANT A LA RECHERCHE]"
-        lignes.append(
-            f"- ID {store.id} : {store.nom} "
-            f"({store.categorie.name if store.categorie else 'Sans categorie'}) "
-            f"- {store.descriptionpetite or 'Pas de description disponible.'}"
-            f"{confirmation}"
-        )
-    commerces_avec_id = "\n".join(lignes)
+    if not stores_list:
+        commerces_avec_id = "(aucun candidat disponible pour cette recherche)"
+    else:
+        lignes = []
+        for store in stores_list:
+            confirmation = ""
+            if store.id in store_ids_par_produit:
+                confirmation = " [CONFIRME : vend reellement un produit correspondant a la recherche]"
+            lignes.append(
+                f"- ID {store.id} : {store.nom} "
+                f"({store.categorie.name if store.categorie else 'Sans categorie'}) "
+                f"- {store.descriptionpetite or 'Pas de description disponible.'}"
+                f"{confirmation}"
+            )
+        commerces_avec_id = "\n".join(lignes)
+
+    system_prompt = (
+        "Tu es l'assistant de Yuumi. Tu aides l'utilisateur a trouver des "
+        "produits et des commerces locaux.\n\n"
+        "Tu ne peux citer QUE les commerces presents dans la liste candidats "
+        "fournie ci-dessous. Tu n'inventes jamais un commerce, une adresse "
+        "ou la disponibilite d'un produit. Si aucun candidat ne convient, "
+        "dis-le.\n\n"
+        f"Candidats (seuls commerces autorises) :\n{commerces_avec_id}\n\n"
+        "Pour chaque demande :\n"
+        "1. Classe l'intention : produit_precis, commerce_precis, besoin, "
+        "ou hors_sujet.\n"
+        "   - hors_sujet (sans rapport avec produits/commerces locaux) -> "
+        "resultats vide, message de recadrage poli vers la mission de Yuumi.\n"
+        "2. Selectionne parmi les candidats ceux qui repondent a la demande, "
+        "les plus pertinents d'abord. Pas de limite arbitraire de nombre - "
+        "recommande tout ce qui est reellement pertinent parmi les candidats.\n"
+        "3. Pour chaque resultat :\n"
+        "   - confiance='confirme' si le candidat est marque [CONFIRME] ou si "
+        "sa description mentionne explicitement le produit/service demande.\n"
+        "   - confiance='deduit' si tu deduis seulement depuis sa categorie "
+        "generale (ce type de commerce en propose generalement). Dans ce cas, "
+        "le dire explicitement dans la justification ('a confirmer', "
+        "'generalement').\n"
+        "   - justification : une phrase courte expliquant pourquoi ce "
+        "commerce, basee UNIQUEMENT sur les informations fournies ci-dessus. "
+        "Ne jamais ajouter de details que tu ne peux pas verifier, comme un "
+        "positionnement tarifaire ('haut de gamme', 'le meilleur') qui n'est "
+        "confirme par aucune donnee fournie.\n"
+        "4. Pour une demande 'besoin' (cadeau, occasion) : tu peux t'appuyer "
+        "sur tes connaissances pour identifier des types de produits "
+        "pertinents, MAIS les commerces cites doivent toujours venir des "
+        "candidats fournis. Si aucun candidat ne couvre une idee, n'invente "
+        "pas de commerce - mentionne juste que tu n'as pas trouve "
+        "d'etablissement correspondant dans la liste.\n"
+        "Ne jamais inventer un ID qui n'est pas dans la liste des candidats."
+    )
 
     try:
         client = _get_client()
@@ -176,46 +258,14 @@ def recommend_stores(user_query, stores_list, store_ids_par_produit=None):
         response = client.chat.complete(
             model=MISTRAL_MODEL,
             messages=[
-                {"role": "system", "content": (
-                    "Tu es l'assistant de recherche de Yuumi. Voici une liste de "
-                    "commerces REELS disponibles, avec leur description :\n\n"
-                    + commerces_avec_id + "\n\n"
-                    "Tu dois produire deux choses :\n\n"
-                    "1) message_intro : un court texte (1 a 3 phrases) affiche "
-                    "AVANT la liste. Commence de facon accueillante, puis reste "
-                    "factuel. REGLE IMPORTANTE : si la requete de l'utilisateur "
-                    "contient un critere que tu ne peux PAS verifier depuis les "
-                    "descriptions ci-dessus (par exemple 'haut de gamme', 'pas "
-                    "cher', 'romantique', 'chaleureux', 'le meilleur'...), ne le "
-                    "valide JAMAIS comme un fait : signale-le honnetement dans "
-                    "l'intro comme un point a confirmer sur place (ex: 'le "
-                    "positionnement haut de gamme reste a confirmer directement "
-                    "aupres du commerce'). Si la requete est neutre et sans "
-                    "critere invraisemblable a verifier, reste simplement "
-                    "accueillant et direct, sans ajouter de reserve inutile.\n\n"
-                    "2) commerces_recommandes : recommande jusqu'a 10 commerces "
-                    "parmi CETTE LISTE UNIQUEMENT, en utilisant leur ID EXACT. "
-                    "Si un commerce est marque [CE COMMERCE VEND REELLEMENT UN "
-                    "PRODUIT CORRESPONDANT A LA RECHERCHE], cela signifie qu'il "
-                    "vend vraiment ce qui est recherche, meme si sa description "
-                    "generale ne le precise pas - recommande-le en priorite. "
-                    "Pour chaque commerce, donne une raison COURTE et FACTUELLE, "
-                    "basee UNIQUEMENT sur sa description - ne repete pas un "
-                    "qualificatif non verifiable (comme 'haut de gamme') dans la "
-                    "raison, et n'invente aucun detail. Ne jamais inventer un ID "
-                    "qui n'est pas dans cette liste."
-                )},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_query},
             ],
             response_format=build_recommendation_schema(),
-            temperature=0.3,
+            temperature=0.2,
         )
         content = response.choices[0].message.content
-        result = json.loads(content)
-        return {
-            "message_intro": result.get("message_intro", ""),
-            "commerces_recommandes": result.get("commerces_recommandes", []),
-        }
+        return json.loads(content)
 
     except Exception as e:
         logger.error(f"recommend_stores a echoue : {e}")
