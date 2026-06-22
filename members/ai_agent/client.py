@@ -188,6 +188,36 @@ Clarification :
 """
 
 
+# Signaux indiquant que la requete depend d'une information EXTERNE et
+# changeante (meteo, tendances, evenements ponctuels) - le SEUL cas ou l'agent
+# web (understand_intent) apporte une vraie valeur. Pour tout le reste (un
+# produit, un type de commerce, un cadeau), cet appel etait du pur cout et de
+# la latence en plus : on le saute et extract_search_params analyse la requete
+# brute. Liste volontairement courte et facile a etendre/ajuster.
+#
+# NB : les notions purement temporelles type "maintenant", "ce soir",
+# "aujourd'hui" ne sont PAS ici - elles sont gerees par le parametre
+# ouvert_maintenant, pas par une recherche web.
+_WEB_SEARCH_SIGNAUX = (
+    "meteo", "météo", "pluie", "neige", "soleil", "canicule", "orage",
+    "tendance", "tendances", "a la mode", "à la mode", "en ce moment",
+    "populaire en ce moment", "festival", "evenement", "événement",
+    "concert", "actualite", "actualité", "marche de noel", "marché de noël",
+    "saison", "saisonnier",
+)
+
+
+def needs_web_search(user_query):
+    """
+    True si la requete contient un signal suggerant qu'une info web recente est
+    utile. Heuristique simple (sous-chaines, insensible a la casse) : on prefere
+    rater quelques cas a la marge (le pipeline marche tres bien sans web) plutot
+    que de payer un appel agent supplementaire sur chaque recherche.
+    """
+    q = (user_query or "").lower()
+    return any(signal in q for signal in _WEB_SEARCH_SIGNAUX)
+
+
 def understand_intent(user_query):
     """
     Appel 1 : agent avec web_search, repond en texte libre. Comprend
@@ -290,29 +320,46 @@ def _understand_intent_fallback(client, user_query):
         return None
 
 
-def extract_search_params(user_query, intent_text):
+def extract_search_params(user_query, intent_text=None):
     """
-    Appel 2a : transforme le texte libre de l'appel 1 en JSON structure
-    garanti (categories, ouvert_maintenant, rayon_km, idees_produits).
+    Appel 2a : transforme la requete en JSON structure garanti (categories,
+    ouvert_maintenant, rayon_km, idees_produits...).
+
+    intent_text est le texte libre de l'appel 1 (understand_intent), QUAND il a
+    eu lieu. Il est desormais OPTIONNEL : pour la grande majorite des requetes,
+    on saute l'appel agent web (voir needs_web_search / la vue) et on passe
+    directement la requete brute ici. Si intent_text est fourni, on l'injecte
+    comme contexte ; sinon le modele analyse directement user_query.
 
     Renvoie un dict Python, ou None en cas d'echec.
     """
-    if intent_text is None:
-        logger.error("extract_search_params : intent_text est None, appel annule.")
-        return None
-
     try:
         client = _get_client()
+
+        messages = [
+            {"role": "system", "content": build_system_prompt()},
+            {"role": "user", "content": user_query},
+        ]
+        if intent_text:
+            # Une pre-comprehension web est disponible : on l'injecte comme
+            # contexte avant de demander le JSON.
+            messages.append({"role": "assistant", "content": intent_text})
+            messages.append({
+                "role": "user",
+                "content": "Traduis cette intention en JSON structure selon le schema fourni.",
+            })
+        else:
+            # Chemin courant, sans appel web prealable : le modele analyse
+            # directement la requete brute.
+            messages.append({
+                "role": "user",
+                "content": "Analyse cette requete et produis le JSON structure selon le schema fourni.",
+            })
 
         response = client.chat.complete(
             model=MISTRAL_MODEL,
             prompt_cache_key="yuumi-extract-search-params",
-            messages=[
-                {"role": "system", "content": build_system_prompt()},
-                {"role": "user", "content": user_query},
-                {"role": "assistant", "content": intent_text},
-                {"role": "user", "content": "Traduis cette intention en JSON structure selon le schema fourni."},
-            ],
+            messages=messages,
             response_format=build_json_schema(),
             temperature=0,
             timeout_ms=MISTRAL_REQUEST_TIMEOUT_MS,
