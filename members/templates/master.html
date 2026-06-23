@@ -535,62 +535,80 @@ main {
 }
 
     
-.agent-ia-bouton-flottant {
+.premium-bouton {
     position: fixed;
-    bottom: 24px;
-    right: 24px;
+    bottom: 28px;
+    right: 28px;
     z-index: 9990;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     background: white;
-    border: 2px solid #ff8b38;
+    border: 3px solid #ff8b38;
     border-radius: 100px;
-    padding: 10px 18px 10px 14px;
-    box-shadow: 0 6px 20px rgba(255, 139, 56, 0.25);
+    padding: 14px 24px 14px 18px;
+    box-shadow: 0 8px 28px rgba(255, 139, 56, 0.35);
     text-decoration: none;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: premium-bouton-pulse 2.5s ease-in-out infinite;
 }
- 
-.agent-ia-bouton-flottant:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(255, 139, 56, 0.35);
+
+.premium-bouton:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 10px 32px rgba(255, 139, 56, 0.45);
+    animation-play-state: paused;
 }
- 
-.agent-ia-bouton-flottant svg {
-    width: 22px;
-    height: 22px;
+
+.premium-bouton svg {
+    width: 28px;
+    height: 28px;
     fill: #ff8b38;
     flex-shrink: 0;
 }
- 
-.agent-ia-bouton-flottant-badge {
-    font-size: 0.78rem;
+
+.premium-bouton-texte {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+}
+
+.premium-bouton-titre {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #333;
+    white-space: nowrap;
+}
+
+.premium-bouton-badge {
+    font-size: 0.7rem;
     font-weight: 700;
     color: white;
     background: #ff8b38;
-    padding: 3px 10px;
+    padding: 2px 9px;
     border-radius: 100px;
     white-space: nowrap;
+    width: fit-content;
+    margin-top: 2px;
 }
- 
-/* Cache le bouton flottant sur mobile : il sera gere differemment
-   (dans le menu burger), pas en flottant sur petit ecran - voir la
-   tache separee deja identifiee. */
+
+@keyframes premium-bouton-pulse {
+    0%, 100% {
+        box-shadow: 0 8px 28px rgba(255, 139, 56, 0.35);
+    }
+    50% {
+        box-shadow: 0 8px 32px rgba(255, 139, 56, 0.6);
+    }
+}
+
 @media (max-width: 767px) {
-    .agent-ia-bouton-flottant {
+    .premium-bouton {
         display: none;
     }
 }
- 
-/* En app native Capacitor, le bouton flottant ne doit pas se superposer
-   a la tab bar du bas (deja presente en fixed bottom:0) - le cache aussi
-   par securite, meme si la media query ci-dessus devrait deja suffire
-   sur les tailles d'ecran mobiles habituelles. */
-.capacitor-native .agent-ia-bouton-flottant {
+
+.capacitor-native .premium-bouton {
     display: none;
 }
- 
 </style>
 </head>
 
@@ -1648,9 +1666,12 @@ document.addEventListener("DOMContentLoaded", () => {
 <script src="{% static 'js/push.js' %}"></script>
     
 {% if ai_agent_visible %}
-<a href="{% url 'test-yuumi2' %}" class="agent-ia-bouton-flottant" title="Recherche intelligente - reserve aux membres Premium">
+<a href="{% url 'test-yuumi2' %}" class="premium-bouton" title="Recherche intelligente - reservee aux membres Premium">
     <svg viewBox="0 0 512 512"><path d="M234.7 42.7L197 56.8c-3 1.1-5 4-5 7.2s2 6.1 5 7.2l37.7 14.1 14.1 37.7c1.1 3 4 5 7.2 5s6.1-2 7.2-5l14.1-37.7L315 64c3-1.1 5-4 5-7.2s-2-6.1-5-7.2l-37.7-14.1L263.2 7.8c-1.1-3-4-5-7.2-5s-6.1 2-7.2 5L234.7 42.7zM46.1 395.4c-18.7 18.7-18.7 49.1 0 67.9l2.6 2.6c18.7 18.7 49.1 18.7 67.9 0L235.9 346.5c4.3 16.8 11.7 32.6 21.9 46.5C290.4 442.4 350.9 480 416 480c44.2 0 83.1-21.7 107.9-54.5 1.5-2 .9-4.7-1.2-6.1-2-1.4-4.7-.9-6.1 1.2C495.1 451.9 458.7 472 416 472c-61.7 0-119.1-35.1-150.5-78.4-9.5-13.4-16.4-28.5-20.3-44.5L364.5 230.2c18.7-18.7 18.7-49.1 0-67.9l-2.6-2.6c-18.7-18.7-49.1-18.7-67.9 0L113.2 340.5C99.3 350.7 83.5 358.1 66.7 362L46.1 395.4zM416 32c-79.5 0-152.1 39.6-194.9 100.4-2.2 3.2-1.4 7.5 1.8 9.7s7.5 1.4 9.7-1.8C273.1 81.1 339.4 44 416 44c97 0 176 79 176 176s-79 176-176 176c-3.9 0-7 3.1-7 7s3.1 7 7 7c104.9 0 190-85.1 190-190S520.9 32 416 32z"/></svg>
-    <span class="agent-ia-bouton-flottant-badge">Premium</span>
+    <span class="premium-bouton-texte">
+        <span class="premium-bouton-titre">Découvrez Yuumi</span>
+        <span class="premium-bouton-badge">Premium</span>
+    </span>
 </a>
 {% endif %}
 </body>
