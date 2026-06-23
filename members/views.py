@@ -33,6 +33,7 @@ from .ai_agent.access import can_use_ai_agent, register_ai_usage, is_premium_use
 from .ai_agent.client import understand_intent, extract_search_params, recommend_stores
 from .ai_agent.search import find_matching_stores, apply_open_now_filter
 
+AI_AGENT_PUBLIC = False
 
 def is_open_now(store):
     now = datetime.now(tz=ZoneInfo('Europe/Paris'))
