@@ -122,3 +122,17 @@ def menu_context(request):
         "menu_departement": departement,
         "menu_ville": ville,
     }
+
+def ai_agent_visible(request):
+    """
+    Expose ai_agent_visible (booleen) a tous les templates : True si
+    AI_AGENT_PUBLIC est passe a True dans views.py (ouverture a tous),
+    ou si l'utilisateur courant est superuser (acces admin pendant les
+    tests, avant l'ouverture publique).
+    """
+    from members.views import AI_AGENT_PUBLIC
+
+    is_superuser = getattr(request.user, "is_superuser", False)
+    return {
+        "ai_agent_visible": AI_AGENT_PUBLIC or is_superuser,
+    }
