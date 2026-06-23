@@ -1304,13 +1304,30 @@ def ai_search_agent(request):
     # Verification de securite : on ne fait JAMAIS confiance aveuglement
     # aux ID renvoyes par l'IA. Le JSON Schema garantit le FORMAT, pas le
     # CONTENU. Applique a chaque resultat, quelle que soit la piste.
+    #
+    # ids_deja_cites : garde-fou cote code contre la duplication d'un meme
+    # commerce dans plusieurs pistes. Observe en prod : sur une demande
+    # avec tres peu de candidats reels (ex: 2 commerces pour un "cadeau
+    # d'anniversaire sous 20 euros"), le modele a invente 3 pistes
+    # ("creatif", "educatif", "gourmand") en reutilisant les 2 MEMES
+    # commerces dans chacune, avec des justifications de plus en plus
+    # forcees pour justifier la repetition. Le prompt interdit maintenant
+    # explicitement cette duplication (voir client.py, regle 5), mais on
+    # ne peut pas compter uniquement sur l'instruction textuelle - ce
+    # garde-fou cote code garantit le resultat meme si le modele l'ignore.
+    # Premiere piste ou un ID apparait = piste retenue, les occurrences
+    # suivantes du meme ID dans d'autres pistes sont silencieusement
+    # ignorees.
     ids_valides = {store.id for store in commerces_filtres}
+    ids_deja_cites = set()
     pistes_valides = []
     for piste in resultat_ia.get("pistes", []):
         resultats_valides = []
         for reco in piste.get("resultats", []):
-            if reco.get("id") in ids_valides:
-                store = next(s for s in commerces_filtres if s.id == reco["id"])
+            reco_id = reco.get("id")
+            if reco_id in ids_valides and reco_id not in ids_deja_cites:
+                ids_deja_cites.add(reco_id)
+                store = next(s for s in commerces_filtres if s.id == reco_id)
                 resultats_valides.append({
                     "id": store.id,
                     "nom": store.nom,
