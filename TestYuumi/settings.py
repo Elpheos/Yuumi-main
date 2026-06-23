@@ -117,6 +117,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "members.context_processors.menu_context",
+                'members.context_processors.ai_agent_visible',
             ],
         },
     },
