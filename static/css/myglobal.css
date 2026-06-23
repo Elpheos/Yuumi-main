@@ -340,23 +340,23 @@ body.menu-open {
         display: block;
     }
 
-    .header-container {
-        display: flex !important;
-        flex-direction: column;
-        position: fixed;
-        top: 0;
-        right: -100%;
-        width: 75vw;
-        max-width: 320px;
-        height: 100dvh;
-        background: white;
-        border-left: 2px solid #ff8b38;
-        z-index: 9999;
-        overflow-y: auto;
-        transition: right 0.3s ease;
-        padding: 60px 0 20px 0;
-        pointer-events: none;
-    }
+   .header-container {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 75vw;
+    max-width: 320px;
+    height: 100dvh;
+    background: white;
+    border-left: 2px solid #ff8b38;
+    z-index: 9999;
+    overflow-y: auto;
+    transition: right 0.3s ease;
+    padding: 60px 0 40px 0;
+    pointer-events: none;
+}
 
     .header-container.open {
         right: 0;
