@@ -534,7 +534,7 @@ main {
     color: #ccc;
 }
 
-    
+
 .premium-bouton {
     position: fixed;
     bottom: 45px;
@@ -608,6 +608,40 @@ main {
 .capacitor-native .premium-bouton {
     display: none;
 }
+
+/* ===== PREMIUM BOUTON - VERSION MENU BURGER MOBILE ===== */
+.premium-bouton-menu {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 3px solid #ff8b38;
+    border-radius: 100px;
+    padding: 8px 20px 8px 8px;
+    box-shadow: 0 6px 18px rgba(255, 139, 56, 0.3);
+    text-decoration: none;
+    margin: 10px 0;
+}
+
+.premium-bouton-menu .premium-bouton-logo {
+    width: 40px;
+    height: 40px;
+}
+
+.premium-bouton-menu .premium-bouton-titre {
+    font-size: 0.9rem;
+}
+
+@media (min-width: 768px) {
+    .premium-bouton-menu {
+        display: none;
+    }
+}
+
+.capacitor-native .premium-bouton-menu {
+    display: none;
+}
+
 </style>
 </head>
 
@@ -799,6 +833,18 @@ main {
                             </span>
                             <a id="changer-de-ville" href="{% url 'changer_ville' %}">Changer de ville</a>
                         </div>
+                    </li>
+                    {% endif %}
+
+                    {% if ai_agent_visible %}
+                    <li>
+                        <a href="{% url 'test-yuumi2' %}" class="premium-bouton-menu" title="Recherche intelligente - reservee aux membres Premium">
+                            <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
+                            <span class="premium-bouton-texte">
+                                <span class="premium-bouton-titre">Découvrez Yuumi</span>
+                                <span class="premium-bouton-badge">Premium</span>
+                            </span>
+                        </a>
                     </li>
                     {% endif %}
 
