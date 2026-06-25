@@ -689,6 +689,7 @@ class AIUsageLog(models.Model):
     )
     date = models.DateField()
     request_count = models.PositiveIntegerField(default=0)
+    web_search_count = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = "Usage agent IA"
@@ -696,4 +697,4 @@ class AIUsageLog(models.Model):
         unique_together = ("user", "date")
 
     def __str__(self):
-        return f"{self.user.username} — {self.date} ({self.request_count} requêtes)"
+        return f"{self.user.username} — {self.date} ({self.request_count} requêtes, {self.web_search_count} web_search)"
