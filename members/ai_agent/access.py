@@ -37,9 +37,10 @@ def can_use_ai_agent(user):
     return current_count < DAILY_AI_QUOTA
 
 
-def register_ai_usage(user):
+def register_ai_usage(user, web_search_used=False):
     """
-    Incrémente le compteur de requêtes IA du jour pour cet utilisateur.
+    Incrémente le compteur de requêtes IA du jour pour cet utilisateur,
+    et le compteur de déclenchements web_search si applicable.
 
     À appeler UNIQUEMENT après un appel IA réellement effectué et réussi.
     """
@@ -52,7 +53,13 @@ def register_ai_usage(user):
     log, created = AIUsageLog.objects.get_or_create(
         user=user,
         date=today,
-        defaults={"request_count": 1},
+        defaults={"request_count": 1, "web_search_count": 1 if web_search_used else 0},
     )
     if not created:
-        AIUsageLog.objects.filter(pk=log.pk).update(request_count=F("request_count") + 1)
+        if web_search_used:
+            AIUsageLog.objects.filter(pk=log.pk).update(
+                request_count=F("request_count") + 1,
+                web_search_count=F("web_search_count") + 1,
+            )
+        else:
+            AIUsageLog.objects.filter(pk=log.pk).update(request_count=F("request_count") + 1)
