@@ -1168,7 +1168,9 @@ def ai_search_agent(request):
     # -----------------------------------------------------------------
     from .ai_agent.client import needs_web_search
 
-    if needs_web_search(user_query):
+    web_search_a_ete_utilise = needs_web_search(user_query)
+
+    if web_search_a_ete_utilise:
         intent_text = understand_intent(user_query)
         if intent_text is None:
             return JsonResponse({
@@ -1187,7 +1189,7 @@ def ai_search_agent(request):
 
     # Hors-sujet detecte des l'extraction - on s'arrete ici.
     if params.get("hors_sujet"):
-        register_ai_usage(request.user)
+        register_ai_usage(request.user, web_search_used=web_search_a_ete_utilise)
         return JsonResponse({
             "fallback_to_tree": False,
             "besoin_clarification": False,
@@ -1204,7 +1206,7 @@ def ai_search_agent(request):
     # Categorie absente : la demande a un vrai sens commercial mais aucune
     # categorie Yuumi ne la couvre.
     if params.get("categorie_absente"):
-        register_ai_usage(request.user)
+        register_ai_usage(request.user, web_search_used=web_search_a_ete_utilise)
         return JsonResponse({
             "fallback_to_tree": False,
             "besoin_clarification": False,
@@ -1345,7 +1347,7 @@ def ai_search_agent(request):
                 "resultats": resultats_valides,
             })
 
-    register_ai_usage(request.user)
+    register_ai_usage(request.user, web_search_used=web_search_a_ete_utilise)
 
     payload = {
         "fallback_to_tree": False,
