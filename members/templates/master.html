@@ -1360,7 +1360,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
                     const data = await resp.json();
-                    listMobile.innerHTML = (data.results || []).map(item => buildResultItem(item)).join("");
+                    const results = data.results || [];
+                    listMobile.innerHTML = results.length
+                        ? results.map(item => buildResultItem(item)).join("")
+                        : `<li style="list-style:none;padding:20px 8px;text-align:center;color:#888;font-size:14px;">Aucun résultat pour « ${q} »</li>`;
                 } catch (err) { console.error(err); }
             }, 250);
         });
@@ -1396,7 +1399,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         headers: { "X-Requested-With": "XMLHttpRequest" }
                     });
                     const data = await resp.json();
-                    list.innerHTML = (data.results || []).map(item => buildResultItem(item)).join("");
+                    const results = data.results || [];
+                    list.innerHTML = results.length
+                        ? results.map(item => buildResultItem(item)).join("")
+                        : `<li style="list-style:none;padding:20px 8px;text-align:center;color:#888;font-size:14px;">Aucun résultat pour « ${q} »</li>`;
                 } catch (err) { console.error(err); }
             }, 250);
         });
