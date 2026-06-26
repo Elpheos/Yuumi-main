@@ -33,7 +33,25 @@ body {
 main {
     flex: 1;
 }
+/* ===== CONTENEUR RACINE — confinement Capacitor =====
+   En contexte app native, tout le contenu normal de la page est
+   enfermé ici, avec une hauteur qui s'arrête au-dessus de la tab bar.
+   N'importe quel élément position:fixed à l'intérieur (présent ou
+   futur, sur n'importe quelle page) devient automatiquement contenu
+   dans cet espace — plus jamais besoin d'ajouter de règle spécifique
+   ailleurs. */
+.capacitor-native,
+.capacitor-native html {
+    height: 100%;
+}
 
+.capacitor-native #yuumi-app-root {
+    position: relative;
+    height: calc(100% - 60px - env(safe-area-inset-bottom));
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateZ(0);
+}
 /* ===== SUPERCATS DROPDOWN ===== */
 #supercats-dropdown {
     display: none;
@@ -435,10 +453,6 @@ main {
     align-items: center;
 }
 
-.capacitor-native main,
-.capacitor-native .page-container {
-    padding-bottom: calc(60px + env(safe-area-inset-bottom)) !important;
-}
 
 .capacitor-native footer {
     display: none !important;
@@ -657,6 +671,7 @@ main {
 </head>
 
 <body data-user-authenticated="{{ user.is_authenticated|yesno:'true,false' }}">
+    <div id="yuumi-app-root">
 
 <!-- ===== PULL TO REFRESH CAPACITOR ===== -->
 <script>
@@ -1056,7 +1071,7 @@ main {
         <div class="yuumi-footer-copy">© 2026 Yuumi S.A.S. | Tous droits réservés</div>
     </div>
 </footer>
-
+</div>
 <!-- ============================= -->
 <!--   MODALE MOBILE COMMERCE      -->
 <!-- ============================= -->
