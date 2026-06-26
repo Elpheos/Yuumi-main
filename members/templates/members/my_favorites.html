@@ -6,16 +6,30 @@
 {% block content %}
 <div class="page-container">
 <main class="my-favorite-main">
-    <section class="my-favorite-section">
 
+    <div class="my-favorite-header">
         <h1 class="my-favorite-title">Mes favoris</h1>
-
         {% if user.is_authenticated %}
             <p class="my-favorite-user">Connecté en tant que {{ user.username }}</p>
         {% else %}
             <p class="my-favorite-user">Non connecté</p>
         {% endif %}
+    </div>
 
+    <div class="my-favorite-tabs">
+        <button class="my-favorite-tab active" id="tab-fav" data-target="panel-fav">
+            <svg style="width: 15px;" viewBox="0 0 512 512"><path fill="currentColor" d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+            <span>Favoris</span>
+            <span class="my-favorite-tab-count">{{ favoris|length }}</span>
+        </button>
+        <button class="my-favorite-tab" id="tab-hidden" data-target="panel-hidden">
+            <svg style="width: 15px;" viewBox="0 0 576 512"><path fill="currentColor" d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298.1L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.4 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.4z"/></svg>
+            <span>Masqués</span>
+            <span class="my-favorite-tab-count">{{ unfavoris|length }}</span>
+        </button>
+    </div>
+
+    <section class="my-favorite-panel" id="panel-fav">
         {% if favoris %}
             <div class="my-favorite-list">
                 {% for store in favoris %}
@@ -27,52 +41,9 @@
                                     <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }}">
                                 </a>
                             </div>
-                        {% endif %}
-
-                        <div class="my-favorite-info">
-                            <h2 class="my-favorite-name">
-                                <a href="{{ store.get_absolute_url }}">{{ store.nom }}</a>
-                            </h2>
-
-                            <p class="my-favorite-meta">
-                                {{ store.ville }}
-                                {% if store.categorie %} | {{ store.categorie }}{% endif %}
-                            </p>
-
-                            <button class="my-favorite-btn favori-btn active" data-store-id="{{ store.id }}">
-                                <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="rgb(255, 139, 56)" d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
-                                <span>Retirer des favoris</span>
-                            </button>
-                        </div>
-
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <p class="my-favorite-empty">Vous n'avez ajouté aucun favori pour le moment.</p>
-        {% endif %}
-
-    </section>
-    <section class="my-favorite-section">
-
-        <h1 class="my-favorite-title">Mes commerces masqués</h1>
-
-        {% if user.is_authenticated %}
-            <p class="my-favorite-user">Connecté en tant que {{ user.username }}</p>
-        {% else %}
-            <p class="my-favorite-user">Non connecté</p>
-        {% endif %}
-
-        {% if unfavoris %}
-            <div class="my-favorite-list">
-                {% for store in unfavoris %}
-                    <div class="my-favorite-card">
-
-                        {% if store.photo %}
-                            <div class="my-favorite-photo">
-                                <a href="{{ store.get_absolute_url }}">
-                                    <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }}">
-                                </a>
+                        {% else %}
+                            <div class="my-favorite-photo my-favorite-photo-empty">
+                                <svg style="width: 26px;" viewBox="0 0 576 512"><path fill="currentColor" d="M528.1 171.5L382.2 71.1C368.3 61.9 352 56 336 56l-32 0-64 0-32 0c-16 0-32.3 5.9-46.2 15.1L15.9 171.5C6 178.1 0 188.8 0 200.2L0 432c0 26.5 21.5 48 48 48l480 0c26.5 0 48-21.5 48-48l0-231.8c0-11.4-6-22.1-15.9-28.7zM320 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
                             </div>
                         {% endif %}
 
@@ -83,15 +54,54 @@
 
                             <p class="my-favorite-meta">
                                 {{ store.ville }}
-                                {% if store.categorie %} | {{ store.categorie }}{% endif %}
+                                {% if store.categorie %} · {{ store.categorie }}{% endif %}
                             </p>
 
-                            <button class="my-unfavorite-btn unfavori-btn active" data-store-id="{{ store.id }}">
-                                <svg style="width: 16px;" viewBox="0 0 200 200">
-                                    <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
-                                    <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
-                                </svg>
-                                <span>Retirer des commerces masqués</span>
+                            <button class="my-favorite-btn favori-btn active" data-store-id="{{ store.id }}">
+                                <svg style="width: 13px;" viewBox="0 0 512 512"><path fill="currentColor" d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+                                <span>Retirer</span>
+                            </button>
+                        </div>
+
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="my-favorite-empty">Vous n'avez ajouté aucun favori pour le moment.</p>
+        {% endif %}
+    </section>
+
+    <section class="my-favorite-panel" id="panel-hidden" style="display:none;">
+        {% if unfavoris %}
+            <div class="my-favorite-list">
+                {% for store in unfavoris %}
+                    <div class="my-favorite-card my-favorite-card-hidden">
+
+                        {% if store.photo %}
+                            <div class="my-favorite-photo">
+                                <a href="{{ store.get_absolute_url }}">
+                                    <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }}">
+                                </a>
+                            </div>
+                        {% else %}
+                            <div class="my-favorite-photo my-favorite-photo-empty">
+                                <svg style="width: 26px;" viewBox="0 0 576 512"><path fill="currentColor" d="M528.1 171.5L382.2 71.1C368.3 61.9 352 56 336 56l-32 0-64 0-32 0c-16 0-32.3 5.9-46.2 15.1L15.9 171.5C6 178.1 0 188.8 0 200.2L0 432c0 26.5 21.5 48 48 48l480 0c26.5 0 48-21.5 48-48l0-231.8c0-11.4-6-22.1-15.9-28.7zM320 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+                            </div>
+                        {% endif %}
+
+                        <div class="my-favorite-info">
+                            <h2 class="my-favorite-name">
+                                <a href="{{ store.get_absolute_url }}">{{ store.nom }}</a>
+                            </h2>
+
+                            <p class="my-favorite-meta">
+                                {{ store.ville }}
+                                {% if store.categorie %} · {{ store.categorie }}{% endif %}
+                            </p>
+
+                            <button class="my-favorite-btn my-unfavorite-btn unfavori-btn active" data-store-id="{{ store.id }}">
+                                <svg style="width: 13px;" viewBox="0 0 576 512"><path fill="currentColor" d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298.1L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.4 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.4z"/></svg>
+                                <span>Réafficher</span>
                             </button>
 
                         </div>
@@ -99,10 +109,10 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="my-favorite-empty">Vous n'avez ajouté aucun commerce masqués.</p>
+            <p class="my-favorite-empty">Vous n'avez ajouté aucun commerce masqué.</p>
         {% endif %}
-
     </section>
+
 </main>
 </div>
 {% endblock %}
@@ -114,24 +124,75 @@
     margin: 30px auto;
     padding: 0 16px;
 }
+
+.my-favorite-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    margin-bottom: 20px;
+}
+
 .my-favorite-title {
-    font-size: 4rem;
-    margin-bottom: 6px;
+    font-size: 1.8rem;
+    margin: 0;
     font-weight: 600;
-    text-align: left;
 }
+
 .my-favorite-user {
-    font-size: 2rem;
-    color: black;
-    margin-bottom: 24px;
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0;
 }
+
+.my-favorite-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid #f0f0f0;
+    margin-bottom: 20px;
+}
+
+.my-favorite-tab {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 10px 6px;
+    margin-bottom: -2px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #888;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.my-favorite-tab.active {
+    color: #ff8b38;
+    border-bottom-color: #ff8b38;
+}
+
+.my-favorite-tab-count {
+    background: #f0f0f0;
+    color: #888;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 100px;
+}
+
+.my-favorite-tab.active .my-favorite-tab-count {
+    background: #fff0e6;
+    color: #ff8b38;
+}
+
 .my-favorite-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 20px;
-    max-width: 1000px;
-    margin: 0 auto;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
 }
+
 .my-favorite-card {
     border: 1px solid #e5e5e5;
     border-radius: 10px;
@@ -140,70 +201,133 @@
     display: flex;
     flex-direction: column;
 }
+
+.my-favorite-card-hidden {
+    opacity: 0.85;
+}
+
 .my-favorite-photo {
-    height: 140px;
+    height: 130px;
     background: #f4f4f4;
 }
+
 .my-favorite-photo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+
+.my-favorite-photo-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #bbb;
+}
+
 .my-favorite-info {
-    padding: 14px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
 }
+
 .my-favorite-name {
-    font-size: 1rem;
+    font-size: 0.95rem;
     margin: 0;
     font-weight: 600;
 }
+
 .my-favorite-name a {
     color: #222;
     text-decoration: none;
 }
+
 .my-favorite-meta {
-    font-size: 0.85rem;
-    color: #666;
-    margin: 6px 0 12px;
+    font-size: 0.82rem;
+    color: #888;
+    margin: 4px 0 10px;
 }
+
 .my-favorite-btn {
     margin-top: auto;
     background: none;
     border: 1px solid #ddd;
-    padding: 8px 12px;
+    padding: 7px 10px;
     border-radius: 6px;
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 5px;
     color: #ff8b38;
 }
+
 .my-favorite-btn.active {
-    border-color: #ff8b38;
-    color: #ff8b38;
+    border-color: #ffcfa6;
 }
-.my-favorite-btn:hover { background: #fafafa; }
+
+.my-favorite-btn:hover {
+    background: #fff8f3;
+}
+
+.my-unfavorite-btn {
+    color: #c62828;
+}
+
+.my-unfavorite-btn.active {
+    border-color: #f3bcbc;
+}
+
+.my-unfavorite-btn:hover {
+    background: #fdf2f2;
+}
+
 .my-favorite-empty {
     text-align: center;
-    font-size: 0.95rem;
-    color: #666;
-    margin-top: 40px;
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 32px;
 }
+
 @media (max-width: 767px) {
-    .my-favorite-main { margin-top: 80px; padding: 0 12px; }
-    .my-favorite-title { font-size: 2rem; }
-    .my-favorite-user { font-size: 1rem; margin-bottom: 16px; }
-    .my-favorite-list { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-    .my-favorite-photo { height: 110px; }
-    .my-favorite-info { padding: 10px; }
-    .my-favorite-name { font-size: 0.9rem; }
-    .my-favorite-btn { font-size: 0.78rem; padding: 6px 10px; }
-}
-@media (max-width: 400px) {
-    .my-favorite-list { grid-template-columns: 1fr; }
+    .my-favorite-main {
+        margin-top: 16px;
+        padding: 0 12px;
+    }
+    .my-favorite-title {
+        font-size: 1.4rem;
+    }
+    .my-favorite-tabs {
+        gap: 0;
+    }
+    .my-favorite-tab {
+        flex: 1;
+        justify-content: center;
+        font-size: 0.85rem;
+        padding: 10px 4px;
+    }
+    .my-favorite-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+    .my-favorite-photo {
+        height: 90px;
+    }
+    .my-favorite-info {
+        padding: 9px;
+    }
+    .my-favorite-name {
+        font-size: 0.82rem;
+    }
+    .my-favorite-meta {
+        font-size: 0.72rem;
+        margin: 3px 0 8px;
+    }
+    .my-favorite-btn {
+        font-size: 0.72rem;
+        padding: 6px 4px;
+    }
 }
 </style>
 
@@ -220,6 +344,18 @@ function getCookie(name) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+
+    const tabs = document.querySelectorAll(".my-favorite-tab");
+    tabs.forEach(tab => {
+        tab.addEventListener("click", () => {
+            tabs.forEach(t => t.classList.remove("active"));
+            tab.classList.add("active");
+            document.querySelectorAll(".my-favorite-panel").forEach(panel => {
+                panel.style.display = panel.id === tab.dataset.target ? "block" : "none";
+            });
+        });
+    });
+
     document.querySelectorAll(".favori-btn").forEach(btn => {
         btn.addEventListener("click", () => {
             const storeId = btn.dataset.storeId;
