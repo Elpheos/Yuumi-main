@@ -6,35 +6,69 @@
 {% block content %}
 <div class="page-container">
 <style>
+.contact-page-wrapper {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 48px 16px;
+    text-align: center;
+}
+
+.contact-page-icon {
+    margin: 0 0 20px;
+    width: 64px;
+    aspect-ratio: 1;
+}
+
+.contact-page-title {
+    font-size: 24px;
+    margin-bottom: 8px;
+}
+
+.contact-page-text {
+    font-size: 18px;
+    color: #555;
+    margin-bottom: 24px;
+}
+
+.contact-page-coords {
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+}
+
+.contact-page-coords a {
+    color: #ff8b38;
+    text-decoration: none;
+}
+
 @media (max-width: 767px) {
-    main, .page-container {
-        margin-top: 60px;
-        padding: 0 12px;
+    .contact-page-wrapper {
+        padding: 32px 12px;
+    }
+    .contact-page-title {
+        font-size: 21px;
+    }
+    .contact-page-text {
+        font-size: 16px;
+    }
+    .contact-page-coords {
+        font-size: 18px;
     }
 }
 </style>
 
-
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-<div style="margin-bottom: 100px !important;"></div>
-<div style="margin-bottom: 100px !important;">
-  <div style="text-align: center;">
-      <svg style="margin:20px; width: 64px; aspect-ratio: 1;" viewBox="0 0 576 512"><path fill="rgb(255, 139, 56)" d="M536.4-26.3c9.8-3.5 20.6-1 28 6.3s9.8 18.2 6.3 28l-178 496.9c-5 13.9-18.1 23.1-32.8 23.1-14.2 0-27-8.6-32.3-21.7l-64.2-158c-4.5-11-2.5-23.6 5.2-32.6l94.5-112.4c5.1-6.1 4.7-15-.9-20.6s-14.6-6-20.6-.9L229.2 276.1c-9.1 7.6-21.6 9.6-32.6 5.2L38.1 216.8c-13.1-5.3-21.7-18.1-21.7-32.3 0-14.7 9.2-27.8 23.1-32.8l496.9-178z"/></svg>
-  </div>
-  <div style="text-align: center;">
-    <p style="font-size: 24px;"><strong>Contactez-nous!</strong></p>
-    <p style="font-size: 20px;">Besoin de renseignements ? Envie d'être référencé sur le site ? N'hésitez pas à nous contacter, nous ferons tout pour vous répondre le plus vite possible.</p>
-    <p style="font-size: 24px; font-weight: bold; color: #333; text-align: center;">
-      <!-- Lien cliquable vers l'email -->
-      <span style="font-size: 24px; font-weight: bold; color: #333; text-align: center;">
-  06 21 35 76 23 |
-</span>
-<a href="mailto:contact@yuumi-shop.com" style="color: #ff8b38; text-decoration: none;">
-  contact@yuumi-shop.com
-</a>
+
+<div class="contact-page-wrapper">
+    <svg class="contact-page-icon" viewBox="0 0 576 512"><path fill="rgb(255, 139, 56)" d="M536.4-26.3c9.8-3.5 20.6-1 28 6.3s9.8 18.2 6.3 28l-178 496.9c-5 13.9-18.1 23.1-32.8 23.1-14.2 0-27-8.6-32.3-21.7l-64.2-158c-4.5-11-2.5-23.6 5.2-32.6l94.5-112.4c5.1-6.1 4.7-15-.9-20.6s-14.6-6-20.6-.9L229.2 276.1c-9.1 7.6-21.6 9.6-32.6 5.2L38.1 216.8c-13.1-5.3-21.7-18.1-21.7-32.3 0-14.7 9.2-27.8 23.1-32.8l496.9-178z"/></svg>
+
+    <p class="contact-page-title"><strong>Contactez-nous !</strong></p>
+    <p class="contact-page-text">Besoin de renseignements ? Envie d'être référencé sur le site ? N'hésitez pas à nous contacter, nous ferons tout pour vous répondre le plus vite possible.</p>
+    <p class="contact-page-coords">
+        06 21 35 76 23 |
+        <a href="mailto:contact@yuumi-shop.com">contact@yuumi-shop.com</a>
     </p>
-  </div>
 </div>
+
 </div>
 {% endblock %}
