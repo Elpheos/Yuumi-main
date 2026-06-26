@@ -3,6 +3,11 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script>
+if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+    document.documentElement.classList.add('capacitor-native');
+}
+</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>{% block title %}Yuumi{% endblock %}</title>
@@ -1457,6 +1462,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /* ===== TAB BAR CAPACITOR ===== */
     if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+        document.documentElement.classList.add('capacitor-native');
         document.body.classList.add('capacitor-native');
 
         const dep = document.cookie.match(/yuumi_departement=([^;]+)/)?.[1] || 'Haute-Savoie';
