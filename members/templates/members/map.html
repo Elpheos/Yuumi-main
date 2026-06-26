@@ -522,7 +522,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        height: 100dvh;
+        height: auto;
     }
     .map-sidebar { display: none; }
     .map-mobile-filter-btn { display: flex; }
@@ -546,14 +546,6 @@
     }
 }
 
-    /* Dans l'app Capacitor : la carte plein écran s'arrête au-dessus
-   de la tab bar native, pour ne jamais passer dessous */
-@media (max-width: 767px) {
-    .capacitor-native .map-layout {
-        bottom: calc(60px + env(safe-area-inset-bottom)) !important;
-        height: auto !important;
-    }
-}
 </style>
 
 <script>
