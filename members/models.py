@@ -698,3 +698,49 @@ class AIUsageLog(models.Model):
 
     def __str__(self):
         return f"{self.user.username} — {self.date} ({self.request_count} requêtes, {self.web_search_count} web_search)"
+
+
+# ===========================================================
+# 🔹 Wishlists nommées (Premium)
+# ===========================================================
+
+class Wishlist(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="wishlists",
+    )
+    name = models.CharField(max_length=80)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    stores = models.ManyToManyField(
+        Store,
+        through="WishlistStore",
+        related_name="in_wishlists",
+        blank=True,
+    )
+
+    class Meta:
+        verbose_name = "Wishlist"
+        verbose_name_plural = "Wishlists"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "name"],
+                name="unique_wishlist_name_per_user",
+            ),
+        ]
+
+    def __str__(self):
+        return f"{self.name} — {self.user.username}"
+
+
+class WishlistStore(models.Model):
+    wishlist = models.ForeignKey(Wishlist, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("wishlist", "store")
+
+    def __str__(self):
+        return f"{self.store.nom} dans « {self.wishlist.name} »"
