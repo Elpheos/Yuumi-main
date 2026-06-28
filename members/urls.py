@@ -73,6 +73,7 @@ urlpatterns = [
     path("mon-compte/supprimer/", views.delete_account, name="delete_account"),
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
+    path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
 
 
 
