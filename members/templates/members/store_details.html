@@ -980,5 +980,23 @@ document.addEventListener("DOMContentLoaded", () => {
     .description-secondaire { order:10; }
     .desktop-only-btn { display:none !important; }
 }
+
+#addToCategoryModal .modal-dialog {
+    max-width: 480px !important;
+    width: auto !important;
+    margin: 1.75rem auto !important;
+}
+
+#addToCategoryModal .category-checkbox {
+    width: 18px;
+    height: 18px;
+    accent-color: #ff8b38;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+#addToCategoryModal input[type="text"] {
+    width: auto;
+}
 </style>
 {% endblock %}
