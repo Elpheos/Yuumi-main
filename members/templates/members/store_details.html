@@ -290,6 +290,23 @@
                     </div>
                     {% endif %}
 
+                  {% if is_premium %}
+<div class="commerce-note-perso" style="max-width:420px; margin:0 auto 16px;">
+    <label for="storeNoteText" style="display:block; font-size:0.8rem; font-weight:600; color:#666; margin-bottom:6px;">
+        Votre pense-bête sur ce commerce <span style="color:#999; font-weight:400;">(visible par vous seul)</span>
+    </label>
+    <textarea id="storeNoteText" maxlength="1000" placeholder="Ex : demander si le pain au levain est dispo le dimanche…"
+        style="width:100%; min-height:70px; border:1px solid #ddd; border-radius:8px; padding:10px; font-size:0.85rem; font-family:inherit; resize:vertical;">{{ store_note_text }}</textarea>
+    <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-top:6px;">
+        <p id="storeNoteError" style="color:#c62828; font-size:0.8rem; margin:0; display:none;"></p>
+        <button type="button" id="saveStoreNoteBtn"
+            style="background:#ff8b38; color:white; border:none; border-radius:8px; padding:7px 16px; font-weight:600; font-size:0.85rem; cursor:pointer;">
+            Enregistrer la note
+        </button>
+    </div>
+</div>
+{% endif %}
+
                     <button class="btn-suggest-modif desktop-only-btn" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
                         onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
                         Suggérer une modification
@@ -723,7 +740,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newCategoryInput = document.getElementById("newCategoryName");
     const createCategoryBtn = document.getElementById("createCategoryAndAdd");
 
-    if (createCategoryBtn) {
+  if (createCategoryBtn) {
         createCategoryBtn.addEventListener("click", () => {
             const name = newCategoryInput.value.trim();
             if (categoryModalError) categoryModalError.style.display = "none";
@@ -759,6 +776,42 @@ document.addEventListener("DOMContentLoaded", () => {
                     method: "POST",
                     headers: { "X-CSRFToken": getCookie("csrftoken") },
                 });
+            });
+        });
+    }
+
+    const saveNoteBtn = document.getElementById("saveStoreNoteBtn");
+    const noteTextarea = document.getElementById("storeNoteText");
+    const noteError = document.getElementById("storeNoteError");
+
+    if (saveNoteBtn) {
+        saveNoteBtn.addEventListener("click", () => {
+            const text = noteTextarea.value;
+            if (noteError) noteError.style.display = "none";
+
+            fetch(`/store/{{ store.id }}/note/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                body: new URLSearchParams({ text }),
+            })
+            .then(async r => ({ status: r.status, data: await r.json().catch(() => ({})) }))
+            .then(({ status, data }) => {
+                if (status !== 200) {
+                    if (noteError) {
+                        noteError.textContent = data.error || "Erreur lors de l'enregistrement.";
+                        noteError.style.display = "block";
+                    }
+                    return;
+                }
+                const original = saveNoteBtn.textContent;
+                saveNoteBtn.textContent = "Enregistré ✓";
+                setTimeout(() => { saveNoteBtn.textContent = original; }, 1800);
+            })
+            .catch(() => {
+                if (noteError) {
+                    noteError.textContent = "Erreur réseau. Réessayez.";
+                    noteError.style.display = "block";
+                }
             });
         });
     }
