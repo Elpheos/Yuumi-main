@@ -136,3 +136,16 @@ def ai_agent_visible(request):
     return {
         "ai_agent_visible": AI_AGENT_PUBLIC or is_superuser,
     }
+
+
+def premium_context(request):
+    """
+    Expose is_premium (booléen) à tous les templates, sans que chaque
+    vue ait à le recalculer. Même pattern que ai_agent_visible juste
+    au-dessus.
+    """
+    from .premium import is_premium_user
+
+    return {
+        "is_premium": is_premium_user(request.user),
+    }
