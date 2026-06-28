@@ -29,6 +29,13 @@
             <span class="my-favorite-tab-count">{{ unfavoris|length }}</span>
         </button>
         {% endif %}
+        {% if is_premium %}
+        <button class="my-favorite-tab" id="tab-categories" data-target="panel-categories">
+            <svg style="width: 15px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+            <span>Mes catégories</span>
+            <span class="my-favorite-tab-count">{{ wishlists|length }}</span>
+        </button>
+        {% endif %}
     </div>
 
     <section class="my-favorite-panel" id="panel-fav">
@@ -114,6 +121,36 @@
         {% else %}
             <p class="my-favorite-empty">Vous n'avez ajouté aucun commerce masqué.</p>
         {% endif %}
+    </section>
+    {% endif %}
+
+    {% if is_premium %}
+    <section class="my-favorite-panel" id="panel-categories" style="display:none;">
+        <div class="my-favorite-wishlists-list" id="wishlists-list">
+            {% for wishlist in wishlists %}
+                <div class="my-favorite-wishlist-card" data-wishlist-id="{{ wishlist.id }}">
+                    <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+                    <span class="my-favorite-wishlist-name">{{ wishlist.name }}</span>
+                    <span class="my-favorite-wishlist-count">0 commerce</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        {% if not wishlists %}
+            <p class="my-favorite-empty" id="wishlists-empty-msg">Vous n'avez créé aucune catégorie pour le moment.</p>
+        {% endif %}
+
+        <div class="my-favorite-wishlist-create">
+            <button type="button" class="my-favorite-wishlist-add-btn" id="show-create-wishlist">
+                <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
+                <span>Nouvelle catégorie</span>
+            </button>
+            <div class="my-favorite-wishlist-create-form" id="create-wishlist-form" style="display:none;">
+                <input type="text" id="new-wishlist-name" maxlength="80" placeholder="Nom de la catégorie…">
+                <button type="button" id="confirm-create-wishlist">Créer</button>
+                <p class="my-favorite-wishlist-error" id="create-wishlist-error" style="display:none;"></p>
+            </div>
+        </div>
     </section>
     {% endif %}
 
@@ -333,6 +370,91 @@
         padding: 6px 4px;
     }
 }
+
+.my-favorite-wishlists-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.my-favorite-wishlist-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    color: #ff8b38;
+}
+
+.my-favorite-wishlist-name {
+    font-weight: 600;
+    color: #222;
+    flex: 1;
+}
+
+.my-favorite-wishlist-count {
+    font-size: 0.78rem;
+    color: #999;
+}
+
+.my-favorite-wishlist-create {
+    margin-top: 4px;
+}
+
+.my-favorite-wishlist-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: 1px dashed #ff8b38;
+    color: #ff8b38;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.my-favorite-wishlist-add-btn:hover {
+    background: #fff8f3;
+}
+
+.my-favorite-wishlist-create-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.my-favorite-wishlist-create-form input {
+    flex: 1;
+    min-width: 180px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 0.88rem;
+}
+
+.my-favorite-wishlist-create-form button {
+    background: #ff8b38;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.my-favorite-wishlist-error {
+    width: 100%;
+    color: #c62828;
+    font-size: 0.8rem;
+    margin: 4px 0 0;
+}
 </style>
 
 <script>
@@ -391,6 +513,61 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         });
     });
+
+    const showCreateBtn = document.getElementById("show-create-wishlist");
+    const createForm = document.getElementById("create-wishlist-form");
+    const nameInput = document.getElementById("new-wishlist-name");
+    const errorEl = document.getElementById("create-wishlist-error");
+    const wishlistsList = document.getElementById("wishlists-list");
+    const emptyMsg = document.getElementById("wishlists-empty-msg");
+
+    if (showCreateBtn) {
+        showCreateBtn.addEventListener("click", () => {
+            createForm.style.display = "flex";
+            showCreateBtn.style.display = "none";
+            nameInput.focus();
+        });
+    }
+
+    const confirmBtn = document.getElementById("confirm-create-wishlist");
+    if (confirmBtn) {
+        confirmBtn.addEventListener("click", () => {
+            const name = nameInput.value.trim();
+            errorEl.style.display = "none";
+            if (!name) {
+                errorEl.textContent = "Le nom de la catégorie est requis.";
+                errorEl.style.display = "block";
+                return;
+            }
+
+            fetch("{% url 'create-wishlist' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                body: new URLSearchParams({ name }),
+            })
+            .then(async r => ({ status: r.status, data: await r.json() }))
+            .then(({ status, data }) => {
+                if (status !== 200) {
+                    errorEl.textContent = data.error || "Erreur lors de la création.";
+                    errorEl.style.display = "block";
+                    return;
+                }
+                if (emptyMsg) emptyMsg.style.display = "none";
+                const card = document.createElement("div");
+                card.className = "my-favorite-wishlist-card";
+                card.dataset.wishlistId = data.id;
+                card.innerHTML = `
+                    <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+                    <span class="my-favorite-wishlist-name">${data.name}</span>
+                    <span class="my-favorite-wishlist-count">0 commerce</span>
+                `;
+                wishlistsList.appendChild(card);
+                nameInput.value = "";
+                createForm.style.display = "none";
+                showCreateBtn.style.display = "flex";
+            });
+        });
+    }
 });
 </script>
 {% endblock %}
