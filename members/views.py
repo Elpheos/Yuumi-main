@@ -296,10 +296,9 @@ def get_client_ip(request):
 # ---------------------------
 
 logger = logging.getLogger(__name__)
-
 def get_unfavori_ids(request):
     try:
-        if request.user.is_authenticated:
+        if request.user.is_authenticated and is_premium_user(request.user):
             return list(
                 request.user.unfavoris.values_list('id', flat=True)
             )
@@ -763,9 +762,14 @@ def my_favorites(request):
 
 @login_required
 def toggle_unfavoris(request, store_id):
+    if not is_premium_user(request.user):
+        return JsonResponse(
+            {"error": "Cette fonctionnalité est réservée aux comptes Premium."},
+            status=403,
+        )
+
     store = get_object_or_404(Store, id=store_id)
     user = request.user
-
     if store in user.unfavoris.all():
         user.unfavoris.remove(store)
         is_unfavorite = False
@@ -773,7 +777,6 @@ def toggle_unfavoris(request, store_id):
         user.unfavoris.add(store)
         is_unfavorite = True
         user.favoris.remove(store)
-
     return JsonResponse({"is_unfavorite": is_unfavorite})
 
 
