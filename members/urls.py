@@ -71,6 +71,7 @@ urlpatterns = [
     path("mon-compte/supprimer/", views.delete_account, name="delete_account"),
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
+    path("wishlists/creer/", views.create_wishlist, name="create-wishlist"),
 
 
     
