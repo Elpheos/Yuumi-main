@@ -128,13 +128,52 @@
     <section class="my-favorite-panel" id="panel-categories" style="display:none;">
         <div class="my-favorite-wishlists-list" id="wishlists-list">
             {% for wishlist in wishlists %}
-                <div class="my-favorite-wishlist-card" data-wishlist-id="{{ wishlist.id }}">
-                    <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
-                    <span class="my-favorite-wishlist-name">{{ wishlist.name }}</span>
-                    <span class="my-favorite-wishlist-count">0 commerce</span>
-                    <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="{{ wishlist.id }}" title="Supprimer cette catégorie">
-                        <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
-                    </button>
+                <div class="my-favorite-wishlist-group" data-wishlist-id="{{ wishlist.id }}">
+                    <div class="my-favorite-wishlist-header">
+                        <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+                        <span class="my-favorite-wishlist-name">{{ wishlist.name }}</span>
+                        <span class="my-favorite-wishlist-count">{{ wishlist.stores.all|length }} commerce{{ wishlist.stores.all|length|pluralize }}</span>
+                        <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="{{ wishlist.id }}" title="Supprimer cette catégorie">
+                            <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                        </button>
+                    </div>
+
+                    {% if wishlist.stores.all %}
+                        <div class="my-favorite-list my-favorite-wishlist-stores">
+                            {% for store in wishlist.stores.all %}
+                                <div class="my-favorite-card">
+                                    {% if store.photo %}
+                                        <div class="my-favorite-photo">
+                                            <a href="{{ store.get_absolute_url }}">
+                                                <img src="{% if store.photo_medium %}{{ store.photo_medium.url }}{% else %}{{ store.photo.url }}{% endif %}" alt="{{ store.nom }}">
+                                            </a>
+                                        </div>
+                                    {% else %}
+                                        <div class="my-favorite-photo my-favorite-photo-empty">
+                                            <svg style="width: 26px;" viewBox="0 0 576 512"><path fill="currentColor" d="M528.1 171.5L382.2 71.1C368.3 61.9 352 56 336 56l-32 0-64 0-32 0c-16 0-32.3 5.9-46.2 15.1L15.9 171.5C6 178.1 0 188.8 0 200.2L0 432c0 26.5 21.5 48 48 48l480 0c26.5 0 48-21.5 48-48l0-231.8c0-11.4-6-22.1-15.9-28.7zM320 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+                                        </div>
+                                    {% endif %}
+
+                                    <div class="my-favorite-info">
+                                        <h2 class="my-favorite-name">
+                                            <a href="{{ store.get_absolute_url }}">{{ store.nom }}</a>
+                                        </h2>
+                                        <p class="my-favorite-meta">
+                                            {{ store.ville }}
+                                            {% if store.categorie %} · {{ store.categorie }}{% endif %}
+                                        </p>
+                                        <button type="button" class="my-favorite-btn wishlist-store-remove-btn"
+                                            data-wishlist-id="{{ wishlist.id }}" data-store-id="{{ store.id }}">
+                                            <i class="fa-solid fa-xmark"></i>
+                                            <span>Retirer de la catégorie</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="my-favorite-empty my-favorite-wishlist-empty">Aucun commerce dans cette catégorie pour le moment. Ajoutez-en depuis la fiche d'un commerce.</p>
+                    {% endif %}
                 </div>
             {% endfor %}
         </div>
@@ -490,6 +529,38 @@
 .my-favorite-wishlist-delete-btn:hover {
     color: #c62828;
 }
+
+.my-favorite-wishlist-group {
+    margin-bottom: 28px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.my-favorite-wishlist-group:last-child {
+    border-bottom: none;
+}
+
+.my-favorite-wishlist-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ff8b38;
+    margin-bottom: 14px;
+}
+
+.my-favorite-wishlist-header .my-favorite-wishlist-name {
+    font-size: 1.05rem;
+}
+
+.my-favorite-wishlist-stores {
+    margin-top: 4px;
+}
+
+.my-favorite-wishlist-empty {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: #999;
+}
 </style>
 
 <script>
@@ -588,18 +659,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
                 if (emptyMsg) emptyMsg.style.display = "none";
-                const card = document.createElement("div");
-                card.className = "my-favorite-wishlist-card";
-                card.dataset.wishlistId = data.id;
-                card.innerHTML = `
-                    <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
-                    <span class="my-favorite-wishlist-name">${data.name}</span>
-                    <span class="my-favorite-wishlist-count">0 commerce</span>
-                    <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="${data.id}" title="Supprimer cette catégorie">
-                        <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
-                    </button>
+                const group = document.createElement("div");
+                group.className = "my-favorite-wishlist-group";
+                group.dataset.wishlistId = data.id;
+                group.innerHTML = `
+                    <div class="my-favorite-wishlist-header">
+                        <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+                        <span class="my-favorite-wishlist-name">${data.name}</span>
+                        <span class="my-favorite-wishlist-count">0 commerce</span>
+                        <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="${data.id}" title="Supprimer cette catégorie">
+                            <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                        </button>
+                    </div>
+                    <p class="my-favorite-empty my-favorite-wishlist-empty">Aucun commerce dans cette catégorie pour le moment. Ajoutez-en depuis la fiche d'un commerce.</p>
                 `;
-                wishlistsList.appendChild(card);
+                wishlistsList.appendChild(group);
                 nameInput.value = "";
                 createForm.style.display = "none";
                 showCreateBtn.style.display = "flex";
@@ -627,7 +701,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const deleteBtn = e.target.closest(".my-favorite-wishlist-delete-btn");
             if (!deleteBtn) return;
 
-            wishlistCardPendingDelete = deleteBtn.closest(".my-favorite-wishlist-card");
+            wishlistCardPendingDelete = deleteBtn.closest(".my-favorite-wishlist-group");
             wishlistIdPendingDelete = deleteBtn.dataset.wishlistId;
             if (deleteWishlistError) deleteWishlistError.style.display = "none";
             if (deleteWishlistModal) deleteWishlistModal.show();
@@ -665,6 +739,43 @@ document.addEventListener("DOMContentLoaded", () => {
             .finally(() => {
                 wishlistCardPendingDelete = null;
                 wishlistIdPendingDelete = null;
+            });
+        });
+    }
+
+    // Retirer un commerce d'une catégorie directement depuis cette page
+    // (même endpoint toggle que sur la fiche commerce : ici le lien existe
+    // toujours déjà, donc togglé = supprimé).
+    if (wishlistsList) {
+        wishlistsList.addEventListener("click", (e) => {
+            const removeBtn = e.target.closest(".wishlist-store-remove-btn");
+            if (!removeBtn) return;
+
+            const wishlistId = removeBtn.dataset.wishlistId;
+            const storeId = removeBtn.dataset.storeId;
+
+            fetch(`/wishlists/${wishlistId}/store/${storeId}/toggle/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.in_wishlist) {
+                    const group = removeBtn.closest(".my-favorite-wishlist-group");
+                    const storeCard = removeBtn.closest(".my-favorite-card");
+                    storeCard.remove();
+
+                    const remaining = group.querySelectorAll(".my-favorite-card").length;
+                    const countEl = group.querySelector(".my-favorite-wishlist-count");
+                    if (countEl) countEl.textContent = `${remaining} commerce${remaining === 1 ? "" : "s"}`;
+
+                    if (remaining === 0) {
+                        const storesContainer = group.querySelector(".my-favorite-wishlist-stores");
+                        if (storesContainer) {
+                            storesContainer.outerHTML = '<p class="my-favorite-empty my-favorite-wishlist-empty">Aucun commerce dans cette catégorie pour le moment. Ajoutez-en depuis la fiche d\'un commerce.</p>';
+                        }
+                    }
+                }
             });
         });
     }
