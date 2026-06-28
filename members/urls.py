@@ -21,6 +21,7 @@ urlpatterns = [
     # Suggestions de modification et de nouveaux commerces
     path("suggestion/nouveau/", views.suggest_new_store, name="suggest-new-store"),
     path("store/<int:store_id>/suggestion/", views.suggest_modif_store, name="suggest-modif-store"),
+
     path("wishlists/creer/", views.create_wishlist, name="create-wishlist"),
     path("wishlists/<int:wishlist_id>/supprimer/", views.delete_wishlist, name="delete-wishlist"),
 
@@ -29,6 +30,7 @@ urlpatterns = [
     path("store/<int:store_id>/unfavoris/", views.toggle_unfavoris, name="toggle-unfavoris"),
     path("store/<int:store_id>/claim/", views.claim_store, name="claim-store"),
     path("store/<int:store_id>/click/", views.track_click, name="track-click"),
+    path("store/<int:store_id>/note/", views.save_store_note, name="save-store-note"),
     path("mes-favoris/", views.my_favorites, name="my-favorites"),
     path("changer-de-ville/", views.changer_ville, name="changer_ville"),
 
@@ -74,9 +76,5 @@ urlpatterns = [
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
-    path("store/<int:store_id>/note/", views.save_store_note, name="save-store-note"),
 
-
-
-    
 ]
