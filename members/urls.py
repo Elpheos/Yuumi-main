@@ -74,6 +74,7 @@ urlpatterns = [
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
+    path("store/<int:store_id>/note/", views.save_store_note, name="save-store-note"),
 
 
 
