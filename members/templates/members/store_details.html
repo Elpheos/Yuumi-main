@@ -280,7 +280,16 @@
                         </button>
                       {% endif %}
                     </div>
-                    
+
+                    {% if is_premium %}
+                    <div class="commerce-add-to-category" style="text-align:center; margin: 0 auto 16px;">
+                        <button type="button" class="btn-add-to-category" data-bs-toggle="modal" data-bs-target="#addToCategoryModal"
+                            style="background:none; border:1px solid #ff8b38; color:#ff8b38; border-radius:8px; padding:8px 16px; font-weight:600; cursor:pointer;">
+                            <i class="fa-solid fa-folder-plus"></i> Ajouter à une de mes catégories
+                        </button>
+                    </div>
+                    {% endif %}
+
                     <button class="btn-suggest-modif desktop-only-btn" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
                         onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
                         Suggérer une modification
@@ -457,6 +466,37 @@
                 <p style="color:#666; margin-bottom:24px;">Rejoignez Yuumi gratuitement et retrouvez tous vos commerces préférés en un clic.</p>
                 <a href="{% url 'register' %}?next={{ request.path }}" class="btn" style="background:#ff8b38; color:white; border-radius:10px; padding:10px 28px; font-weight:600; font-size:1rem; text-decoration:none;">Créer un compte</a>
                 <div style="margin-top:14px;"><a href="{% url 'login' %}?next={{ request.path }}" style="color:#ff8b38; font-size:0.9rem;">J'ai déjà un compte</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Ajouter à une catégorie -->
+<div class="modal fade" id="addToCategoryModal" tabindex="-1" aria-labelledby="addToCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addToCategoryModalLabel">Ajouter à une catégorie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+            </div>
+            <div class="modal-body">
+                <ul id="categoryChecklist" style="list-style:none; padding:0; margin:0 0 16px;">
+                    {% for w in user_wishlists %}
+                    <li style="padding:8px 0; border-bottom:1px solid #f0f0f0;">
+                        <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0;">
+                            <input type="checkbox" class="category-checkbox" data-wishlist-id="{{ w.id }}" {% if w.has_store %}checked{% endif %}>
+                            {{ w.name }}
+                        </label>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div style="display:flex; gap:8px;">
+                    <input type="text" id="newCategoryName" maxlength="80" placeholder="Nouvelle catégorie…"
+                        style="flex:1; border:1px solid #ddd; border-radius:8px; padding:8px 10px;">
+                    <button type="button" id="createCategoryAndAdd"
+                        style="background:#ff8b38; color:white; border:none; border-radius:8px; padding:8px 16px; font-weight:600; cursor:pointer;">Créer</button>
+                </div>
+                <p id="categoryModalError" style="color:#c62828; font-size:0.85rem; margin:10px 0 0; display:none;"></p>
             </div>
         </div>
     </div>
@@ -643,6 +683,85 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(res => res.json()).then(data => { isunFavorite = data.is_unfavorite; updateunFavoriUI(isunFavorite); });
         });
     });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const categoryChecklist = document.getElementById("categoryChecklist");
+    const categoryModalError = document.getElementById("categoryModalError");
+
+    if (categoryChecklist) {
+        categoryChecklist.addEventListener("change", (e) => {
+            const checkbox = e.target.closest(".category-checkbox");
+            if (!checkbox) return;
+            const wishlistId = checkbox.dataset.wishlistId;
+            const wasChecked = checkbox.checked;
+
+            fetch(`/wishlists/${wishlistId}/store/{{ store.id }}/toggle/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+            })
+            .then(async r => ({ status: r.status, data: await r.json().catch(() => ({})) }))
+            .then(({ status, data }) => {
+                if (status !== 200) {
+                    checkbox.checked = !wasChecked;
+                    if (categoryModalError) {
+                        categoryModalError.textContent = data.error || "Une erreur est survenue.";
+                        categoryModalError.style.display = "block";
+                    }
+                } else if (categoryModalError) {
+                    categoryModalError.style.display = "none";
+                }
+            })
+            .catch(() => {
+                checkbox.checked = !wasChecked;
+            });
+        });
+    }
+
+    const newCategoryInput = document.getElementById("newCategoryName");
+    const createCategoryBtn = document.getElementById("createCategoryAndAdd");
+
+    if (createCategoryBtn) {
+        createCategoryBtn.addEventListener("click", () => {
+            const name = newCategoryInput.value.trim();
+            if (categoryModalError) categoryModalError.style.display = "none";
+            if (!name) return;
+
+            fetch("{% url 'create-wishlist' %}", {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+                body: new URLSearchParams({ name }),
+            })
+            .then(async r => ({ status: r.status, data: await r.json() }))
+            .then(({ status, data }) => {
+                if (status !== 200) {
+                    if (categoryModalError) {
+                        categoryModalError.textContent = data.error || "Erreur lors de la création.";
+                        categoryModalError.style.display = "block";
+                    }
+                    return;
+                }
+
+                const li = document.createElement("li");
+                li.style = "padding:8px 0; border-bottom:1px solid #f0f0f0;";
+                li.innerHTML = `
+                    <label style="display:flex; align-items:center; gap:10px; cursor:pointer; margin:0;">
+                        <input type="checkbox" class="category-checkbox" data-wishlist-id="${data.id}" checked>
+                        ${data.name}
+                    </label>
+                `;
+                categoryChecklist.appendChild(li);
+                newCategoryInput.value = "";
+
+                fetch(`/wishlists/${data.id}/store/{{ store.id }}/toggle/`, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": getCookie("csrftoken") },
+                });
+            });
+        });
+    }
 });
 </script>
 
