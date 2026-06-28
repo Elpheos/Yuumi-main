@@ -159,6 +159,24 @@
 
 </main>
 </div>
+
+<!-- Modal confirmation suppression de catégorie -->
+<div class="modal fade" id="deleteWishlistModal" tabindex="-1" aria-labelledby="deleteWishlistModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:14px; border:2px solid #ff8b38;">
+            <div class="modal-body" style="text-align:center; padding:32px 24px;">
+                <svg style="width:40px; margin-bottom:16px;" viewBox="0 0 448 512"><path fill="#c62828" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                <h5 style="font-weight:700; margin-bottom:10px;" id="deleteWishlistModalLabel">Supprimer cette catégorie ?</h5>
+                <p style="color:#666; margin-bottom:24px;">Les commerces qu'elle contient resteront sur Yuumi — seule la catégorie disparaît. Cette action est irréversible.</p>
+                <div style="display:flex; gap:10px; justify-content:center;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;">Annuler</button>
+                    <button type="button" id="confirmDeleteWishlist" style="background:#c62828; color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">Supprimer</button>
+                </div>
+                <p id="deleteWishlistError" style="color:#c62828; font-size:0.85rem; margin:14px 0 0; display:none;"></p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
@@ -593,28 +611,60 @@ document.addEventListener("DOMContentLoaded", () => {
     // sur "supprimer", que la carte vienne du rendu serveur (au chargement)
     // ou d'une carte ajoutée dynamiquement après création (pas besoin de
     // réattacher un listener à chaque nouvelle carte).
+    //
+    // Le clic n'envoie PAS la requête directement : il ouvre le modal de
+    // confirmation et mémorise QUELLE carte est concernée. La suppression
+    // réelle n'a lieu que si l'utilisateur confirme dans le modal.
+    let wishlistCardPendingDelete = null;
+    let wishlistIdPendingDelete = null;
+
+    const deleteWishlistModalEl = document.getElementById("deleteWishlistModal");
+    const deleteWishlistModal = deleteWishlistModalEl ? new bootstrap.Modal(deleteWishlistModalEl) : null;
+    const deleteWishlistError = document.getElementById("deleteWishlistError");
+
     if (wishlistsList) {
         wishlistsList.addEventListener("click", (e) => {
             const deleteBtn = e.target.closest(".my-favorite-wishlist-delete-btn");
             if (!deleteBtn) return;
 
-            if (!confirm("Supprimer cette catégorie ? Cette action est irréversible.")) {
-                return;
-            }
+            wishlistCardPendingDelete = deleteBtn.closest(".my-favorite-wishlist-card");
+            wishlistIdPendingDelete = deleteBtn.dataset.wishlistId;
+            if (deleteWishlistError) deleteWishlistError.style.display = "none";
+            if (deleteWishlistModal) deleteWishlistModal.show();
+        });
+    }
 
-            const wishlistId = deleteBtn.dataset.wishlistId;
-            fetch(`/wishlists/${wishlistId}/supprimer/`, {
+    const confirmDeleteWishlistBtn = document.getElementById("confirmDeleteWishlist");
+    if (confirmDeleteWishlistBtn) {
+        confirmDeleteWishlistBtn.addEventListener("click", () => {
+            if (!wishlistIdPendingDelete) return;
+
+            fetch(`/wishlists/${wishlistIdPendingDelete}/supprimer/`, {
                 method: "POST",
                 headers: { "X-CSRFToken": getCookie("csrftoken") },
             })
-            .then(r => r.json())
-            .then(data => {
-                if (data.deleted) {
-                    deleteBtn.closest(".my-favorite-wishlist-card").remove();
+            .then(async r => ({ status: r.status, data: await r.json().catch(() => ({})) }))
+            .then(({ status, data }) => {
+                if (status === 200 && data.deleted) {
+                    if (deleteWishlistModal) deleteWishlistModal.hide();
+                    if (wishlistCardPendingDelete) wishlistCardPendingDelete.remove();
                     if (wishlistsList.children.length === 0 && emptyMsg) {
                         emptyMsg.style.display = "block";
                     }
+                } else if (deleteWishlistError) {
+                    deleteWishlistError.textContent = data.error || "Une erreur est survenue lors de la suppression.";
+                    deleteWishlistError.style.display = "block";
                 }
+            })
+            .catch(() => {
+                if (deleteWishlistError) {
+                    deleteWishlistError.textContent = "Erreur réseau. Vérifiez votre connexion et réessayez.";
+                    deleteWishlistError.style.display = "block";
+                }
+            })
+            .finally(() => {
+                wishlistCardPendingDelete = null;
+                wishlistIdPendingDelete = null;
             });
         });
     }
