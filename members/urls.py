@@ -21,6 +21,8 @@ urlpatterns = [
     # Suggestions de modification et de nouveaux commerces
     path("suggestion/nouveau/", views.suggest_new_store, name="suggest-new-store"),
     path("store/<int:store_id>/suggestion/", views.suggest_modif_store, name="suggest-modif-store"),
+    path("wishlists/creer/", views.create_wishlist, name="create-wishlist"),
+    path("wishlists/<int:wishlist_id>/supprimer/", views.delete_wishlist, name="delete-wishlist"),
 
     # Favoris / actions
     path("store/<int:store_id>/favoris/", views.toggle_favoris, name="toggle-favoris"),
@@ -71,8 +73,7 @@ urlpatterns = [
     path("mon-compte/supprimer/", views.delete_account, name="delete_account"),
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
-    path("wishlists/creer/", views.create_wishlist, name="create-wishlist"),
-    path("wishlists/<int:wishlist_id>/supprimer/", views.delete_wishlist, name="delete-wishlist"),
+
 
 
     
