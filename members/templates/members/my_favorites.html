@@ -21,20 +21,17 @@
 
     <div class="my-favorite-tabs">
         <button class="my-favorite-tab active" id="tab-fav" data-target="panel-fav">
-            <i class="fa-solid fa-heart"></i>
             <span>Favoris</span>
             <span class="my-favorite-tab-count">{{ favoris|length }}</span>
         </button>
         {% if is_premium %}
         <button class="my-favorite-tab" id="tab-hidden" data-target="panel-hidden">
-            <i class="fa-solid fa-eye-slash"></i>
             <span>Masqués</span>
             <span class="my-favorite-tab-count">{{ unfavoris|length }}</span>
         </button>
         {% endif %}
         {% if is_premium %}
         <button class="my-favorite-tab" id="tab-categories" data-target="panel-categories">
-            <i class="fa-solid fa-tag"></i>
             <span>Mes catégories</span>
             <span class="my-favorite-tab-count">{{ wishlists|length }}</span>
         </button>
@@ -55,7 +52,7 @@
                             </div>
                         {% else %}
                             <div class="my-favorite-photo my-favorite-photo-empty">
-                                <i class="fa-regular fa-image"></i>
+                                
                             </div>
                         {% endif %}
 
@@ -70,7 +67,6 @@
                             </p>
 
                             <button class="my-favorite-btn favori-btn active" data-store-id="{{ store.id }}">
-                                <i class="fa-solid fa-heart"></i>
                                 <span>Retirer</span>
                             </button>
                         </div>
@@ -98,7 +94,7 @@
                             </div>
                         {% else %}
                             <div class="my-favorite-photo my-favorite-photo-empty">
-                                <i class="fa-regular fa-image"></i>
+                                
                             </div>
                         {% endif %}
 
@@ -113,7 +109,6 @@
                             </p>
 
                             <button class="my-favorite-btn my-unfavorite-btn unfavori-btn active" data-store-id="{{ store.id }}">
-                                <i class="fa-solid fa-eye"></i>
                                 <span>Réafficher</span>
                             </button>
 
@@ -133,12 +128,9 @@
             {% for wishlist in wishlists %}
                 <div class="my-favorite-wishlist-group" data-wishlist-id="{{ wishlist.id }}">
                     <div class="my-favorite-wishlist-header">
-                        <i class="fa-solid fa-tag"></i>
                         <span class="my-favorite-wishlist-name">{{ wishlist.name }}</span>
                         <span class="my-favorite-wishlist-count">{{ wishlist.stores.all|length }} commerce{{ wishlist.stores.all|length|pluralize }}</span>
-                        <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="{{ wishlist.id }}" title="Supprimer cette catégorie">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="{{ wishlist.id }}">Supprimer</button>
                     </div>
 
                     {% if wishlist.stores.all %}
@@ -153,7 +145,7 @@
                                         </div>
                                     {% else %}
                                         <div class="my-favorite-photo my-favorite-photo-empty">
-                                            <i class="fa-regular fa-image"></i>
+                                            
                                         </div>
                                     {% endif %}
 
@@ -167,7 +159,6 @@
                                         </p>
                                         <button type="button" class="my-favorite-btn wishlist-store-remove-btn"
                                             data-wishlist-id="{{ wishlist.id }}" data-store-id="{{ store.id }}">
-                                            <i class="fa-solid fa-xmark"></i>
                                             <span>Retirer de la catégorie</span>
                                         </button>
                                     </div>
@@ -187,8 +178,7 @@
 
         <div class="my-favorite-wishlist-create">
             <button type="button" class="my-favorite-wishlist-add-btn" id="show-create-wishlist">
-                <i class="fa-solid fa-plus"></i>
-                <span>Nouvelle catégorie</span>
+                <span>+ Nouvelle catégorie</span>
             </button>
             <div class="my-favorite-wishlist-create-form" id="create-wishlist-form" style="display:none;">
                 <input type="text" id="new-wishlist-name" maxlength="80" placeholder="Nom de la catégorie…">
@@ -207,7 +197,6 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content mf-modal-content">
             <div class="modal-body mf-modal-body">
-                <i class="fa-solid fa-trash-can mf-modal-icon"></i>
                 <h5 class="mf-modal-title" id="deleteWishlistModalLabel">Supprimer cette catégorie ?</h5>
                 <p class="mf-modal-text">Les commerces qu'elle contient resteront sur Yuumi — seule la catégorie disparaît. Cette action est irréversible.</p>
                 <div class="mf-modal-actions">
@@ -300,10 +289,6 @@
     transition: color 0.15s, border-color 0.15s;
 }
 
-.my-favorite-tab i {
-    font-size: 0.85rem;
-}
-
 .my-favorite-tab:hover {
     color: var(--mf-ink);
 }
@@ -368,8 +353,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--mf-line);
-    font-size: 1.6rem;
+    background-image: repeating-linear-gradient(
+        45deg,
+        var(--mf-surface),
+        var(--mf-surface) 8px,
+        var(--mf-line) 8px,
+        var(--mf-line) 9px
+    );
+}
+
+.my-favorite-photo-empty::after {
+    content: "Sans photo";
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--mf-ink-muted);
+    background: var(--mf-paper);
+    padding: 3px 9px;
+    border-radius: 4px;
 }
 
 .my-favorite-info {
@@ -461,8 +463,12 @@
     margin-bottom: 14px;
 }
 
-.my-favorite-wishlist-header i.fa-tag {
-    font-size: 0.85rem;
+.my-favorite-wishlist-header::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    background: var(--mf-accent);
+    flex-shrink: 0;
 }
 
 .my-favorite-wishlist-name {
@@ -485,16 +491,17 @@
     border: none;
     color: var(--mf-ink-muted);
     cursor: pointer;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    opacity: 0.6;
-    transition: opacity 0.15s, color 0.15s;
+    padding: 4px 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    transition: color 0.15s, text-decoration-color 0.15s;
 }
 
 .my-favorite-wishlist-delete-btn:hover {
-    opacity: 1;
     color: var(--mf-danger);
+    text-decoration-color: var(--mf-danger);
 }
 
 .my-favorite-wishlist-stores {
@@ -580,13 +587,6 @@
 .mf-modal-body {
     text-align: center;
     padding: 32px 28px;
-}
-
-.mf-modal-icon {
-    font-size: 34px;
-    color: #B34A39;
-    margin-bottom: 16px;
-    display: block;
 }
 
 .mf-modal-title {
@@ -792,12 +792,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 group.dataset.wishlistId = data.id;
                 group.innerHTML = `
                     <div class="my-favorite-wishlist-header">
-                        <i class="fa-solid fa-tag"></i>
                         <span class="my-favorite-wishlist-name">${data.name}</span>
                         <span class="my-favorite-wishlist-count">0 commerce</span>
-                        <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="${data.id}" title="Supprimer cette catégorie">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="${data.id}">Supprimer</button>
                     </div>
                     <p class="my-favorite-empty my-favorite-wishlist-empty">Aucun commerce dans cette catégorie pour le moment. Ajoutez-en depuis la fiche d'un commerce.</p>
                 `;
