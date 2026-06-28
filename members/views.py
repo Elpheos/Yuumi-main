@@ -549,6 +549,12 @@ def store_details(request, departement, ville, slug):
             {"id": w.id, "name": w.name, "has_store": w.id in wishlist_ids_with_store}
             for w in request.user.wishlists.all()
         ]
+
+    store_note_text = ""
+    if request.user.is_authenticated and is_premium_user(request.user):
+        note = StoreNote.objects.filter(user=request.user, store=store).first()
+        if note:
+            store_note_text = note.text
         
     est_ouvert = is_open_now(store)
     opening_status = get_opening_status(store)
@@ -585,7 +591,8 @@ def store_details(request, departement, ville, slug):
         "est_ouvert": est_ouvert,
         "opening_status": opening_status,  # ← NOUVEAU
         "families_with_rows": families_with_rows,
-        "opening_hours": opening_hours
+        "opening_hours": opening_hours,
+        "store_note_text": store_note_text,
     })
 
 
@@ -1443,3 +1450,26 @@ def ai_search_agent(request):
         cache.set(cache_key, payload, 60 * 60 * 6)
 
     return JsonResponse(payload)
+
+
+@login_required
+def save_store_note(request, store_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    if not is_premium_user(request.user):
+        return JsonResponse(
+            {"error": "Cette fonctionnalité est réservée aux comptes Premium."},
+            status=403,
+        )
+
+    store = get_object_or_404(Store, id=store_id)
+    text = request.POST.get("text", "").strip()[:1000]
+
+    StoreNote.objects.update_or_create(
+        user=request.user,
+        store=store,
+        defaults={"text": text},
+    )
+    return JsonResponse({"text": text})
+
