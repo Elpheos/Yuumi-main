@@ -278,8 +278,9 @@
                             </svg>
                             <span>Ajouter aux commerces masqués</span>
                         </button>
+                      {% endif %}
                     </div>
-                    {% endif %}
+                    
                     <button class="btn-suggest-modif desktop-only-btn" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
                         onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
                         Suggérer une modification
