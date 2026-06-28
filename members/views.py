@@ -768,7 +768,10 @@ def toggle_favoris(request, store_id):
 def my_favorites(request):
     favoris = request.user.favoris.all()
     unfavoris = request.user.unfavoris.all() if is_premium_user(request.user) else []
-    wishlists = request.user.wishlists.all() if is_premium_user(request.user) else []
+    wishlists = (
+        request.user.wishlists.all().prefetch_related("stores")
+        if is_premium_user(request.user) else []
+    )
     return render(request, "members/my_favorites.html", {
         "favoris": favoris,
         "unfavoris": unfavoris,
