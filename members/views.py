@@ -26,7 +26,7 @@ import json
 from .models import (
     Store, ProductFamily, Product, Category,
     StoreImage, CityCategoryHighlight, SuperCategory, StoreGalerieImage, Click, PageView, StoreSuggestion,
-    Wishlist,
+    Wishlist, WishlistStore,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
@@ -537,9 +537,21 @@ def store_details(request, departement, ville, slug):
     is_unfavorite = False
     if request.user.is_authenticated:
         is_unfavorite = store in request.user.unfavoris.all()
-
+        
+    user_wishlists = []
+    if request.user.is_authenticated and is_premium_user(request.user):
+        wishlist_ids_with_store = set(
+            WishlistStore.objects.filter(
+                wishlist__user=request.user, store=store
+            ).values_list("wishlist_id", flat=True)
+        )
+        user_wishlists = [
+            {"id": w.id, "name": w.name, "has_store": w.id in wishlist_ids_with_store}
+            for w in request.user.wishlists.all()
+        ]
+        
     est_ouvert = is_open_now(store)
-    opening_status = get_opening_status(store)  # ← NOUVEAU : badge enrichi (label + prochaine transition)
+    opening_status = get_opening_status(store)
 
     families_with_rows = []
     for family in store.families.all():
@@ -569,6 +581,7 @@ def store_details(request, departement, ville, slug):
         "stores": store_data,
         "is_favorite": is_favorite,
         "is_unfavorite": is_unfavorite,
+        "user_wishlists": user_wishlists,
         "est_ouvert": est_ouvert,
         "opening_status": opening_status,  # ← NOUVEAU
         "families_with_rows": families_with_rows,
@@ -813,6 +826,28 @@ def create_wishlist(request):
 
     wishlist = Wishlist.objects.create(user=request.user, name=name)
     return JsonResponse({"id": wishlist.id, "name": wishlist.name})
+
+@login_required
+def toggle_wishlist_store(request, wishlist_id, store_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    wishlist = get_object_or_404(Wishlist, id=wishlist_id, user=request.user)
+    store = get_object_or_404(Store, id=store_id)
+
+    link = WishlistStore.objects.filter(wishlist=wishlist, store=store).first()
+    if link:
+        link.delete()
+        return JsonResponse({"in_wishlist": False})
+
+    if not is_premium_user(request.user):
+        return JsonResponse(
+            {"error": "Cette fonctionnalité est réservée aux comptes Premium."},
+            status=403,
+        )
+
+    WishlistStore.objects.create(wishlist=wishlist, store=store)
+    return JsonResponse({"in_wishlist": True})
     
 @login_required
 def delete_wishlist(request, wishlist_id):
