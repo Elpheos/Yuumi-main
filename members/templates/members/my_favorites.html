@@ -8,9 +8,12 @@
 <main class="my-favorite-main">
 
     <div class="my-favorite-header">
-        <h1 class="my-favorite-title">Mes favoris</h1>
+        <div class="my-favorite-header-titles">
+            <p class="mf-eyebrow">Mon carnet</p>
+            <h1 class="my-favorite-title">Mes favoris</h1>
+        </div>
         {% if user.is_authenticated %}
-            <p class="my-favorite-user">Connecté en tant que {{ user.username }}</p>
+            <p class="my-favorite-user">{{ user.username }}</p>
         {% else %}
             <p class="my-favorite-user">Non connecté</p>
         {% endif %}
@@ -18,20 +21,20 @@
 
     <div class="my-favorite-tabs">
         <button class="my-favorite-tab active" id="tab-fav" data-target="panel-fav">
-            <svg style="width: 15px;" viewBox="0 0 512 512"><path fill="currentColor" d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+            <i class="fa-solid fa-heart"></i>
             <span>Favoris</span>
             <span class="my-favorite-tab-count">{{ favoris|length }}</span>
         </button>
         {% if is_premium %}
         <button class="my-favorite-tab" id="tab-hidden" data-target="panel-hidden">
-            <svg style="width: 15px;" viewBox="0 0 576 512"><path fill="currentColor" d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298.1L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.4 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.4z"/></svg>
+            <i class="fa-solid fa-eye-slash"></i>
             <span>Masqués</span>
             <span class="my-favorite-tab-count">{{ unfavoris|length }}</span>
         </button>
         {% endif %}
         {% if is_premium %}
         <button class="my-favorite-tab" id="tab-categories" data-target="panel-categories">
-            <svg style="width: 15px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+            <i class="fa-solid fa-tag"></i>
             <span>Mes catégories</span>
             <span class="my-favorite-tab-count">{{ wishlists|length }}</span>
         </button>
@@ -52,7 +55,7 @@
                             </div>
                         {% else %}
                             <div class="my-favorite-photo my-favorite-photo-empty">
-                                <svg style="width: 26px;" viewBox="0 0 576 512"><path fill="currentColor" d="M528.1 171.5L382.2 71.1C368.3 61.9 352 56 336 56l-32 0-64 0-32 0c-16 0-32.3 5.9-46.2 15.1L15.9 171.5C6 178.1 0 188.8 0 200.2L0 432c0 26.5 21.5 48 48 48l480 0c26.5 0 48-21.5 48-48l0-231.8c0-11.4-6-22.1-15.9-28.7zM320 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+                                <i class="fa-regular fa-image"></i>
                             </div>
                         {% endif %}
 
@@ -67,7 +70,7 @@
                             </p>
 
                             <button class="my-favorite-btn favori-btn active" data-store-id="{{ store.id }}">
-                                <svg style="width: 13px;" viewBox="0 0 512 512"><path fill="currentColor" d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+                                <i class="fa-solid fa-heart"></i>
                                 <span>Retirer</span>
                             </button>
                         </div>
@@ -95,7 +98,7 @@
                             </div>
                         {% else %}
                             <div class="my-favorite-photo my-favorite-photo-empty">
-                                <svg style="width: 26px;" viewBox="0 0 576 512"><path fill="currentColor" d="M528.1 171.5L382.2 71.1C368.3 61.9 352 56 336 56l-32 0-64 0-32 0c-16 0-32.3 5.9-46.2 15.1L15.9 171.5C6 178.1 0 188.8 0 200.2L0 432c0 26.5 21.5 48 48 48l480 0c26.5 0 48-21.5 48-48l0-231.8c0-11.4-6-22.1-15.9-28.7zM320 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+                                <i class="fa-regular fa-image"></i>
                             </div>
                         {% endif %}
 
@@ -110,7 +113,7 @@
                             </p>
 
                             <button class="my-favorite-btn my-unfavorite-btn unfavori-btn active" data-store-id="{{ store.id }}">
-                                <svg style="width: 13px;" viewBox="0 0 576 512"><path fill="currentColor" d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298.1L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.4 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.4z"/></svg>
+                                <i class="fa-solid fa-eye"></i>
                                 <span>Réafficher</span>
                             </button>
 
@@ -130,11 +133,11 @@
             {% for wishlist in wishlists %}
                 <div class="my-favorite-wishlist-group" data-wishlist-id="{{ wishlist.id }}">
                     <div class="my-favorite-wishlist-header">
-                        <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+                        <i class="fa-solid fa-tag"></i>
                         <span class="my-favorite-wishlist-name">{{ wishlist.name }}</span>
                         <span class="my-favorite-wishlist-count">{{ wishlist.stores.all|length }} commerce{{ wishlist.stores.all|length|pluralize }}</span>
                         <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="{{ wishlist.id }}" title="Supprimer cette catégorie">
-                            <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
 
@@ -150,7 +153,7 @@
                                         </div>
                                     {% else %}
                                         <div class="my-favorite-photo my-favorite-photo-empty">
-                                            <svg style="width: 26px;" viewBox="0 0 576 512"><path fill="currentColor" d="M528.1 171.5L382.2 71.1C368.3 61.9 352 56 336 56l-32 0-64 0-32 0c-16 0-32.3 5.9-46.2 15.1L15.9 171.5C6 178.1 0 188.8 0 200.2L0 432c0 26.5 21.5 48 48 48l480 0c26.5 0 48-21.5 48-48l0-231.8c0-11.4-6-22.1-15.9-28.7zM320 320l-64 0c-17.7 0-32-14.3-32-32s14.3-32 32-32l64 0c17.7 0 32 14.3 32 32s-14.3 32-32 32z"/></svg>
+                                            <i class="fa-regular fa-image"></i>
                                         </div>
                                     {% endif %}
 
@@ -184,7 +187,7 @@
 
         <div class="my-favorite-wishlist-create">
             <button type="button" class="my-favorite-wishlist-add-btn" id="show-create-wishlist">
-                <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M256 80c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 144L48 224c-17.7 0-32 14.3-32 32s14.3 32 32 32l144 0 0 144c0 17.7 14.3 32 32 32s32-14.3 32-32l0-144 144 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-144 0 0-144z"/></svg>
+                <i class="fa-solid fa-plus"></i>
                 <span>Nouvelle catégorie</span>
             </button>
             <div class="my-favorite-wishlist-create-form" id="create-wishlist-form" style="display:none;">
@@ -202,16 +205,16 @@
 <!-- Modal confirmation suppression de catégorie -->
 <div class="modal fade" id="deleteWishlistModal" tabindex="-1" aria-labelledby="deleteWishlistModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:14px; border:2px solid #ff8b38;">
-            <div class="modal-body" style="text-align:center; padding:32px 24px;">
-                <svg style="width:40px; margin-bottom:16px;" viewBox="0 0 448 512"><path fill="#c62828" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
-                <h5 style="font-weight:700; margin-bottom:10px;" id="deleteWishlistModalLabel">Supprimer cette catégorie ?</h5>
-                <p style="color:#666; margin-bottom:24px;">Les commerces qu'elle contient resteront sur Yuumi — seule la catégorie disparaît. Cette action est irréversible.</p>
-                <div style="display:flex; gap:10px; justify-content:center;">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius:8px;">Annuler</button>
-                    <button type="button" id="confirmDeleteWishlist" style="background:#c62828; color:white; border:none; border-radius:8px; padding:8px 20px; font-weight:600; cursor:pointer;">Supprimer</button>
+        <div class="modal-content mf-modal-content">
+            <div class="modal-body mf-modal-body">
+                <i class="fa-solid fa-trash-can mf-modal-icon"></i>
+                <h5 class="mf-modal-title" id="deleteWishlistModalLabel">Supprimer cette catégorie ?</h5>
+                <p class="mf-modal-text">Les commerces qu'elle contient resteront sur Yuumi — seule la catégorie disparaît. Cette action est irréversible.</p>
+                <div class="mf-modal-actions">
+                    <button type="button" class="mf-btn mf-btn-ghost" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="mf-btn mf-btn-danger" id="confirmDeleteWishlist">Supprimer</button>
                 </div>
-                <p id="deleteWishlistError" style="color:#c62828; font-size:0.85rem; margin:14px 0 0; display:none;"></p>
+                <p id="deleteWishlistError" class="mf-modal-error" style="display:none;"></p>
             </div>
         </div>
     </div>
@@ -221,71 +224,108 @@
 {% block extra_js %}
 <style>
 .my-favorite-main {
+    --mf-ink: #1F2421;
+    --mf-ink-muted: #6B6F6A;
+    --mf-paper: #FAF7F2;
+    --mf-surface: #FFFFFF;
+    --mf-accent: #2F5D4E;
+    --mf-accent-soft: #E4EDE8;
+    --mf-danger: #B34A39;
+    --mf-danger-soft: #F5E6E2;
+    --mf-line: #E5E1D8;
+
     max-width: 1000px;
     margin: 30px auto;
-    padding: 0 16px;
+    padding: 0 16px 40px;
+    color: var(--mf-ink);
 }
 
 .my-favorite-header {
     display: flex;
-    align-items: baseline;
+    align-items: flex-end;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 4px 16px;
-    margin-bottom: 20px;
+    gap: 8px 16px;
+    margin-bottom: 24px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--mf-line);
+}
+
+.mf-eyebrow {
+    margin: 0 0 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mf-accent);
 }
 
 .my-favorite-title {
-    font-size: 1.8rem;
+    font-size: 1.9rem;
     margin: 0;
-    font-weight: 600;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--mf-ink);
 }
 
 .my-favorite-user {
-    font-size: 0.85rem;
-    color: #888;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--mf-ink-muted);
     margin: 0;
+    padding: 5px 12px;
+    border: 1px solid var(--mf-line);
+    border-radius: 999px;
+    background: var(--mf-surface);
 }
 
 .my-favorite-tabs {
     display: flex;
     gap: 4px;
-    border-bottom: 2px solid #f0f0f0;
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 
 .my-favorite-tab {
     background: none;
     border: none;
-    border-bottom: 3px solid transparent;
-    padding: 10px 6px;
-    margin-bottom: -2px;
-    font-size: 0.95rem;
+    border-bottom: 2px solid transparent;
+    padding: 10px 14px 12px;
+    font-size: 0.92rem;
     font-weight: 600;
-    color: #888;
+    color: var(--mf-ink-muted);
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+.my-favorite-tab i {
+    font-size: 0.85rem;
+}
+
+.my-favorite-tab:hover {
+    color: var(--mf-ink);
 }
 
 .my-favorite-tab.active {
-    color: #ff8b38;
-    border-bottom-color: #ff8b38;
+    color: var(--mf-accent);
+    border-bottom-color: var(--mf-accent);
 }
 
 .my-favorite-tab-count {
-    background: #f0f0f0;
-    color: #888;
+    background: var(--mf-paper);
+    color: var(--mf-ink-muted);
     font-size: 0.72rem;
     font-weight: 700;
-    padding: 1px 7px;
+    padding: 1px 8px;
     border-radius: 100px;
+    font-family: 'SFMono-Regular', Consolas, monospace;
 }
 
 .my-favorite-tab.active .my-favorite-tab-count {
-    background: #fff0e6;
-    color: #ff8b38;
+    background: var(--mf-accent-soft);
+    color: var(--mf-accent);
 }
 
 .my-favorite-list {
@@ -295,12 +335,18 @@
 }
 
 .my-favorite-card {
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--mf-line);
     border-radius: 10px;
     overflow: hidden;
-    background: #fff;
+    background: var(--mf-surface);
     display: flex;
     flex-direction: column;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.my-favorite-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(31, 36, 33, 0.08);
 }
 
 .my-favorite-card-hidden {
@@ -309,7 +355,7 @@
 
 .my-favorite-photo {
     height: 130px;
-    background: #f4f4f4;
+    background: var(--mf-paper);
 }
 
 .my-favorite-photo img {
@@ -322,7 +368,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #bbb;
+    color: var(--mf-line);
+    font-size: 1.6rem;
 }
 
 .my-favorite-info {
@@ -338,66 +385,272 @@
 }
 
 .my-favorite-name a {
-    color: #222;
+    color: var(--mf-ink);
     text-decoration: none;
 }
 
 .my-favorite-meta {
-    font-size: 0.82rem;
-    color: #888;
+    font-size: 0.8rem;
+    color: var(--mf-ink-muted);
     margin: 4px 0 10px;
 }
 
 .my-favorite-btn {
     margin-top: auto;
     background: none;
-    border: 1px solid #ddd;
+    border: 1px solid var(--mf-line);
     padding: 7px 10px;
     border-radius: 6px;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    color: #ff8b38;
-}
-
-.my-favorite-btn.active {
-    border-color: #ffcfa6;
+    gap: 6px;
+    color: var(--mf-accent);
+    transition: background 0.15s, border-color 0.15s;
 }
 
 .my-favorite-btn:hover {
-    background: #fff8f3;
+    background: var(--mf-accent-soft);
+    border-color: var(--mf-accent);
 }
 
-.my-unfavorite-btn {
-    color: #c62828;
+.my-unfavorite-btn,
+.wishlist-store-remove-btn {
+    color: var(--mf-danger);
 }
 
-.my-unfavorite-btn.active {
-    border-color: #f3bcbc;
-}
-
-.my-unfavorite-btn:hover {
-    background: #fdf2f2;
+.my-unfavorite-btn:hover,
+.wishlist-store-remove-btn:hover {
+    background: var(--mf-danger-soft);
+    border-color: var(--mf-danger);
 }
 
 .my-favorite-empty {
     text-align: center;
     font-size: 0.9rem;
-    color: #888;
-    margin-top: 32px;
+    font-style: italic;
+    color: var(--mf-ink-muted);
+    margin-top: 28px;
+}
+
+.my-favorite-wishlists-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: 20px;
+}
+
+.my-favorite-wishlist-group {
+    margin-bottom: 26px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--mf-line);
+}
+
+.my-favorite-wishlist-group:last-child {
+    border-bottom: none;
+}
+
+.my-favorite-wishlist-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--mf-accent);
+    margin-bottom: 14px;
+}
+
+.my-favorite-wishlist-header i.fa-tag {
+    font-size: 0.85rem;
+}
+
+.my-favorite-wishlist-name {
+    font-weight: 700;
+    color: var(--mf-ink);
+    font-size: 1.02rem;
+}
+
+.my-favorite-wishlist-count {
+    font-size: 0.75rem;
+    color: var(--mf-ink-muted);
+    background: var(--mf-paper);
+    border-radius: 100px;
+    padding: 2px 9px;
+    margin-right: auto;
+}
+
+.my-favorite-wishlist-delete-btn {
+    background: none;
+    border: none;
+    color: var(--mf-ink-muted);
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    opacity: 0.6;
+    transition: opacity 0.15s, color 0.15s;
+}
+
+.my-favorite-wishlist-delete-btn:hover {
+    opacity: 1;
+    color: var(--mf-danger);
+}
+
+.my-favorite-wishlist-stores {
+    margin-top: 4px;
+}
+
+.my-favorite-wishlist-empty {
+    margin: 4px 0 0;
+    font-size: 0.85rem;
+}
+
+.my-favorite-wishlist-create {
+    margin-top: 8px;
+}
+
+.my-favorite-wishlist-add-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: 1px dashed var(--mf-line);
+    color: var(--mf-accent);
+    border-radius: 8px;
+    padding: 11px 16px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    justify-content: center;
+}
+
+.my-favorite-wishlist-add-btn:hover {
+    background: var(--mf-accent-soft);
+    border-color: var(--mf-accent);
+}
+
+.my-favorite-wishlist-create-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.my-favorite-wishlist-create-form input {
+    flex: 1;
+    min-width: 180px;
+    border: 1px solid var(--mf-line);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 0.88rem;
+    background: var(--mf-surface);
+    color: var(--mf-ink);
+}
+
+.my-favorite-wishlist-create-form input:focus {
+    outline: none;
+    border-color: var(--mf-accent);
+}
+
+.my-favorite-wishlist-create-form button {
+    background: var(--mf-accent);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.my-favorite-wishlist-error {
+    width: 100%;
+    color: var(--mf-danger);
+    font-size: 0.8rem;
+    margin: 4px 0 0;
+}
+
+.mf-modal-content {
+    border-radius: 14px;
+    border: 1px solid #2F5D4E;
+}
+
+.mf-modal-body {
+    text-align: center;
+    padding: 32px 28px;
+}
+
+.mf-modal-icon {
+    font-size: 34px;
+    color: #B34A39;
+    margin-bottom: 16px;
+    display: block;
+}
+
+.mf-modal-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1F2421;
+}
+
+.mf-modal-text {
+    color: #6B6F6A;
+    margin-bottom: 24px;
+    font-size: 0.92rem;
+}
+
+.mf-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.mf-btn {
+    border-radius: 8px;
+    padding: 9px 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    border: 1px solid transparent;
+}
+
+.mf-btn-ghost {
+    background: #fff;
+    border-color: #E5E1D8;
+    color: #1F2421;
+}
+
+.mf-btn-ghost:hover {
+    background: #FAF7F2;
+}
+
+.mf-btn-danger {
+    background: #B34A39;
+    color: #fff;
+}
+
+.mf-btn-danger:hover {
+    background: #9c3e2f;
+}
+
+.mf-modal-error {
+    color: #B34A39;
+    font-size: 0.85rem;
+    margin: 14px 0 0;
 }
 
 @media (max-width: 767px) {
     .my-favorite-main {
         margin-top: 16px;
-        padding: 0 12px;
+        padding: 0 12px 32px;
     }
     .my-favorite-title {
         font-size: 1.4rem;
+    }
+    .my-favorite-header {
+        align-items: flex-start;
     }
     .my-favorite-tabs {
         gap: 0;
@@ -405,8 +658,11 @@
     .my-favorite-tab {
         flex: 1;
         justify-content: center;
-        font-size: 0.85rem;
-        padding: 10px 4px;
+        font-size: 0.82rem;
+        padding: 10px 4px 12px;
+    }
+    .my-favorite-tab span:not(.my-favorite-tab-count) {
+        display: none;
     }
     .my-favorite-list {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -429,137 +685,9 @@
         font-size: 0.72rem;
         padding: 6px 4px;
     }
-}
-
-.my-favorite-wishlists-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.my-favorite-wishlist-card {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border: 1px solid #e5e5e5;
-    border-radius: 10px;
-    padding: 12px 14px;
-    background: #fff;
-    color: #ff8b38;
-}
-
-.my-favorite-wishlist-name {
-    font-weight: 600;
-    color: #222;
-    flex: 1;
-}
-
-.my-favorite-wishlist-count {
-    font-size: 0.78rem;
-    color: #999;
-}
-
-.my-favorite-wishlist-create {
-    margin-top: 4px;
-}
-
-.my-favorite-wishlist-add-btn {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: 1px dashed #ff8b38;
-    color: #ff8b38;
-    border-radius: 8px;
-    padding: 10px 14px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.my-favorite-wishlist-add-btn:hover {
-    background: #fff8f3;
-}
-
-.my-favorite-wishlist-create-form {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-    flex-wrap: wrap;
-}
-
-.my-favorite-wishlist-create-form input {
-    flex: 1;
-    min-width: 180px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 9px 12px;
-    font-size: 0.88rem;
-}
-
-.my-favorite-wishlist-create-form button {
-    background: #ff8b38;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 9px 16px;
-    font-size: 0.88rem;
-    font-weight: 600;
-    cursor: pointer;
-}
-
-.my-favorite-wishlist-error {
-    width: 100%;
-    color: #c62828;
-    font-size: 0.8rem;
-    margin: 4px 0 0;
-}
-
-.my-favorite-wishlist-delete-btn {
-    background: none;
-    border: none;
-    color: #bbb;
-    cursor: pointer;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-}
-
-.my-favorite-wishlist-delete-btn:hover {
-    color: #c62828;
-}
-
-.my-favorite-wishlist-group {
-    margin-bottom: 28px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #f0f0f0;
-}
-
-.my-favorite-wishlist-group:last-child {
-    border-bottom: none;
-}
-
-.my-favorite-wishlist-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: #ff8b38;
-    margin-bottom: 14px;
-}
-
-.my-favorite-wishlist-header .my-favorite-wishlist-name {
-    font-size: 1.05rem;
-}
-
-.my-favorite-wishlist-stores {
-    margin-top: 4px;
-}
-
-.my-favorite-wishlist-empty {
-    margin-top: 4px;
-    font-size: 0.85rem;
-    color: #999;
+    .my-favorite-wishlist-count {
+        margin-right: 0;
+    }
 }
 </style>
 
@@ -664,11 +792,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 group.dataset.wishlistId = data.id;
                 group.innerHTML = `
                     <div class="my-favorite-wishlist-header">
-                        <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
+                        <i class="fa-solid fa-tag"></i>
                         <span class="my-favorite-wishlist-name">${data.name}</span>
                         <span class="my-favorite-wishlist-count">0 commerce</span>
                         <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="${data.id}" title="Supprimer cette catégorie">
-                            <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </div>
                     <p class="my-favorite-empty my-favorite-wishlist-empty">Aucun commerce dans cette catégorie pour le moment. Ajoutez-en depuis la fiche d'un commerce.</p>
