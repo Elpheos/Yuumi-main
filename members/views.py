@@ -813,7 +813,15 @@ def create_wishlist(request):
 
     wishlist = Wishlist.objects.create(user=request.user, name=name)
     return JsonResponse({"id": wishlist.id, "name": wishlist.name})
+    
+@login_required
+def delete_wishlist(request, wishlist_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
 
+    wishlist = get_object_or_404(Wishlist, id=wishlist_id, user=request.user)
+    wishlist.delete()
+    return JsonResponse({"deleted": True})
 
 @login_required
 def claim_store(request, store_id):
