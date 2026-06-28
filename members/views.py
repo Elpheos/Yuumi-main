@@ -26,6 +26,7 @@ import json
 from .models import (
     Store, ProductFamily, Product, Category,
     StoreImage, CityCategoryHighlight, SuperCategory, StoreGalerieImage, Click, PageView, StoreSuggestion,
+    Wishlist,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
@@ -754,9 +755,11 @@ def toggle_favoris(request, store_id):
 def my_favorites(request):
     favoris = request.user.favoris.all()
     unfavoris = request.user.unfavoris.all() if is_premium_user(request.user) else []
+    wishlists = request.user.wishlists.all() if is_premium_user(request.user) else []
     return render(request, "members/my_favorites.html", {
         "favoris": favoris,
         "unfavoris": unfavoris,
+        "wishlists": wishlists,
     })
 
 
@@ -784,6 +787,32 @@ def toggle_unfavoris(request, store_id):
 def my_unfavorites(request):
     favoris = request.user.unfavoris.all()
     return render(request, "members/my_unfavorites.html", {"unfavoris": favoris})
+
+
+# ===========================================================
+# 🔹 Wishlists nommées (Premium)
+# ===========================================================
+
+@login_required
+def create_wishlist(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    if not is_premium_user(request.user):
+        return JsonResponse(
+            {"error": "Cette fonctionnalité est réservée aux comptes Premium."},
+            status=403,
+        )
+
+    name = request.POST.get("name", "").strip()
+    if not name:
+        return JsonResponse({"error": "Le nom de la wishlist est requis."}, status=400)
+
+    if request.user.wishlists.filter(name__iexact=name).exists():
+        return JsonResponse({"error": "Vous avez déjà une wishlist avec ce nom."}, status=400)
+
+    wishlist = Wishlist.objects.create(user=request.user, name=name)
+    return JsonResponse({"id": wishlist.id, "name": wishlist.name})
 
 
 @login_required
