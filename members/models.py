@@ -744,3 +744,29 @@ class WishlistStore(models.Model):
 
     def __str__(self):
         return f"{self.store.nom} dans « {self.wishlist.name} »"
+
+class StoreNote(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="store_notes",
+    )
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="user_notes",
+    )
+    text = models.TextField(
+        max_length=1000,
+        blank=True,
+        help_text="Note privée, visible uniquement par son auteur.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Note personnelle"
+        verbose_name_plural = "Notes personnelles"
+        unique_together = ("user", "store")
+
+    def __str__(self):
+        return f"Note de {self.user.username} sur {self.store.nom}"
