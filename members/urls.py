@@ -72,6 +72,7 @@ urlpatterns = [
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/creer/", views.create_wishlist, name="create-wishlist"),
+    path("wishlists/<int:wishlist_id>/supprimer/", views.delete_wishlist, name="delete-wishlist"),
 
 
     
