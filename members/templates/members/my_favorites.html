@@ -132,6 +132,9 @@
                     <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
                     <span class="my-favorite-wishlist-name">{{ wishlist.name }}</span>
                     <span class="my-favorite-wishlist-count">0 commerce</span>
+                    <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="{{ wishlist.id }}" title="Supprimer cette catégorie">
+                        <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                    </button>
                 </div>
             {% endfor %}
         </div>
@@ -455,6 +458,20 @@
     font-size: 0.8rem;
     margin: 4px 0 0;
 }
+
+.my-favorite-wishlist-delete-btn {
+    background: none;
+    border: none;
+    color: #bbb;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.my-favorite-wishlist-delete-btn:hover {
+    color: #c62828;
+}
 </style>
 
 <script>
@@ -560,11 +577,44 @@ document.addEventListener("DOMContentLoaded", () => {
                     <svg style="width: 16px;" viewBox="0 0 512 512"><path fill="currentColor" d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
                     <span class="my-favorite-wishlist-name">${data.name}</span>
                     <span class="my-favorite-wishlist-count">0 commerce</span>
+                    <button type="button" class="my-favorite-wishlist-delete-btn" data-wishlist-id="${data.id}" title="Supprimer cette catégorie">
+                        <svg style="width: 13px;" viewBox="0 0 448 512"><path fill="currentColor" d="M135.2 17.7L128 32 32 32C14.3 32 0 46.3 0 64S14.3 96 32 96l384 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-96 0-7.2-14.3C307.4 6.8 295.2 0 282 0L166 0c-13.2 0-25.4 6.8-30.8 17.7zM416 128L32 128 53.2 467c1.6 25.3 22.6 45 47.9 45l245.8 0c25.3 0 46.3-19.7 47.9-45L416 128z"/></svg>
+                    </button>
                 `;
                 wishlistsList.appendChild(card);
                 nameInput.value = "";
                 createForm.style.display = "none";
                 showCreateBtn.style.display = "flex";
+            });
+        });
+    }
+
+    // Délégation d'événement : un seul listener sur le conteneur gère le clic
+    // sur "supprimer", que la carte vienne du rendu serveur (au chargement)
+    // ou d'une carte ajoutée dynamiquement après création (pas besoin de
+    // réattacher un listener à chaque nouvelle carte).
+    if (wishlistsList) {
+        wishlistsList.addEventListener("click", (e) => {
+            const deleteBtn = e.target.closest(".my-favorite-wishlist-delete-btn");
+            if (!deleteBtn) return;
+
+            if (!confirm("Supprimer cette catégorie ? Cette action est irréversible.")) {
+                return;
+            }
+
+            const wishlistId = deleteBtn.dataset.wishlistId;
+            fetch(`/wishlists/${wishlistId}/supprimer/`, {
+                method: "POST",
+                headers: { "X-CSRFToken": getCookie("csrftoken") },
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.deleted) {
+                    deleteBtn.closest(".my-favorite-wishlist-card").remove();
+                    if (wishlistsList.children.length === 0 && emptyMsg) {
+                        emptyMsg.style.display = "block";
+                    }
+                }
             });
         });
     }
