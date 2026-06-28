@@ -26,7 +26,7 @@ import json
 from .models import (
     Store, ProductFamily, Product, Category,
     StoreImage, CityCategoryHighlight, SuperCategory, StoreGalerieImage, Click, PageView, StoreSuggestion,
-    Wishlist, WishlistStore,
+    Wishlist, WishlistStore, StoreNote,
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
