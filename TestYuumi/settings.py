@@ -119,6 +119,7 @@ TEMPLATES = [
                 "members.context_processors.menu_context",
                 'members.context_processors.ai_agent_visible', 
                 'members.context_processors.premium_context',
+                'members.context_processors.native_context',
             ],
         },
     },
