@@ -139,6 +139,29 @@
     display: block;
 }
 
+/* ===== BARRE D'AFFINEMENT ===== */
+.agent-ia-affiner {
+    margin: 8px 0 20px;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 14px;
+    background: #fafafa;
+}
+.agent-ia-affiner-titre {
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.agent-ia-affiner-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.agent-ia-affiner-row .agent-ia-input {
+    flex: 1;
+    min-width: 200px;
+    margin: 0;
+}
+
 /* ===== ANIMATION LAPIN ===== */
 .agent-ia-lapin-container {
     display: flex;
@@ -257,6 +280,46 @@ if (!window._agentIaInitialized) {
                 return '<span class="agent-ia-badge agent-ia-badge-confirme">Confirmé</span>';
             }
             return '<span class="agent-ia-badge agent-ia-badge-deduit">À vérifier</span>';
+        }
+
+        // Construit le HTML de la barre d'affinement (re-repondre a l'agent
+        // pour preciser la recherche). Placee en HAUT des resultats, juste
+        // sous le message d'intro, pour relancer sans scroller jusqu'en bas.
+        function barreAffinerHtml() {
+            return `
+                <div class="agent-ia-affiner">
+                    <p class="agent-ia-affiner-titre">Pas tout à fait ça ? Affinez votre recherche :</p>
+                    <div class="agent-ia-affiner-row">
+                        <input type="text" id="agent-ia-affiner-input" class="agent-ia-input"
+                               placeholder="Ex: plutôt moins cher, ouvert le dimanche, sans gluten...">
+                        <button type="button" class="agent-ia-button" id="agent-ia-affiner-btn">Affiner</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // (re)cable la barre d'affinement apres reecriture du DOM. On repart
+        // de la requete qui a produit CES resultats (capturee dans la closure)
+        // et on y ajoute la precision avec le meme format " - " que le flux de
+        // clarification, ce qui declenche la regle anti-boucle cote backend
+        // (recherche directe, pas de nouvelle serie de questions).
+        function cablerAffiner() {
+            const affinerInput = document.getElementById('agent-ia-affiner-input');
+            const affinerBtn = document.getElementById('agent-ia-affiner-btn');
+            if (!affinerBtn || !affinerInput) return;
+
+            const lancerAffinement = () => {
+                const precision = affinerInput.value.trim();
+                if (!precision) return;
+                const queryInput = document.getElementById('agent-ia-query');
+                queryInput.value = query + ' - ' + precision;
+                document.getElementById('agent-ia-submit').click();
+            };
+
+            affinerBtn.addEventListener('click', lancerAffinement);
+            affinerInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); lancerAffinement(); }
+            });
         }
 
         try {
@@ -455,6 +518,10 @@ if (!window._agentIaInitialized) {
                     html += `<p class="agent-ia-intro-message">${data.message}</p>`;
                 }
 
+                // Barre d'affinement EN HAUT : juste apres le message d'intro,
+                // avant la liste des resultats.
+                html += barreAffinerHtml();
+
                 if (data.pistes && data.pistes.length > 0) {
                     // Une seule piste sans nom particulier (cas des demandes
                     // precises type produit_precis/commerce_precis) : pas
@@ -483,46 +550,15 @@ if (!window._agentIaInitialized) {
                             </div>
                         `).join('');
                     });
-               } else if (!data.message) {
+                } else if (!data.message) {
                     html += '<p class="agent-ia-message">Aucun résultat trouvé.</p>';
                 }
 
-                // Barre d'affinement : permet de "re-répondre" à l'agent pour
-                // préciser sans tout retaper. La précision est ajoutée à la
-                // requête précédente (même format " - " que la clarification),
-                // puis on relance la recherche.
-                html += `
-                    <div class="agent-ia-affiner" style="margin-top:24px;border-top:1px solid #eee;padding-top:16px;">
-                        <p style="font-weight:600;margin-bottom:8px;">Pas tout à fait ça ? Affinez votre recherche :</p>
-                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                            <input type="text" id="agent-ia-affiner-input" class="agent-ia-input"
-                                   style="flex:1;min-width:200px;margin:0;"
-                                   placeholder="Ex: plutôt moins cher, ouvert le dimanche, sans gluten...">
-                            <button type="button" class="agent-ia-button" id="agent-ia-affiner-btn">Affiner</button>
-                        </div>
-                    </div>
-                `;
-
                 resultatsDiv.innerHTML = html;
 
-                // (re)câblage après réécriture du DOM
-                const affinerInput = document.getElementById('agent-ia-affiner-input');
-                const affinerBtn = document.getElementById('agent-ia-affiner-btn');
-                if (affinerBtn && affinerInput) {
-                    const lancerAffinement = () => {
-                        const precision = affinerInput.value.trim();
-                        if (!precision) return;
-                        const queryInput = document.getElementById('agent-ia-query');
-                        // On repart de la requête qui a produit CES résultats
-                        // (capturée dans la closure) et on y ajoute la précision.
-                        queryInput.value = query + ' - ' + precision;
-                        document.getElementById('agent-ia-submit').click();
-                    };
-                    affinerBtn.addEventListener('click', lancerAffinement);
-                    affinerInput.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter') { e.preventDefault(); lancerAffinement(); }
-                    });
-                }
+                // La barre d'affinement est presente dans tous les cas de ce
+                // bloc (resultats ou "aucun resultat"), donc on la cable ici.
+                cablerAffiner();
             }
         } catch (e) {
             resultatsDiv.innerHTML = '<p class="agent-ia-message">Une erreur est survenue.</p>';
