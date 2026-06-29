@@ -33,6 +33,9 @@ from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewSt
 from .ai_agent.access import can_use_ai_agent, register_ai_usage, is_premium_user
 from .ai_agent.client import understand_intent, extract_search_params, recommend_stores
 from .ai_agent.search import find_matching_stores, apply_open_now_filter
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from .utils import web_only, app_only, is_native_request
 
 AI_AGENT_PUBLIC = False
 
@@ -1584,3 +1587,36 @@ def is_native_request(request):
     """
     ua = request.META.get("HTTP_USER_AGENT", "")
     return "YuumiNativeApp" in ua
+
+def premium_home(request):
+    """
+    Accueil premium. Aiguillage : l'app est REDIRIGEE vers sa page dediee
+    (/premium/app/), le web voit la page premium web. L'app ne touche donc
+    jamais la page web, meme d'accueil.
+    """
+    if is_native_request(request):
+        return redirect("premium_app")
+    return HttpResponse("Premium — page WEB (placeholder)")
+
+
+@web_only
+def premium_web_checkout(request):
+    # WEB UNIQUEMENT — 404 si la requete vient de l'app.
+    return HttpResponse("Premium — checkout WEB (placeholder Stripe)")
+
+
+@web_only
+def premium_web_success(request):
+    return HttpResponse("Premium — paiement reussi (placeholder)")
+
+
+@web_only
+def premium_web_cancel(request):
+    return HttpResponse("Premium — paiement annule (placeholder)")
+
+
+@app_only
+def premium_app(request):
+    # APP UNIQUEMENT — 404 si la requete vient du web.
+    # Vraie page dediee a l'app : presentation + bouton IAP (placeholder).
+    return HttpResponse("Premium — page dediee APP (placeholder IAP)")
