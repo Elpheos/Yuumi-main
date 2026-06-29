@@ -83,5 +83,4 @@ urlpatterns = [
     path("premium/web/succes/", views.premium_web_success, name="premium_web_success"),
     path("premium/web/annule/", views.premium_web_cancel, name="premium_web_cancel"),
     path("premium/app/", views.premium_app, name="premium_app"),
-
 ]
