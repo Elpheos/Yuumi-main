@@ -139,6 +139,20 @@
     display: block;
 }
 
+/* ===== FIL DE CONVERSATION ===== */
+.agent-ia-fil {
+    margin-bottom: 16px;
+}
+.agent-ia-fil-tour {
+    font-size: 0.82rem;
+    color: #999;
+    margin-bottom: 4px;
+}
+.agent-ia-fil-tour strong {
+    color: #ff8b38;
+    font-weight: 600;
+}
+
 /* ===== BARRE D'AFFINEMENT ===== */
 .agent-ia-affiner {
     margin: 8px 0 20px;
@@ -234,12 +248,93 @@ if (!window._agentIaInitialized) {
         return MOTS_AUTRE.includes(t);
     }
 
-    document.getElementById('agent-ia-submit').addEventListener('click', async () => {
-        const query = document.getElementById('agent-ia-query').value.trim();
+    function getCookie(name) {
+        const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+        return match ? match[2] : null;
+    }
+
+    function badgeHtml(confiance) {
+        if (confiance === 'confirme') {
+            return '<span class="agent-ia-badge agent-ia-badge-confirme">Confirmé</span>';
+        }
+        return '<span class="agent-ia-badge agent-ia-badge-deduit">À vérifier</span>';
+    }
+
+    // -----------------------------------------------------------------
+    // MEMOIRE CONVERSATIONNELLE
+    // conversation = liste de tours [{role:'user'|'assistant', content:'...'}]
+    // envoyee au backend a chaque appel. C'est elle qui permet a l'agent de
+    // suivre le fil : "et ce soir ?" est compris par rapport au tour
+    // precedent, sans concatener du texte dans la barre de recherche.
+    //
+    // - Une recherche depuis la barre du haut DEMARRE une nouvelle
+    //   conversation (on vide l'historique).
+    // - Une reponse depuis la barre "Affiner" CONTINUE la conversation
+    //   (on conserve l'historique et on ajoute le nouveau tour).
+    // -----------------------------------------------------------------
+    let conversation = [];
+    const MAX_TOURS = 8; // borne le cout : on ne garde que les derniers tours
+
+    // Construit le petit fil affiche au-dessus des resultats, pour que
+    // l'utilisateur visualise ce qu'il a deja demande dans ce fil.
+    function filHtml(messageCourant) {
+        const tours = conversation
+            .filter(t => t.role === 'user')
+            .map(t => t.content);
+        tours.push(messageCourant);
+        if (tours.length <= 1) return '';
+        const items = tours
+            .map((t, i) => `<div class="agent-ia-fil-tour"><strong>${i === 0 ? 'Recherche' : 'Précision'} :</strong> ${t}</div>`)
+            .join('');
+        return `<div class="agent-ia-fil">${items}</div>`;
+    }
+
+    // Barre d'affinement (re-repondre a l'agent). Placee en HAUT des
+    // resultats, juste sous le message d'intro.
+    function barreAffinerHtml() {
+        return `
+            <div class="agent-ia-affiner">
+                <p class="agent-ia-affiner-titre">Pas tout à fait ça ? Répondez à l'assistant pour affiner :</p>
+                <div class="agent-ia-affiner-row">
+                    <input type="text" id="agent-ia-affiner-input" class="agent-ia-input"
+                           placeholder="Ex: plutôt moins cher, et ce soir ?, sans gluten...">
+                    <button type="button" class="agent-ia-button" id="agent-ia-affiner-btn">Affiner</button>
+                </div>
+            </div>
+        `;
+    }
+
+    // (re)cable la barre d'affinement apres reecriture du DOM. Une reponse
+    // CONTINUE la conversation (nouvelleConversation = false) : le message
+    // part comme un nouveau tour, l'historique est conserve.
+    function cablerAffiner() {
+        const affinerInput = document.getElementById('agent-ia-affiner-input');
+        const affinerBtn = document.getElementById('agent-ia-affiner-btn');
+        if (!affinerBtn || !affinerInput) return;
+
+        const lancer = () => {
+            const precision = affinerInput.value.trim();
+            if (!precision) return;
+            lancerRecherche(precision, false);
+        };
+
+        affinerBtn.addEventListener('click', lancer);
+        affinerInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') { e.preventDefault(); lancer(); }
+        });
+    }
+
+    // -----------------------------------------------------------------
+    // FONCTION CENTRALE : un appel a l'agent.
+    //   messageUtilisateur   : le tour courant (texte brut, jamais concatene)
+    //   nouvelleConversation : true = on repart de zero (barre du haut),
+    //                          false = on continue le fil (barre Affiner)
+    // -----------------------------------------------------------------
+    async function lancerRecherche(messageUtilisateur, nouvelleConversation) {
         const resultatsDiv = document.getElementById('agent-ia-resultats');
         const submitBtn = document.getElementById('agent-ia-submit');
 
-        if (!query) return;
+        if (!messageUtilisateur) return;
 
         const departement = "{{ departement_cookie|default:'' }}";
         const ville = "{{ ville_cookie|default:'' }}";
@@ -248,6 +343,15 @@ if (!window._agentIaInitialized) {
             resultatsDiv.innerHTML = '<p class="agent-ia-message">Veuillez d\'abord choisir une ville.</p>';
             return;
         }
+
+        // Nouvelle recherche depuis la barre du haut : on oublie le fil.
+        if (nouvelleConversation) {
+            conversation = [];
+        }
+
+        // Historique envoye = ce qui precede le tour courant (vide si nouvelle
+        // conversation). Le tour courant est passe a part dans "query".
+        const historiqueAEnvoyer = JSON.stringify(conversation);
 
         submitBtn.disabled = true;
         resultatsDiv.innerHTML = `
@@ -270,56 +374,16 @@ if (!window._agentIaInitialized) {
             <p class="agent-ia-loading">Recherche en cours...</p>
         `;
 
-        function getCookie(name) {
-            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
-            return match ? match[2] : null;
-        }
-
-        function badgeHtml(confiance) {
-            if (confiance === 'confirme') {
-                return '<span class="agent-ia-badge agent-ia-badge-confirme">Confirmé</span>';
+        // Ajoute le tour courant a l'historique (user + assistant) une fois la
+        // reponse obtenue. Appele uniquement pour les reponses "finales"
+        // (resultats ou message), pas pour une demande de clarification.
+        function memoriserTour(messageAssistant) {
+            conversation.push({ role: 'user', content: messageUtilisateur });
+            conversation.push({ role: 'assistant', content: messageAssistant || '' });
+            // Borne la taille (on garde les derniers MAX_TOURS echanges).
+            if (conversation.length > MAX_TOURS * 2) {
+                conversation = conversation.slice(-MAX_TOURS * 2);
             }
-            return '<span class="agent-ia-badge agent-ia-badge-deduit">À vérifier</span>';
-        }
-
-        // Construit le HTML de la barre d'affinement (re-repondre a l'agent
-        // pour preciser la recherche). Placee en HAUT des resultats, juste
-        // sous le message d'intro, pour relancer sans scroller jusqu'en bas.
-        function barreAffinerHtml() {
-            return `
-                <div class="agent-ia-affiner">
-                    <p class="agent-ia-affiner-titre">Pas tout à fait ça ? Affinez votre recherche :</p>
-                    <div class="agent-ia-affiner-row">
-                        <input type="text" id="agent-ia-affiner-input" class="agent-ia-input"
-                               placeholder="Ex: plutôt moins cher, ouvert le dimanche, sans gluten...">
-                        <button type="button" class="agent-ia-button" id="agent-ia-affiner-btn">Affiner</button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // (re)cable la barre d'affinement apres reecriture du DOM. On repart
-        // de la requete qui a produit CES resultats (capturee dans la closure)
-        // et on y ajoute la precision avec le meme format " - " que le flux de
-        // clarification, ce qui declenche la regle anti-boucle cote backend
-        // (recherche directe, pas de nouvelle serie de questions).
-        function cablerAffiner() {
-            const affinerInput = document.getElementById('agent-ia-affiner-input');
-            const affinerBtn = document.getElementById('agent-ia-affiner-btn');
-            if (!affinerBtn || !affinerInput) return;
-
-            const lancerAffinement = () => {
-                const precision = affinerInput.value.trim();
-                if (!precision) return;
-                const queryInput = document.getElementById('agent-ia-query');
-                queryInput.value = query + ' - ' + precision;
-                document.getElementById('agent-ia-submit').click();
-            };
-
-            affinerBtn.addEventListener('click', lancerAffinement);
-            affinerInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') { e.preventDefault(); lancerAffinement(); }
-            });
         }
 
         try {
@@ -329,7 +393,10 @@ if (!window._agentIaInitialized) {
                     'X-CSRFToken': getCookie('csrftoken'),
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: `query=${encodeURIComponent(query)}&departement=${encodeURIComponent(departement)}&ville=${encodeURIComponent(ville)}`,
+                body: `query=${encodeURIComponent(messageUtilisateur)}`
+                    + `&departement=${encodeURIComponent(departement)}`
+                    + `&ville=${encodeURIComponent(ville)}`
+                    + `&history=${encodeURIComponent(historiqueAEnvoyer)}`,
             });
             const data = await response.json();
 
@@ -341,11 +408,8 @@ if (!window._agentIaInitialized) {
 
             } else if (data.hors_sujet || data.categorie_absente) {
                 // Deux cas distincts cote backend (voir ai_search_agent dans
-                // views.py), mais le meme traitement cote frontend : un
-                // message simple, sans carte resultat, sans bouton clarification.
-                // Le message lui-meme differe deja selon le cas (recadrage vs
-                // invitation a suggerer l'ajout), donc pas besoin de le
-                // dupliquer ici.
+                // views.py), meme traitement cote frontend : un message simple,
+                // sans carte resultat, sans bouton clarification.
                 resultatsDiv.innerHTML = `<p class="agent-ia-message">${data.message}</p>`;
 
             } else if (data.besoin_clarification) {
@@ -367,8 +431,6 @@ if (!window._agentIaInitialized) {
                 resultatsDiv.innerHTML = html;
 
                 // reponses[qIndex] est un Set de chaines (multi-selection).
-                // La valeur du champ "Autre" (si rempli) y est ajoutee/retiree
-                // dynamiquement, au meme titre qu'un bouton.
                 const reponses = {};
                 const totalQuestions = data.questions_clarification.length;
                 const validerBtn = document.getElementById('agent-ia-clarif-valider');
@@ -397,9 +459,6 @@ if (!window._agentIaInitialized) {
                             const dejaActif = btn.classList.contains('agent-ia-clarif-btn-active');
 
                             if (sortie) {
-                                // Option de sortie : exclusive. La selectionner
-                                // efface tout le reste (boutons + "Autre"), et
-                                // la deselectionner ne fait que la retirer.
                                 if (dejaActif) {
                                     btn.classList.remove('agent-ia-clarif-btn-active');
                                     set.delete(texte);
@@ -416,11 +475,6 @@ if (!window._agentIaInitialized) {
                                     set.add(texte);
                                 }
                             } else {
-                                // Option normale (y compris "Autre") : toggle
-                                // independant, cumulable avec d'autres options
-                                // normales. Selectionner une option normale
-                                // desactive une eventuelle option de sortie
-                                // active dans le meme groupe.
                                 group.querySelectorAll('.agent-ia-clarif-btn').forEach(b => {
                                     if (estOptionSortie(b.dataset.reponse)) {
                                         b.classList.remove('agent-ia-clarif-btn-active');
@@ -438,7 +492,7 @@ if (!window._agentIaInitialized) {
                                 } else {
                                     btn.classList.add('agent-ia-clarif-btn-active');
                                     if (autre) {
-                                        set.add('Autre'); // placeholder, remplace au saisie
+                                        set.add('Autre');
                                         if (autreInput) autreInput.classList.add('agent-ia-visible');
                                     } else {
                                         set.add(texte);
@@ -454,8 +508,6 @@ if (!window._agentIaInitialized) {
                         autreInput.addEventListener('input', () => {
                             const set = reponses[qIndex];
                             set.delete('Autre');
-                            // Retire toute ancienne valeur de texte libre
-                            // precedemment ajoutee, avant d'ajouter la nouvelle.
                             if (autreInput.dataset.derniereValeur) {
                                 set.delete(autreInput.dataset.derniereValeur);
                             }
@@ -472,13 +524,8 @@ if (!window._agentIaInitialized) {
                 });
 
                 validerBtn.addEventListener('click', () => {
-                    const queryInput = document.getElementById('agent-ia-query');
-
                     // Les reponses "Je ne sais pas" / "Surprends-moi" sont transmises
-                    // de facon EXPLICITE comme un signal positif ("ne pas demander
-                    // plus de precisions"), plutot que d'etre retirees silencieusement -
-                    // sinon l'IA ne sait pas que l'utilisateur a deja choisi de ne pas
-                    // preciser, et redemande une autre question en boucle.
+                    // explicitement comme un signal "ne pas redemander".
                     let aUnSignalSortie = false;
                     const segmentsParQuestion = [];
 
@@ -491,15 +538,14 @@ if (!window._agentIaInitialized) {
                             }
                             const valeursUtiles = valeurs.filter(v => !estOptionSortie(v));
                             if (valeursUtiles.length > 0) {
-                                // Plusieurs valeurs cochees sur une meme question
-                                // = alternatives, jointes par " ou " (voir
-                                // build_system_prompt dans client.py qui
-                                // interprete ce format).
                                 segmentsParQuestion.push(valeursUtiles.join(' ou '));
                             }
                         });
 
-                    let queryFinale = query;
+                    // La clarification finalise la requete INITIALE : on repart
+                    // donc sur une nouvelle conversation avec la requete enrichie
+                    // comme premier tour propre.
+                    let queryFinale = messageUtilisateur;
                     if (segmentsParQuestion.length > 0) {
                         queryFinale += ' - ' + segmentsParQuestion.join(' - ');
                     }
@@ -507,30 +553,27 @@ if (!window._agentIaInitialized) {
                         queryFinale += ' - cherche directement, ne me redemande pas de precisions';
                     }
 
-                    queryInput.value = queryFinale;
-                    document.getElementById('agent-ia-submit').click();
+                    lancerRecherche(queryFinale, true);
                 });
 
             } else {
+                // Reponse finale (resultats ou "aucun resultat") : on memorise
+                // le tour pour que le prochain message continue le fil.
+                memoriserTour(data.message);
+
                 let html = '';
+
+                // Fil de conversation (visible seulement a partir du 2e tour).
+                html += filHtml(messageUtilisateur);
 
                 if (data.message) {
                     html += `<p class="agent-ia-intro-message">${data.message}</p>`;
                 }
 
-                // Barre d'affinement EN HAUT : juste apres le message d'intro,
-                // avant la liste des resultats.
+                // Barre d'affinement EN HAUT, avant la liste.
                 html += barreAffinerHtml();
 
                 if (data.pistes && data.pistes.length > 0) {
-                    // Une seule piste sans nom particulier (cas des demandes
-                    // precises type produit_precis/commerce_precis) : pas
-                    // besoin d'afficher un titre de section, ca alourdirait
-                    // l'affichage pour rien. Plusieurs pistes (demande
-                    // ouverte type "besoin") : chaque angle devient une
-                    // section visuellement separee, pour que l'utilisateur
-                    // comprenne que ce sont des directions differentes, pas
-                    // une seule liste fourre-tout.
                     const afficherTitres = data.pistes.length > 1;
 
                     data.pistes.forEach(piste => {
@@ -555,15 +598,26 @@ if (!window._agentIaInitialized) {
                 }
 
                 resultatsDiv.innerHTML = html;
-
-                // La barre d'affinement est presente dans tous les cas de ce
-                // bloc (resultats ou "aucun resultat"), donc on la cable ici.
                 cablerAffiner();
             }
         } catch (e) {
             resultatsDiv.innerHTML = '<p class="agent-ia-message">Une erreur est survenue.</p>';
         } finally {
             submitBtn.disabled = false;
+        }
+    }
+
+    // Barre du haut : DEMARRE une nouvelle conversation.
+    document.getElementById('agent-ia-submit').addEventListener('click', () => {
+        const query = document.getElementById('agent-ia-query').value.trim();
+        lancerRecherche(query, true);
+    });
+
+    // Entree dans la barre du haut = clic sur Rechercher.
+    document.getElementById('agent-ia-query').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            document.getElementById('agent-ia-submit').click();
         }
     });
 }
