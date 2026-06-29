@@ -143,3 +143,12 @@ def premium_context(request):
     return {
         "is_premium": is_premium_user(request.user),
     }
+
+from .utils import is_native_request
+
+def native_context(request):
+    """
+    Expose `is_native_app` a tous les templates : True si la requete vient
+    de l'app Capacitor. Sert a ne PAS rendre le bouton premium dans l'app.
+    """
+    return {"is_native_app": is_native_request(request)}
