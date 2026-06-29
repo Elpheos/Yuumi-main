@@ -1,1 +1,119 @@
-.
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Passer en Premium | Yuumi{% endblock %}
+
+{% block content %}
+<style>
+.premium-checkout-page {
+    max-width: 480px;
+    margin: 56px auto 80px;
+    padding: 0 20px;
+}
+
+.premium-back-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 20px;
+    text-decoration: none;
+}
+
+.premium-back-link:hover {
+    color: #ff8b38;
+}
+
+.premium-checkout-page h1 {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #2b2118;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.premium-summary-card {
+    background: linear-gradient(135deg, #4a3624, #2b2118);
+    color: #fff8f0;
+    border-radius: 14px;
+    padding: 24px 22px;
+    box-shadow: 0 14px 30px rgba(43, 33, 24, 0.28);
+    margin-bottom: 24px;
+}
+
+.premium-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+}
+
+.premium-summary-label {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.premium-summary-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+
+.premium-summary-sub {
+    font-size: 0.8rem;
+    color: #d9cdbf;
+    margin-top: 4px;
+}
+
+.premium-pay-button {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #ff8b38, #ff7033);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.premium-pay-button:hover {
+    transform: scale(1.02);
+}
+
+.premium-checkout-trust {
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.82rem;
+    color: #aaa;
+}
+
+@media (max-width: 767px) {
+    .premium-checkout-page { margin-top: 70px; }
+}
+</style>
+
+<div class="premium-checkout-page">
+    <a href="{% url 'premium_home' %}" class="premium-back-link">← Retour à l'offre</a>
+    <h1>Passer en Premium</h1>
+
+    <div class="premium-summary-card">
+        <div class="premium-summary-row">
+            <span class="premium-summary-label">Abonnement Yuumi Premium</span>
+            <span class="premium-summary-price">{{ premium_price|default:"XX,XX €" }}</span>
+        </div>
+        <p class="premium-summary-sub">Facturation mensuelle, sans engagement.</p>
+    </div>
+
+    <!--
+        TODO (branchement Stripe) : ce bouton declenchera la creation d'une
+        session Stripe Checkout cote serveur (vue premium_web_checkout) et
+        redirigera vers la page de paiement hebergee par Stripe. Pour
+        l'instant, design uniquement — pas encore connecte.
+    -->
+    <button type="button" class="premium-pay-button">Payer en toute sécurité</button>
+
+    <p class="premium-checkout-trust">🔒 Paiement sécurisé via Stripe</p>
+</div>
+{% endblock %}
