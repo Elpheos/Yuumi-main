@@ -1573,3 +1573,14 @@ def save_store_note(request, store_id):
     )
     return JsonResponse({"text": text})
 
+def is_native_request(request):
+    """
+    True si la requete vient de l'app mobile Capacitor (et non du web).
+
+    L'app ajoute 'YuumiNativeApp' a son User-Agent via appendUserAgent
+    dans capacitor.config.json. C'est notre signal serveur pour ne JAMAIS
+    exposer le paiement dans l'app (conformite App Store / Google Play :
+    pas de vente de contenu numerique hors achat in-app).
+    """
+    ua = request.META.get("HTTP_USER_AGENT", "")
+    return "YuumiNativeApp" in ua
