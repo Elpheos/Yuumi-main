@@ -67,3 +67,34 @@ def app_only(view_func):
             raise Http404()
         return view_func(request, *args, **kwargs)
     return _wrapped
+
+from datetime import timedelta
+from django.utils import timezone
+
+
+def activer_premium(user, source, duree_jours=30, external_subscription_id=None):
+    """
+    Active (ou prolonge) le premium d'un utilisateur. Point d'entree UNIQUE
+    appele apres un paiement verifie — quel que soit le prestataire. Ne fait
+    JAMAIS confiance au client : a appeler uniquement cote serveur, apres
+    validation reelle du paiement.
+    """
+    from members.models import UserPremium
+
+    premium, _ = UserPremium.objects.get_or_create(user=user)
+    premium.is_active = True
+    premium.payment_provider = source
+
+    if external_subscription_id:
+        premium.external_subscription_id = external_subscription_id
+
+    if duree_jours is None:
+        premium.expires_at = None
+    else:
+        base = premium.expires_at
+        if base is None or base < timezone.now():
+            base = timezone.now()
+        premium.expires_at = base + timedelta(days=duree_jours)
+
+    premium.save()
+    return premium
