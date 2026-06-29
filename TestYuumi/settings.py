@@ -357,3 +357,14 @@ _firebase_creds_path = BASE_DIR / 'firebase-credentials.json'
 if _firebase_creds_path.exists() and not firebase_admin._apps:
     _cred = credentials.Certificate(str(_firebase_creds_path))
     firebase_admin.initialize_app(_cred)
+
+# ===== PAIEMENT PREMIUM =====
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
+PAYPAL_CLIENT_ID = os.environ.get("PAYPAL_CLIENT_ID", "")
+PAYPAL_CLIENT_SECRET = os.environ.get("PAYPAL_CLIENT_SECRET", "")
+PAYPAL_PLAN_ID = os.environ.get("PAYPAL_PLAN_ID", "")
+PAYPAL_MODE = os.environ.get("PAYPAL_MODE", "sandbox")
