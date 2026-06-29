@@ -210,28 +210,31 @@
                         <p>{{ store.descriptiongrande }}</p>
                     </div>
 
-                    <div class="commerce-contact-bar">
+                    <div class="itinéraire-commerce">
                         {% if store.addresseitineraire %}
-                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description contact-pill primary" data-store-id="{{ store.id }}">
-                                <svg viewBox="0 0 384 512" fill="currentColor"><path d="M0 188.6C0 84.4 86 0 192 0S384 84.4 384 188.6c0 119.3-120.2 262.3-170.4 316.8-11.8 12.8-31.5 12.8-43.3 0-50.2-54.5-170.4-197.5-170.4-316.8zM192 256a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
-                                Itinéraire
+                            <a href="{{ store.addresseitineraire }}" rel="noopener noreferrer" target="_blank" class="button-1-description" data-store-id="{{ store.id }}">
+                                Je me rends sur place
                             </a>
                         {% endif %}
+                    </div>
+
+                    <div class="site-commerce">
                         {% if store.site %}
-                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description contact-pill secondary" data-store-id="{{ store.id }}">
-                                <svg viewBox="0 0 512 512" fill="currentColor"><path d="M352 256c0 22.2-1.2 43.6-3.3 64H163.3c-2.1-20.4-3.3-41.8-3.3-64s1.2-43.6 3.3-64H348.7c2.1 20.4 3.3 41.8 3.3 64zm28.8-64H503.9c5.3 20.5 8.1 41.9 8.1 64s-2.8 43.5-8.1 64H380.8c2.1-20.6 3.2-42 3.2-64s-1.1-43.4-3.2-64zm113.5-32H376.7c-10-63.9-29.8-117.4-55.3-152.6c78.3 20.7 142 77.5 171.9 152.6zm-149.7 0H167.4c6.4-30.1 16.4-56.7 29-77.5c12-19.8 25.4-34.2 38.2-43.8C247.5 34.1 257.7 32 264 32s16.5 2.1 29.5 14.7c12.8 9.6 26.2 24 38.2 43.8c12.5 20.8 22.5 47.3 28.9 77.5zm-209 0H68.8C98.6 85.9 162.3 29.1 240.6 8.4C215.1 43.6 195.3 97.1 185.3 161zM44.1 192H167.2c-2.1 20.6-3.2 42-3.2 64s1.1 43.4 3.2 64H44.1C38.8 299.5 36 278.1 36 256s2.8-43.5 8.1-64zM167.4 352c6.4 30.1 16.4 56.7 29 77.5c12 19.8 25.4 34.2 38.2 43.8c12.9 12.6 23.2 14.7 29.5 14.7s16.5-2.1 29.5-14.7c12.8-9.6 26.2-24 38.2-43.8c12.5-20.8 22.5-47.3 28.9-77.5H167.4zm-98.6 32H183.5c10 63.9 29.8 117.4 55.3 152.6c-78.3-20.7-142-77.5-171.9-152.6zm208.2 0H376.7c-10 63.9-29.8 117.4-55.3 152.6c78.3-20.7 142-77.5 171.9-152.6z"/></svg>
-                                Site
-                            </a>
-                        {% endif %}
-                        {% if store.phone %}
-                            <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}" class="contact-pill secondary">
-                                <svg viewBox="0 0 512 512" fill="currentColor"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-88-40c-16.3-7-35.2-2.3-46.3 11.6l-36 45c-58.2-28.5-105.6-75.9-134-134l45-36c13.9-11.2 18.6-30 11.6-46.3l-40-88z"/></svg>
-                                Appeler
+                            <a href="{{ store.site }}" rel="noopener noreferrer" target="_blank" class="button-2-description" data-store-id="{{ store.id }}">
+                                Site du commerce
                             </a>
                         {% endif %}
                     </div>
 
                     <div class="commerce-réseaux">
+                        {% if store.phone %}
+                            <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
+                                {% with image_path='images/'|add:store.ville|lower|add:'/telephone.webp' %}
+                                    <img src="{% static image_path %}" alt="Téléphone {{ store.nom }}">
+                                {% endwith %}
+                            </a>
+                        {% endif %}
+
                         {% if store.instagram %}
                             <a href="{{ store.instagram }}" class="btn-instagram" rel="noopener noreferrer" target="_blank" data-store-id="{{ store.id }}">
                                 <img src="{% static 'images/instagram-yuumi.webp' %}" alt="Instagram {{ store.nom }}" />
@@ -245,49 +248,64 @@
                         {% endif %}
 
                         <!-- Bouton partage natif — visible uniquement dans l'app Capacitor -->
-                        <button id="share-btn" style="display:none; align-items:center; gap:6px; background:var(--orange); color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-size:0.9rem; font-weight:600;">
+                        <button id="share-btn" style="display:none; align-items:center; gap:6px; background:#ff8b38; color:white; border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-size:0.9rem; font-weight:600;">
                             📤 Partager
                         </button>
                     </div>
 
-                    <!-- OUTILS REGROUPÉS : favoris (gratuit) + masquer / catégorie / note (Premium) -->
-                    <div class="commerce-toolbar">
-                        <button class="favori-btn toolbar-btn"
+                    <!-- FAVORIS + UNFAVORIS -->
+                    <div class="commerce-wishlist" style="display:flex; gap:40px; align-items:center; justify-content:center; margin: 16px auto;">
+                        <button class="favori-btn"
                             data-store-id="{{ store.id }}"
                             data-is-favorite="{{ is_favorite|yesno:'true,false' }}"
                             data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
-                            <svg class="heart-outline" style="width:16px;" fill="#000000" viewBox="0 0 512 512"><path d="M378.9 80c-27.3 0-53 13.1-69 35.2l-34.4 47.6c-4.5 6.2-11.7 9.9-19.4 9.9s-14.9-3.7-19.4-9.9l-34.4-47.6c-16-22.1-41.7-35.2-69-35.2-47 0-85.1 38.1-85.1 85.1 0 49.9 32 98.4 68.1 142.3 41.1 50 91.4 94 125.9 120.3 3.2 2.4 7.9 4.2 14 4.2s10.8-1.8 14-4.2c34.5-26.3 84.8-70.4 125.9-120.3 36.2-43.9 68.1-92.4 68.1-142.3 0-47-38.1-85.1-85.1-85.1zM271 87.1c25-34.6 65.2-55.1 107.9-55.1 73.5 0 133.1 59.6 133.1 133.1 0 68.6-42.9 128.9-79.1 172.8-44.1 53.6-97.3 100.1-133.8 127.9-12.3 9.4-27.5 14.1-43.1 14.1s-30.8-4.7-43.1-14.1C176.4 438 123.2 391.5 79.1 338 42.9 294.1 0 233.7 0 165.1 0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1l15 20.7 15-20.7z"/></svg>
-                            <svg class="heart-filled" style="width:16px; display:none;" viewBox="0 0 512 512"><path d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
-                            <span>Favoris</span>
+                            <svg class="heart-outline" style="width:16px; margin-bottom:3px;" fill="#000000" viewBox="0 0 512 512"><path d="M378.9 80c-27.3 0-53 13.1-69 35.2l-34.4 47.6c-4.5 6.2-11.7 9.9-19.4 9.9s-14.9-3.7-19.4-9.9l-34.4-47.6c-16-22.1-41.7-35.2-69-35.2-47 0-85.1 38.1-85.1 85.1 0 49.9 32 98.4 68.1 142.3 41.1 50 91.4 94 125.9 120.3 3.2 2.4 7.9 4.2 14 4.2s10.8-1.8 14-4.2c34.5-26.3 84.8-70.4 125.9-120.3 36.2-43.9 68.1-92.4 68.1-142.3 0-47-38.1-85.1-85.1-85.1zM271 87.1c25-34.6 65.2-55.1 107.9-55.1 73.5 0 133.1 59.6 133.1 133.1 0 68.6-42.9 128.9-79.1 172.8-44.1 53.6-97.3 100.1-133.8 127.9-12.3 9.4-27.5 14.1-43.1 14.1s-30.8-4.7-43.1-14.1C176.4 438 123.2 391.5 79.1 338 42.9 294.1 0 233.7 0 165.1 0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1l15 20.7 15-20.7z"/></svg>
+                            <svg class="heart-filled" style="width:16px; margin-bottom:3px; display:none;" viewBox="0 0 512 512"><path d="M241 87.1l15 20.7 15-20.7C296 52.5 336.2 32 378.9 32 452.4 32 512 91.6 512 165.1l0 2.6c0 112.2-139.9 242.5-212.9 298.2-12.4 9.4-27.6 14.1-43.1 14.1s-30.8-4.6-43.1-14.1C139.9 410.2 0 279.9 0 167.7l0-2.6C0 91.6 59.6 32 133.1 32 175.8 32 216 52.5 241 87.1z"/></svg>
+                            <span>Ajouter aux favoris</span>
                         </button>
                         {% if is_premium %}
-                        <div class="toolbar-sep"></div>
-                        <button class="unfavori-btn toolbar-btn"
+                        <button class="unfavori-btn"
                             data-store-id="{{ store.id }}"
                             data-is-unfavorite="{{ is_unfavorite|yesno:'true,false' }}"
                             data-is-authenticated="{{ request.user.is_authenticated|yesno:'true,false' }}">
-                            <svg class="interdit-outline" style="width:16px;" viewBox="0 0 200 200">
+                            <svg class="interdit-outline" style="width:16px; margin-bottom:3px;" viewBox="0 0 200 200">
                                 <circle cx="100" cy="100" r="90" fill="none" stroke="#333" stroke-width="12"/>
                                 <rect x="22" y="82" width="156" height="36" rx="4" fill="#333"/>
                             </svg>
-                            <svg class="interdit-filled" style="width:16px; display:none;" viewBox="0 0 200 200">
+                            <svg class="interdit-filled" style="width:16px; margin-bottom:3px; display:none;" viewBox="0 0 200 200">
                                 <circle cx="100" cy="100" r="90" fill="#e53935" stroke="#c62828" stroke-width="12"/>
                                 <rect x="22" y="82" width="156" height="36" rx="4" fill="white"/>
                             </svg>
-                            <span>Masquer</span>
+                            <span>Ajouter aux commerces masqués</span>
                         </button>
-                        <div class="toolbar-sep"></div>
-                        <button type="button" class="toolbar-btn" data-bs-toggle="modal" data-bs-target="#addToCategoryModal">
-                            <svg style="width:16px;" viewBox="0 0 512 512" fill="currentColor"><path d="M0 96C0 60.7 28.7 32 64 32l128 0c20.1 0 39.1 9.5 51.2 25.6l19.2 25.6c6 8.1 15.5 12.8 25.6 12.8l176 0c35.3 0 64 28.7 64 64l0 224c0 35.3-28.7 64-64 64L64 448c-35.3 0-64-28.7-64-64L0 96z"/></svg>
-                            <span>Catégorie</span>
-                        </button>
-                        <div class="toolbar-sep"></div>
-                        <button type="button" class="toolbar-btn" data-bs-toggle="modal" data-bs-target="#noteModal">
-                            <svg style="width:16px;" viewBox="0 0 512 512" fill="currentColor"><path d="M441 58.9L453.1 71c9.4 9.4 9.4 24.6 0 33.9L424 134.1 377.9 88 407 58.9c9.4-9.4 24.6-9.4 33.9 0zM209.8 152.2L344 18l46.1 46.1L255.8 198.3c-2.9 2.9-6.5 5-10.4 6.1l-65.5 18.7 18.7-65.5c1.1-3.9 3.2-7.5 6.1-10.4zM252.7 27.9L0 280.6 0 384c0 17.7 14.3 32 32 32l103.4 0L407.7 163.3c11.3-11.3 11.3-29.7 0-41L312 26.6c-11.3-11.3-29.7-11.3-41 0z"/></svg>
-                            <span>Note</span>
-                        </button>
-                        {% endif %}
+                      {% endif %}
                     </div>
+
+                    {% if is_premium %}
+                    <div class="commerce-add-to-category" style="text-align:center; margin: 0 auto 16px;">
+                        <button type="button" class="btn-add-to-category" data-bs-toggle="modal" data-bs-target="#addToCategoryModal"
+                            style="background:none; border:1px solid #ff8b38; color:#ff8b38; border-radius:8px; padding:8px 16px; font-weight:600; cursor:pointer;">
+                            <i class="fa-solid fa-folder-plus"></i> Ajouter à une de mes catégories
+                        </button>
+                    </div>
+                    {% endif %}
+
+                  {% if is_premium %}
+<div class="commerce-note-perso" style="max-width:420px; margin:0 auto 16px;">
+    <label for="storeNoteText" style="display:block; font-size:0.8rem; font-weight:600; color:#666; margin-bottom:6px;">
+        Votre pense-bête sur ce commerce <span style="color:#999; font-weight:400;">(visible par vous seul)</span>
+    </label>
+    <textarea id="storeNoteText" maxlength="1000" placeholder="Ex : demander si le pain au levain est dispo le dimanche…"
+        style="width:100%; min-height:70px; border:1px solid #ddd; border-radius:8px; padding:10px; font-size:0.85rem; font-family:inherit; resize:vertical;">{{ store_note_text }}</textarea>
+    <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-top:6px;">
+        <p id="storeNoteError" style="color:#c62828; font-size:0.8rem; margin:0; display:none;"></p>
+        <button type="button" id="saveStoreNoteBtn"
+            style="background:#ff8b38; color:white; border:none; border-radius:8px; padding:7px 16px; font-weight:600; font-size:0.85rem; cursor:pointer;">
+            Enregistrer la note
+        </button>
+    </div>
+</div>
+{% endif %}
 
                     <button class="btn-suggest-modif desktop-only-btn" data-bs-toggle="modal" data-bs-target="#suggestModifModal"
                         onclick="document.getElementById('suggest-modif-submit').dataset.storeId='{{ store.id }}'">
@@ -500,32 +518,6 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Note personnelle -->
-{% if is_premium %}
-<div class="modal fade" id="noteModal" tabindex="-1" aria-labelledby="noteModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius:14px;">
-            <div class="modal-header">
-                <h5 class="modal-title" id="noteModalLabel">Votre pense-bête sur ce commerce</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size:0.8rem; color:#999; margin:0 0 10px;">Visible par vous seul.</p>
-                <textarea id="storeNoteText" maxlength="1000" placeholder="Ex : demander si le pain au levain est dispo le dimanche…"
-                    style="width:100%; min-height:100px; border:1px solid #ddd; border-radius:8px; padding:10px; font-size:0.85rem; font-family:inherit; resize:vertical;">{{ store_note_text }}</textarea>
-                <div style="display:flex; justify-content:flex-end; align-items:center; gap:12px; margin-top:10px;">
-                    <p id="storeNoteError" style="color:#c62828; font-size:0.8rem; margin:0; display:none;"></p>
-                    <button type="button" id="saveStoreNoteBtn"
-                        style="background:var(--orange); color:white; border:none; border-radius:8px; padding:8px 18px; font-weight:600; font-size:0.85rem; cursor:pointer;">
-                        Enregistrer
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{% endif %}
 
 <!-- Modal revendication -->
 <div class="modal fade" id="loginRequiredClaimModal" tabindex="-1" aria-hidden="true">
@@ -748,7 +740,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const newCategoryInput = document.getElementById("newCategoryName");
     const createCategoryBtn = document.getElementById("createCategoryAndAdd");
 
-    if (createCategoryBtn) {
+  if (createCategoryBtn) {
         createCategoryBtn.addEventListener("click", () => {
             const name = newCategoryInput.value.trim();
             if (categoryModalError) categoryModalError.style.display = "none";
@@ -1015,20 +1007,6 @@ document.addEventListener("DOMContentLoaded", () => {
 .produits-empty { text-align:center; color:#aaa; font-style:italic; padding:40px 16px; font-size:1rem; }
 .mobile-bottom-actions { display:none !important; }
 
-.commerce-contact-bar { display:flex; gap:10px; margin:16px 0; flex-wrap:wrap; }
-.contact-pill { display:flex; align-items:center; gap:7px; font-size:0.85rem; font-weight:600; padding:9px 16px; border-radius:9px; text-decoration:none; cursor:pointer; border:none; font-family:inherit; }
-.contact-pill svg { width:15px; height:15px; flex-shrink:0; }
-.contact-pill.primary { background:var(--orange); color:white; }
-.contact-pill.primary:hover { opacity:0.9; }
-.contact-pill.secondary { background:white; border:1px solid #ddd; color:#333; }
-.contact-pill.secondary:hover { border-color:var(--orange); color:var(--orange); }
-
-.commerce-toolbar { display:flex; align-items:center; background:white; border:1px solid #eee; border-radius:12px; padding:6px; margin:0 0 16px; width:fit-content; }
-.toolbar-btn { display:flex; align-items:center; gap:6px; background:none; border:none; font-family:inherit; font-size:0.8rem; font-weight:600; color:#666; padding:8px 14px; border-radius:8px; cursor:pointer; }
-.toolbar-btn:hover { background:#fff5ee; color:var(--orange); }
-.toolbar-btn.active { background:#fff0e3; color:var(--orange); }
-.toolbar-sep { width:1px; height:20px; background:#eee; margin:0 2px; }
-
 @media (max-width: 767px) {
     #page-container-store-details { padding-left:0; padding-right:0; }
     .store-action-bar { margin:0; }
@@ -1037,21 +1015,22 @@ document.addEventListener("DOMContentLoaded", () => {
     .desktop-only-btn { display:none !important; }
     .mobile-bottom-actions { display:block !important; border-top:2px solid #f0f0f0; padding-top:8px; margin-top:28px; }
     .commerce-réseaux { background:#f8f8f8; border-top:1px solid #eee; border-bottom:1px solid #eee; padding:14px 0; margin:8px 0; display:flex !important; justify-content:center; gap:22px; }
-    .commerce-contact-bar { margin:12px 16px; }
-    .contact-pill { flex:1; justify-content:center; }
-    .commerce-toolbar { width:calc(100% - 32px); margin:0 16px 16px; justify-content:space-between; }
-    .toolbar-btn { flex:1; flex-direction:column; gap:4px; font-size:0.68rem; padding:8px 2px; }
-    .toolbar-sep { display:none; }
+    .commerce-wishlist { display:flex !important; gap:0 !important; margin:0 16px 10px !important; border:1px solid #eee; border-radius:8px; overflow:hidden; }
+    .commerce-wishlist .favori-btn, .commerce-wishlist .unfavori-btn { flex:1 !important; display:flex !important; flex-direction:column; align-items:center; gap:5px; padding:12px 6px; font-size:12px; background:white; border:none; cursor:pointer; text-align:center; line-height:1.3; }
+    .commerce-wishlist .favori-btn { border-right:1px solid #eee; }
+    .itinéraire-commerce, .site-commerce { padding:0 16px; }
+    .itinéraire-commerce .button-1-description, .site-commerce .button-2-description { display:block !important; width:100% !important; text-align:center !important; margin:6px 0 !important; box-sizing:border-box; padding:12px 16px !important; border-radius:8px; position:static !important; }
     .hr-page-commerce { display:none; }
     .breadcrumb-yuumi { order:1; }
     .description-container > h1 { order:2; }
     .badge-statut { order:3; }
     .texte-badge-commerce { order:4; display:none; }
     .description-principale { order:5; }
-    .commerce-contact-bar { order:6; }
-    .commerce-réseaux { order:7; }
-    .commerce-toolbar { order:8; }
-    .description-secondaire { order:9; }
+    .commerce-réseaux { order:6; }
+    .itinéraire-commerce { order:7; }
+    .site-commerce { order:8; }
+    .commerce-wishlist { order:9; }
+    .description-secondaire { order:10; }
     .desktop-only-btn { display:none !important; }
 }
 
