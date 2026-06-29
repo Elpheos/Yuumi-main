@@ -32,3 +32,25 @@ def convert_to_webp(image_file):
     """Compatibilité avec l'ancien code — conserve le nom original."""
     original_name = image_file.name.rsplit('.', 1)[0]
     return resize_and_convert(image_file, name=original_name)
+
+from functools import wraps
+from django.http import Http404
+
+
+def web_only(view_func):
+    """
+    Decorateur : bloque l'acces a une vue depuis l'app mobile Capacitor.
+
+    Renvoie un 404 si la requete vient de l'app (User-Agent natif). Sert a
+    garantir, cote SERVEUR, qu'aucun paiement de contenu numerique ne peut
+    etre declenche depuis l'app (conformite App Store / Google Play). C'est
+    la vraie barriere : meme en tapant l'URL a la main dans l'app, l'acces
+    est refuse. Le masquage du bouton cote template n'est qu'un confort
+    visuel par-dessus.
+    """
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if is_native_request(request):
+            raise Http404()
+        return view_func(request, *args, **kwargs)
+    return _wrapped
