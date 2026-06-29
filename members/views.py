@@ -35,7 +35,7 @@ from .ai_agent.client import understand_intent, extract_search_params, recommend
 from .ai_agent.search import find_matching_stores, apply_open_now_filter
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from .utils import web_only, app_only, is_native_request
+from .utils import web_only, app_only, is_native_request, activer_premium
 
 AI_AGENT_PUBLIC = False
 
@@ -1576,31 +1576,29 @@ def save_store_note(request, store_id):
     )
     return JsonResponse({"text": text})
 
-def is_native_request(request):
-    """
-    True si la requete vient de l'app mobile Capacitor (et non du web).
+# ============================================================
+#  PREMIUM — vues
+#  (is_native_request, web_only, app_only, activer_premium sont
+#   deja importes en haut du fichier — pas de re-import ici.)
+# ============================================================
+from django.conf import settings
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
-    L'app ajoute 'YuumiNativeApp' a son User-Agent via appendUserAgent
-    dans capacitor.config.json. C'est notre signal serveur pour ne JAMAIS
-    exposer le paiement dans l'app (conformite App Store / Google Play :
-    pas de vente de contenu numerique hors achat in-app).
-    """
-    ua = request.META.get("HTTP_USER_AGENT", "")
-    return "YuumiNativeApp" in ua
+
+# ---------- Pages affichées ----------
 
 def premium_home(request):
     if is_native_request(request):
         return redirect("premium_app")
     return render(request, "members/premium_home.html", {
-        "premium_price": None,  # TODO : fixer le vrai prix avant la mise en prod
+        "premium_price": None,  # TODO : fixer le vrai prix
     })
 
 
 @web_only
 def premium_web_checkout(request):
-    return render(request, "members/premium_checkout.html", {
-        "premium_price": None,
-    })
+    return render(request, "members/premium_checkout.html", {"premium_price": None})
 
 
 @web_only
@@ -1612,8 +1610,94 @@ def premium_web_success(request):
 def premium_web_cancel(request):
     return render(request, "members/premium_cancel.html")
 
+
 @app_only
 def premium_app(request):
     # APP UNIQUEMENT — 404 si la requete vient du web.
-    # Vraie page dediee a l'app : presentation + bouton IAP (placeholder).
     return HttpResponse("Premium — page dediee APP (placeholder IAP)")
+
+
+# ---------- Déclenchement du paiement ----------
+
+@web_only
+def premium_checkout_stripe(request):
+    if not (settings.STRIPE_SECRET_KEY and settings.STRIPE_PRICE_ID):
+        return render(request, "members/premium_checkout.html", {
+            "premium_price": None,
+            "config_error": "Le paiement par carte n'est pas encore activé.",
+        })
+
+    import stripe
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    session = stripe.checkout.Session.create(
+        mode="subscription",
+        line_items=[{"price": settings.STRIPE_PRICE_ID, "quantity": 1}],
+        success_url=request.build_absolute_uri(reverse("premium_web_success")),
+        cancel_url=request.build_absolute_uri(reverse("premium_web_cancel")),
+        client_reference_id=str(request.user.id) if request.user.is_authenticated else None,
+    )
+    return redirect(session.url)
+
+
+@web_only
+def premium_checkout_paypal(request):
+    if not (settings.PAYPAL_CLIENT_ID and settings.PAYPAL_PLAN_ID):
+        return render(request, "members/premium_checkout.html", {
+            "premium_price": None,
+            "config_error": "Le paiement PayPal n'est pas encore activé.",
+        })
+
+    # TODO : POST /v1/billing/subscriptions, récupérer le lien "approve", y rediriger.
+    return HttpResponse("TODO PayPal", status=501)
+
+
+# ---------- Webhooks (appelés par les serveurs des prestataires) ----------
+
+@csrf_exempt
+def stripe_webhook(request):
+    if not settings.STRIPE_WEBHOOK_SECRET:
+        return HttpResponse(status=503)
+
+    import stripe
+    try:
+        event = stripe.Webhook.construct_event(
+            request.body,
+            request.META.get("HTTP_STRIPE_SIGNATURE", ""),
+            settings.STRIPE_WEBHOOK_SECRET,
+        )
+    except Exception:
+        return HttpResponse(status=400)
+
+    if event["type"] == "checkout.session.completed":
+        session = event["data"]["object"]
+        user_id = session.get("client_reference_id")
+        sub_id = session.get("subscription")
+        if user_id:
+            from django.contrib.auth.models import User
+            try:
+                activer_premium(
+                    User.objects.get(id=user_id),
+                    source="stripe",
+                    duree_jours=30,
+                    external_subscription_id=sub_id,
+                )
+            except User.DoesNotExist:
+                pass
+
+    # TODO : invoice.paid (renouvellements, eviter double-comptage) +
+    # customer.subscription.deleted (resiliations).
+    return HttpResponse(status=200)
+
+
+@csrf_exempt
+def paypal_webhook(request):
+    if not settings.PAYPAL_CLIENT_ID:
+        return HttpResponse(status=503)
+
+    try:
+        event = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return HttpResponse(status=400)
+
+    # TODO : verifier l'evenement avant d'appeler activer_premium(..., source="paypal").
+    return HttpResponse(status=200)
