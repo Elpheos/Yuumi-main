@@ -1589,31 +1589,28 @@ def is_native_request(request):
     return "YuumiNativeApp" in ua
 
 def premium_home(request):
-    """
-    Accueil premium. Aiguillage : l'app est REDIRIGEE vers sa page dediee
-    (/premium/app/), le web voit la page premium web. L'app ne touche donc
-    jamais la page web, meme d'accueil.
-    """
     if is_native_request(request):
         return redirect("premium_app")
-    return HttpResponse("Premium — page WEB (placeholder)")
+    return render(request, "members/premium_home.html", {
+        "premium_price": None,  # TODO : fixer le vrai prix avant la mise en prod
+    })
 
 
 @web_only
 def premium_web_checkout(request):
-    # WEB UNIQUEMENT — 404 si la requete vient de l'app.
-    return HttpResponse("Premium — checkout WEB (placeholder Stripe)")
+    return render(request, "members/premium_checkout.html", {
+        "premium_price": None,
+    })
 
 
 @web_only
 def premium_web_success(request):
-    return HttpResponse("Premium — paiement reussi (placeholder)")
+    return render(request, "members/premium_success.html")
 
 
 @web_only
 def premium_web_cancel(request):
-    return HttpResponse("Premium — paiement annule (placeholder)")
-
+    return render(request, "members/premium_cancel.html")
 
 @app_only
 def premium_app(request):
