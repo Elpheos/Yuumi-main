@@ -186,6 +186,7 @@ Clarification :
 - Une demande qui a deja recu une reponse a une premiere serie de questions de clarification (visible si le message utilisateur contient deja des reponses, format "question - reponse - reponse") ne doit JAMAIS declencher une deuxieme serie de clarification - a ce stade, cherche directement avec le contexte disponible, meme partiel.
 - Si un segment de reponse contient le mot " ou " entre plusieurs valeurs (ex: "Bijou ou Livre"), cela signifie que l'utilisateur a selectionne plusieurs options comme des ALTERNATIVES valables, pas une contrainte cumulative - traite chaque valeur comme une piste independante a explorer (ex: produire des idees_produits couvrant a la fois les bijoux ET les livres, pas seulement l'intersection des deux).
 - Si la demande contient deja assez de contexte pour chercher directement (ex: "foie gras", "un restaurant ouvert maintenant", "un cadeau pour ma mere qui aime le jardinage"), mets besoin_clarification=false et questions_clarification=[].
+- CONTEXTE CONVERSATIONNEL : les messages precedents de la conversation (s'il y en a) sont fournis comme contexte. Une question de suivi ("et ce soir ?", "plutot moins cher", "sans le cote sucre") se comprend PAR RAPPORT a ce qui a deja ete demande : conserve les categories et contraintes deja etablies et applique seulement la nouvelle precision. Ne repars jamais de zero en ignorant le fil, et ne redemande pas une clarification sur un point deja resolu plus haut dans la conversation.
 """
 
 
@@ -334,7 +335,7 @@ def _understand_intent_fallback(client, user_query):
         return None
 
 
-def extract_search_params(user_query, intent_text=None):
+def extract_search_params(user_query, intent_text=None, history=None):
     """
     Appel 2a : transforme la requete en JSON structure garanti (categories,
     ouvert_maintenant, rayon_km, idees_produits...).
@@ -345,15 +346,29 @@ def extract_search_params(user_query, intent_text=None):
     directement la requete brute ici. Si intent_text est fourni, on l'injecte
     comme contexte ; sinon le modele analyse directement user_query.
 
+    history (optionnel) : liste de tours conversationnels precedents au format
+    [{"role": "user"|"assistant", "content": "..."}, ...]. Permet a l'agent de
+    comprendre une question de suivi ("et ce soir ?", "plutot moins cher") par
+    rapport a ce qui a deja ete demande, SANS concatener de texte cote
+    frontend. Vide ou None = comportement identique a avant (recherche isolee).
+
     Renvoie un dict Python, ou None en cas d'echec.
     """
     try:
         client = _get_client()
 
-        messages = [
-            {"role": "system", "content": build_system_prompt()},
-            {"role": "user", "content": user_query},
-        ]
+        messages = [{"role": "system", "content": build_system_prompt()}]
+
+        # Historique conversationnel : les tours precedents sont injectes
+        # APRES le prompt systeme et AVANT le message courant, pour que le
+        # modele resolve les questions de suivi par rapport au fil. On fait
+        # confiance a l'appelant (views.ai_search_agent) pour n'envoyer que
+        # des tours bien formes et bornes en nombre.
+        if history:
+            messages.extend(history)
+
+        messages.append({"role": "user", "content": user_query})
+
         if intent_text:
             # Une pre-comprehension web est disponible : on l'injecte comme
             # contexte avant de demander le JSON.
