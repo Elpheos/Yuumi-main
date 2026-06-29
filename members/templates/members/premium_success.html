@@ -1,1 +1,88 @@
-.
+{% extends "master.html" %}
+{% load static %}
+
+{% block title %}Bienvenue dans Premium | Yuumi{% endblock %}
+
+{% block content %}
+<style>
+.premium-result-page {
+    max-width: 460px;
+    margin: 64px auto 80px;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.premium-result-seal {
+    width: 76px;
+    height: 76px;
+    margin: 0 auto 24px;
+    border-radius: 50%;
+    border: 3px solid #ff8b38;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ff8b38;
+    font-size: 2.2rem;
+    font-weight: 900;
+}
+
+.premium-result-page h1 {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #2b2118;
+    margin-bottom: 14px;
+}
+
+.premium-result-page p {
+    font-size: 1rem;
+    color: #777;
+    line-height: 1.7;
+    margin-bottom: 32px;
+}
+
+.premium-result-cta {
+    display: inline-block;
+    padding: 13px 30px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+    border-radius: 8px;
+    background: linear-gradient(45deg, #ff8b38, #ff7033);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-decoration: none;
+    margin-bottom: 16px;
+    transition: transform 0.2s;
+}
+
+.premium-result-cta:hover {
+    transform: scale(1.03);
+    color: white;
+}
+
+.premium-result-secondary {
+    display: block;
+    font-size: 0.88rem;
+    color: #aaa;
+    text-decoration: none;
+}
+
+.premium-result-secondary:hover {
+    color: #ff8b38;
+}
+
+@media (max-width: 767px) {
+    .premium-result-page { margin-top: 80px; }
+}
+</style>
+
+<div class="premium-result-page">
+    <div class="premium-result-seal">✓</div>
+    <h1>Bienvenue dans Premium !</h1>
+    <p>
+        Votre abonnement est actif. L'assistant de recherche et vos listes
+        personnelles vous attendent.
+    </p>
+    <a href="{% url 'ai_search_agent' %}" class="premium-result-cta">Essayer l'assistant</a>
+    <a href="{% url 'main' %}" class="premium-result-secondary">Retour à l'accueil</a>
+</div>
+{% endblock %}
