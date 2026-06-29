@@ -54,3 +54,34 @@ def web_only(view_func):
             raise Http404()
         return view_func(request, *args, **kwargs)
     return _wrapped
+
+from functools import wraps
+from django.http import Http404
+
+
+def web_only(view_func):
+    """
+    Decorateur : 404 si la requete vient de l'app mobile Capacitor.
+    Reserve les pages de paiement WEB (Stripe) au navigateur. C'est le
+    verrou cote serveur : meme en tapant l'URL a la main dans l'app,
+    l'acces est refuse.
+    """
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if is_native_request(request):
+            raise Http404()
+        return view_func(request, *args, **kwargs)
+    return _wrapped
+
+
+def app_only(view_func):
+    """
+    Decorateur : 404 si la requete vient du web. Reserve la page premium
+    dediee a l'app (IAP). Le web ne peut jamais l'ouvrir.
+    """
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not is_native_request(request):
+            raise Http404()
+        return view_func(request, *args, **kwargs)
+    return _wrapped
