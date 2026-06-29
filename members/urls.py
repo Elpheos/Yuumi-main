@@ -54,6 +54,15 @@ urlpatterns = [
     path("ville-autocomplete/", autocomplete.VilleAutocomplete.as_view(), name="ville-autocomplete"),
     path("categorie-autocomplete/", autocomplete.CategorieAutocomplete.as_view(), name="categorie-autocomplete"),
 
+    # ===== PREMIUM (avant les routes generiques <departement>/<ville>/... car
+    # ces dernieres sont des attrape-tout a 3 segments qui captureraient
+    # /premium/web/checkout/ etc. avant d'atteindre les vraies routes ici) =====
+    path("premium/", views.premium_home, name="premium_home"),
+    path("premium/web/checkout/", views.premium_web_checkout, name="premium_web_checkout"),
+    path("premium/web/succes/", views.premium_web_success, name="premium_web_success"),
+    path("premium/web/annule/", views.premium_web_cancel, name="premium_web_cancel"),
+    path("premium/app/", views.premium_app, name="premium_app"),
+
     # EDIT doit être avant store_details pour éviter les conflits de pattern
     path("<str:departement>/<str:ville>/<slug:slug>/edit/", views.edit_store, name="edit_store"),
 
@@ -76,11 +85,4 @@ urlpatterns = [
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
-
-    # ===== PREMIUM =====
-    path("premium/", views.premium_home, name="premium_home"),
-    path("premium/web/checkout/", views.premium_web_checkout, name="premium_web_checkout"),
-    path("premium/web/succes/", views.premium_web_success, name="premium_web_success"),
-    path("premium/web/annule/", views.premium_web_cancel, name="premium_web_cancel"),
-    path("premium/app/", views.premium_app, name="premium_app"),
 ]
