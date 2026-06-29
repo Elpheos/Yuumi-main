@@ -483,11 +483,46 @@ if (!window._agentIaInitialized) {
                             </div>
                         `).join('');
                     });
-                } else if (!data.message) {
+               } else if (!data.message) {
                     html += '<p class="agent-ia-message">Aucun résultat trouvé.</p>';
                 }
 
+                // Barre d'affinement : permet de "re-répondre" à l'agent pour
+                // préciser sans tout retaper. La précision est ajoutée à la
+                // requête précédente (même format " - " que la clarification),
+                // puis on relance la recherche.
+                html += `
+                    <div class="agent-ia-affiner" style="margin-top:24px;border-top:1px solid #eee;padding-top:16px;">
+                        <p style="font-weight:600;margin-bottom:8px;">Pas tout à fait ça ? Affinez votre recherche :</p>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <input type="text" id="agent-ia-affiner-input" class="agent-ia-input"
+                                   style="flex:1;min-width:200px;margin:0;"
+                                   placeholder="Ex: plutôt moins cher, ouvert le dimanche, sans gluten...">
+                            <button type="button" class="agent-ia-button" id="agent-ia-affiner-btn">Affiner</button>
+                        </div>
+                    </div>
+                `;
+
                 resultatsDiv.innerHTML = html;
+
+                // (re)câblage après réécriture du DOM
+                const affinerInput = document.getElementById('agent-ia-affiner-input');
+                const affinerBtn = document.getElementById('agent-ia-affiner-btn');
+                if (affinerBtn && affinerInput) {
+                    const lancerAffinement = () => {
+                        const precision = affinerInput.value.trim();
+                        if (!precision) return;
+                        const queryInput = document.getElementById('agent-ia-query');
+                        // On repart de la requête qui a produit CES résultats
+                        // (capturée dans la closure) et on y ajoute la précision.
+                        queryInput.value = query + ' - ' + precision;
+                        document.getElementById('agent-ia-submit').click();
+                    };
+                    affinerBtn.addEventListener('click', lancerAffinement);
+                    affinerInput.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') { e.preventDefault(); lancerAffinement(); }
+                    });
+                }
             }
         } catch (e) {
             resultatsDiv.innerHTML = '<p class="agent-ia-message">Une erreur est survenue.</p>';
