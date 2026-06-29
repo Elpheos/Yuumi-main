@@ -1181,6 +1181,12 @@ def delete_account(request):
         return redirect('main')
     return redirect('account')
 
+# Extrait de members/views.py — fonction ai_search_agent patchee (memoire conversationnelle).
+# Dependances supposees deja importees en haut de views.py : JsonResponse, json,
+# can_use_ai_agent, is_premium_user, understand_intent, extract_search_params,
+# recommend_stores, register_ai_usage, find_matching_stores.
+
+
 @login_required
 def ai_search_agent(request):
     """
@@ -1194,6 +1200,13 @@ def ai_search_agent(request):
     extraction parametres -> recherche en base par tiers de preuve (catalogue
     / description / categorie) -> recommandation finale (intention, confiance
     confirme/deduit, justification par resultat).
+
+    MEMOIRE CONVERSATIONNELLE : le frontend peut envoyer un champ "history"
+    (JSON, liste de tours {role, content}). Il est transmis a l'extraction
+    pour resoudre les questions de suivi ("et ce soir ?") par rapport au fil,
+    et sert a reconstruire le besoin complet pour la recommandation. Une
+    requete avec historique n'est ni lue ni ecrite dans le cache (elle depend
+    du contexte conversationnel, pas seulement de (query, ville, departement)).
     """
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -1225,13 +1238,39 @@ def ai_search_agent(request):
         }, status=400)
 
     # -----------------------------------------------------------------
+    # HISTORIQUE CONVERSATIONNEL envoye par le frontend (liste de tours
+    # {role, content}). Valide strictement : on n'injecte que des tours bien
+    # formes dans l'appel LLM, et on borne leur nombre pour limiter le cout.
+    # -----------------------------------------------------------------
+    history = []
+    history_raw = request.POST.get("history", "")
+    if history_raw:
+        try:
+            parsed = json.loads(history_raw)
+            if isinstance(parsed, list):
+                for tour in parsed:
+                    if (isinstance(tour, dict)
+                            and tour.get("role") in ("user", "assistant")
+                            and isinstance(tour.get("content"), str)
+                            and tour["content"].strip()):
+                        history.append({
+                            "role": tour["role"],
+                            "content": tour["content"][:2000],
+                        })
+        except (ValueError, TypeError):
+            history = []
+    history = history[-16:]  # 8 echanges max (user + assistant)
+
+    # -----------------------------------------------------------------
     # CACHE : meme (query, ville, departement) -> meme reponse, sans relancer
     # les 2-3 appels LLM. Un hit ne consomme PAS de quota (reponse gratuite a
     # servir). On ne met en cache que les reponses NON temporelles : une
     # recherche "ouvert maintenant" depend de l'heure et n'est jamais cachee
-    # (voir cache.set plus bas). NB : un backend de cache PARTAGE entre les
-    # workers Gunicorn est necessaire pour que ce soit efficace (voir reglage
-    # CACHES dans settings).
+    # (voir cache.set plus bas). Une requete AVEC historique n'est ni lue ni
+    # ecrite dans le cache : elle depend du fil de conversation, pas seulement
+    # de (query, ville, departement). NB : un backend de cache PARTAGE entre
+    # les workers Gunicorn est necessaire pour que ce soit efficace (voir
+    # reglage CACHES dans settings).
     # -----------------------------------------------------------------
     import hashlib
     from django.core.cache import cache
@@ -1241,7 +1280,7 @@ def ai_search_agent(request):
     ).hexdigest()
 
     reponse_cache = cache.get(cache_key)
-    if reponse_cache is not None:
+    if reponse_cache is not None and not history:
         return JsonResponse(reponse_cache)
 
     # -----------------------------------------------------------------
@@ -1265,7 +1304,7 @@ def ai_search_agent(request):
     else:
         intent_text = None  # extract_search_params gere le cas None.
 
-    params = extract_search_params(user_query, intent_text)
+    params = extract_search_params(user_query, intent_text, history=history)
     if params is None:
         return JsonResponse({
             "fallback_to_tree": True,
@@ -1374,7 +1413,8 @@ def ai_search_agent(request):
             commerces_par_produit, commerces_par_categorie
         )
         produit_sans_match_confirme = False
-# -----------------------------------------------------------------
+
+    # -----------------------------------------------------------------
     # COURT-CIRCUIT LISTE VIDE : si aucun candidat ne ressort, NE PAS
     # appeler recommend_stores. Sur une liste vide, le modele improvise un
     # message de recadrage type "ça ne correspond pas à la mission de Yuumi",
@@ -1422,8 +1462,21 @@ def ai_search_agent(request):
         # et une reponse "rien dans la ville" peut changer des qu'un commerce
         # est ajoute -> on prefere ne pas figer ces cas vides.
         return JsonResponse(payload)
+
+    # -----------------------------------------------------------------
+    # REQUETE EFFECTIVE pour la recommandation : on reconstruit le besoin
+    # complet a partir de TOUS les tours utilisateur (cote serveur uniquement,
+    # jamais affiche ni place dans la barre de recherche). Sans ca,
+    # recommend_stores ne verrait que le dernier message ("et ce soir ?") et
+    # perdrait le "restaurant gastronomique" du depart. Hors conversation,
+    # requete_effective == user_query (comportement inchange).
+    # -----------------------------------------------------------------
+    tours_user = [t["content"] for t in history if t["role"] == "user"]
+    tours_user.append(user_query)
+    requete_effective = " ; ".join(tours_user)
+
     resultat_ia = recommend_stores(
-        user_query,
+        requete_effective,
         commerces_filtres,
         ids_par_produit,
         produit_sans_match_confirme=produit_sans_match_confirme,
@@ -1490,14 +1543,14 @@ def ai_search_agent(request):
         "aucun_resultat": len(pistes_valides) == 0,
     }
 
-    # Mise en cache : uniquement les reponses NON temporelles. Une recherche
-    # "ouvert maintenant" depend de l'heure -> jamais mise en cache. TTL 6h,
+    # Mise en cache : uniquement les reponses NON temporelles ET hors
+    # conversation. Une recherche "ouvert maintenant" depend de l'heure, une
+    # requete avec historique depend du fil -> jamais mises en cache. TTL 6h,
     # a ajuster selon la frequence de mise a jour de ton catalogue.
-    if not ouvert:
+    if not ouvert and not history:
         cache.set(cache_key, payload, 60 * 60 * 6)
 
     return JsonResponse(payload)
-
 
 @login_required
 def save_store_note(request, store_id):
