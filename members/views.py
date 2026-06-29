@@ -1374,7 +1374,54 @@ def ai_search_agent(request):
             commerces_par_produit, commerces_par_categorie
         )
         produit_sans_match_confirme = False
+# -----------------------------------------------------------------
+    # COURT-CIRCUIT LISTE VIDE : si aucun candidat ne ressort, NE PAS
+    # appeler recommend_stores. Sur une liste vide, le modele improvise un
+    # message de recadrage type "ça ne correspond pas à la mission de Yuumi",
+    # ce qui est absurde pour une vraie categorie (ex: un restaurant a 11h,
+    # simplement pas encore ouvert). On renvoie ici un message honnete et
+    # adapte, sans appel LLM (gratuit, instantane).
+    # -----------------------------------------------------------------
+    if not commerces_filtres:
+        register_ai_usage(request.user, web_search_used=web_search_a_ete_utilise)
 
+        if ouvert:
+            # Distinguer "rien d'OUVERT maintenant" de "rien du tout dans
+            # cette ville" : on relance la meme recherche categorie SANS le
+            # filtre horaire. Si ca renvoie des commerces, c'est juste une
+            # question d'horaire, pas d'absence de commerce.
+            existe_hors_horaire = find_matching_stores(
+                categories, departement, ville, ouvert_maintenant=False
+            ).exists()
+            if existe_hors_horaire:
+                message = (
+                    "Aucun commerce correspondant n'est ouvert à cet instant. "
+                    "Réessayez plus tard, ou relancez la recherche sans le critère "
+                    "« ouvert maintenant »."
+                )
+            else:
+                message = (
+                    "Je n'ai trouvé aucun commerce correspondant à votre recherche "
+                    "dans votre ville pour le moment."
+                )
+        else:
+            message = (
+                "Je n'ai trouvé aucun commerce correspondant à votre recherche "
+                "dans votre ville pour le moment."
+            )
+
+        payload = {
+            "fallback_to_tree": False,
+            "besoin_clarification": False,
+            "intention": "",
+            "message": message,
+            "pistes": [],
+            "aucun_resultat": True,
+        }
+        # Pas de mise en cache : une reponse "rien d'ouvert" depend de l'heure,
+        # et une reponse "rien dans la ville" peut changer des qu'un commerce
+        # est ajoute -> on prefere ne pas figer ces cas vides.
+        return JsonResponse(payload)
     resultat_ia = recommend_stores(
         user_query,
         commerces_filtres,
