@@ -77,4 +77,11 @@ urlpatterns = [
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
 
+    # ===== PREMIUM =====
+    path("premium/", views.premium_home, name="premium_home"),
+    path("premium/web/checkout/", views.premium_web_checkout, name="premium_web_checkout"),
+    path("premium/web/succes/", views.premium_web_success, name="premium_web_success"),
+    path("premium/web/annule/", views.premium_web_cancel, name="premium_web_cancel"),
+    path("premium/app/", views.premium_app, name="premium_app"),
+
 ]
