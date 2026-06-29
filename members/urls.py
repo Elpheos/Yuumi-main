@@ -59,9 +59,13 @@ urlpatterns = [
     # /premium/web/checkout/ etc. avant d'atteindre les vraies routes ici) =====
     path("premium/", views.premium_home, name="premium_home"),
     path("premium/web/checkout/", views.premium_web_checkout, name="premium_web_checkout"),
+    path("premium/web/checkout/stripe/", views.premium_checkout_stripe, name="premium_checkout_stripe"),
+    path("premium/web/checkout/paypal/", views.premium_checkout_paypal, name="premium_checkout_paypal"),
     path("premium/web/succes/", views.premium_web_success, name="premium_web_success"),
     path("premium/web/annule/", views.premium_web_cancel, name="premium_web_cancel"),
     path("premium/app/", views.premium_app, name="premium_app"),
+    path("premium/web/webhook/stripe/", views.stripe_webhook, name="stripe_webhook"),
+    path("premium/web/webhook/paypal/", views.paypal_webhook, name="paypal_webhook"),
 
     # EDIT doit être avant store_details pour éviter les conflits de pattern
     path("<str:departement>/<str:ville>/<slug:slug>/edit/", views.edit_store, name="edit_store"),
@@ -85,4 +89,7 @@ urlpatterns = [
     path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
+
+
+    
 ]
