@@ -691,7 +691,7 @@ def register(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             user = form.save()
-            login(request, user)
+            login(request, user, backend="django.contrib.auth.backends.ModelBackend")
             messages.success(request, "Bienvenue sur Yuumi ! Votre compte a été créé avec succès.")
             return redirect(next_url if next_url else "main")
     else:
