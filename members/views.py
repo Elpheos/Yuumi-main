@@ -35,7 +35,7 @@ from .ai_agent.client import understand_intent, extract_search_params, recommend
 from .ai_agent.search import find_matching_stores, apply_open_now_filter
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from .utils import web_only, app_only, is_native_request, activer_premium
+from .utils import web_only, app_only, is_native_request, activer_premium, yuumi_plus_required
 
 AI_AGENT_PUBLIC = False
 
@@ -810,6 +810,7 @@ def toggle_unfavoris(request, store_id):
 
 
 @login_required
+@yuumi_plus_required
 def my_unfavorites(request):
     favoris = request.user.unfavoris.all()
     return render(request, "members/my_unfavorites.html", {"unfavoris": favoris})
@@ -820,6 +821,7 @@ def my_unfavorites(request):
 # ===========================================================
 
 @login_required
+@yuumi_plus_required
 def create_wishlist(request):
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -841,6 +843,7 @@ def create_wishlist(request):
     return JsonResponse({"id": wishlist.id, "name": wishlist.name})
 
 @login_required
+@yuumi_plus_required
 def toggle_wishlist_store(request, wishlist_id, store_id):
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -863,6 +866,7 @@ def toggle_wishlist_store(request, wishlist_id, store_id):
     return JsonResponse({"in_wishlist": True})
     
 @login_required
+@yuumi_plus_required
 def delete_wishlist(request, wishlist_id):
     if request.method != "POST":
         return JsonResponse({"error": "Méthode non autorisée"}, status=405)
@@ -1189,7 +1193,7 @@ def delete_account(request):
 # can_use_ai_agent, is_premium_user, understand_intent, extract_search_params,
 # recommend_stores, register_ai_usage, find_matching_stores.
 
-
+@yuumi_plus_required
 @login_required
 def ai_search_agent(request):
     """
@@ -1554,7 +1558,8 @@ def ai_search_agent(request):
         cache.set(cache_key, payload, 60 * 60 * 6)
 
     return JsonResponse(payload)
-
+    
+@yuumi_plus_required
 @login_required
 def save_store_note(request, store_id):
     if request.method != "POST":
@@ -1620,10 +1625,16 @@ def premium_app(request):
 # ---------- Déclenchement du paiement ----------
 
 @web_only
+@login_required
 def premium_checkout_stripe(request):
-    if not (settings.STRIPE_SECRET_KEY and settings.STRIPE_PRICE_ID):
+    plan = request.GET.get("plan", "monthly")
+    if plan == "annual":
+        price_id = settings.STRIPE_PRICE_YUUMI_PLUS_ANNUEL
+    else:
+        price_id = settings.STRIPE_PRICE_YUUMI_PLUS_MENSUEL
+
+    if not (settings.STRIPE_SECRET_KEY and price_id):
         return render(request, "members/premium_checkout.html", {
-            "premium_price": None,
             "config_error": "Le paiement par carte n'est pas encore activé.",
         })
 
@@ -1631,10 +1642,10 @@ def premium_checkout_stripe(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
     session = stripe.checkout.Session.create(
         mode="subscription",
-        line_items=[{"price": settings.STRIPE_PRICE_ID, "quantity": 1}],
+        line_items=[{"price": price_id, "quantity": 1}],
         success_url=request.build_absolute_uri(reverse("premium_web_success")),
         cancel_url=request.build_absolute_uri(reverse("premium_web_cancel")),
-        client_reference_id=str(request.user.id) if request.user.is_authenticated else None,
+        client_reference_id=str(request.user.id),
     )
     return redirect(session.url)
 
