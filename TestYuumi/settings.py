@@ -300,7 +300,7 @@ AUTHENTICATION_BACKENDS = [
 # django-axes (protection brute force)
 # -------------------------------------------------------------------
 AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = 1000
+AXES_COOLOFF_TIME = 1
 AXES_LOCKOUT_CALLABLE = None
 
 
