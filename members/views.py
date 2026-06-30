@@ -1657,7 +1657,6 @@ def premium_checkout_paypal(request):
 def stripe_webhook(request):
     if not settings.STRIPE_WEBHOOK_SECRET:
         return HttpResponse(status=503)
-
     import stripe
     try:
         event = stripe.Webhook.construct_event(
@@ -1667,11 +1666,8 @@ def stripe_webhook(request):
         )
     except Exception:
         return HttpResponse(status=400)
-
-  if event["type"] == "checkout.session.completed":
+    if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        # session est un StripeObject, pas un dict : .get() n'y fonctionne pas
-        # comme attendu. On accede par attribut, avec None en secours.
         user_id = getattr(session, "client_reference_id", None)
         sub_id = getattr(session, "subscription", None)
         if user_id:
@@ -1685,9 +1681,6 @@ def stripe_webhook(request):
                 )
             except User.DoesNotExist:
                 pass
-
-    # TODO : invoice.paid (renouvellements, eviter double-comptage) +
-    # customer.subscription.deleted (resiliations).
     return HttpResponse(status=200)
 
 
