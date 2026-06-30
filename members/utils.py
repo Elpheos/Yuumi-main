@@ -4,6 +4,9 @@ from functools import wraps
 from django.core.files.base import ContentFile
 from django.http import Http404
 
+# Limites Yuumi+
+YUUMI_PLUS_WISHLIST_LIMIT = 10
+YUUMI_PLUS_UNFAVORIS_LIMIT = 10
 
 def resize_and_convert(image_file, name, max_width=None):
     """
