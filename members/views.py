@@ -1693,13 +1693,15 @@ def stripe_webhook(request):
     except Exception:
         return HttpResponse(status=400)
 
+    # ----------------------------------------------------------------
+    # Activation initiale après paiement réussi
+    # ----------------------------------------------------------------
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         user_id = getattr(session, "client_reference_id", None)
         sub_id = getattr(session, "subscription", None)
         price_id = None
 
-        # Récupère le price_id acheté pour identifier le plan
         line_items = getattr(session, "line_items", None)
         if line_items is None:
             try:
@@ -1717,7 +1719,6 @@ def stripe_webhook(request):
             except Exception:
                 pass
 
-        # Détermine tier et billing_period selon le price_id
         PRICE_MAP = {
             settings.STRIPE_PRICE_YUUMI_PLUS_MENSUEL: ("yuumi_plus", "monthly"),
             settings.STRIPE_PRICE_YUUMI_PLUS_ANNUEL:  ("yuumi_plus", "annual"),
@@ -1739,21 +1740,47 @@ def stripe_webhook(request):
             except User.DoesNotExist:
                 pass
 
-    # TODO : invoice.paid (renouvellements) + customer.subscription.deleted (résiliations)
-    return HttpResponse(status=200)
+    # ----------------------------------------------------------------
+    # Renouvellement mensuel/annuel automatique
+    # ----------------------------------------------------------------
+    elif event["type"] == "invoice.paid":
+        invoice = event["data"]["object"]
+        sub_id = getattr(invoice, "subscription", None)
+        # On ne traite que les renouvellements (billing_reason == "subscription_cycle")
+        # pas la première facture (déjà gérée par checkout.session.completed)
+        billing_reason = getattr(invoice, "billing_reason", None)
+        if sub_id and billing_reason == "subscription_cycle":
+            from members.models import UserPremium
+            try:
+                premium = UserPremium.objects.get(external_subscription_id=sub_id)
+                # Prolonge selon la périodicité déjà enregistrée
+                duree = 365 if premium.billing_period == "annual" else 30
+                activer_premium(
+                    premium.user,
+                    source="stripe",
+                    tier=premium.tier,
+                    billing_period=premium.billing_period,
+                    duree_jours=duree,
+                    external_subscription_id=sub_id,
+                )
+            except UserPremium.DoesNotExist:
+                pass
 
+    # ----------------------------------------------------------------
+    # Résiliation : l'abonné a annulé ou le paiement a définitivement échoué
+    # ----------------------------------------------------------------
+    elif event["type"] == "customer.subscription.deleted":
+        subscription = event["data"]["object"]
+        sub_id = getattr(subscription, "id", None)
+        if sub_id:
+            from members.models import UserPremium
+            try:
+                premium = UserPremium.objects.get(external_subscription_id=sub_id)
+                premium.is_active = False
+                premium.save(update_fields=["is_active"])
+            except UserPremium.DoesNotExist:
+                pass
 
-@csrf_exempt
-def paypal_webhook(request):
-    if not settings.PAYPAL_CLIENT_ID:
-        return HttpResponse(status=503)
-
-    try:
-        event = json.loads(request.body or "{}")
-    except json.JSONDecodeError:
-        return HttpResponse(status=400)
-
-    # TODO : verifier l'evenement avant d'appeler activer_premium(..., source="paypal").
     return HttpResponse(status=200)
 
 
