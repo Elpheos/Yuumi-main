@@ -1666,21 +1666,54 @@ def stripe_webhook(request):
         )
     except Exception:
         return HttpResponse(status=400)
+
     if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
         user_id = getattr(session, "client_reference_id", None)
         sub_id = getattr(session, "subscription", None)
+        price_id = None
+
+        # Récupère le price_id acheté pour identifier le plan
+        line_items = getattr(session, "line_items", None)
+        if line_items is None:
+            try:
+                expanded = stripe.checkout.Session.retrieve(
+                    session.id,
+                    expand=["line_items"],
+                )
+                line_items = getattr(expanded, "line_items", None)
+            except Exception:
+                pass
+
+        if line_items:
+            try:
+                price_id = line_items.data[0].price.id
+            except Exception:
+                pass
+
+        # Détermine tier et billing_period selon le price_id
+        PRICE_MAP = {
+            settings.STRIPE_PRICE_YUUMI_PLUS_MENSUEL: ("yuumi_plus", "monthly"),
+            settings.STRIPE_PRICE_YUUMI_PLUS_ANNUEL:  ("yuumi_plus", "annual"),
+            settings.STRIPE_PRICE_PREMIUM_MENSUEL:    ("premium",    "monthly"),
+            settings.STRIPE_PRICE_PREMIUM_ANNUEL:     ("premium",    "annual"),
+        }
+        tier, billing_period = PRICE_MAP.get(price_id, ("yuumi_plus", "monthly"))
+
         if user_id:
             from django.contrib.auth.models import User
             try:
                 activer_premium(
                     User.objects.get(id=user_id),
                     source="stripe",
-                    duree_jours=30,
+                    tier=tier,
+                    billing_period=billing_period,
                     external_subscription_id=sub_id,
                 )
             except User.DoesNotExist:
                 pass
+
+    # TODO : invoice.paid (renouvellements) + customer.subscription.deleted (résiliations)
     return HttpResponse(status=200)
 
 
