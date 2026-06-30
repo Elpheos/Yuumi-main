@@ -1668,10 +1668,12 @@ def stripe_webhook(request):
     except Exception:
         return HttpResponse(status=400)
 
-    if event["type"] == "checkout.session.completed":
+  if event["type"] == "checkout.session.completed":
         session = event["data"]["object"]
-        user_id = session.get("client_reference_id")
-        sub_id = session.get("subscription")
+        # session est un StripeObject, pas un dict : .get() n'y fonctionne pas
+        # comme attendu. On accede par attribut, avec None en secours.
+        user_id = getattr(session, "client_reference_id", None)
+        sub_id = getattr(session, "subscription", None)
         if user_id:
             from django.contrib.auth.models import User
             try:
