@@ -30,12 +30,12 @@ from .models import (
 )
 from .forms import FamilyFormSet, ProductFormSet, RegisterForm, StoreForm, NewStoreForm, ModifStoreForm
 
-from .ai_agent.access import can_use_ai_agent, register_ai_usage, is_premium_user
+from .ai_agent.access import can_use_ai_agent, register_ai_usage, is_premium_user, can_use_web_search
 from .ai_agent.client import understand_intent, extract_search_params, recommend_stores
 from .ai_agent.search import find_matching_stores, apply_open_now_filter
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from .utils import web_only, app_only, is_native_request, activer_premium, yuumi_plus_required
+from .utils import web_only, app_only, is_native_request, activer_premium, yuumi_plus_required, YUUMI_PLUS_WISHLIST_LIMIT, YUUMI_PLUS_UNFAVORIS_LIMIT
 
 AI_AGENT_PUBLIC = False
 
@@ -803,6 +803,11 @@ def toggle_unfavoris(request, store_id):
         user.unfavoris.remove(store)
         is_unfavorite = False
     else:
+        if request.user.unfavoris.count() >= YUUMI_PLUS_UNFAVORIS_LIMIT:
+            return JsonResponse(
+                {"error": f"Vous avez atteint la limite de {YUUMI_PLUS_UNFAVORIS_LIMIT} commerces masqués."},
+                status=400,
+            )
         user.unfavoris.add(store)
         is_unfavorite = True
         user.favoris.remove(store)
@@ -830,6 +835,12 @@ def create_wishlist(request):
         return JsonResponse(
             {"error": "Cette fonctionnalité est réservée aux comptes Premium."},
             status=403,
+        )
+
+    if request.user.wishlists.count() >= YUUMI_PLUS_WISHLIST_LIMIT:
+        return JsonResponse(
+            {"error": f"Vous avez atteint la limite de {YUUMI_PLUS_WISHLIST_LIMIT} catégories."},
+            status=400,
         )
 
     name = request.POST.get("name", "").strip()
@@ -1300,6 +1311,10 @@ def ai_search_agent(request):
     from .ai_agent.client import needs_web_search
 
     web_search_a_ete_utilise = needs_web_search(user_query)
+
+    # Quota mensuel de recherches web atteint : mode dégradé (pas de blocage total)
+    if web_search_a_ete_utilise and not can_use_web_search(request.user):
+        web_search_a_ete_utilise = False
 
     if web_search_a_ete_utilise:
         intent_text = understand_intent(user_query)
