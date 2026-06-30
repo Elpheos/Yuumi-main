@@ -105,3 +105,33 @@ def activer_premium(user, source, billing_period="monthly", tier="yuumi_plus",
 
     premium.save()
     return premium
+
+from functools import wraps
+
+def yuumi_plus_required(view_func):
+    """
+    Restreint l'acces aux abonnes Yuumi+.
+    - Vue HTML  → redirige vers la page premium
+    - Vue JSON  → retourne 403 avec message
+    """
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            from django.contrib.auth.views import redirect_to_login
+            return redirect_to_login(request.get_full_path())
+        if not is_premium_user(request.user):
+            is_json = (
+                request.headers.get("X-Requested-With") == "XMLHttpRequest"
+                or "application/json" in request.headers.get("Accept", "")
+            )
+            if is_json:
+                from django.http import JsonResponse
+                return JsonResponse(
+                    {"error": "Fonctionnalité réservée aux abonnés Yuumi+",
+                     "premium_required": True},
+                    status=403,
+                )
+            from django.shortcuts import redirect
+            return redirect("premium_home")
+        return view_func(request, *args, **kwargs)
+    return wrapper
