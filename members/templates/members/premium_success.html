@@ -1,124 +1,264 @@
 {% extends "master.html" %}
 {% load static %}
-
-{% block title %}Bienvenue dans Premium | Yuumi{% endblock %}
+{% block title %}Bienvenue dans Yuumi+ !{% endblock %}
 
 {% block content %}
 <div class="page-container">
 <style>
-.premium-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: 50px auto;
-    padding: 0 5%;
-}
 
-.premium-header {
-    background-color: #ff8b38;
-    color: white;
+.ps-wrapper {
+    max-width: 680px;
+    margin: 60px auto;
+    padding: 0 16px 80px;
     text-align: center;
-    padding: 30px 20px;
-    border-radius: 10px;
-    width: 100%;
-    max-width: 560px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.premium-header h1 {
-    margin: 0;
-    font-size: 26px;
-    color: white;
+/* Confetti animation */
+@keyframes ps-fall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
 }
 
-.premium-container {
-    background-color: #fff;
-    border: solid 5px #ff8b38;
+.ps-confetti-container {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+    height: 100vh;
+}
+
+.ps-confetti-piece {
+    position: absolute;
+    top: -20px;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    animation: ps-fall linear forwards;
+}
+
+/* Hero succès */
+.ps-hero {
+    background: #fff;
+    border: 5px solid #ff8b38;
+    border-radius: 16px;
+    box-shadow: 0 6px 24px rgba(255, 139, 56, 0.15);
+    padding: 50px 40px;
+    margin-bottom: 30px;
+}
+
+.ps-emoji {
+    font-size: 3.5rem;
+    margin-bottom: 18px;
+    display: block;
+}
+
+.ps-hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ff8b38;
+    margin-bottom: 12px;
+}
+
+.ps-hero p {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.7;
+    max-width: 460px;
+    margin: 0 auto;
+}
+
+/* Features débloquées */
+.ps-features {
+    background: #fff8f3;
+    border: 2px dashed #ff8b38;
     border-radius: 12px;
-    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-    max-width: 560px;
-    width: 100%;
-    box-sizing: border-box;
-    margin-top: 35px;
-    padding: 40px 50px;
+    padding: 28px 32px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.ps-features-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ff8b38;
+    margin-bottom: 18px;
     text-align: center;
 }
 
-.premium-result-seal {
-    width: 70px;
-    height: 70px;
-    margin: 0 auto 20px;
+.ps-feature-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.ps-feature-row:last-child { margin-bottom: 0; }
+
+.ps-feature-check {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    background: #ff8b38;
     border-radius: 50%;
-    border: 3px solid #ff8b38;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ff8b38;
-    font-size: 2rem;
-    font-weight: 900;
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 1px;
 }
 
-.premium-container p {
-    font-size: 16px;
-    color: #555;
-    line-height: 1.8;
-    margin-bottom: 28px;
-}
-
-.premium-result-cta {
-    display: inline-block;
-    background-color: #ff8b38;
-    color: #fff;
-    border: solid 3px #ff8b38;
-    border-radius: 8px;
-    padding: 12px 28px;
-    text-decoration: none;
-    font-weight: bold;
-    text-transform: uppercase;
-    font-size: 15px;
-    transition: all 0.25s ease;
-    margin-bottom: 14px;
-}
-
-.premium-result-cta:hover {
-    background-color: #fff;
-    color: #ff8b38;
-    box-shadow: 0 0 10px rgba(255, 139, 56, 0.6);
-}
-
-.premium-result-secondary {
+.ps-feature-text strong {
     display: block;
-    font-size: 0.88rem;
-    color: gray;
-    text-decoration: underline;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 3px;
 }
 
-@media (max-width: 768px) {
-    .premium-container {
-        padding: 25px 20px;
-    }
+.ps-feature-text span {
+    font-size: 0.83rem;
+    color: #777;
+    line-height: 1.5;
+}
+
+/* CTA */
+.ps-cta-block {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.ps-btn-primary {
+    display: inline-block;
+    background: #ff8b38;
+    color: white;
+    border: 3px solid #ff8b38;
+    border-radius: 10px;
+    padding: 16px 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.25s ease;
+    width: 100%;
+    max-width: 360px;
+}
+
+.ps-btn-primary:hover {
+    background: white;
+    color: #ff8b38;
+    box-shadow: 0 0 16px rgba(255, 139, 56, 0.4);
+}
+
+.ps-btn-secondary {
+    display: inline-block;
+    color: #ff8b38;
+    font-size: 0.88rem;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 @media (max-width: 767px) {
-    .premium-wrapper { margin-top: 70px; }
+    .ps-wrapper { margin-top: 80px; }
+    .ps-hero { padding: 32px 20px; }
+    .ps-features { padding: 22px 18px; }
 }
+
 </style>
 
-<div class="premium-wrapper">
+<!-- Confettis -->
+<div class="ps-confetti-container" id="ps-confetti"></div>
 
-    <div class="premium-header">
-        <h1>Bienvenue dans Premium !</h1>
-    </div>
+<div class="ps-wrapper">
 
-    <div class="premium-container">
-        <div class="premium-result-seal">✓</div>
+    <div class="ps-hero">
+        <span class="ps-emoji">🎉</span>
+        <h1>Bienvenue dans Yuumi+ !</h1>
         <p>
-            Votre abonnement est actif. L'assistant de recherche et vos listes
-            personnelles vous attendent.
+            Votre abonnement est actif. Toutes les fonctionnalités premium sont
+            maintenant disponibles sur votre compte.
         </p>
-        <a href="{% url 'ai_search_agent' %}" class="premium-result-cta">Essayer l'assistant</a>
-        <a href="{% url 'main' %}" class="premium-result-secondary">Retour à l'accueil</a>
     </div>
+
+    <div class="ps-features">
+        <p class="ps-features-title">✦ Fonctionnalités débloquées</p>
+
+        <div class="ps-feature-row">
+            <div class="ps-feature-check">✓</div>
+            <div class="ps-feature-text">
+                <strong>Recherche par Intelligence Artificielle</strong>
+                <span>Décrivez ce que vous cherchez en langage naturel et laissez Yuumi trouver.</span>
+            </div>
+        </div>
+
+        <div class="ps-feature-row">
+            <div class="ps-feature-check">✓</div>
+            <div class="ps-feature-text">
+                <strong>Listes personnalisées</strong>
+                <span>Organisez vos commerces favoris dans des catégories que vous créez vous-même.</span>
+            </div>
+        </div>
+
+        <div class="ps-feature-row">
+            <div class="ps-feature-check">✓</div>
+            <div class="ps-feature-text">
+                <strong>Notes personnelles</strong>
+                <span>Ajoutez vos propres observations sur chaque fiche commerce.</span>
+            </div>
+        </div>
+
+        <div class="ps-feature-row">
+            <div class="ps-feature-check">✓</div>
+            <div class="ps-feature-text">
+                <strong>Commerces masqués</strong>
+                <span>Faites disparaître les commerces qui ne vous intéressent pas.</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="ps-cta-block">
+        <a href="{% url 'test-yuumi2' %}" class="ps-btn-primary">
+            🤖 Essayer l'IA maintenant
+        </a>
+        {% if request.COOKIES.yuumi_ville and request.COOKIES.yuumi_departement %}
+        <a href="{% url 'stores' request.COOKIES.yuumi_departement request.COOKIES.yuumi_ville %}"
+           class="ps-btn-secondary">
+            Revenir aux commerces
+        </a>
+        {% else %}
+        <a href="{% url 'main' %}" class="ps-btn-secondary">
+            Retour à l'accueil
+        </a>
+        {% endif %}
+    </div>
+
 </div>
+
+<script>
+// Confettis
+(function () {
+    const colors = ['#ff8b38', '#fff3e8', '#ffb07a', '#d37531', '#ffffff'];
+    const container = document.getElementById('ps-confetti');
+    for (let i = 0; i < 60; i++) {
+        const el = document.createElement('div');
+        el.className = 'ps-confetti-piece';
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.background = colors[Math.floor(Math.random() * colors.length)];
+        el.style.width = (8 + Math.random() * 8) + 'px';
+        el.style.height = (8 + Math.random() * 8) + 'px';
+        el.style.animationDuration = (2 + Math.random() * 3) + 's';
+        el.style.animationDelay = (Math.random() * 1.5) + 's';
+        container.appendChild(el);
+    }
+    setTimeout(() => container.remove(), 6000);
+})();
+</script>
 </div>
 {% endblock %}
