@@ -1701,3 +1701,5 @@ def paypal_webhook(request):
 
     # TODO : verifier l'evenement avant d'appeler activer_premium(..., source="paypal").
     return HttpResponse(status=200)
+
+
