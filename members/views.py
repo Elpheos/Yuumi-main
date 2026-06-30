@@ -1782,5 +1782,16 @@ def stripe_webhook(request):
                 pass
 
     return HttpResponse(status=200)
+@csrf_exempt
+def paypal_webhook(request):
+    if not settings.PAYPAL_CLIENT_ID:
+        return HttpResponse(status=503)
 
+    try:
+        event = json.loads(request.body or "{}")
+    except json.JSONDecodeError:
+        return HttpResponse(status=400)
+
+    # TODO : verifier l'evenement avant d'appeler activer_premium(..., source="paypal").
+    return HttpResponse(status=200)
 
