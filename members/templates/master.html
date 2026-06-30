@@ -857,15 +857,23 @@ main {
                     </li>
                 </ul>
 
-                {% if ai_agent_visible %}
-                <a href="{% url 'test-yuumi2' %}" class="premium-bouton-menu" title="Recherche intelligente - reservee aux membres Premium">
-                    <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
-                    <span class="premium-bouton-texte">
-                        <span class="premium-bouton-titre">Découvrez Yuumi</span>
-                        <span class="premium-bouton-badge">Premium</span>
-                    </span>
-                </a>
-                {% endif %}
+               {% if is_premium %}
+<a href="{% url 'test-yuumi2' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
+    <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
+    <span class="premium-bouton-texte">
+        <span class="premium-bouton-titre">Recherche IA</span>
+        <span class="premium-bouton-badge">Yuumi+</span>
+    </span>
+</a>
+{% else %}
+<a href="{% url 'premium_home' %}" class="premium-bouton" title="Découvrez Yuumi+">
+    <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
+    <span class="premium-bouton-texte">
+        <span class="premium-bouton-titre">Découvrez Yuumi</span>
+        <span class="premium-bouton-badge">Premium</span>
+    </span>
+</a>
+{% endif %}
             </div>
 
         </nav>
@@ -1958,8 +1966,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
 <script src="{% static 'js/push.js' %}"></script>
     
-{% if ai_agent_visible %}
-<a href="{% url 'test-yuumi2' %}" class="premium-bouton" title="Recherche intelligente - reservee aux membres Premium">
+{% if is_premium %}
+<a href="{% url 'test-yuumi2' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
+    <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
+    <span class="premium-bouton-texte">
+        <span class="premium-bouton-titre">Recherche IA</span>
+        <span class="premium-bouton-badge">Yuumi+</span>
+    </span>
+</a>
+{% else %}
+<a href="{% url 'premium_home' %}" class="premium-bouton" title="Découvrez Yuumi+">
     <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
     <span class="premium-bouton-texte">
         <span class="premium-bouton-titre">Découvrez Yuumi</span>
