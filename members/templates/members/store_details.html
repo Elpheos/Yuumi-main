@@ -229,9 +229,7 @@
                     <div class="commerce-réseaux">
                         {% if store.phone %}
                             <a href="tel:+33{{ store.phone|cut:' '|slice:'1:' }}">
-                                {% with image_path='images/'|add:store.ville|lower|add:'/telephone.webp' %}
-                                    <img src="{% static image_path %}" alt="Téléphone {{ store.nom }}">
-                                {% endwith %}
+                                 <img src="{% static 'images/telephone.webp' %}" alt="Téléphone {{ store.nom }}">
                             </a>
                         {% endif %}
 
