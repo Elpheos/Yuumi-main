@@ -613,6 +613,7 @@ class StoreSuggestion(models.Model):
         verbose_name = "Suggestion"
         verbose_name_plural = "Suggestions"
         ordering = ["-created_at"]
+
 # ===========================================================
 # 🔹 Tokens FCM (Push Notifications Firebase)
 # ===========================================================
@@ -635,46 +636,6 @@ class FCMToken(models.Model):
 
     def __str__(self):
         return f"Token de {self.user} — {self.token[:20]}..."
-
-
-# ===========================================================
-# 🔹 Premium utilisateur
-# ===========================================================
-
-class UserPremium(models.Model):
-    user = models.OneToOneField(
-        User,
-        on_delete=models.CASCADE,
-        related_name="premium",
-    )
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Coupe-circuit manuel : permet de désactiver le premium "
-                   "sans toucher à la date d'expiration (ex: litige paiement).",
-    )
-    started_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField(
-        null=True,
-        blank=True,
-        help_text="Laisser vide pour un premium sans date d'expiration "
-                   "(ex: compte de test, accès offert manuellement).",
-    )
-
-    class Meta:
-        verbose_name = "Statut Premium"
-        verbose_name_plural = "Statuts Premium"
-
-    def __str__(self):
-        return f"Premium — {self.user.username}"
-
-    @property
-    def is_valid(self):
-        if not self.is_active:
-            return False
-        if self.expires_at is None:
-            return True
-        from django.utils import timezone
-        return timezone.now() < self.expires_at
 
 
 # ===========================================================
@@ -745,6 +706,7 @@ class WishlistStore(models.Model):
     def __str__(self):
         return f"{self.store.nom} dans « {self.wishlist.name} »"
 
+
 class StoreNote(models.Model):
     user = models.ForeignKey(
         User,
@@ -771,7 +733,21 @@ class StoreNote(models.Model):
     def __str__(self):
         return f"Note de {self.user.username} sur {self.store.nom}"
 
+
+# ===========================================================
+# 🔹 Premium utilisateur
+# ===========================================================
+
 class UserPremium(models.Model):
+    TIER_CHOICES = [
+        ("yuumi_plus", "Yuumi+"),
+        ("premium", "Yuumi Premium"),
+    ]
+    BILLING_CHOICES = [
+        ("monthly", "Mensuel"),
+        ("annual", "Annuel"),
+    ]
+
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
@@ -780,29 +756,38 @@ class UserPremium(models.Model):
     is_active = models.BooleanField(
         default=True,
         help_text="Coupe-circuit manuel : permet de désactiver le premium "
-                   "sans toucher à la date d'expiration (ex: litige paiement).",
+                  "sans toucher à la date d'expiration (ex: litige paiement).",
     )
     started_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(
         null=True,
         blank=True,
         help_text="Laisser vide pour un premium sans date d'expiration "
-                   "(ex: compte de test, accès offert manuellement).",
+                  "(ex: compte de test, accès offert manuellement).",
     )
     payment_provider = models.CharField(
         max_length=30,
         blank=True,
         help_text="Prestataire ayant confirmé le paiement : 'stripe', "
-                   "'lemonsqueezy', 'manuel'... Vide si jamais payé (ex: "
-                   "premium offert directement par l'admin).",
+                  "'paypal', 'manuel'...",
     )
     external_subscription_id = models.CharField(
         max_length=255,
         blank=True,
         null=True,
-        help_text="ID de l'abonnement chez le prestataire (ex: "
-                   "sub_xxx chez Stripe), pour relier un webhook a cet "
-                   "utilisateur sans dependre d'un seul prestataire.",
+        help_text="ID de l'abonnement chez le prestataire (ex: sub_xxx chez Stripe).",
+    )
+    tier = models.CharField(
+        max_length=20,
+        choices=TIER_CHOICES,
+        default="yuumi_plus",
+        help_text="Niveau d'abonnement : Yuumi+ ou Yuumi Premium.",
+    )
+    billing_period = models.CharField(
+        max_length=10,
+        choices=BILLING_CHOICES,
+        default="monthly",
+        help_text="Périodicité de facturation : mensuel ou annuel.",
     )
 
     class Meta:
@@ -810,7 +795,7 @@ class UserPremium(models.Model):
         verbose_name_plural = "Statuts Premium"
 
     def __str__(self):
-        return f"Premium — {self.user.username}"
+        return f"{self.get_tier_display()} — {self.user.username}"
 
     @property
     def is_valid(self):
