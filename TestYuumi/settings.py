@@ -361,8 +361,15 @@ if _firebase_creds_path.exists() and not firebase_admin._apps:
 # ===== PAIEMENT PREMIUM =====
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
-STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
+# Yuumi+
+STRIPE_PRICE_YUUMI_PLUS_MENSUEL = os.environ.get("STRIPE_PRICE_YUUMI_PLUS_MENSUEL", "")
+STRIPE_PRICE_YUUMI_PLUS_ANNUEL = os.environ.get("STRIPE_PRICE_YUUMI_PLUS_ANNUEL", "")
+
+# Yuumi Premium (à venir)
+STRIPE_PRICE_PREMIUM_MENSUEL = os.environ.get("STRIPE_PRICE_PREMIUM_MENSUEL", "")
+STRIPE_PRICE_PREMIUM_ANNUEL = os.environ.get("STRIPE_PRICE_PREMIUM_ANNUEL", "")
 
 PAYPAL_CLIENT_ID = os.environ.get("PAYPAL_CLIENT_ID", "")
 PAYPAL_CLIENT_SECRET = os.environ.get("PAYPAL_CLIENT_SECRET", "")
