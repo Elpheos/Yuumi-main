@@ -530,9 +530,9 @@ const stripeBase = "{% url 'premium_checkout_stripe' %}";
 
 phSwitch.addEventListener('change', function () {
     if (this.checked) {
-        phPrice.textContent  = '47,88 €';
-        phPeriod.textContent = '\u00a0/ an';
-        phSub.textContent    = 'Facturation annuelle — soit 3,99\u00a0€/mois.';
+        phPrice.textContent  = '3,99 €';
+        phPeriod.textContent = '\u00a0/ mois';
+        phSub.textContent    = 'soit 47,88\u00a0€ facturés en une fois — économisez 43\u00a0%.';
         phLabelM.classList.remove('active');
         phLabelA.classList.add('active');
         phBtn.href = stripeBase + '?plan=annual';
