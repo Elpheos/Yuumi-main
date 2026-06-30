@@ -72,7 +72,8 @@ from datetime import timedelta
 from django.utils import timezone
 
 
-def activer_premium(user, source, duree_jours=30, external_subscription_id=None):
+def activer_premium(user, source, billing_period="monthly", tier="yuumi_plus",
+                    duree_jours=None, external_subscription_id=None):
     """
     Active (ou prolonge) le premium d'un utilisateur. Point d'entree UNIQUE
     appele apres un paiement verifie — quel que soit le prestataire. Ne fait
@@ -81,9 +82,15 @@ def activer_premium(user, source, duree_jours=30, external_subscription_id=None)
     """
     from members.models import UserPremium
 
+    # Durée selon la périodicité, sauf si forcée manuellement via duree_jours
+    if duree_jours is None:
+        duree_jours = 365 if billing_period == "annual" else 30
+
     premium, _ = UserPremium.objects.get_or_create(user=user)
     premium.is_active = True
     premium.payment_provider = source
+    premium.tier = tier
+    premium.billing_period = billing_period
 
     if external_subscription_id:
         premium.external_subscription_id = external_subscription_id
