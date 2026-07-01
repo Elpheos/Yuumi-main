@@ -1838,3 +1838,78 @@ def google_play_verify(request):
     )
 
     return JsonResponse({"success": True})
+
+@csrf_exempt
+def google_play_rtdn(request):
+    """
+    Recoit les Real-Time Developer Notifications de Google Play via Pub/Sub
+    (push). Le message contient un evenement d'abonnement (renouvellement,
+    resiliation, remboursement, etc.) encode en base64 dans request.body.
+
+    Format du payload Pub/Sub push :
+    {
+      "message": {
+        "data": "<base64 JSON>",
+        "messageId": "...",
+        "publishTime": "..."
+      },
+      "subscription": "..."
+    }
+
+    Le JSON decode contient notamment subscriptionNotification avec
+    purchaseToken et notificationType (cf. doc Google RTDN).
+    """
+    import base64
+    import logging
+    from members.models import UserPremium
+    from members.utils import verify_pubsub_token
+
+    logger = logging.getLogger(__name__)
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+
+    if not verify_pubsub_token(request):
+        return HttpResponse(status=401)
+
+    try:
+        envelope = json.loads(request.body)
+        message_data = envelope["message"]["data"]
+        decoded = base64.b64decode(message_data).decode("utf-8")
+        notification = json.loads(decoded)
+    except (KeyError, ValueError, TypeError) as e:
+        logger.error(f"RTDN Google Play : payload invalide - {e}")
+        return HttpResponse(status=200)
+
+    sub_notif = notification.get("subscriptionNotification")
+    if not sub_notif:
+        return HttpResponse(status=200)
+
+    purchase_token = sub_notif.get("purchaseToken")
+    notification_type = sub_notif.get("notificationType")
+
+    TYPES_DESACTIVATION = {3, 13, 12}
+    TYPES_RENOUVELLEMENT = {2, 4}
+
+    try:
+        premium = UserPremium.objects.get(external_subscription_id=purchase_token)
+    except UserPremium.DoesNotExist:
+        logger.warning(f"RTDN Google Play : token inconnu - {purchase_token}")
+        return HttpResponse(status=200)
+
+    if notification_type in TYPES_DESACTIVATION:
+        premium.is_active = False
+        premium.save(update_fields=["is_active"])
+    elif notification_type in TYPES_RENOUVELLEMENT:
+        from members.utils import activer_premium
+        duree = 365 if premium.billing_period == "annual" else 30
+        activer_premium(
+            premium.user,
+            source="google_play",
+            tier=premium.tier,
+            billing_period=premium.billing_period,
+            duree_jours=duree,
+            external_subscription_id=purchase_token,
+        )
+
+    return HttpResponse(status=200)
