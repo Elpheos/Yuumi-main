@@ -1629,11 +1629,6 @@ def premium_web_cancel(request):
     return render(request, "members/premium_cancel.html")
 
 
-@app_only
-def premium_app(request):
-    # APP UNIQUEMENT — 404 si la requete vient du web.
-    return HttpResponse("Premium — page dediee APP (placeholder IAP)")
-
 
 # ---------- Déclenchement du paiement ----------
 
