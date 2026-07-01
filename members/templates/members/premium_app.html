@@ -1,0 +1,63 @@
+{% extends "master.html" %}
+{% load static %}
+{% block title %}Yuumi+ | Passez au premium{% endblock %}
+
+{% block content %}
+<div class="page-container">
+<div class="ph-wrapper" style="max-width:600px;margin:0 auto;padding:40px 16px 80px;text-align:center;">
+
+    <div class="ph-hero-badge" style="display:inline-block;background:#fff3e8;color:#ff8b38;border:2px solid #ff8b38;border-radius:999px;padding:6px 18px;font-size:0.8rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:20px;">✦ Yuumi+</div>
+
+    <h1 style="font-size:1.8rem;font-weight:800;color:#1a1a1a;margin-bottom:16px;">Débloquez Yuumi+</h1>
+
+    <p style="color:#666;font-size:1rem;line-height:1.7;margin-bottom:32px;">
+        Recherche par intelligence artificielle, listes personnalisées, notes privées et plus encore.
+    </p>
+
+    <div id="ygp-plans" style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px;">
+        <button id="ygp-btn-monthly" class="ph-pricing-btn" style="background:#ff8b38;color:white;border:3px solid #ff8b38;border-radius:10px;padding:16px;font-size:1rem;font-weight:700;cursor:pointer;">
+            S'abonner — Mensuel
+        </button>
+        <button id="ygp-btn-annual" class="ph-pricing-btn" style="background:white;color:#ff8b38;border:3px solid #ff8b38;border-radius:10px;padding:16px;font-size:1rem;font-weight:700;cursor:pointer;">
+            S'abonner — Annuel <span style="font-size:0.8rem;">(−43%)</span>
+        </button>
+    </div>
+
+    <p id="ygp-status" style="font-size:0.9rem;color:#888;min-height:20px;"></p>
+
+    <p style="font-size:0.8rem;color:#bbb;margin-top:20px;">Paiement sécurisé via Google Play</p>
+
+</div>
+</div>
+
+<script src="{% static 'js/google-play-billing.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const statusEl = document.getElementById('ygp-status');
+    const btnMonthly = document.getElementById('ygp-btn-monthly');
+    const btnAnnual = document.getElementById('ygp-btn-annual');
+
+    async function handlePurchase(plan, btn) {
+        btn.disabled = true;
+        statusEl.textContent = 'Traitement en cours...';
+
+        const result = await YUUMI_BILLING.purchaseSubscription(plan);
+
+        if (result.success) {
+            statusEl.textContent = 'Abonnement activé ! Redirection...';
+            setTimeout(() => { window.location.href = '/'; }, 1200);
+        } else {
+            btn.disabled = false;
+            if (result.error === 'purchase_cancelled') {
+                statusEl.textContent = '';
+            } else {
+                statusEl.textContent = "Une erreur est survenue. Réessayez.";
+            }
+        }
+    }
+
+    btnMonthly.addEventListener('click', () => handlePurchase('monthly', btnMonthly));
+    btnAnnual.addEventListener('click', () => handlePurchase('annual', btnAnnual));
+});
+</script>
+{% endblock %}
