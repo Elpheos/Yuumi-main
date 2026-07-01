@@ -857,8 +857,8 @@ main {
                     </li>
                 </ul>
 
-               {% if is_premium %}
-<a href="{% url 'recherche-intelligente' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
+              {% if is_premium %}
+<a href="{% url 'recherche-intelligente' %}" class="premium-bouton-menu" title="Recherche intelligente Yuumi+">
     <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
     <span class="premium-bouton-texte">
         <span class="premium-bouton-titre">Recherche Intelligente</span>
@@ -866,7 +866,7 @@ main {
     </span>
 </a>
 {% else %}
-<a href="{% url 'premium_home' %}" class="premium-bouton" title="Découvrez Yuumi+">
+<a href="{% url 'premium_home' %}" class="premium-bouton-menu" title="Découvrez Yuumi+">
     <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
     <span class="premium-bouton-texte">
         <span class="premium-bouton-titre">Découvrez Yuumi</span>
