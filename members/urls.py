@@ -68,6 +68,8 @@ urlpatterns = [
     path("premium/web/webhook/stripe/", views.stripe_webhook, name="stripe_webhook"),
     path("premium/web/webhook/paypal/", views.paypal_webhook, name="paypal_webhook"),
 
+    path("premium/app/verify/google-play/", views.google_play_verify, name="google_play_verify"),
+
     # EDIT doit être avant store_details pour éviter les conflits de pattern
     path("<str:departement>/<str:ville>/<slug:slug>/edit/", views.edit_store, name="edit_store"),
 
