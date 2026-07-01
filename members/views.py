@@ -1795,3 +1795,46 @@ def paypal_webhook(request):
     # TODO : verifier l'evenement avant d'appeler activer_premium(..., source="paypal").
     return HttpResponse(status=200)
 
+# ---------- Google Play : vérification d'achat côté app ----------
+
+@app_only
+@login_required
+@csrf_exempt
+def google_play_verify(request):
+    """
+    Reçoit le purchase_token envoyé par l'app après un achat Google Play
+    (via @capgo/native-purchases), le vérifie auprès de l'API Google Play
+    Developer, puis active le premium si l'achat est valide.
+
+    csrf_exempt : l'app mobile appelle cet endpoint hors contexte
+    navigateur classique, sans token CSRF disponible facilement.
+    Ne fait JAMAIS confiance au token sans verify_google_purchase.
+    """
+    if request.method != "POST":
+        return JsonResponse({"error": "Méthode non autorisée"}, status=405)
+
+    purchase_token = request.POST.get("purchase_token", "").strip()
+    product_id = request.POST.get("product_id", "").strip()
+
+    if not purchase_token or not product_id:
+        return JsonResponse({"error": "purchase_token et product_id requis"}, status=400)
+
+    is_valid = verify_google_purchase(purchase_token, product_id)
+    if not is_valid:
+        return JsonResponse({"error": "Achat invalide"}, status=400)
+
+    PRODUCT_MAP = {
+        "yuumi_plus_monthly": ("yuumi_plus", "monthly"),
+        "yuumi_plus_annual": ("yuumi_plus", "annual"),
+    }
+    tier, billing_period = PRODUCT_MAP.get(product_id, ("yuumi_plus", "monthly"))
+
+    activer_premium(
+        request.user,
+        source="google_play",
+        tier=tier,
+        billing_period=billing_period,
+        external_subscription_id=purchase_token,
+    )
+
+    return JsonResponse({"success": True})
