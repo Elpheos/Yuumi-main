@@ -138,3 +138,17 @@ def yuumi_plus_required(view_func):
             return redirect("premium_home")
         return view_func(request, *args, **kwargs)
     return wrapper
+
+def verify_google_purchase(purchase_token, product_id, package_name="com.yuumi.app"):
+    """
+    Verifie un achat Google Play aupres de l'API Google Play Developer.
+
+    STUB TEMPORAIRE : retourne toujours True pour permettre de tester
+    le reste du flux (vue, activer_premium) avant que le compte de
+    service et la lib google-auth soient branches. A remplacer par le
+    vrai appel a androidpublisher avant la mise en prod.
+    """
+    # TODO: remplacer par un vrai appel a l'API Google Play Developer
+    # via google-auth + google-api-python-client, en utilisant
+    # settings.GOOGLE_PLAY_SERVICE_ACCOUNT_PATH
+    return True
