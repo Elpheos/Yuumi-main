@@ -29,6 +29,8 @@ if _env_path.exists():
 SECRET_KEY = os.environ.get("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY manquante — vérifiez votre fichier .env")
+GOOGLE_PLAY_SERVICE_ACCOUNT_PATH = os.environ.get("GOOGLE_PLAY_SERVICE_ACCOUNT_PATH")
+GOOGLE_PLAY_PACKAGE_NAME = os.environ.get("GOOGLE_PLAY_PACKAGE_NAME", "com.yuumi.app")
 
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "yes")
 
