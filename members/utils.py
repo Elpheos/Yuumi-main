@@ -187,3 +187,28 @@ def verify_google_purchase(purchase_token, product_id, package_name=None):
     except Exception as e:
         logger.error(f"Erreur verification achat Google Play : {e}", exc_info=True)
         return False
+
+def verify_pubsub_token(request):
+    """
+    Verifie le jeton OIDC signe par Google dans l'en-tete Authorization
+    d'une requete push Pub/Sub, pour confirmer qu'elle vient bien de
+    Google et non d'un tiers malveillant connaissant l'URL du webhook.
+    """
+    from google.oauth2 import id_token
+    from google.auth.transport import requests as google_requests
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+    if not auth_header.startswith("Bearer "):
+        return False
+
+    token = auth_header.split(" ", 1)[1]
+
+    try:
+        id_token.verify_oauth2_token(token, google_requests.Request())
+        return True
+    except Exception as e:
+        logger.error(f"Jeton Pub/Sub invalide : {e}")
+        return False
