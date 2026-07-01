@@ -35,7 +35,7 @@ from .ai_agent.client import understand_intent, extract_search_params, recommend
 from .ai_agent.search import find_matching_stores, apply_open_now_filter
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from .utils import web_only, app_only, is_native_request, activer_premium, yuumi_plus_required, YUUMI_PLUS_WISHLIST_LIMIT, YUUMI_PLUS_UNFAVORIS_LIMIT
+from .utils import web_only, app_only, is_native_request, activer_premium, yuumi_plus_required, YUUMI_PLUS_WISHLIST_LIMIT, YUUMI_PLUS_UNFAVORIS_LIMIT, verify_google_purchase
 
 AI_AGENT_PUBLIC = False
 
