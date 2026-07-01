@@ -1869,6 +1869,8 @@ def google_play_rtdn(request):
     if request.method != "POST":
         return HttpResponse(status=405)
 
+    logger.error(f"DEBUG headers RTDN : {dict(request.headers)}")
+
     if not verify_pubsub_token(request):
         return HttpResponse(status=401)
 
