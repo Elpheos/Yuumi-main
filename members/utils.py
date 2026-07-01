@@ -139,16 +139,51 @@ def yuumi_plus_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
-def verify_google_purchase(purchase_token, product_id, package_name="com.yuumi.app"):
+def verify_google_purchase(purchase_token, product_id, package_name=None):
     """
-    Verifie un achat Google Play aupres de l'API Google Play Developer.
+    Verifie un achat Google Play aupres de l'API Google Play Developer,
+    via le compte de service configure dans GOOGLE_PLAY_SERVICE_ACCOUNT_PATH.
 
-    STUB TEMPORAIRE : retourne toujours True pour permettre de tester
-    le reste du flux (vue, activer_premium) avant que le compte de
-    service et la lib google-auth soient branches. A remplacer par le
-    vrai appel a androidpublisher avant la mise en prod.
+    Retourne True si l'abonnement est actif (paye et non expire/annule),
+    False sinon (token invalide, abonnement expire, erreur API).
     """
-    # TODO: remplacer par un vrai appel a l'API Google Play Developer
-    # via google-auth + google-api-python-client, en utilisant
-    # settings.GOOGLE_PLAY_SERVICE_ACCOUNT_PATH
-    return True
+    from django.conf import settings
+    from google.oauth2 import service_account
+    from googleapiclient.discovery import build
+    import logging
+
+    logger = logging.getLogger(__name__)
+
+    if package_name is None:
+        package_name = settings.GOOGLE_PLAY_PACKAGE_NAME
+
+    if not settings.GOOGLE_PLAY_SERVICE_ACCOUNT_PATH:
+        logger.error("GOOGLE_PLAY_SERVICE_ACCOUNT_PATH non configure.")
+        return False
+
+    try:
+        credentials = service_account.Credentials.from_service_account_file(
+            settings.GOOGLE_PLAY_SERVICE_ACCOUNT_PATH,
+            scopes=["https://www.googleapis.com/auth/androidpublisher"],
+        )
+        service = build("androidpublisher", "v3", credentials=credentials)
+
+        result = service.purchases().subscriptionsv2().get(
+            packageName=package_name,
+            token=purchase_token,
+        ).execute()
+
+        # subscriptionState possibles : SUBSCRIPTION_STATE_ACTIVE,
+        # SUBSCRIPTION_STATE_IN_GRACE_PERIOD, SUBSCRIPTION_STATE_CANCELED,
+        # SUBSCRIPTION_STATE_EXPIRED, etc. On considere valide seulement
+        # les etats ou l'utilisateur doit garder l'acces.
+        state = result.get("subscriptionState", "")
+        etats_valides = (
+            "SUBSCRIPTION_STATE_ACTIVE",
+            "SUBSCRIPTION_STATE_IN_GRACE_PERIOD",
+        )
+        return state in etats_valides
+
+    except Exception as e:
+        logger.error(f"Erreur verification achat Google Play : {e}", exc_info=True)
+        return False
