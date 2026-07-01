@@ -1182,7 +1182,7 @@ def supprimer_compte_public(request):
     
 @login_required
 def testyuumi2(request):
-    response = render(request, 'members/test-yuumi2.html', {
+    response = render(request, 'members/recherche-intelligente.html', {
         "departement_cookie": request.COOKIES.get("yuumi_departement", ""),
         "ville_cookie": request.COOKIES.get("yuumi_ville", ""),
     })
