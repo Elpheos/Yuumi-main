@@ -858,7 +858,7 @@ main {
                 </ul>
 
                {% if is_premium %}
-<a href="{% url 'test-yuumi2' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
+<a href="{% url 'recherche-intelligente' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
     <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
     <span class="premium-bouton-texte">
         <span class="premium-bouton-titre">Recherche IA</span>
@@ -1967,7 +1967,7 @@ document.addEventListener("DOMContentLoaded", () => {
 <script src="{% static 'js/push.js' %}"></script>
     
 {% if is_premium %}
-<a href="{% url 'test-yuumi2' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
+<a href="{% url 'recherche-intelligente' %}" class="premium-bouton" title="Recherche intelligente Yuumi+">
     <img src="{% static 'images/logo.webp' %}" alt="Yuumi" class="premium-bouton-logo">
     <span class="premium-bouton-texte">
         <span class="premium-bouton-titre">Recherche IA</span>
