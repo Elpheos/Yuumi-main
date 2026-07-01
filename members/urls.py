@@ -2,6 +2,7 @@ from django.urls import path
 from django.views.generic import TemplateView
 from . import views
 from . import autocomplete
+from django.views.generic import RedirectView
 from . import api_views as views_api
 
 urlpatterns = [
@@ -86,7 +87,8 @@ urlpatterns = [
 
     path("supprimer-mon-compte/", views.supprimer_compte_public, name="supprimer_compte"),
     path("mon-compte/supprimer/", views.delete_account, name="delete_account"),
-    path("test-yuumi2/", views.testyuumi2, name="test-yuumi2"),
+    path("recherche-intelligente/", views.testyuumi2, name="recherche-intelligente"),
+    path("test-yuumi2/", RedirectView.as_view(pattern_name="recherche-intelligente", permanent=True)),
     path("agent-ia/", views.ai_search_agent, name="ai_search_agent"),
     path("wishlists/<int:wishlist_id>/store/<int:store_id>/toggle/", views.toggle_wishlist_store, name="toggle-wishlist-store"),
 
