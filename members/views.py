@@ -1608,11 +1608,18 @@ from django.views.decorators.csrf import csrf_exempt
 
 # ---------- Pages affichées ----------
 
+def premium_home(request):
+    if is_native_request(request):
+        return redirect("premium_app")
+    return render(request, "members/premium_home.html", {
+        "premium_price": None,  # TODO : fixer le vrai prix
+    })
+
+
 @app_only
 def premium_app(request):
     # APP UNIQUEMENT — 404 si la requete vient du web.
     return render(request, "members/premium_app.html")
-
 
 @web_only
 def premium_web_checkout(request):
